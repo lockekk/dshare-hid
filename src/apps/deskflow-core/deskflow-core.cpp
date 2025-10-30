@@ -9,10 +9,13 @@
 #include "arch/Arch.h"
 #include "base/EventQueue.h"
 #include "base/Log.h"
+#include "client/BridgeClientApp.h"
 #include "common/ExitCodes.h"
+#include "common/Settings.h"
 #include "deskflow/ClientApp.h"
 #include "deskflow/CoreArgParser.h"
 #include "deskflow/ServerApp.h"
+#include "platform/bridge/CdcTransport.h"
 
 #if SYSAPI_WIN32
 #include "arch/win32/ArchMiscWindows.h"
@@ -48,6 +51,52 @@ int main(int argc, char **argv)
   for (int i = 0; i < argc; i++)
     args.append(argv[i]);
 
+  // Step 1: Early lightweight argument pre-parse to extract --name and detect mode
+  QString instanceName = "default";
+  QString linkDevice;
+  bool isClient = false;
+  bool isServer = false;
+  bool isBridgeClient = false;
+
+  QString bridgeSettingsOverride;
+  QString configOverride;
+
+  for (int i = 1; i < argc; i++) {
+    const QString arg = QString::fromUtf8(argv[i]);
+
+    if ((arg == "--name" || arg == "-n") && (i + 1 < argc)) {
+      instanceName = QString::fromUtf8(argv[++i]);
+    } else if (arg == "--link" && (i + 1 < argc)) {
+      linkDevice = QString::fromUtf8(argv[++i]);
+      isBridgeClient = true;
+      isClient = true; // Bridge client is a type of client
+    } else if (arg == "--bridge-settings-file" && (i + 1 < argc)) {
+      bridgeSettingsOverride = QString::fromUtf8(argv[++i]);
+    } else if ((arg == "--settings" || arg == "-s") && (i + 1 < argc)) {
+      configOverride = QString::fromUtf8(argv[++i]);
+    } else if (arg == "client") {
+      isClient = true;
+    } else if (arg == "server") {
+      isServer = true;
+    }
+  }
+
+  // Determine initial settings file before constructing CoreArgParser so CLI overrides take effect.
+  QString initialSettingsFile;
+  if (isBridgeClient) {
+    if (!bridgeSettingsOverride.isEmpty()) {
+      initialSettingsFile = bridgeSettingsOverride;
+    } else {
+      initialSettingsFile = QStringLiteral("settings/%1.conf").arg(instanceName);
+    }
+  } else if (!configOverride.isEmpty()) {
+    initialSettingsFile = configOverride;
+  }
+
+  if (!initialSettingsFile.isEmpty()) {
+    Settings::setSettingFile(initialSettingsFile);
+  }
+
   CoreArgParser parser(args);
 
   // Comment below until we are ready use only this parser
@@ -66,10 +115,20 @@ int main(int argc, char **argv)
     return s_exitSuccess;
   }
 
-  // Before we check any more args we need to check for a duplicate process.
-  // Create a shared memory segment with a unique key
+  // Step 2: Build shared memory key based on role
+  QString sharedMemKey;
+  if (isClient) {
+    sharedMemKey = QString("deskflow-core-client-%1").arg(instanceName);
+  } else if (isServer) {
+    sharedMemKey = "deskflow-core-server";
+  } else {
+    // Default to old behavior if mode not detected yet
+    sharedMemKey = "deskflow-core";
+  }
+
+  // Step 3: Create shared memory segment with the constructed key
   // This is to prevent a new instance from running if one is already running
-  QSharedMemory sharedMemory("deskflow-core");
+  QSharedMemory sharedMemory(sharedMemKey);
 
   // Attempt to attach first and detach in order to clean up stale shm chunks
   // This can happen if the previous instance was killed or crashed
@@ -82,6 +141,7 @@ int main(int argc, char **argv)
     return s_exitDuplicate;
   }
 
+  // Step 4: Full argument parsing with CoreArgParser
   parser.parse();
 
   EventQueue events;
@@ -91,8 +151,35 @@ int main(int argc, char **argv)
     ServerApp app(&events, processName);
     return app.run();
   } else if (parser.clientMode()) {
-    ClientApp app(&events, processName);
-    return app.run();
+    // Check if this is a bridge client
+    if (isBridgeClient) {
+      // Step 6: Bridge client initialization
+      LOG_INFO("initializing bridge client with link device: %s", linkDevice.toUtf8().constData());
+
+      // Create CDC transport
+      auto transport = std::make_shared<deskflow::bridge::CdcTransport>(linkDevice);
+      // Bypass CDC query during bootstrap; use placeholder configuration
+      deskflow::bridge::PicoConfig config;
+      config.arch = "bridge-default";
+      config.screenWidth = 1920;
+      config.screenHeight = 1080;
+      config.screenRotation = 0;
+      config.screenPhysicalWidth = 10.0f;
+      config.screenPhysicalHeight = 6.0f;
+      config.screenScaleFactor = 1.0f;
+
+      LOG_INFO(
+          "Pico config: arch=%s screen=%dx%d", config.arch.c_str(), config.screenWidth, config.screenHeight
+      );
+
+      // Create and run bridge client
+      BridgeClientApp app(&events, processName, transport, config);
+      return app.run();
+    } else {
+      // Standard client
+      ClientApp app(&events, processName);
+      return app.run();
+    }
   }
 
   return s_exitSuccess;

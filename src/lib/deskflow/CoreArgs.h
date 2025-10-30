@@ -80,9 +80,34 @@ struct CoreArgs
   inline static const auto remoteHostOption =
       QCommandLineOption("remoteHost", "Client Mode: Sets the remote host in the settings file", "hostname");
 
-  inline static const auto options = {helpOption,    versionOption,      configOption,       interfaceOption,
-                                      portOption,    nameOption,         logLevelOption,     logFileOption,
-                                      secureOption,  tlsCertOption,      preventSleepOption, restartOption,
-                                      displayOption, useHooksOption,     peerCheckOption,    serverConfigOption,
-                                      yscrollOption, languageSyncOption, invertScrollOption, remoteHostOption};
+  // Bridge Client Options
+  inline static const auto linkOption =
+      QCommandLineOption("link", "Bridge Client Mode: USB CDC device path for Pico 2 W communication", "device-path");
+
+  inline static const auto bridgeSettingsFileOption = QCommandLineOption(
+      "bridge-settings-file", "Bridge Client Mode: Override per-instance settings file path", "path"
+  );
+
+  inline static const auto options = {helpOption,
+                                      versionOption,
+                                      configOption,
+                                      interfaceOption,
+                                      portOption,
+                                      nameOption,
+                                      logLevelOption,
+                                      logFileOption,
+                                      secureOption,
+                                      tlsCertOption,
+                                      preventSleepOption,
+                                      restartOption,
+                                      displayOption,
+                                      useHooksOption,
+                                      peerCheckOption,
+                                      serverConfigOption,
+                                      yscrollOption,
+                                      languageSyncOption,
+                                      invertScrollOption,
+                                      remoteHostOption,
+                                      linkOption,
+                                      bridgeSettingsFileOption};
 };

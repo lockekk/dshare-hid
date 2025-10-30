@@ -197,3 +197,13 @@ const char *CoreArgParser::display() const
   return nullptr;
 #endif
 }
+
+QString CoreArgParser::linkDevice() const
+{
+  return m_parser.value(CoreArgs::linkOption);
+}
+
+QString CoreArgParser::bridgeSettingsFile() const
+{
+  return m_parser.value(CoreArgs::bridgeSettingsFileOption);
+}

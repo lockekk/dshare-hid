@@ -34,6 +34,8 @@ public:
   bool serverMode() const;
   bool clientMode() const;
   const char *display() const;
+  QString linkDevice() const;
+  QString bridgeSettingsFile() const;
 
 private:
   [[noreturn]] void showHelpText() const;

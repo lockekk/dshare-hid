@@ -5,6 +5,8 @@
 
 
 add_library(client STATIC
+  BridgeClientApp.cpp
+  BridgeClientApp.h
   Client.cpp
   Client.h
   HelloBack.cpp

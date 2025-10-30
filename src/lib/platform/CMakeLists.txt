@@ -151,8 +151,18 @@ if(APPLE)
 endif()
 include_directories(${inc})
 
+# Bridge sources (platform-independent)
+set(BRIDGE_SOURCES
+  bridge/BridgePlatformScreen.cpp
+  bridge/BridgePlatformScreen.h
+  bridge/CdcTransport.cpp
+  bridge/CdcTransport.h
+  bridge/HidFrame.cpp
+  bridge/HidFrame.h
+)
+
 # wayland.h is included to check for wayland support
-add_library(platform STATIC ${PLATFORM_SOURCES} Wayland.h)
+add_library(platform STATIC ${PLATFORM_SOURCES} ${BRIDGE_SOURCES} Wayland.h)
 
 target_link_libraries(platform client ${libs})
 

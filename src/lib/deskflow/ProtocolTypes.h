@@ -312,6 +312,30 @@ extern const char *const kMsgHelloBack;
  */
 extern const char *const kMsgHelloBackArgs;
 
+/**
+ * @brief Server identity message (Bridge compatibility)
+ *
+ * **Message Code**: `"IDEN"`
+ * **Direction**: Primary → Secondary
+ * **Format**: `"IDEN%s"`
+ * **Parameters**:
+ * - `$1`: Server identity string (string) - Identifies server as bridge-compatible
+ *
+ * **Example**:
+ *
+ * Bridge-compatible server
+ * ```
+ * "IDEN\x00\x00\x00\x0Dbridge-server"
+ * ```
+ *
+ * Sent by bridge-compatible servers during handshake to identify themselves.
+ * Bridge clients require this message to accept the connection, preventing
+ * connections to unmodified upstream servers.
+ *
+ * @since Protocol version 1.9 (Bridge extension)
+ */
+extern const char *const kMsgDIdentity;
+
 /** @} */ // end of protocol_handshake group
 
 /**
