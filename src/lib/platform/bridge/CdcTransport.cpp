@@ -7,8 +7,11 @@
 
 #include "base/Log.h"
 
+#include <algorithm>
 #include <chrono>
+#include <iomanip>
 #include <random>
+#include <sstream>
 #include <thread>
 
 #if defined(Q_OS_UNIX)
@@ -33,6 +36,29 @@ constexpr uint8_t kUsbControlAck = 0x81;
 
 constexpr int kHandshakeTimeoutMs = 2000;
 constexpr int kReadPollIntervalMs = 10;
+
+std::string hexDump(const uint8_t *data, size_t length, size_t maxBytes = 64)
+{
+  if (data == nullptr || length == 0) {
+    return {};
+  }
+
+  const size_t limit = std::min(length, maxBytes);
+
+  std::ostringstream oss;
+  oss << std::hex << std::uppercase << std::setfill('0');
+  for (size_t i = 0; i < limit; ++i) {
+    if (i > 0)
+      oss << ' ';
+    oss << std::setw(2) << static_cast<unsigned>(data[i]);
+  }
+
+  if (length > maxBytes) {
+    oss << " ...";
+  }
+
+  return oss.str();
+}
 } // namespace
 
 CdcTransport::CdcTransport(const QString &devicePath) : m_devicePath(devicePath)
@@ -276,6 +302,16 @@ bool CdcTransport::sendUsbFrame(uint8_t type, uint8_t flags, const uint8_t *payl
 
   if (length > 0 && payload != nullptr) {
     frame.insert(frame.end(), payload, payload + length);
+  }
+
+  std::string frameHex = hexDump(frame.data(), frame.size(), 128);
+  if (!frameHex.empty()) {
+    LOG_DEBUG(
+        "CDC: TX frame type=0x%02x flags=0x%02x len=%u bytes=%s%s", type, flags, length, frameHex.c_str(),
+        frame.size() > 128 ? " ..." : ""
+    );
+  } else {
+    LOG_DEBUG("CDC: TX frame type=0x%02x flags=0x%02x len=%u", type, flags, length);
   }
 
   if (!writeAll(frame.data(), frame.size())) {

@@ -9,7 +9,9 @@
 #include "base/Log.h"
 
 #include <algorithm>
+#include <iomanip>
 #include <cstring>
+#include <sstream>
 #include <limits>
 #include <utility>
 
@@ -20,6 +22,29 @@ constexpr int kMinMouseDelta = std::numeric_limits<int16_t>::min();
 constexpr int kMaxMouseDelta = std::numeric_limits<int16_t>::max();
 constexpr int kDebugScreenWidth = 1920;
 constexpr int kDebugScreenHeight = 1080;
+
+std::string hexDump(const uint8_t *data, size_t length, size_t maxBytes = 32)
+{
+  if (data == nullptr || length == 0) {
+    return {};
+  }
+
+  const size_t limit = std::min(length, maxBytes);
+
+  std::ostringstream oss;
+  oss << std::hex << std::uppercase << std::setfill('0');
+  for (size_t i = 0; i < limit; ++i) {
+    if (i > 0)
+      oss << ' ';
+    oss << std::setw(2) << static_cast<unsigned>(data[i]);
+  }
+
+  if (length > maxBytes) {
+    oss << " ...";
+  }
+
+  return oss.str();
+}
 }
 
 BridgePlatformScreen::BridgePlatformScreen(
@@ -416,6 +441,16 @@ void BridgePlatformScreen::handleSystemEvent(const Event &event)
 
 bool BridgePlatformScreen::sendEvent(HidEventType type, const std::vector<uint8_t> &payload) const
 {
+  std::string payloadHex = hexDump(payload.data(), payload.size(), 48);
+  if (!payloadHex.empty()) {
+    LOG_DEBUG(
+        "BridgeScreen: TX HID type=0x%02x len=%zu payload=%s", static_cast<unsigned>(type), payload.size(),
+        payloadHex.c_str()
+    );
+  } else {
+    LOG_DEBUG("BridgeScreen: TX HID type=0x%02x len=%zu", static_cast<unsigned>(type), payload.size());
+  }
+
   HidEventPacket packet;
   packet.type = type;
   packet.payload = payload;

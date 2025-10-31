@@ -1,5 +1,9 @@
 # USB-HID Bridge Device Plan
 
+## Change Summary
+- Multi-instance support validated in practice: two bridge clients can now connect concurrently to a single server on the same PC.
+- Bridge client temporarily reports a fixed 1920×1080 display size so the server accepts DINF responses during debugging.
+
 ## Problem
 Need to extend PC keyboard/mouse control to mobile devices (iPad/iPhone/Android) that don't support standard Deskflow client installation.
 
