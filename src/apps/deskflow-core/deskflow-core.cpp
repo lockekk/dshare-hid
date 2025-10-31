@@ -161,8 +161,8 @@ int main(int argc, char **argv)
       // Bypass CDC query during bootstrap; use placeholder configuration
       deskflow::bridge::PicoConfig config;
       config.arch = "bridge-default";
-      config.screenWidth = 1920;
-      config.screenHeight = 1080;
+      config.screenWidth = 1080;
+      config.screenHeight = 2424;
       config.screenRotation = 0;
       config.screenPhysicalWidth = 10.0f;
       config.screenPhysicalHeight = 6.0f;
