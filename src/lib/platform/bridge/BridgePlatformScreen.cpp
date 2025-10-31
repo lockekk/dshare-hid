@@ -549,6 +549,16 @@ bool BridgePlatformScreen::sendEvent(HidEventType type, const std::vector<uint8_
 
 bool BridgePlatformScreen::sendKeyboardEvent(HidEventType type, uint8_t modifiers, uint8_t keycode) const
 {
+  const bool isPress = (type == HidEventType::KeyboardPress);
+  const bool isRelease = (type == HidEventType::KeyboardRelease);
+
+  if (isPress || isRelease) {
+    if (m_transport->sendKeyboardCompact(modifiers, keycode, isPress)) {
+      return true;
+    }
+    LOG_WARN("BridgeScreen: compact keyboard send failed, falling back to HID payload");
+  }
+
   if (!sendEvent(type, {modifiers, keycode})) {
     LOG_ERR("BridgeScreen: failed to send keyboard event");
     return false;

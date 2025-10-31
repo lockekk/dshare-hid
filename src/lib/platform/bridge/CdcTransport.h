@@ -78,6 +78,14 @@ public:
   bool sendMouseMoveCompact(int16_t dx, int16_t dy);
 
   /**
+   * @brief Send a compact keyboard event frame
+   *
+   * Encodes the modifier/keycode pair and press/release state directly in the
+   * header so the on-wire frame is eight bytes with no payload.
+   */
+  bool sendKeyboardCompact(uint8_t modifiers, uint8_t keycode, bool isPress);
+
+  /**
    * @brief Get last error message
    */
   std::string lastError() const

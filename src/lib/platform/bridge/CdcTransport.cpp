@@ -31,6 +31,7 @@ constexpr uint16_t kUsbLinkMagic = 0xC35A;
 constexpr uint8_t kUsbLinkVersion = 1;
 constexpr uint8_t kUsbFrameTypeHid = 0x01;
 constexpr uint8_t kUsbFrameTypeHidMouseCompact = 0x02;
+constexpr uint8_t kUsbFrameTypeHidKeyCompact = 0x03;
 constexpr uint8_t kUsbFrameTypeControl = 0x80;
 
 constexpr uint8_t kUsbControlHello = 0x01;
@@ -310,6 +311,36 @@ bool CdcTransport::sendMouseMoveCompact(int16_t dx, int16_t dy)
       kUsbFrameTypeHidMouseCompact,
       clampedDx,
       clampedDy,
+      frameHex.c_str()
+  );
+
+  return writeAll(frame.data(), frame.size());
+}
+
+bool CdcTransport::sendKeyboardCompact(uint8_t modifiers, uint8_t keycode, bool isPress)
+{
+  if (!ensureOpen()) {
+    return false;
+  }
+
+  std::array<uint8_t, 8> frame = {
+      static_cast<uint8_t>(kUsbLinkMagic & 0xFF),
+      static_cast<uint8_t>((kUsbLinkMagic >> 8) & 0xFF),
+      kUsbLinkVersion,
+      kUsbFrameTypeHidKeyCompact,
+      modifiers,
+      keycode,
+      static_cast<uint8_t>(isPress ? 0x01 : 0x00),
+      0x00,
+  };
+
+  const std::string frameHex = hexDump(frame.data(), frame.size(), 32);
+  LOG_DEBUG(
+      "CDC: TX compact key frame type=0x%02x press=%d mods=0x%02x key=0x%02x bytes=%s",
+      kUsbFrameTypeHidKeyCompact,
+      isPress ? 1 : 0,
+      modifiers,
+      keycode,
       frameHex.c_str()
   );
 
