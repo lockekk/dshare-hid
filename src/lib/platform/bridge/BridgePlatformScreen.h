@@ -107,11 +107,7 @@ private:
   uint8_t convertKeyID(KeyID id) const;
   uint8_t convertKeyButton(KeyButton button) const;
   uint8_t convertKey(KeyID id, KeyButton button) const;
-
-  void sendKeyboardReport();
-  void sendMouseReport();
-  uint8_t mapKeyToHid(KeyID key, KeyButton button) const;
-  uint8_t mapModifiersToHid(KeyModifierMask mask) const;
+  uint8_t convertButtonID(ButtonID id) const;
 
   std::shared_ptr<CdcTransport> m_transport;
   PicoConfig m_config;
@@ -124,10 +120,6 @@ private:
   std::set<uint8_t> m_pressedKeycodes;
   std::set<KeyButton> m_pressedButtons;
   KeyModifierMask m_activeModifiers = 0;
-
-  uint8_t m_keyModifiers = 0;
-  uint8_t m_pressedKeys[6] = {0};
-  size_t m_numPressedKeys = 0;
 
   bool m_enabled = false;
   uint32_t m_sequenceNumber = 0;

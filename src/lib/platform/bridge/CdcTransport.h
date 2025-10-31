@@ -19,8 +19,8 @@ namespace deskflow::bridge {
  */
 struct PicoConfig {
   std::string arch;           // e.g., "bridge-ios", "bridge-android"
-  int32_t screenWidth = 0;
-  int32_t screenHeight = 0;
+  int32_t screenWidth = 1920;
+  int32_t screenHeight = 1080;
   int32_t screenRotation = 0; // 0, 90, 180, 270
   float screenPhysicalWidth = 0.0f;  // in inches
   float screenPhysicalHeight = 0.0f; // in inches
@@ -68,12 +68,6 @@ public:
    * @return true if successful
    */
   bool sendHidEvent(const HidEventPacket &packet);
-
-  /**
-   * @brief Send HID frame to Pico
-   * @return true if successful
-   */
-  bool sendHidFrame(const HidFrame &frame);
 
   /**
    * @brief Get last error message

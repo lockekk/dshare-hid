@@ -250,15 +250,6 @@ bool CdcTransport::sendHidEvent(const HidEventPacket &packet)
   return sendUsbFrame(kUsbFrameTypeHid, 0, payload);
 }
 
-bool CdcTransport::sendHidFrame(const HidFrame &frame)
-{
-  if (!ensureOpen()) {
-    return false;
-  }
-
-  return sendUsbFrame(kUsbFrameTypeHid, static_cast<uint8_t>(frame.type), frame.payload);
-}
-
 bool CdcTransport::sendUsbFrame(uint8_t type, uint8_t flags, const std::vector<uint8_t> &payload)
 {
   return sendUsbFrame(type, flags, payload.data(), static_cast<uint16_t>(payload.size()));

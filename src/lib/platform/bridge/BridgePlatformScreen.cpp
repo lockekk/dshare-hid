@@ -8,18 +8,33 @@
 #include "HidFrame.h"
 #include "base/Log.h"
 
+#include <algorithm>
 #include <cstring>
+#include <limits>
+#include <utility>
 
 namespace deskflow::bridge {
+
+namespace {
+constexpr int kMinMouseDelta = std::numeric_limits<int16_t>::min();
+constexpr int kMaxMouseDelta = std::numeric_limits<int16_t>::max();
+constexpr int kDebugScreenWidth = 1920;
+constexpr int kDebugScreenHeight = 1080;
+}
 
 BridgePlatformScreen::BridgePlatformScreen(
     IEventQueue *events, std::shared_ptr<CdcTransport> transport, const PicoConfig &config
 ) :
     PlatformScreen(events, false), // invertScrollDirection = false by default
-    m_transport(transport),
+    m_transport(std::move(transport)),
     m_config(config)
 {
-  LOG_INFO("BridgeScreen: initialized for arch=%s screen=%dx%d", m_config.arch.c_str(), m_config.screenWidth, m_config.screenHeight);
+  LOG_INFO(
+      "BridgeScreen: initialized for arch=%s screen=%dx%d (debug override active)",
+      m_config.arch.c_str(),
+      kDebugScreenWidth,
+      kDebugScreenHeight
+  );
 }
 
 BridgePlatformScreen::~BridgePlatformScreen() = default;
@@ -39,8 +54,8 @@ void BridgePlatformScreen::getShape(int32_t &x, int32_t &y, int32_t &width, int3
 {
   x = 0;
   y = 0;
-  width = m_config.screenWidth;
-  height = m_config.screenHeight;
+  width = kDebugScreenWidth;
+  height = kDebugScreenHeight;
 }
 
 void BridgePlatformScreen::getCursorPos(int32_t &x, int32_t &y) const
@@ -110,27 +125,30 @@ bool BridgePlatformScreen::isAnyMouseButtonDown(uint32_t &buttonID) const
 
 void BridgePlatformScreen::getCursorCenter(int32_t &x, int32_t &y) const
 {
-  x = m_config.screenWidth / 2;
-  y = m_config.screenHeight / 2;
+  x = kDebugScreenWidth / 2;
+  y = kDebugScreenHeight / 2;
 }
 
 void BridgePlatformScreen::fakeMouseButton(ButtonID id, bool press)
 {
   LOG_DEBUG("BridgeScreen: mouse button %d %s", id, press ? "press" : "release");
 
-  if (id == 0 || id > 8) {
+  const uint8_t hidButton = convertButtonID(id);
+  if (hidButton == 0) {
     return;
   }
 
-  uint8_t buttonBit = 1 << (id - 1);
-
   if (press) {
-    m_mouseButtons |= buttonBit;
+    m_mouseButtons |= hidButton;
+    if (!sendMouseButtonEvent(HidEventType::MouseButtonPress, hidButton)) {
+      LOG_ERR("BridgeScreen: failed to send mouse button press");
+    }
   } else {
-    m_mouseButtons &= ~buttonBit;
+    m_mouseButtons &= static_cast<uint8_t>(~hidButton);
+    if (!sendMouseButtonEvent(HidEventType::MouseButtonRelease, hidButton)) {
+      LOG_ERR("BridgeScreen: failed to send mouse button release");
+    }
   }
-
-  sendMouseReport();
 }
 
 void BridgePlatformScreen::fakeMouseMove(int32_t x, int32_t y)
@@ -151,85 +169,66 @@ void BridgePlatformScreen::fakeMouseRelativeMove(int32_t dx, int32_t dy) const
 {
   LOG_DEBUG2("BridgeScreen: mouse relative move %d,%d", dx, dy);
 
-  // HID mouse reports use int8_t, so we need to send multiple reports for large movements
-  while (dx != 0 || dy != 0) {
-    int8_t reportDx = (dx > 127) ? 127 : (dx < -127) ? -127 : static_cast<int8_t>(dx);
-    int8_t reportDy = (dy > 127) ? 127 : (dy < -127) ? -127 : static_cast<int8_t>(dy);
+  if (dx == 0 && dy == 0) {
+    return;
+  }
 
-    MouseReport report;
-    report.buttons = m_mouseButtons;
-    report.x = reportDx;
-    report.y = reportDy;
+  dx = std::clamp(dx, static_cast<int32_t>(kMinMouseDelta), static_cast<int32_t>(kMaxMouseDelta));
+  dy = std::clamp(dy, static_cast<int32_t>(kMinMouseDelta), static_cast<int32_t>(kMaxMouseDelta));
 
-    HidFrame frame;
-    frame.type = HidReportType::Mouse;
-    frame.payload = report.toPayload();
-
-    if (!const_cast<BridgePlatformScreen *>(this)->m_transport->sendHidFrame(frame)) {
-      LOG_ERR("BridgeScreen: failed to send mouse report");
-      break;
-    }
-
-    dx -= reportDx;
-    dy -= reportDy;
+  if (!sendMouseMoveEvent(static_cast<int16_t>(dx), static_cast<int16_t>(dy))) {
+    LOG_ERR("BridgeScreen: failed to send mouse move");
   }
 }
 
-void BridgePlatformScreen::fakeMouseWheel(int32_t xDelta, int32_t yDelta) const
+void BridgePlatformScreen::fakeMouseWheel(int32_t, int32_t yDelta) const
 {
-  LOG_DEBUG("BridgeScreen: mouse wheel x=%d y=%d", xDelta, yDelta);
+  LOG_DEBUG("BridgeScreen: mouse wheel y=%d", yDelta);
 
-  // Convert to HID wheel deltas (typically scaled down)
-  int8_t wheelY = static_cast<int8_t>(yDelta / 120); // Standard wheel delta is 120
-  int8_t wheelX = static_cast<int8_t>(xDelta / 120);
+  if (yDelta == 0) {
+    return;
+  }
 
-  MouseWheelReport report;
-  report.wheel = wheelY;
-  report.hwheel = wheelX;
-
-  HidFrame frame;
-  frame.type = HidReportType::MouseWheel;
-  frame.payload = report.toPayload();
-
-  if (!const_cast<BridgePlatformScreen *>(this)->m_transport->sendHidFrame(frame)) {
-    LOG_ERR("BridgeScreen: failed to send wheel report");
+  yDelta = std::clamp(yDelta, -128, 127);
+  if (!sendMouseScrollEvent(static_cast<int8_t>(yDelta))) {
+    LOG_ERR("BridgeScreen: failed to send scroll event");
   }
 }
 
-void BridgePlatformScreen::fakeKeyDown(KeyID id, KeyModifierMask mask, KeyButton button, const std::string &lang)
+void BridgePlatformScreen::fakeKeyDown(KeyID id, KeyModifierMask mask, KeyButton button, const std::string &)
 {
   LOG_DEBUG("BridgeScreen: key down id=0x%04x button=%d", id, button);
 
-  uint8_t hidKey = mapKeyToHid(id, button);
-  m_keyModifiers = mapModifiersToHid(mask);
-  m_activeModifiers = mask;
-  m_pressedButtons.insert(button);
+  const uint8_t hidKey = convertKey(id, button);
+  uint8_t hidModifiers = convertModifiers(mask);
 
-  // Add key to pressed keys array (if not already present)
-  if (m_numPressedKeys < 6) {
-    bool alreadyPressed = false;
-    for (size_t i = 0; i < m_numPressedKeys; i++) {
-      if (m_pressedKeys[i] == hidKey) {
-        alreadyPressed = true;
-        break;
-      }
-    }
-
-    if (!alreadyPressed && hidKey != 0) {
-      m_pressedKeys[m_numPressedKeys++] = hidKey;
-    }
+  if (uint8_t extra = modifierBitForKey(id); extra != 0) {
+    hidModifiers |= extra;
+  } else if (uint8_t extraBtn = modifierBitForButton(button); extraBtn != 0) {
+    hidModifiers |= extraBtn;
   }
 
-  sendKeyboardReport();
+  m_activeModifiers = mask;
+  m_pressedButtons.insert(button);
+  if (hidKey != 0) {
+    m_pressedKeycodes.insert(hidKey);
+  }
+
+  if (hidKey == 0 && hidModifiers == 0) {
+    return;
+  }
+
+  if (!sendKeyboardEvent(HidEventType::KeyboardPress, hidModifiers, hidKey)) {
+    LOG_ERR("BridgeScreen: failed to send key press");
+  }
 }
 
 bool BridgePlatformScreen::fakeKeyRepeat(
-    KeyID id, KeyModifierMask mask, int32_t count, KeyButton button, const std::string &lang
+    KeyID id, KeyModifierMask mask, int32_t count, KeyButton button, const std::string &
 )
 {
-  // Key repeat is handled by sending the same key down event
-  for (int32_t i = 0; i < count; i++) {
-    fakeKeyDown(id, mask, button, lang);
+  for (int32_t i = 0; i < count; ++i) {
+    fakeKeyDown(id, mask, button, {});
   }
   return true;
 }
@@ -238,29 +237,22 @@ bool BridgePlatformScreen::fakeKeyUp(KeyButton button)
 {
   LOG_DEBUG("BridgeScreen: key up button=%d", button);
 
-  // We need to map the button back to HID code to remove it
-  // For now, we'll use a simplified approach
-  uint8_t hidKey = mapKeyToHid(0, button);
+  const uint8_t hidKey = convertKey(0, button);
+  const uint8_t hidModifiers = convertModifiers(m_activeModifiers);
 
-  // Remove key from pressed keys array
-  for (size_t i = 0; i < m_numPressedKeys; i++) {
-    if (m_pressedKeys[i] == hidKey) {
-      // Shift remaining keys
-      for (size_t j = i; j < m_numPressedKeys - 1; j++) {
-        m_pressedKeys[j] = m_pressedKeys[j + 1];
-      }
-      m_pressedKeys[--m_numPressedKeys] = 0;
-      break;
-    }
-  }
-
+  m_pressedKeycodes.erase(hidKey);
   m_pressedButtons.erase(button);
   if (m_pressedButtons.empty()) {
     m_activeModifiers = 0;
-    m_keyModifiers = 0;
   }
 
-  sendKeyboardReport();
+  if (hidKey == 0 && hidModifiers == 0) {
+    return true;
+  }
+
+  if (!sendKeyboardEvent(HidEventType::KeyboardRelease, hidModifiers, hidKey)) {
+    LOG_ERR("BridgeScreen: failed to send key release");
+  }
   return true;
 }
 
@@ -268,13 +260,15 @@ void BridgePlatformScreen::fakeAllKeysUp()
 {
   LOG_DEBUG("BridgeScreen: all keys up");
 
-  m_keyModifiers = 0;
-  m_numPressedKeys = 0;
-  std::memset(m_pressedKeys, 0, sizeof(m_pressedKeys));
+  for (uint8_t hidKey : m_pressedKeycodes) {
+    if (!sendKeyboardEvent(HidEventType::KeyboardRelease, 0, hidKey)) {
+      LOG_ERR("BridgeScreen: failed to send key release for %u", hidKey);
+    }
+  }
+
+  m_pressedKeycodes.clear();
   m_pressedButtons.clear();
   m_activeModifiers = 0;
-
-  sendKeyboardReport();
 }
 
 void BridgePlatformScreen::updateKeyMap()
@@ -420,65 +414,432 @@ void BridgePlatformScreen::handleSystemEvent(const Event &event)
   // Bridge doesn't handle system events
 }
 
-void BridgePlatformScreen::sendKeyboardReport()
+bool BridgePlatformScreen::sendEvent(HidEventType type, const std::vector<uint8_t> &payload) const
 {
-  KeyboardReport report;
-  report.modifiers = m_keyModifiers;
-  report.reserved = 0;
-  std::memcpy(report.keycodes, m_pressedKeys, 6);
+  HidEventPacket packet;
+  packet.type = type;
+  packet.payload = payload;
+  if (!m_transport->sendHidEvent(packet)) {
+    LOG_ERR("BridgeScreen: failed to send HID event type=%u", static_cast<unsigned>(type));
+    return false;
+  }
+  return true;
+}
 
-  HidFrame frame;
-  frame.type = HidReportType::Keyboard;
-  frame.payload = report.toPayload();
+bool BridgePlatformScreen::sendKeyboardEvent(HidEventType type, uint8_t modifiers, uint8_t keycode) const
+{
+  if (!sendEvent(type, {modifiers, keycode})) {
+    LOG_ERR("BridgeScreen: failed to send keyboard event");
+    return false;
+  }
+  return true;
+}
 
-  if (!m_transport->sendHidFrame(frame)) {
-    LOG_ERR("BridgeScreen: failed to send keyboard report");
+bool BridgePlatformScreen::sendMouseMoveEvent(int16_t dx, int16_t dy) const
+{
+  std::vector<uint8_t> payload(4);
+  payload[0] = static_cast<uint8_t>(dx & 0xFF);
+  payload[1] = static_cast<uint8_t>((dx >> 8) & 0xFF);
+  payload[2] = static_cast<uint8_t>(dy & 0xFF);
+  payload[3] = static_cast<uint8_t>((dy >> 8) & 0xFF);
+  if (!sendEvent(HidEventType::MouseMove, payload)) {
+    LOG_ERR("BridgeScreen: failed to send mouse move event");
+    return false;
+  }
+  return true;
+}
+
+bool BridgePlatformScreen::sendMouseButtonEvent(HidEventType type, uint8_t buttonMask) const
+{
+  if (!sendEvent(type, {buttonMask})) {
+    LOG_ERR("BridgeScreen: failed to send mouse button event");
+    return false;
+  }
+  return true;
+}
+
+bool BridgePlatformScreen::sendMouseScrollEvent(int8_t delta) const
+{
+  if (!sendEvent(HidEventType::MouseScroll, {static_cast<uint8_t>(delta)})) {
+    LOG_ERR("BridgeScreen: failed to send scroll event");
+    return false;
+  }
+  return true;
+}
+
+uint8_t BridgePlatformScreen::convertModifiers(KeyModifierMask mask) const
+{
+  uint8_t hidMods = 0;
+  if (mask & KeyModifierShift)
+    hidMods |= 0x02;
+  if (mask & KeyModifierControl)
+    hidMods |= 0x01;
+  if (mask & KeyModifierAlt)
+    hidMods |= 0x04;
+  if (mask & KeyModifierAltGr)
+    hidMods |= 0x40;
+  if (mask & (KeyModifierSuper | KeyModifierMeta))
+    hidMods |= 0x08;
+  return hidMods;
+}
+
+uint8_t BridgePlatformScreen::modifierBitForKey(KeyID id) const
+{
+  switch (id) {
+  case ::kKeyShift_L:
+  case 0xFFE1:
+    return 0x02;
+  case ::kKeyShift_R:
+  case 0xFFE2:
+    return 0x20;
+  case ::kKeyControl_L:
+  case 0xFFE3:
+    return 0x01;
+  case ::kKeyControl_R:
+  case 0xFFE4:
+    return 0x10;
+  case ::kKeyAlt_L:
+  case 0xFFE9:
+    return 0x04;
+  case ::kKeyAlt_R:
+  case 0xFFEA:
+  case ::kKeyAltGr:
+    return 0x40;
+  case ::kKeyMeta_L:
+  case ::kKeySuper_L:
+  case 0xFFE7:
+  case 0xFFEB:
+    return 0x08;
+  case ::kKeyMeta_R:
+  case ::kKeySuper_R:
+  case 0xFFE8:
+  case 0xFFEC:
+    return 0x80;
+  default:
+    return 0;
   }
 }
 
-void BridgePlatformScreen::sendMouseReport()
+uint8_t BridgePlatformScreen::modifierBitForButton(KeyButton button) const
 {
-  MouseReport report;
-  report.buttons = m_mouseButtons;
-  report.x = 0; // Position updates sent via fakeMouseRelativeMove
-  report.y = 0;
-
-  HidFrame frame;
-  frame.type = HidReportType::Mouse;
-  frame.payload = report.toPayload();
-
-  if (!m_transport->sendHidFrame(frame)) {
-    LOG_ERR("BridgeScreen: failed to send mouse report");
+  switch (button) {
+  case 50:
+    return 0x02;
+  case 62:
+    return 0x20;
+  case 37:
+    return 0x01;
+  case 105:
+    return 0x10;
+  case 64:
+    return 0x04;
+  case 108:
+    return 0x40;
+  case 133:
+    return 0x08;
+  case 134:
+    return 0x80;
+  default:
+    return 0;
   }
 }
 
-uint8_t BridgePlatformScreen::mapKeyToHid(KeyID key, KeyButton button) const
+uint8_t BridgePlatformScreen::convertKeyID(KeyID id) const
 {
-  // TODO: Implement proper KeyID -> HID keycode mapping
-  // For now, return button as-is (this is a placeholder)
-  // Full implementation would require a comprehensive mapping table
-  // based on the target arch (iOS vs Android)
+  if (id >= 'a' && id <= 'z')
+    return static_cast<uint8_t>(0x04 + (id - 'a'));
+  if (id >= 'A' && id <= 'Z')
+    return static_cast<uint8_t>(0x04 + (id - 'A'));
+  if (id >= '1' && id <= '9')
+    return static_cast<uint8_t>(0x1E + (id - '1'));
+  if (id == '0')
+    return 0x27;
 
-  // Simplified mapping for common keys (placeholder)
-  if (button >= 4 && button <= 231) {
-    return static_cast<uint8_t>(button - 4); // Approximate HID mapping
+  switch (id) {
+  case 0xFFE5:
+  case 0xEFE5:
+    return 0x39;
+  case 0xFFBE:
+  case 0xEFBE:
+    return 0x3A;
+  case 0xFFBF:
+  case 0xEFBF:
+    return 0x3B;
+  case 0xFFC0:
+  case 0xEFC0:
+    return 0x3C;
+  case 0xFFC1:
+  case 0xEFC1:
+    return 0x3D;
+  case 0xFFC2:
+  case 0xEFC2:
+    return 0x3E;
+  case 0xFFC3:
+  case 0xEFC3:
+    return 0x3F;
+  case 0xFFC4:
+  case 0xEFC4:
+    return 0x40;
+  case 0xFFC5:
+  case 0xEFC5:
+    return 0x41;
+  case 0xFFC6:
+  case 0xEFC6:
+    return 0x42;
+  case 0xFFC7:
+  case 0xEFC7:
+    return 0x43;
+  case 0xFFC8:
+  case 0xEFC8:
+    return 0x44;
+  case 0xFFC9:
+  case 0xEFC9:
+    return 0x45;
+  case 0xFF61:
+  case 0xEF61:
+    return 0x46;
+  case 0xFF14:
+  case 0xEF14:
+    return 0x47;
+  case 0xFF13:
+  case 0xEF13:
+    return 0x48;
+  case 0xFF63:
+  case 0xEF63:
+    return 0x49;
+  case 0xFF0D:
+  case 0xEF0D:
+    return 0x28;
+  case 0xFF1B:
+  case 0xEF1B:
+    return 0x29;
+  case 0xFF08:
+  case 0xEF08:
+    return 0x2A;
+  case 0xFF09:
+  case 0xEF09:
+    return 0x2B;
+  case 0x0020:
+    return 0x2C;
+  case 0xFF50:
+  case 0xEF50:
+    return 0x4A;
+  case 0xFF57:
+  case 0xEF57:
+    return 0x4D;
+  case 0xFF55:
+  case 0xEF55:
+    return 0x4B;
+  case 0xFF56:
+  case 0xEF56:
+    return 0x4E;
+  case 0xFFFF:
+  case 0xEFFF:
+    return 0x4C;
+  case 0xFF7F:
+  case 0xEF7F:
+    return 0x53;
+  case 0xFF67:
+  case 0xEF67:
+    return 0x65;
+  case 0xFF51:
+  case 0xEF51:
+    return 0x50;
+  case 0xFF52:
+  case 0xEF52:
+    return 0x52;
+  case 0xFF53:
+  case 0xEF53:
+    return 0x4F;
+  case 0xFF54:
+  case 0xEF54:
+    return 0x51;
+  default:
+    LOG_DEBUG2("BridgeScreen: unmapped KeyID 0x%04x", id);
+    return 0;
   }
-
-  return 0; // No key
 }
 
-uint8_t BridgePlatformScreen::mapModifiersToHid(KeyModifierMask mask) const
+uint8_t BridgePlatformScreen::convertKeyButton(KeyButton button) const
 {
-  uint8_t hidModifiers = 0;
+  switch (button) {
+  case 10:
+  case 90:
+    return convertKeyID('1');
+  case 11:
+    return convertKeyID('2');
+  case 12:
+    return convertKeyID('3');
+  case 13:
+    return convertKeyID('4');
+  case 14:
+    return convertKeyID('5');
+  case 15:
+    return convertKeyID('6');
+  case 16:
+    return convertKeyID('7');
+  case 17:
+    return convertKeyID('8');
+  case 18:
+    return convertKeyID('9');
+  case 19:
+    return convertKeyID('0');
+  case 20:
+    return 0x2d;
+  case 21:
+    return 0x2e;
+  case 22:
+    return 0x2a;
+  case 23:
+    return 0x2b;
+  case 24:
+    return convertKeyID('q');
+  case 25:
+    return convertKeyID('w');
+  case 26:
+    return convertKeyID('e');
+  case 27:
+    return convertKeyID('r');
+  case 28:
+    return convertKeyID('t');
+  case 29:
+    return convertKeyID('y');
+  case 30:
+    return convertKeyID('u');
+  case 31:
+    return convertKeyID('i');
+  case 32:
+    return convertKeyID('o');
+  case 33:
+    return convertKeyID('p');
+  case 34:
+    return 0x2f;
+  case 35:
+    return 0x30;
+  case 36:
+    return 0x28;
+  case 38:
+    return convertKeyID('a');
+  case 39:
+    return convertKeyID('s');
+  case 40:
+    return convertKeyID('d');
+  case 41:
+    return convertKeyID('f');
+  case 42:
+    return convertKeyID('g');
+  case 43:
+    return convertKeyID('h');
+  case 44:
+    return convertKeyID('j');
+  case 45:
+    return convertKeyID('k');
+  case 46:
+    return convertKeyID('l');
+  case 47:
+    return 0x33;
+  case 48:
+    return 0x34;
+  case 49:
+    return 0x35;
+  case 51:
+    return 0x31;
+  case 52:
+    return convertKeyID('z');
+  case 53:
+    return convertKeyID('x');
+  case 54:
+    return convertKeyID('c');
+  case 55:
+    return convertKeyID('v');
+  case 56:
+    return convertKeyID('b');
+  case 57:
+    return convertKeyID('n');
+  case 58:
+    return convertKeyID('m');
+  case 59:
+    return 0x36;
+  case 60:
+    return 0x37;
+  case 61:
+    return 0x38;
+  case 65:
+    return 0x2c;
+  case 66:
+    return 0x39;
+  case 67:
+    return 0x3A;
+  case 68:
+    return 0x3B;
+  case 69:
+    return 0x3C;
+  case 70:
+    return 0x3D;
+  case 71:
+    return 0x3E;
+  case 72:
+    return 0x3F;
+  case 73:
+    return 0x40;
+  case 74:
+    return 0x41;
+  case 75:
+    return 0x42;
+  case 76:
+    return 0x43;
+  case 77:
+    return 0x53;
+  case 78:
+    return 0x47;
+  case 107:
+    return 0x46;
+  case 111:
+    return 0x52;
+  case 113:
+    return 0x50;
+  case 114:
+    return 0x4F;
+  case 116:
+    return 0x51;
+  case 118:
+    return 0x49;
+  case 119:
+    return 0x4C;
+  case 127:
+    return 0x48;
+  case 95:
+    return 0x44;
+  case 96:
+    return 0x45;
+  case 135:
+    return 0x65;
+  default:
+    LOG_DEBUG2("BridgeScreen: unmapped button code %u", button);
+    return 0;
+  }
+}
 
-  // Deskflow modifier mask to HID modifier bitmap mapping
-  // HID modifiers: Ctrl=0x01, Shift=0x02, Alt=0x04, GUI=0x08 (left)
-  //                Ctrl=0x10, Shift=0x20, Alt=0x40, GUI=0x80 (right)
+uint8_t BridgePlatformScreen::convertKey(KeyID id, KeyButton button) const
+{
+  if (uint8_t code = convertKeyID(id); code != 0) {
+    return code;
+  }
+  return convertKeyButton(button);
+}
 
-  // This is a placeholder - full implementation would need proper mask values
-  // from Deskflow's KeyModifierMask definitions
-
-  return hidModifiers;
+uint8_t BridgePlatformScreen::convertButtonID(ButtonID id) const
+{
+  switch (id) {
+  case 1:
+    return 0x01; // Left
+  case 2:
+    return 0x04; // Right
+  case 3:
+    return 0x02; // Middle
+  default:
+    return 0;
+  }
 }
 
 } // namespace deskflow::bridge
