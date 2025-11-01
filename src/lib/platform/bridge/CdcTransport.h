@@ -95,6 +95,22 @@ public:
     return m_lastError;
   }
 
+  /**
+   * @brief Check whether the device provided configuration data during handshake
+   */
+  bool hasDeviceConfig() const
+  {
+    return m_handshakeComplete && m_hasDeviceConfig;
+  }
+
+  /**
+   * @brief Retrieve configuration discovered during the CDC handshake
+   */
+  const PicoConfig &deviceConfig() const
+  {
+    return m_deviceConfig;
+  }
+
 private:
   bool performHandshake();
   bool sendUsbFrame(uint8_t type, uint8_t flags, const uint8_t *payload, uint16_t length);
@@ -110,6 +126,8 @@ private:
   uint32_t m_lastNonce = 0;
   std::vector<uint8_t> m_rxBuffer;
   std::string m_lastError;
+  bool m_hasDeviceConfig = false;
+  PicoConfig m_deviceConfig;
 };
 
 } // namespace deskflow::bridge

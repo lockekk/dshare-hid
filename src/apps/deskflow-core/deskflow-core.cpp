@@ -158,18 +158,45 @@ int main(int argc, char **argv)
 
       // Create CDC transport
       auto transport = std::make_shared<deskflow::bridge::CdcTransport>(linkDevice);
-      // Bypass CDC query during bootstrap; use placeholder configuration
-      deskflow::bridge::PicoConfig config;
-      config.arch = "bridge-default";
-      config.screenWidth = 1080;
-      config.screenHeight = 2424;
-      config.screenRotation = 0;
-      config.screenPhysicalWidth = 10.0f;
-      config.screenPhysicalHeight = 6.0f;
-      config.screenScaleFactor = 1.0f;
+      if (!transport->open()) {
+        LOG_ERR(
+            "failed to open CDC transport %s: %s",
+            linkDevice.toUtf8().constData(),
+            transport->lastError().c_str()
+        );
+        return s_exitFailed;
+      }
+
+      if (!transport->hasDeviceConfig()) {
+        LOG_ERR("CDC handshake did not provide display information");
+        return s_exitFailed;
+      }
+
+      deskflow::bridge::PicoConfig config = transport->deviceConfig();
+      if (config.arch.empty()) {
+        config.arch = "bridge-default";
+      }
+
+      if (config.screenWidth <= 0 || config.screenHeight <= 0) {
+        LOG_ERR(
+            "CDC handshake reported invalid display dimensions %dx%d",
+            config.screenWidth,
+            config.screenHeight
+        );
+        return s_exitFailed;
+      }
+
+      if (config.screenRotation % 90 != 0) {
+        LOG_ERR("CDC handshake reported invalid rotation %d", config.screenRotation);
+        return s_exitFailed;
+      }
 
       LOG_INFO(
-          "Pico config: arch=%s screen=%dx%d", config.arch.c_str(), config.screenWidth, config.screenHeight
+          "Pico config: arch=%s screen=%dx%d rotation=%d",
+          config.arch.c_str(),
+          config.screenWidth,
+          config.screenHeight,
+          config.screenRotation
       );
 
       // Create and run bridge client

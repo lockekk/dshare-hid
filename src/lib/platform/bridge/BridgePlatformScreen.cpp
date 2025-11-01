@@ -22,8 +22,6 @@ namespace deskflow::bridge {
 namespace {
 constexpr int kMinMouseDelta = -127;
 constexpr int kMaxMouseDelta = 127;
-constexpr int kDebugScreenWidth = 1920;
-constexpr int kDebugScreenHeight = 1080;
 constexpr auto kMouseThrottleInterval = std::chrono::milliseconds(120);
 constexpr double kMouseThrottleIntervalSeconds =
     std::chrono::duration_cast<std::chrono::duration<double>>(kMouseThrottleInterval).count();
@@ -62,10 +60,11 @@ BridgePlatformScreen::BridgePlatformScreen(
     m_events(events)
 {
   LOG_INFO(
-      "BridgeScreen: initialized for arch=%s screen=%dx%d (debug override active)",
+      "BridgeScreen: initialized for arch=%s screen=%dx%d rotation=%d",
       m_config.arch.c_str(),
-      kDebugScreenWidth,
-      kDebugScreenHeight
+      m_config.screenWidth,
+      m_config.screenHeight,
+      m_config.screenRotation
   );
 
   if (m_events != nullptr) {
@@ -98,8 +97,8 @@ void BridgePlatformScreen::getShape(int32_t &x, int32_t &y, int32_t &width, int3
 {
   x = 0;
   y = 0;
-  width = kDebugScreenWidth;
-  height = kDebugScreenHeight;
+  width = m_config.screenWidth;
+  height = m_config.screenHeight;
 }
 
 void BridgePlatformScreen::getCursorPos(int32_t &x, int32_t &y) const
@@ -169,8 +168,8 @@ bool BridgePlatformScreen::isAnyMouseButtonDown(uint32_t &buttonID) const
 
 void BridgePlatformScreen::getCursorCenter(int32_t &x, int32_t &y) const
 {
-  x = kDebugScreenWidth / 2;
-  y = kDebugScreenHeight / 2;
+  x = m_config.screenWidth / 2;
+  y = m_config.screenHeight / 2;
 }
 
 void BridgePlatformScreen::fakeMouseButton(ButtonID id, bool press)

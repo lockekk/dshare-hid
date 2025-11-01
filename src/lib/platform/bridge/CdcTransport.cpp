@@ -39,6 +39,13 @@ constexpr uint8_t kUsbFrameTypeControl = 0x80;
 constexpr uint8_t kUsbControlHello = 0x01;
 constexpr uint8_t kUsbControlAck = 0x81;
 
+constexpr size_t kAckProtocolVersionIndex = 1;
+constexpr size_t kAckHidConnectedIndex = 3;
+constexpr size_t kAckScreenWidthIndex = 4;
+constexpr size_t kAckScreenHeightIndex = 8;
+constexpr size_t kAckScreenRotationIndex = 12;
+constexpr size_t kAckMinimumPayloadSize = kAckScreenRotationIndex + 1;
+
 constexpr int kHandshakeTimeoutMs = 2000;
 constexpr int kReadPollIntervalMs = 10;
 
@@ -81,6 +88,8 @@ void CdcTransport::resetState()
   m_handshakeComplete = false;
   m_lastNonce = 0;
   m_rxBuffer.clear();
+  m_hasDeviceConfig = false;
+  m_deviceConfig = PicoConfig{};
 }
 
 bool CdcTransport::ensureOpen()
@@ -256,7 +265,45 @@ bool CdcTransport::performHandshake()
 
     if (framePayload[0] == kUsbControlAck) {
       m_handshakeComplete = true;
-      LOG_INFO("CDC: handshake completed");
+
+      if (framePayload.size() >= kAckMinimumPayloadSize) {
+        const uint32_t screenWidth =
+            static_cast<uint32_t>(framePayload[kAckScreenWidthIndex]) |
+            (static_cast<uint32_t>(framePayload[kAckScreenWidthIndex + 1]) << 8) |
+            (static_cast<uint32_t>(framePayload[kAckScreenWidthIndex + 2]) << 16) |
+            (static_cast<uint32_t>(framePayload[kAckScreenWidthIndex + 3]) << 24);
+
+        const uint32_t screenHeight =
+            static_cast<uint32_t>(framePayload[kAckScreenHeightIndex]) |
+            (static_cast<uint32_t>(framePayload[kAckScreenHeightIndex + 1]) << 8) |
+            (static_cast<uint32_t>(framePayload[kAckScreenHeightIndex + 2]) << 16) |
+            (static_cast<uint32_t>(framePayload[kAckScreenHeightIndex + 3]) << 24);
+
+        const int32_t screenRotation = static_cast<int32_t>(framePayload[kAckScreenRotationIndex]);
+
+        m_deviceConfig.screenWidth = static_cast<int32_t>(screenWidth);
+        m_deviceConfig.screenHeight = static_cast<int32_t>(screenHeight);
+        m_deviceConfig.screenRotation = screenRotation;
+        m_hasDeviceConfig = true;
+
+        const uint8_t protocolVersion = framePayload[kAckProtocolVersionIndex];
+        const uint8_t hidConnected = framePayload[kAckHidConnectedIndex];
+
+        LOG_INFO(
+            "CDC: handshake completed version=%u hid=%u screen=%ux%u rot=%d",
+            protocolVersion,
+            hidConnected,
+            screenWidth,
+            screenHeight,
+            screenRotation
+        );
+      } else {
+        LOG_WARN(
+            "CDC: handshake ACK missing display info (payload=%zu)",
+            framePayload.size()
+        );
+        LOG_INFO("CDC: handshake completed");
+      }
       return true;
     }
   }
