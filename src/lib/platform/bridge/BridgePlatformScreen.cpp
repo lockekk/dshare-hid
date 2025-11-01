@@ -577,6 +577,16 @@ bool BridgePlatformScreen::sendMouseMoveEvent(int16_t dx, int16_t dy) const
 
 bool BridgePlatformScreen::sendMouseButtonEvent(HidEventType type, uint8_t buttonMask) const
 {
+  const bool isPress = (type == HidEventType::MouseButtonPress);
+  const bool isRelease = (type == HidEventType::MouseButtonRelease);
+
+  if (isPress || isRelease) {
+    if (m_transport->sendMouseButtonCompact(buttonMask, isPress)) {
+      return true;
+    }
+    LOG_WARN("BridgeScreen: compact mouse button send failed, falling back to HID payload");
+  }
+
   if (!sendEvent(type, {buttonMask})) {
     LOG_ERR("BridgeScreen: failed to send mouse button event");
     return false;
@@ -586,6 +596,9 @@ bool BridgePlatformScreen::sendMouseButtonEvent(HidEventType type, uint8_t butto
 
 bool BridgePlatformScreen::sendMouseScrollEvent(int8_t delta) const
 {
+  if (m_transport->sendMouseScrollCompact(delta)) {
+    return true;
+  }
   if (!sendEvent(HidEventType::MouseScroll, {static_cast<uint8_t>(delta)})) {
     LOG_ERR("BridgeScreen: failed to send scroll event");
     return false;
@@ -963,6 +976,16 @@ uint8_t BridgePlatformScreen::convertButtonID(ButtonID id) const
     return 0x04; // Right
   case 3:
     return 0x02; // Middle
+  case 4:
+    return 0x08; // Back (Button 4)
+  case 5:
+    return 0x10; // Forward (Button 5)
+  case 6:
+    return 0x20; // Button 6
+  case 7:
+    return 0x40; // Button 7
+  case 8:
+    return 0x80; // Button 8
   default:
     return 0;
   }

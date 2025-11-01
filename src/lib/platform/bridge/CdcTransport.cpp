@@ -32,6 +32,8 @@ constexpr uint8_t kUsbLinkVersion = 1;
 constexpr uint8_t kUsbFrameTypeHid = 0x01;
 constexpr uint8_t kUsbFrameTypeHidMouseCompact = 0x02;
 constexpr uint8_t kUsbFrameTypeHidKeyCompact = 0x03;
+constexpr uint8_t kUsbFrameTypeHidMouseButtonCompact = 0x04;
+constexpr uint8_t kUsbFrameTypeHidScrollCompact = 0x05;
 constexpr uint8_t kUsbFrameTypeControl = 0x80;
 
 constexpr uint8_t kUsbControlHello = 0x01;
@@ -341,6 +343,63 @@ bool CdcTransport::sendKeyboardCompact(uint8_t modifiers, uint8_t keycode, bool 
       isPress ? 1 : 0,
       modifiers,
       keycode,
+      frameHex.c_str()
+  );
+
+  return writeAll(frame.data(), frame.size());
+}
+
+bool CdcTransport::sendMouseButtonCompact(uint8_t buttons, bool isPress)
+{
+  if (!ensureOpen()) {
+    return false;
+  }
+
+  std::array<uint8_t, 8> frame = {
+      static_cast<uint8_t>(kUsbLinkMagic & 0xFF),
+      static_cast<uint8_t>((kUsbLinkMagic >> 8) & 0xFF),
+      kUsbLinkVersion,
+      kUsbFrameTypeHidMouseButtonCompact,
+      buttons,
+      0x00,
+      static_cast<uint8_t>(isPress ? 0x01 : 0x00),
+      0x00,
+  };
+
+  const std::string frameHex = hexDump(frame.data(), frame.size(), 32);
+  LOG_DEBUG(
+      "CDC: TX compact mouse button frame type=0x%02x press=%d buttons=0x%02x bytes=%s",
+      kUsbFrameTypeHidMouseButtonCompact,
+      isPress ? 1 : 0,
+      buttons,
+      frameHex.c_str()
+  );
+
+  return writeAll(frame.data(), frame.size());
+}
+
+bool CdcTransport::sendMouseScrollCompact(int8_t delta)
+{
+  if (!ensureOpen()) {
+    return false;
+  }
+
+  std::array<uint8_t, 8> frame = {
+      static_cast<uint8_t>(kUsbLinkMagic & 0xFF),
+      static_cast<uint8_t>((kUsbLinkMagic >> 8) & 0xFF),
+      kUsbLinkVersion,
+      kUsbFrameTypeHidScrollCompact,
+      static_cast<uint8_t>(delta),
+      0x00,
+      0x00,
+      0x00,
+  };
+
+  const std::string frameHex = hexDump(frame.data(), frame.size(), 32);
+  LOG_DEBUG(
+      "CDC: TX compact scroll frame type=0x%02x delta=%d bytes=%s",
+      kUsbFrameTypeHidScrollCompact,
+      delta,
       frameHex.c_str()
   );
 

@@ -76,6 +76,8 @@ public:
    * frame is exactly eight bytes (header only, no payload).
    */
   bool sendMouseMoveCompact(int16_t dx, int16_t dy);
+  bool sendMouseButtonCompact(uint8_t buttons, bool isPress);
+  bool sendMouseScrollCompact(int8_t delta);
 
   /**
    * @brief Send a compact keyboard event frame
