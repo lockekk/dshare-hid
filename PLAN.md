@@ -42,10 +42,26 @@ Compatibility requirements:
 - Reason: GUI is for server configuration and USB device management only
 
 ### 2. deskflow (GUI) - USB Device Event Subscription
-- Subscribe to USB device plug/unplug events via platform-specific APIs:
-  - Windows: `WM_DEVICECHANGE` (already used in MSWindowsScreen.cpp)
-  - macOS: IOKit notifications (IOKit already imported in platform code)
-  - X11/Wayland: udev (needs implementation)
+
+#### Implementation Status
+**Linux (✓ Complete)**:
+- Implemented `LinuxUdevMonitor` using libudev for USB device plug/unplug events
+- Monitors "tty" subsystem for USB CDC devices (no root permissions required)
+- Filters by vendor ID (2e8a for Raspberry Pi Pico)
+- Integrates with Qt event loop using `QSocketNotifier`
+- Tracks connected devices to handle removal events (vendor ID unavailable after unplug)
+- Bridge Clients GUI section added with dynamic buttons (3 per row):
+  - Buttons created/removed automatically on device plug/unplug
+  - Fixed size buttons (120-200px width, 32px height)
+  - Toggle functionality: click to enable/disable (grayed text when disabled)
+  - Button label shows device path (e.g., "/dev/ttyACM0")
+  - State tracked per device for future bridge client process management
+
+**Windows/macOS (Pending)**:
+- Windows: `WM_DEVICECHANGE` (already used in MSWindowsScreen.cpp)
+- macOS: IOKit notifications (IOKit already imported in platform code)
+
+#### Planned Behavior
 - On matched vendor USB CDC device plug:
   - Open Pico configuration window (fetch/configure arch, screen info)
   - GUI directly communicates with Pico via USB CDC

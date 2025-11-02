@@ -1273,8 +1273,31 @@ void MainWindow::usbDeviceConnected(const UsbDeviceInfo &device)
            << "product:" << device.productId
            << "serial:" << device.serialNumber;
 
-  // TODO: Open Pico configuration window and spawn bridge client
-  // For now, just log the event
+  // Create button for this client
+  QPushButton *button = new QPushButton(device.devicePath, this);
+  button->setCheckable(true);
+  button->setChecked(true); // Default enabled
+  button->setMinimumSize(120, 32);
+  button->setMaximumSize(200, 32);
+
+  // Connect toggle signal
+  connect(button, &QPushButton::toggled, this, [this, devicePath = device.devicePath](bool checked) {
+    clientButtonToggled(devicePath, checked);
+  });
+
+  // Add to grid layout (3 columns per row)
+  QGridLayout *gridLayout = ui->widgetBridgeClients->findChild<QGridLayout*>("gridLayoutBridgeClients");
+  if (gridLayout) {
+    int count = m_clientButtons.size();
+    int row = count / 3;
+    int col = count % 3;
+    gridLayout->addWidget(button, row, col);
+  }
+
+  // Track button and state
+  m_clientButtons[device.devicePath] = button;
+  m_clientStates[device.devicePath] = true;
+
   QString message = tr("Pico 2 W device connected: %1").arg(device.devicePath);
   setStatus(message);
 }
@@ -1286,8 +1309,54 @@ void MainWindow::usbDeviceDisconnected(const UsbDeviceInfo &device)
            << "vendor:" << device.vendorId
            << "product:" << device.productId;
 
-  // TODO: Kill corresponding bridge client process
-  // For now, just log the event
+  // Find and remove the button for this device
+  if (m_clientButtons.contains(device.devicePath)) {
+    QPushButton *button = m_clientButtons[device.devicePath];
+
+    // Remove from grid layout
+    QGridLayout *gridLayout = ui->widgetBridgeClients->findChild<QGridLayout*>("gridLayoutBridgeClients");
+    if (gridLayout) {
+      gridLayout->removeWidget(button);
+    }
+
+    // Delete button widget
+    button->deleteLater();
+
+    // Remove from tracking maps
+    m_clientButtons.remove(device.devicePath);
+    m_clientStates.remove(device.devicePath);
+
+    // TODO: Kill corresponding bridge client process if running
+  }
+
   QString message = tr("Pico 2 W device disconnected: %1").arg(device.devicePath);
+  setStatus(message);
+}
+
+void MainWindow::clientButtonToggled(const QString &devicePath, bool enabled)
+{
+  qDebug() << "Bridge client button toggled:"
+           << "device:" << devicePath
+           << "enabled:" << enabled;
+
+  // Update state tracking
+  m_clientStates[devicePath] = enabled;
+
+  // Update button appearance (use stylesheet for grayed out effect when disabled)
+  if (m_clientButtons.contains(devicePath)) {
+    QPushButton *button = m_clientButtons[devicePath];
+    if (!enabled) {
+      // Grayed out when disabled (not checked)
+      button->setStyleSheet("QPushButton { color: gray; }");
+    } else {
+      // Normal appearance when enabled (checked)
+      button->setStyleSheet("");
+    }
+  }
+
+  // TODO: Start/stop the bridge client process based on enabled state
+  QString message = enabled
+                        ? tr("Bridge client enabled: %1").arg(devicePath)
+                        : tr("Bridge client disabled: %1").arg(devicePath);
   setStatus(message);
 }

@@ -169,6 +169,7 @@ private:
 
   void usbDeviceConnected(const deskflow::gui::UsbDeviceInfo &device);
   void usbDeviceDisconnected(const deskflow::gui::UsbDeviceInfo &device);
+  void clientButtonToggled(const QString &devicePath, bool enabled);
 
   inline static const auto m_guiSocketName = QStringLiteral("deskflow-gui");
   inline static const auto m_nameRegEx = QRegularExpression(QStringLiteral("^[\\w\\-_\\.]{0,255}$"));
@@ -189,6 +190,11 @@ private:
   QLocalServer *m_guiDupeChecker = nullptr;
   deskflow::gui::ipc::DaemonIpcClient *m_daemonIpcClient = nullptr;
   deskflow::gui::UsbDeviceMonitor *m_usbDeviceMonitor = nullptr;
+
+  // Bridge client buttons: device path -> button
+  QMap<QString, QPushButton*> m_clientButtons;
+  // Bridge client states: device path -> enabled state
+  QMap<QString, bool> m_clientStates;
 
   LogDock *m_logDock;
   QLabel *m_lblSecurityStatus = nullptr;
