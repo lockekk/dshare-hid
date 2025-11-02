@@ -134,3 +134,56 @@ Performed before the standard `ClientApp` starts:
 - Client-side `Arch` services (time, threading, sockets, mutexes, etc.) reuse upstream implementations unchanged.
 - The critical deviation is input routing: instead of injecting OS events through the platform `Arch`, the bridge client packages the synthesized input into HID frames and sends them over the Link to Pico 2 W.
 - Pico 2 W parses the frame, applies any host-arch key translations, enqueues the HID report into its BLE stack, and the mobile device receives the resulting mouse/keyboard events.
+
+### 8. TLS Configuration for Bridge Clients
+
+#### Settings Directory Structure
+Bridge clients use isolated settings directories:
+- **Server settings**: Uses default location (e.g., `~/.config/deskflow/deskflow.conf`)
+- **Bridge client settings**: `settings/<client-name>.conf` (e.g., `settings/my-bridge.conf`)
+- **Shared TLS directory**: `settings/tls/` (shared between server and all bridge clients)
+
+#### TLS Files
+The `settings/tls/` directory contains:
+1. **`deskflow.pem`**: Server's self-signed certificate (contains both private key and certificate)
+2. **`trusted-servers`**: Client's list of trusted server certificate fingerprints
+3. **`trusted-clients`**: Server's list of trusted client certificate fingerprints (if mutual auth is needed)
+
+#### Manual Setup Process for Bridge Clients
+When setting up a new bridge client with TLS enabled:
+
+1. **Copy Server Certificate**:
+   ```bash
+   cp <server-settings-dir>/tls/deskflow.pem settings/tls/
+   ```
+
+2. **Generate Trusted Fingerprint File**:
+   Extract the SHA-256 fingerprint from the server's certificate and save it in the correct format:
+   ```bash
+   openssl x509 -noout -fingerprint -sha256 -inform pem -in settings/tls/deskflow.pem | \
+     sed 's/SHA256 Fingerprint=/v2:sha256:/' | \
+     tr -d ':' | \
+     tr 'A-Z' 'a-z' > settings/tls/trusted-servers
+   ```
+
+   This creates a file with format: `v2:sha256:<lowercase_hex_fingerprint>`
+
+3. **Enable TLS in Client Settings**:
+   In `settings/<client-name>.conf`, add:
+   ```ini
+   [security]
+   tlsEnabled=true
+   ```
+
+#### Fingerprint Verification
+- Bridge clients use **SecurityLevel::PeerAuth** when TLS is enabled
+- The client verifies the server's certificate fingerprint matches an entry in `trusted-servers`
+- Fingerprint format: `v2:sha256:<64-character-hex>` (lowercase, no colons in hex)
+- The fingerprint is the SHA-256 hash of the certificate, ensuring the client only trusts the specific server certificate
+- This provides certificate pinning security: even valid certificates from other sources will be rejected
+
+#### Why This Design?
+- **Shared TLS directory**: All bridge clients on the same PC trust the same server certificate
+- **Per-client settings**: Each bridge client maintains its own configuration (screen name, remote host, etc.)
+- **Certificate pinning**: More secure than CA-based validation; prevents MITM attacks even with valid certificates
+- **No certificate regeneration**: Bridge clients reuse the server's existing certificate instead of generating new ones
