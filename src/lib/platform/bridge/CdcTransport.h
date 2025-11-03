@@ -111,6 +111,14 @@ public:
     return m_deviceConfig;
   }
 
+  /**
+   * @brief Get the device path
+   */
+  QString devicePath() const
+  {
+    return m_devicePath;
+  }
+
 private:
   bool performHandshake();
   bool sendUsbFrame(uint8_t type, uint8_t flags, const uint8_t *payload, uint16_t length);

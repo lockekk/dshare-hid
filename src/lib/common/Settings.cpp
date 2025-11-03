@@ -169,6 +169,22 @@ QVariant Settings::defaultValue(const QString &key)
     return 120;
   }
 
+  if (key == Bridge::SerialNumber) {
+    return QString(); // Empty by default, populated from CDC device
+  }
+
+  if (key == Bridge::ScreenWidth) {
+    return 0; // Populated from Pico device
+  }
+
+  if (key == Bridge::ScreenHeight) {
+    return 0; // Populated from Pico device
+  }
+
+  if (key == Bridge::ScreenOrientation) {
+    return QString("landscape"); // Default orientation
+  }
+
   return QVariant();
 }
 

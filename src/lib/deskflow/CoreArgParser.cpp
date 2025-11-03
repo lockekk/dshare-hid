@@ -203,7 +203,21 @@ QString CoreArgParser::linkDevice() const
   return m_parser.value(CoreArgs::linkOption);
 }
 
-QString CoreArgParser::bridgeSettingsFile() const
+int CoreArgParser::screenWidth() const
 {
-  return m_parser.value(CoreArgs::bridgeSettingsFileOption);
+  bool ok = false;
+  int width = m_parser.value(CoreArgs::screenWidthOption).toInt(&ok);
+  return ok ? width : 0;
+}
+
+int CoreArgParser::screenHeight() const
+{
+  bool ok = false;
+  int height = m_parser.value(CoreArgs::screenHeightOption).toInt(&ok);
+  return ok ? height : 0;
+}
+
+QString CoreArgParser::screenOrientation() const
+{
+  return m_parser.value(CoreArgs::screenOrientationOption);
 }

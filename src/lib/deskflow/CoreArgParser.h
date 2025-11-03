@@ -35,7 +35,9 @@ public:
   bool clientMode() const;
   const char *display() const;
   QString linkDevice() const;
-  QString bridgeSettingsFile() const;
+  int screenWidth() const;
+  int screenHeight() const;
+  QString screenOrientation() const;
 
 private:
   [[noreturn]] void showHelpText() const;

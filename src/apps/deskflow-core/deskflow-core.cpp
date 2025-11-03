@@ -58,7 +58,6 @@ int main(int argc, char **argv)
   bool isServer = false;
   bool isBridgeClient = false;
 
-  QString bridgeSettingsOverride;
   QString configOverride;
 
   for (int i = 1; i < argc; i++) {
@@ -70,8 +69,6 @@ int main(int argc, char **argv)
       linkDevice = QString::fromUtf8(argv[++i]);
       isBridgeClient = true;
       isClient = true; // Bridge client is a type of client
-    } else if (arg == "--bridge-settings-file" && (i + 1 < argc)) {
-      bridgeSettingsOverride = QString::fromUtf8(argv[++i]);
     } else if ((arg == "--settings" || arg == "-s") && (i + 1 < argc)) {
       configOverride = QString::fromUtf8(argv[++i]);
     } else if (arg == "client") {
@@ -84,11 +81,9 @@ int main(int argc, char **argv)
   // Determine initial settings file before constructing CoreArgParser so CLI overrides take effect.
   QString initialSettingsFile;
   if (isBridgeClient) {
-    if (!bridgeSettingsOverride.isEmpty()) {
-      initialSettingsFile = bridgeSettingsOverride;
-    } else {
-      initialSettingsFile = QStringLiteral("settings/%1.conf").arg(instanceName);
-    }
+    // Bridge clients use: ~/.config/deskflow/bridge-clients/<client-name>.conf
+    initialSettingsFile = QStringLiteral("%1/bridge-clients/%2.conf")
+                              .arg(Settings::settingsPath(), instanceName);
   } else if (!configOverride.isEmpty()) {
     initialSettingsFile = configOverride;
   }
@@ -177,27 +172,39 @@ int main(int argc, char **argv)
         config.arch = "bridge-default";
       }
 
-      if (config.screenWidth <= 0 || config.screenHeight <= 0) {
-        LOG_ERR(
-            "CDC handshake reported invalid display dimensions %dx%d",
-            config.screenWidth,
-            config.screenHeight
-        );
-        return s_exitFailed;
-      }
-
-      if (config.screenRotation % 90 != 0) {
-        LOG_ERR("CDC handshake reported invalid rotation %d", config.screenRotation);
-        return s_exitFailed;
-      }
-
       LOG_INFO(
-          "Pico config: arch=%s screen=%dx%d rotation=%d",
+          "Pico handshake: arch=%s screen=%dx%d rotation=%d (info available but not used for screen dimensions)",
           config.arch.c_str(),
           config.screenWidth,
           config.screenHeight,
           config.screenRotation
       );
+
+      // Get screen info from CLI arguments (provided by GUI)
+      int screenWidth = parser.screenWidth();
+      int screenHeight = parser.screenHeight();
+      QString screenOrientation = parser.screenOrientation();
+
+      if (screenWidth <= 0 || screenHeight <= 0) {
+        LOG_ERR(
+            "Invalid screen dimensions from CLI arguments: %dx%d (use --screen-width and --screen-height)",
+            screenWidth,
+            screenHeight
+        );
+        return s_exitFailed;
+      }
+
+      LOG_INFO(
+          "Screen config from CLI: %dx%d orientation=%s",
+          screenWidth,
+          screenHeight,
+          screenOrientation.toUtf8().constData()
+      );
+
+      // Override PicoConfig with CLI-provided screen info
+      config.screenWidth = screenWidth;
+      config.screenHeight = screenHeight;
+      // Note: screenRotation from Pico handshake is ignored, orientation comes from CLI
 
       // Create and run bridge client
       BridgeClientApp app(&events, processName, transport, config);

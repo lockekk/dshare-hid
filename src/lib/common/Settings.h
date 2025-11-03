@@ -90,6 +90,13 @@ public:
     inline static const auto ExternalConfig = QStringLiteral("server/externalConfig");
     inline static const auto ExternalConfigFile = QStringLiteral("server/externalConfigFile");
   };
+  struct Bridge
+  {
+    inline static const auto SerialNumber = QStringLiteral("bridge/sn");
+    inline static const auto ScreenWidth = QStringLiteral("bridge/screenWidth");
+    inline static const auto ScreenHeight = QStringLiteral("bridge/screenHeight");
+    inline static const auto ScreenOrientation = QStringLiteral("bridge/screenOrientation");
+  };
 
   // Enums types used in settings
   // The use of enum classes is not use for these
@@ -198,6 +205,10 @@ private:
     , Settings::Security::TlsEnabled
     , Settings::Server::ExternalConfig
     , Settings::Server::ExternalConfigFile
+    , Settings::Bridge::SerialNumber
+    , Settings::Bridge::ScreenWidth
+    , Settings::Bridge::ScreenHeight
+    , Settings::Bridge::ScreenOrientation
   };
   // clang-format on
 };

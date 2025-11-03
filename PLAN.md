@@ -124,19 +124,19 @@ Performed before the standard `ClientApp` starts:
 - **USB CDC transport**: Sends framed HID data to Pico 2 W
 - **Screen info supplied by Pico 2 W**: Uses mobile device screen properties, not PC screen
 - **Clipboard handling**: `BridgePlatformScreen::setClipboard()` discards clipboard payloads instead of forwarding them over the Link; the server still follows the standard clipboard protocol.
-- **Settings isolation**: Each bridge client instance loads a dedicated QSettings file (created on first run if not exists) and strips TLS keys to avoid leaking preferences back into the main Deskflow configuration.
+- **Settings isolation**: Each bridge client instance loads a dedicated QSettings file at `~/.config/deskflow/bridge-clients/<client-name>.conf` (created on first run if not exists) and strips TLS keys to avoid leaking preferences back into the main Deskflow configuration.
 - **TLS compatibility**: Bridge client reuses the server's TLS certificates/config by reading cert paths from the server's main settings file (no user-facing toggle); when the server requires TLS, connect using the same security level and certificate files.
 - **Upstream interop**: Bridge client validates the server identity during handshake (server sends identity command) and refuses connections if the identity is missing or indicates an upstream server to avoid unintended pairings.
 
 ### 5. CLI / Argument Handling
 - Extend `CoreArgParser` options with:
   - `--link <usb cdc dev>` (string) for the Pico USB CDC device path, eg. /dev/ttyACM0
-  - Optional `--bridge-settings-file <path>` to override per-instance settings (defaults to `settings/<name>.conf`).
 - The GUI always launches bridge clients once a matching Link is detected, so the presence of `--link` implies bridge mode and client-only execution.
+- Bridge client settings are automatically stored at `~/.config/deskflow/bridge-clients/<client-name>.conf` (no override option needed).
 - Strip/ignore client-side TLS switches from the parsed option set so they cannot override server-driven behavior.
 - Update `deskflow-core` `main()` to:
   1. Inspect arguments for `--link` before the single-instance guard.
-  2. Select the shared-memory key and settings file based on `--name`/`--bridge-settings-file`.
+  2. Select the shared-memory key and settings file based on `--name` (bridge clients use `bridge-clients/<name>.conf`).
   3. Fetch Pico configuration, instantiate `BridgeClientApp`, and run it.
 
 ### 6. Transport / HID Framing
@@ -154,13 +154,13 @@ Performed before the standard `ClientApp` starts:
 ### 8. TLS Configuration for Bridge Clients
 
 #### Settings Directory Structure
-Bridge clients use isolated settings directories:
+Bridge clients use isolated settings under the server's config directory:
 - **Server settings**: Uses default location (e.g., `~/.config/deskflow/deskflow.conf`)
-- **Bridge client settings**: `settings/<client-name>.conf` (e.g., `settings/my-bridge.conf`)
-- **Shared TLS directory**: `settings/tls/` (shared between server and all bridge clients)
+- **Bridge client settings**: `~/.config/deskflow/bridge-clients/<client-name>.conf` (e.g., `~/.config/deskflow/bridge-clients/my-pico.conf`)
+- **Shared TLS directory**: `~/.config/deskflow/tls/` (shared between server and all bridge clients)
 
 #### TLS Files
-The `settings/tls/` directory contains:
+The `~/.config/deskflow/tls/` directory contains:
 1. **`deskflow.pem`**: Server's self-signed certificate (contains both private key and certificate)
 2. **`trusted-servers`**: Client's list of trusted server certificate fingerprints
 3. **`trusted-clients`**: Server's list of trusted client certificate fingerprints (if mutual auth is needed)
@@ -168,24 +168,10 @@ The `settings/tls/` directory contains:
 #### Manual Setup Process for Bridge Clients
 When setting up a new bridge client with TLS enabled:
 
-1. **Copy Server Certificate**:
-   ```bash
-   cp <server-settings-dir>/tls/deskflow.pem settings/tls/
-   ```
+1. **TLS files are automatically shared**: Bridge clients use the same `~/.config/deskflow/tls/` directory as the server, so no certificate copying is needed.
 
-2. **Generate Trusted Fingerprint File**:
-   Extract the SHA-256 fingerprint from the server's certificate and save it in the correct format:
-   ```bash
-   openssl x509 -noout -fingerprint -sha256 -inform pem -in settings/tls/deskflow.pem | \
-     sed 's/SHA256 Fingerprint=/v2:sha256:/' | \
-     tr -d ':' | \
-     tr 'A-Z' 'a-z' > settings/tls/trusted-servers
-   ```
-
-   This creates a file with format: `v2:sha256:<lowercase_hex_fingerprint>`
-
-3. **Enable TLS in Client Settings**:
-   In `settings/<client-name>.conf`, add:
+2. **Enable TLS in Client Settings**:
+   In `~/.config/deskflow/bridge-clients/<client-name>.conf`, add:
    ```ini
    [security]
    tlsEnabled=true
