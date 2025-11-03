@@ -5,8 +5,10 @@
 
 #include "BridgeClientApp.h"
 
+#include "BridgeSocketFactory.h"
 #include "base/Log.h"
 #include "deskflow/Screen.h"
+#include "net/SocketMultiplexer.h"
 #include "platform/bridge/BridgePlatformScreen.h"
 
 BridgeClientApp::BridgeClientApp(
@@ -32,4 +34,12 @@ deskflow::Screen *BridgeClientApp::createScreen()
 
   // Wrap in deskflow::Screen
   return new deskflow::Screen(platformScreen, getEvents());
+}
+
+ISocketFactory *BridgeClientApp::getSocketFactory() const
+{
+  // Bridge clients use BridgeSocketFactory which:
+  // - Reads TLS setting from server's main config (not bridge client config)
+  // - Uses SecurityLevel::Encrypted (not PeerAuth) when TLS is enabled
+  return new BridgeSocketFactory(getEvents(), getSocketMultiplexer());
 }

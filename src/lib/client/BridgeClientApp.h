@@ -58,6 +58,16 @@ public:
     return m_config;
   }
 
+protected:
+  /**
+   * @brief Get socket factory for bridge client
+   *
+   * Returns BridgeSocketFactory that:
+   * - Reads TLS setting from server's main config (not bridge client config)
+   * - Uses SecurityLevel::Encrypted (not PeerAuth) when TLS is enabled
+   */
+  ISocketFactory *getSocketFactory() const override;
+
 private:
   std::shared_ptr<deskflow::bridge::CdcTransport> m_transport;
   deskflow::bridge::PicoConfig m_config;

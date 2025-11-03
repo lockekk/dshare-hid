@@ -77,9 +77,10 @@ public:
     return (ClientApp &)App::instance();
   }
 
-private:
-  ISocketFactory *getSocketFactory() const;
+protected:
+  virtual ISocketFactory *getSocketFactory() const;
 
+private:
   bool m_suspended = false;
   Client *m_client = nullptr;
   deskflow::Screen *m_clientScreen = nullptr;

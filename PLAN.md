@@ -153,6 +153,20 @@ Performed before the standard `ClientApp` starts:
 
 ### 8. TLS Configuration for Bridge Clients
 
+#### Automatic TLS Configuration
+Bridge clients automatically follow the server's TLS configuration without requiring manual setup:
+
+**Implementation**:
+- `BridgeSocketFactory` reads `security/tlsEnabled` from server's main config (`~/.config/deskflow/deskflow.conf`)
+- When server has TLS enabled, bridge clients use **SecurityLevel::Encrypted** (NOT PeerAuth)
+- When server has TLS disabled, bridge clients use **SecurityLevel::PlainText**
+- No `[security]` section needed in bridge client config files
+
+**Security Level Details**:
+- **SecurityLevel::Encrypted**: TLS encryption without certificate fingerprint verification
+- **SecurityLevel::PeerAuth**: TLS encryption with certificate fingerprint verification (used by upstream clients)
+- Bridge clients always use Encrypted (not PeerAuth) for simplicity and convenience
+
 #### Settings Directory Structure
 Bridge clients use isolated settings under the server's config directory:
 - **Server settings**: Uses default location (e.g., `~/.config/deskflow/deskflow.conf`)
@@ -162,30 +176,18 @@ Bridge clients use isolated settings under the server's config directory:
 #### TLS Files
 The `~/.config/deskflow/tls/` directory contains:
 1. **`deskflow.pem`**: Server's self-signed certificate (contains both private key and certificate)
-2. **`trusted-servers`**: Client's list of trusted server certificate fingerprints
-3. **`trusted-clients`**: Server's list of trusted client certificate fingerprints (if mutual auth is needed)
+2. **`trusted-servers`**: Not used by bridge clients (no fingerprint verification)
+3. **`trusted-clients`**: Not used by bridge clients
 
-#### Manual Setup Process for Bridge Clients
-When setting up a new bridge client with TLS enabled:
-
-1. **TLS files are automatically shared**: Bridge clients use the same `~/.config/deskflow/tls/` directory as the server, so no certificate copying is needed.
-
-2. **Enable TLS in Client Settings**:
-   In `~/.config/deskflow/bridge-clients/<client-name>.conf`, add:
-   ```ini
-   [security]
-   tlsEnabled=true
-   ```
-
-#### Fingerprint Verification
-- Bridge clients use **SecurityLevel::PeerAuth** when TLS is enabled
-- The client verifies the server's certificate fingerprint matches an entry in `trusted-servers`
-- Fingerprint format: `v2:sha256:<64-character-hex>` (lowercase, no colons in hex)
-- The fingerprint is the SHA-256 hash of the certificate, ensuring the client only trusts the specific server certificate
-- This provides certificate pinning security: even valid certificates from other sources will be rejected
+#### Setup Process for Bridge Clients
+**No manual TLS setup required!** Bridge clients automatically:
+1. Read TLS setting from server's config
+2. Use server's certificate from `~/.config/deskflow/tls/deskflow.pem`
+3. Connect with appropriate security level (Encrypted or PlainText)
 
 #### Why This Design?
-- **Shared TLS directory**: All bridge clients on the same PC trust the same server certificate
-- **Per-client settings**: Each bridge client maintains its own configuration (screen name, remote host, etc.)
-- **Certificate pinning**: More secure than CA-based validation; prevents MITM attacks even with valid certificates
-- **No certificate regeneration**: Bridge clients reuse the server's existing certificate instead of generating new ones
+- **Automatic configuration**: No manual TLS setup for bridge clients
+- **Simplified security**: Uses Encrypted (not PeerAuth) to avoid fingerprint management
+- **Shared TLS directory**: All bridge clients use the same server certificate
+- **Per-client settings**: Each bridge client maintains its own non-TLS configuration (screen name, log level, etc.)
+- **Convenience**: Bridge clients "just work" when server has TLS enabled
