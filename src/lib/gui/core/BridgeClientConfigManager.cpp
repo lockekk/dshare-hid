@@ -11,6 +11,7 @@
 #include <QDebug>
 #include <QDir>
 #include <QFileInfo>
+#include <QRegularExpression>
 #include <QSettings>
 
 namespace deskflow::gui {
@@ -57,12 +58,17 @@ QStringList BridgeClientConfigManager::findConfigsBySerialNumber(const QString &
 
 QString BridgeClientConfigManager::createDefaultConfig(const QString &serialNumber, const QString &devicePath)
 {
-  // Generate base name from device path (e.g., /dev/ttyACM0 -> ttyACM0)
-  QFileInfo deviceInfo(devicePath);
-  QString baseName = deviceInfo.fileName();
+  // Default screen name uses device basename with Bridge- prefix
+  const QString deviceBaseName = QFileInfo(devicePath).fileName();
+  const QString defaultScreenName = QStringLiteral("Bridge-%1").arg(deviceBaseName);
 
-  // Generate unique config path
-  QString configPath = generateUniqueConfigPath(baseName);
+  // Sanitize screen name for filesystem usage
+  QString sanitizedBaseName = defaultScreenName;
+  static const QRegularExpression kInvalidChars(QStringLiteral("[^a-zA-Z0-9_-]"));
+  sanitizedBaseName.replace(kInvalidChars, QStringLiteral("_"));
+
+  // Generate unique config path using sanitized screen name
+  QString configPath = generateUniqueConfigPath(sanitizedBaseName);
 
   // Create config file with default values
   QSettings config(configPath, QSettings::IniFormat);
@@ -79,8 +85,6 @@ QString BridgeClientConfigManager::createDefaultConfig(const QString &serialNumb
   config.setValue(Settings::Client::LanguageSync, true);
 
   // [core] section
-  // Screen name defaults to device name
-  QString defaultScreenName = QStringLiteral("Bridge-%1").arg(baseName);
   config.setValue(Settings::Core::ScreenName, defaultScreenName);
   config.setValue(Settings::Core::RestartOnFailure, true);
   config.setValue(Settings::Core::ProcessMode, Settings::Desktop);
@@ -90,10 +94,25 @@ QString BridgeClientConfigManager::createDefaultConfig(const QString &serialNumb
   config.setValue(Settings::Log::Level, "INFO");
   config.setValue(Settings::Log::ToFile, false);
 
+  config.remove(QStringLiteral("security"));
   config.sync();
 
   qDebug() << "Created default bridge client config:" << configPath;
   return configPath;
+}
+
+void BridgeClientConfigManager::removeLegacySecuritySettings(const QString &configPath)
+{
+  QSettings config(configPath, QSettings::IniFormat);
+  if (config.childGroups().contains(QStringLiteral("security")) ||
+      config.contains(Settings::Security::TlsEnabled) ||
+      config.contains(Settings::Security::CheckPeers)) {
+    config.beginGroup(QStringLiteral("security"));
+    config.remove(QLatin1String(""));
+    config.endGroup();
+    config.sync();
+    qDebug() << "Removed legacy security keys from bridge config" << configPath;
+  }
 }
 
 QString BridgeClientConfigManager::readScreenName(const QString &configPath)

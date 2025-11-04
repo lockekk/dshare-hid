@@ -1626,6 +1626,7 @@ void MainWindow::loadBridgeClientConfigs()
 
   // Create a widget for each config file
   for (const QString &configPath : configFiles) {
+    BridgeClientConfigManager::removeLegacySecuritySettings(configPath);
     QString screenName = BridgeClientConfigManager::readScreenName(configPath);
     if (screenName.isEmpty()) {
       screenName = tr("Unknown Device");

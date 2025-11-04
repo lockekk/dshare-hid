@@ -38,6 +38,11 @@ public:
   static QString createDefaultConfig(const QString &serialNumber, const QString &devicePath);
 
   /**
+   * @brief Remove legacy security keys that are no longer used by bridge clients
+   */
+  static void removeLegacySecuritySettings(const QString &configPath);
+
+  /**
    * @brief Read screen name from config file
    * @param configPath Path to config file
    * @return Screen name, or empty string if not found

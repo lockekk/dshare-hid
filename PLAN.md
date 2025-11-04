@@ -68,6 +68,8 @@ Compatibility requirements:
 - GUI loads all existing configs on startup
 - Config contains: serial number, screen dimensions, orientation, screen name, log level
 - Serial number used to match USB devices to config files
+- Vendor filter: only USB CDC devices with vendor ID 2e8a (Raspberry Pi) generate configs
+- Config file names mirror the bridge screen name (default `Bridge-<tty>`), preventing duplicate files when the client launches
 - Widgets created for each config (grayed out if device not plugged in)
 - Configuration dialog allows editing settings and renaming config files
 

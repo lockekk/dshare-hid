@@ -33,6 +33,13 @@ public:
    * On Linux, scans /dev/ttyACM* devices and reads their serial numbers
    */
   static QMap<QString, QString> getConnectedDevices();
+
+  /**
+   * @brief Check if the device path belongs to a supported bridge device (e.g., Pico 2 W)
+   */
+  static bool isSupportedBridgeDevice(const QString &devicePath);
+
+  inline static const QString kPicoVendorId = QStringLiteral("2e8a");
 };
 
 } // namespace deskflow::gui

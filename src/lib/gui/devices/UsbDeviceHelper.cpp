@@ -15,6 +15,52 @@
 
 namespace deskflow::gui {
 
+namespace {
+
+#ifdef Q_OS_LINUX
+QString canonicalUsbDevicePath(const QString &devicePath)
+{
+  QFileInfo deviceInfo(devicePath);
+  QString ttyName = deviceInfo.fileName();
+
+  const QString ttyBasePath = QStringLiteral("/sys/class/tty/%1").arg(ttyName);
+  QFileInfo ttyLink(ttyBasePath);
+  if (!ttyLink.exists()) {
+    qWarning() << "TTY entry does not exist for" << devicePath << ":" << ttyBasePath;
+    return QString();
+  }
+
+  QFileInfo deviceLink(ttyBasePath + QStringLiteral("/device"));
+  return deviceLink.canonicalFilePath();
+}
+
+QString readUsbAttribute(const QString &canonicalDevicePath, const QString &attribute)
+{
+  if (canonicalDevicePath.isEmpty())
+    return QString();
+
+  QDir currentDir(canonicalDevicePath);
+  constexpr int kMaxTraversal = 6;
+  for (int depth = 0; depth < kMaxTraversal; ++depth) {
+    const QString candidate = currentDir.absoluteFilePath(attribute);
+    QFile file(candidate);
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+      QTextStream in(&file);
+      const QString value = in.readLine().trimmed();
+      file.close();
+      if (!value.isEmpty())
+        return value;
+    }
+    if (!currentDir.cdUp())
+      break;
+  }
+
+  return QString();
+}
+#endif
+
+} // namespace
+
 QString UsbDeviceHelper::readSerialNumber(const QString &devicePath)
 {
 #ifdef Q_OS_LINUX
@@ -52,20 +98,12 @@ QString UsbDeviceHelper::readSerialNumber(const QString &devicePath)
   }
 
   // Resolve the tty device symlink and search upwards for a "serial" attribute on the USB node.
-  QString canonicalDevicePath = deviceLink.canonicalFilePath();
+  const QString canonicalDevicePath = deviceLink.canonicalFilePath();
   if (!canonicalDevicePath.isEmpty()) {
-    QDir currentDir(canonicalDevicePath);
-    constexpr int kMaxTraversal = 6; // Enough to reach the USB device without looping over root
-    for (int depth = 0; depth < kMaxTraversal; ++depth) {
-      const QString candidate = currentDir.absoluteFilePath(QStringLiteral("serial"));
-      const QString serial = tryReadSerial(candidate);
-      if (!serial.isEmpty()) {
-        qDebug() << "Read serial number for" << devicePath << ":" << serial;
-        return serial;
-      }
-      if (!currentDir.cdUp()) {
-        break;
-      }
+    const QString serial = readUsbAttribute(canonicalDevicePath, QStringLiteral("serial"));
+    if (!serial.isEmpty()) {
+      qDebug() << "Read serial number for" << devicePath << ":" << serial;
+      return serial;
     }
   }
 
@@ -89,6 +127,12 @@ QMap<QString, QString> UsbDeviceHelper::getConnectedDevices()
 
   for (const QString &deviceFile : deviceFiles) {
     QString devicePath = QStringLiteral("/dev/%1").arg(deviceFile);
+
+    if (!isSupportedBridgeDevice(devicePath)) {
+      qDebug() << "Skipping non-bridge CDC device" << devicePath;
+      continue;
+    }
+
     QString serialNumber = readSerialNumber(devicePath);
 
     if (!serialNumber.isEmpty()) {
@@ -100,6 +144,26 @@ QMap<QString, QString> UsbDeviceHelper::getConnectedDevices()
 #endif
 
   return devices;
+}
+
+bool UsbDeviceHelper::isSupportedBridgeDevice(const QString &devicePath)
+{
+#ifdef Q_OS_LINUX
+  const QString canonicalPath = canonicalUsbDevicePath(devicePath);
+  const QString vendorId = readUsbAttribute(canonicalPath, QStringLiteral("idVendor")).toLower();
+  if (vendorId.isEmpty())
+    return false;
+
+  if (vendorId == kPicoVendorId) {
+    return true;
+  }
+
+  qDebug() << "Device" << devicePath << "has unsupported vendor id" << vendorId;
+  return false;
+#else
+  Q_UNUSED(devicePath);
+  return false;
+#endif
 }
 
 } // namespace deskflow::gui
