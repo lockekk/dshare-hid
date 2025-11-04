@@ -52,6 +52,13 @@ void BridgeClientWidget::setConnected(bool connected)
   m_btnConnect->setText(connected ? tr("Disconnect") : tr("Connect"));
 }
 
+void BridgeClientWidget::updateConfig(const QString &screenName, const QString &configPath)
+{
+  m_screenName = screenName;
+  m_configPath = configPath;
+  setTitle(screenName); // Update the group box title
+}
+
 void BridgeClientWidget::onConnectToggled(bool checked)
 {
   m_isConnected = checked;

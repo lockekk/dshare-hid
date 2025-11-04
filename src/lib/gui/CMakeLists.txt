@@ -86,6 +86,8 @@ add_library(${target} STATIC
   dialogs/AddClientDialog.cpp
   dialogs/AddClientDialog.h
   dialogs/AddClientDialog.ui
+  dialogs/BridgeClientConfigDialog.cpp
+  dialogs/BridgeClientConfigDialog.h
   dialogs/FingerprintDialog.cpp
   dialogs/FingerprintDialog.h
   dialogs/HotkeyDialog.cpp

@@ -14,6 +14,7 @@
 #include "VersionInfo.h"
 
 #include "dialogs/AboutDialog.h"
+#include "dialogs/BridgeClientConfigDialog.h"
 #include "dialogs/FingerprintDialog.h"
 #include "dialogs/ServerConfigDialog.h"
 #include "dialogs/SettingsDialog.h"
@@ -1391,7 +1392,30 @@ void MainWindow::bridgeClientConfigureClicked(const QString &devicePath, const Q
            << "device:" << devicePath
            << "config:" << configPath;
 
-  // TODO: Open configuration dialog
-  qDebug() << "TODO: Open bridge client configuration dialog";
-  setStatus(tr("Opening configuration for: %1").arg(devicePath));
+  // Open configuration dialog
+  BridgeClientConfigDialog dialog(configPath, this);
+
+  // Connect signal to handle config file rename
+  connect(&dialog, &BridgeClientConfigDialog::configChanged, this, [this, devicePath](const QString &oldConfigPath, const QString &newConfigPath) {
+    // Find the widget for this device
+    auto it = m_bridgeClientWidgets.find(devicePath);
+    if (it != m_bridgeClientWidgets.end()) {
+      BridgeClientWidget *widget = it.value();
+
+      // Read the new screen name from config
+      QString newScreenName = BridgeClientConfigManager::readScreenName(newConfigPath);
+
+      // Update the widget with new screen name and config path
+      widget->updateConfig(newScreenName, newConfigPath);
+
+      qDebug() << "Bridge client config updated:"
+               << "device:" << devicePath
+               << "newScreenName:" << newScreenName
+               << "newConfigPath:" << newConfigPath;
+    }
+  });
+
+  if (dialog.exec() == QDialog::Accepted) {
+    setStatus(tr("Configuration saved for: %1").arg(dialog.screenName()));
+  }
 }

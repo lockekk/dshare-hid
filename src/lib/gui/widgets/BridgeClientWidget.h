@@ -80,6 +80,13 @@ public:
    */
   void setConnected(bool connected);
 
+  /**
+   * @brief Update screen name and config path
+   * @param screenName New screen name
+   * @param configPath New config file path
+   */
+  void updateConfig(const QString &screenName, const QString &configPath);
+
 Q_SIGNALS:
   /**
    * @brief Emitted when connect button is toggled
