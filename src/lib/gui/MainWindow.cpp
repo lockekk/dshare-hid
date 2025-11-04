@@ -1412,9 +1412,68 @@ void MainWindow::bridgeClientConnectToggled(const QString &devicePath, bool conn
            << "connect:" << connect;
 
   if (connect) {
-    // TODO: Start bridge client process
-    qDebug() << "TODO: Start bridge client for device:" << devicePath;
-    setStatus(tr("Connecting bridge client: %1").arg(devicePath));
+    // Find the config file for this device path
+    QString configPath;
+    for (auto it = m_bridgeClientWidgets.begin(); it != m_bridgeClientWidgets.end(); ++it) {
+      BridgeClientWidget *widget = it.value();
+      if (widget->devicePath() == devicePath) {
+        configPath = it.key();
+        break;
+      }
+    }
+
+    if (configPath.isEmpty()) {
+      qWarning() << "No config found for device:" << devicePath;
+      setStatus(tr("Error: No configuration found for device: %1").arg(devicePath));
+      return;
+    }
+
+    // Read screen dimensions and orientation from config
+    QSettings config(configPath, QSettings::IniFormat);
+    int screenWidth = config.value(Settings::Bridge::ScreenWidth, 1920).toInt();
+    int screenHeight = config.value(Settings::Bridge::ScreenHeight, 1080).toInt();
+    QString screenOrientation = config.value(Settings::Bridge::ScreenOrientation, "landscape").toString();
+    QString screenName = config.value(Settings::Core::ScreenName).toString();
+    QString logLevel = config.value(Settings::Log::Level, "INFO").toString();
+
+    // Get server hostname and port
+    QString serverHost = Settings::value(Settings::Client::RemoteHost).toString();
+    if (serverHost.isEmpty()) {
+      serverHost = "127.0.0.1"; // Default to localhost
+    }
+
+    QVariant portValue = Settings::value(Settings::Core::Port);
+    int serverPort = portValue.isValid() ? portValue.toInt() : 24800;
+
+    // Build the remote host with port
+    QString remoteHost = QString("%1:%2").arg(serverHost).arg(serverPort);
+
+    // Get TLS/secure setting from server configuration
+    bool tlsEnabled = Settings::value(Settings::Security::TlsEnabled).toBool();
+
+    // Build the command
+    QStringList command;
+    command << "deskflow-core";
+    command << "client";
+    command << "--name" << screenName;
+    command << "--link" << devicePath;
+    command << "--remoteHost" << remoteHost;
+    command << "--secure" << (tlsEnabled ? "true" : "false");
+    command << "--log-level" << logLevel;
+    command << "--screen-width" << QString::number(screenWidth);
+    command << "--screen-height" << QString::number(screenHeight);
+    command << "--screen-orientation" << screenOrientation;
+
+    // Print the command
+    QString commandString = command.join(" ");
+    qInfo() << "Bridge client command:";
+    qInfo().noquote() << commandString;
+
+    // Show in status and also log it
+    setStatus(tr("Command: %1").arg(commandString));
+
+    // TODO: Actually execute the command
+    qDebug() << "TODO: Execute bridge client process with command:" << commandString;
   } else {
     // TODO: Stop bridge client process
     qDebug() << "TODO: Stop bridge client for device:" << devicePath;
