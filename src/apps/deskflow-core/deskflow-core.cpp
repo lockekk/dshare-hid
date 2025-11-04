@@ -78,6 +78,8 @@ int main(int argc, char **argv)
     }
   }
 
+  Settings::setBridgeClientMode(isBridgeClient);
+
   // Determine initial settings file before constructing CoreArgParser so CLI overrides take effect.
   QString initialSettingsFile;
   if (isBridgeClient) {

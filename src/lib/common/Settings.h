@@ -139,6 +139,8 @@ public:
   static void save(bool emitSaving = true);
   static QStringList validKeys();
   static int logLevelToInt(const QString &level = "INFO");
+  static void setBridgeClientMode(bool enabled);
+  static bool isBridgeClientMode();
 
 Q_SIGNALS:
   void settingsChanged(const QString key);
@@ -154,6 +156,7 @@ private:
   QSettings *m_settings = nullptr;
   QString m_portableSettingsFile = QStringLiteral("%1/settings/%2.conf");
   std::shared_ptr<QSettingsProxy> m_settingsProxy;
+  bool m_bridgeClientMode = false;
 
   // clang-format off
   inline static const QStringList m_logLevels = {

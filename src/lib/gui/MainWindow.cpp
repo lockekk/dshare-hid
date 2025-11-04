@@ -249,7 +249,46 @@ void MainWindow::setupControls()
   ui->serverOptions->setVisible(false);
   ui->clientOptions->setVisible(false);
 
-  const auto coreMode = Settings::value(Settings::Core::CoreMode).value<Settings::CoreMode>();
+  auto coreMode = Settings::value(Settings::Core::CoreMode).value<Settings::CoreMode>();
+
+  // Auto-select Server mode on first run
+  if (coreMode == Settings::CoreMode::None) {
+    coreMode = Settings::CoreMode::Server;
+    Settings::setValue(Settings::Core::CoreMode, coreMode);
+    qInfo() << "first run detected, automatically selecting Server mode";
+
+    // Generate TLS certificates if needed
+    const auto certificate = Settings::value(Settings::Security::Certificate).toString();
+    if (!QFile::exists(certificate)) {
+      qInfo() << "generating TLS certificates for first run";
+      if (m_tlsUtility.generateCertificate()) {
+        qInfo() << "TLS certificates generated successfully";
+      } else {
+        qWarning() << "failed to generate TLS certificates";
+      }
+    }
+
+    // Auto-detect and configure USB CDC bridge devices
+    auto connectedDevices = UsbDeviceHelper::getConnectedDevices();
+    if (!connectedDevices.isEmpty()) {
+      qInfo() << "detected" << connectedDevices.size() << "USB CDC device(s), creating default configs";
+      for (auto it = connectedDevices.constBegin(); it != connectedDevices.constEnd(); ++it) {
+        const QString &devicePath = it.key();
+        const QString &serialNumber = it.value();
+
+        // Check if config already exists for this serial number
+        QStringList existingConfigs = BridgeClientConfigManager::findConfigsBySerialNumber(serialNumber);
+        if (existingConfigs.isEmpty()) {
+          // Create default config
+          QString configPath = BridgeClientConfigManager::createDefaultConfig(serialNumber, devicePath);
+          qInfo() << "created default config for" << devicePath << ":" << configPath;
+        } else {
+          qInfo() << "config already exists for" << devicePath << "serial:" << serialNumber;
+        }
+      }
+    }
+  }
+
   ui->rbModeClient->setChecked(coreMode == Settings::CoreMode::Client);
   ui->rbModeServer->setChecked(coreMode == Settings::CoreMode::Server);
 

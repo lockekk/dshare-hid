@@ -14,9 +14,9 @@ class SocketMultiplexer;
  * @brief Socket factory for bridge clients
  *
  * Bridge clients need special TLS handling:
- * - Read tlsEnabled from server's main config (not bridge client config)
- * - Always use SecurityLevel::Encrypted (not PeerAuth) when TLS is enabled
- * - This avoids fingerprint verification complexity while maintaining encryption
+ * - Read TLS preference from CLI `--secure` flag (persisted in Settings)
+ * - Always use SecurityLevel::PeerAuth when TLS is enabled
+ * - This keeps bridge clients aligned with upstream security expectations
  */
 class BridgeSocketFactory : public ISocketFactory
 {
@@ -37,8 +37,8 @@ public:
 
 private:
   /**
-   * @brief Read TLS setting from server's main config
-   * @return SecurityLevel::Encrypted if server has TLS enabled, SecurityLevel::PlainText otherwise
+   * @brief Read TLS preference from settings (populated by CLI `--secure`)
+   * @return SecurityLevel::PeerAuth if TLS is enabled, SecurityLevel::PlainText otherwise
    */
   SecurityLevel getServerSecurityLevel() const;
 

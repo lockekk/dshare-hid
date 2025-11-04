@@ -20,6 +20,10 @@
 #include "net/TSocketMultiplexerMethodJob.h"
 #include <net/SslLogger.h>
 
+#include <QDir>
+#include <QFile>
+#include <QFileInfo>
+
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
@@ -599,10 +603,24 @@ void SecureSocket::checkResult(int status, int &retry)
     isFatal(true);
     break;
 
-  case SSL_ERROR_SSL:
+  case SSL_ERROR_SSL: {
+    const auto sslError = ERR_peek_error();
+    const auto reason = ERR_GET_REASON(sslError);
+    if (reason == SSL_R_UNEXPECTED_EOF_WHILE_READING) {
+      LOG_DEBUG("tls connection closed without close_notify");
+      isFatal(false);
+      retry = 0;
+      ERR_clear_error();
+      setConnected(false);
+      setReadable(false);
+      setWritable(false);
+      disconnect();
+      break;
+    }
     LOG_ERR("tls error occurred (generic failure)");
     isFatal(true);
     break;
+  }
 
   default:
     LOG_ERR("tls error occurred (unknown failure)");
@@ -640,15 +658,21 @@ bool SecureSocket::verifyCertFingerprint(const QString &FingerprintDatabasePath)
   LOG_IPC("peer fingerprint: %s", qPrintable(deskflow::formatSSLFingerprint(sha256.data, false)));
 
   QFile file(FingerprintDatabasePath);
+  const auto &path = FingerprintDatabasePath;
+  const QFileInfo fileInfo(file);
+  QDir dir = fileInfo.dir();
 
   FingerprintDatabase db;
   db.read(FingerprintDatabasePath);
   const bool emptyDB = db.fingerprints().empty();
 
-  const auto &path = FingerprintDatabasePath;
-
   // Trust On First Use (TOFU): if database doesn't exist, auto-trust and save
   if (!file.exists() && emptyDB) {
+    if (!dir.exists() && !dir.mkpath(".")) {
+      LOG_ERR("failed to create trusted fingerprint directory: %s", qPrintable(dir.absolutePath()));
+      return false;
+    }
+
     LOG_INFO("trusted fingerprints file does not exist, using TOFU (trust on first use)");
     db.addTrusted(sha256);
     if (!db.write(FingerprintDatabasePath)) {

@@ -214,41 +214,28 @@ Performed before the standard `ClientApp` starts:
 
 ### 8. TLS Configuration for Bridge Clients
 
-#### Automatic TLS Configuration
-Bridge clients automatically follow the server's TLS configuration without requiring manual setup:
+#### Runtime Selection via CLI
+Bridge clients no longer inspect the server configuration file for TLS settings. Instead:
 
-**Implementation**:
-- `BridgeSocketFactory` reads `security/tlsEnabled` from server's main config (`~/.config/deskflow/deskflow.conf`)
-- When server has TLS enabled, bridge clients use **SecurityLevel::Encrypted** (NOT PeerAuth)
-- When server has TLS disabled, bridge clients use **SecurityLevel::PlainText**
-- No `[security]` section needed in bridge client config files
+- The GUI/launcher passes `--secure <true|false>` to `deskflow-core`.
+- `CoreArgParser` writes the selected value into `Settings::Security::TlsEnabled` before the bridge client starts.
+- `BridgeSocketFactory` reads this flag and:
+  - Uses **SecurityLevel::PeerAuth** (with fingerprint verification) when `--secure true`.
+  - Uses **SecurityLevel::PlainText** when `--secure false`.
 
-**Security Level Details**:
-- **SecurityLevel::Encrypted**: TLS encryption without certificate fingerprint verification
-- **SecurityLevel::PeerAuth**: TLS encryption with certificate fingerprint verification (used by upstream clients)
-- Bridge clients always use Encrypted (not PeerAuth) for simplicity and convenience
+This keeps TLS selection explicit and avoids persisting stale data in bridge configs.
 
-#### Settings Directory Structure
-Bridge clients use isolated settings under the server's config directory:
-- **Server settings**: Uses default location (e.g., `~/.config/deskflow/deskflow.conf`)
-- **Bridge client settings**: `~/.config/deskflow/bridge-clients/<client-name>.conf` (e.g., `~/.config/deskflow/bridge-clients/my-pico.conf`)
-- **Shared TLS directory**: `~/.config/deskflow/tls/` (shared between server and all bridge clients)
+#### Fingerprint Handling
+- When running in `SecurityLevel::PeerAuth`, bridge clients validate the server certificate fingerprint.
+- The first secure connection performs TOFU: the fingerprint is stored in `~/.config/deskflow/tls/trusted-servers`, creating parent directories if needed.
+- Subsequent connections require the fingerprint to match; mismatches abort the TLS session.
+- `trusted-clients` remains unused by bridge clients (still server-side only).
 
-#### TLS Files
-The `~/.config/deskflow/tls/` directory contains:
-1. **`deskflow.pem`**: Server's self-signed certificate (contains both private key and certificate)
-2. **`trusted-servers`**: Not used by bridge clients (no fingerprint verification)
-3. **`trusted-clients`**: Not used by bridge clients
+#### Configuration Files
+- Bridge client `.conf` files no longer contain a `[security]` section; TLS decisions are entirely CLI-driven.
+- Server-side `security/checkPeerFingerprints` continues to control whether the server listener demands client certificates (`SecurityLevel::PeerAuth`) or just encryption (`SecurityLevel::Encrypted`).
 
-#### Setup Process for Bridge Clients
-**No manual TLS setup required!** Bridge clients automatically:
-1. Read TLS setting from server's config
-2. Use server's certificate from `~/.config/deskflow/tls/deskflow.pem`
-3. Connect with appropriate security level (Encrypted or PlainText)
-
-#### Why This Design?
-- **Automatic configuration**: No manual TLS setup for bridge clients
-- **Simplified security**: Uses Encrypted (not PeerAuth) to avoid fingerprint management
-- **Shared TLS directory**: All bridge clients use the same server certificate
-- **Per-client settings**: Each bridge client maintains its own non-TLS configuration (screen name, log level, etc.)
-- **Convenience**: Bridge clients "just work" when server has TLS enabled
+#### Directory Layout
+- **Server settings**: `~/.config/deskflow/deskflow.conf`
+- **Bridge client settings**: `~/.config/deskflow/bridge-clients/<client-name>.conf`
+- **Shared TLS directory**: `~/.config/deskflow/tls/` containing `deskflow.pem`, `trusted-servers`, and (optionally) `trusted-clients`.

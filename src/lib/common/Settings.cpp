@@ -110,6 +110,16 @@ int Settings::logLevelToInt(const QString &level)
   return 4; // If all else fail return info
 }
 
+void Settings::setBridgeClientMode(bool enabled)
+{
+  instance()->m_bridgeClientMode = enabled;
+}
+
+bool Settings::isBridgeClientMode()
+{
+  return instance()->m_bridgeClientMode;
+}
+
 QVariant Settings::defaultValue(const QString &key)
 {
   if ((key == Gui::Autohide) || (key == Core::StartedBefore) || (key == Core::PreventSleep) ||
@@ -132,8 +142,9 @@ QVariant Settings::defaultValue(const QString &key)
 
   if (key == Security::Certificate) {
     // Bridge clients (in bridge-clients subdirectory) share the server's certificates
-    auto currentPath = instance()->settingsPath();
-    if (currentPath.contains("bridge-clients")) {
+    const auto currentPath = instance()->settingsPath();
+    const bool bridgeClient = instance()->m_bridgeClientMode || currentPath.contains("bridge-clients");
+    if (bridgeClient) {
       auto mainTlsDir = QStringLiteral("%1/%2").arg(UserDir, kTlsDirName);
       return QStringLiteral("%1/%2").arg(mainTlsDir, kTlsCertificateFilename);
     }
@@ -255,7 +266,8 @@ QString Settings::tlsTrustedServersDb()
 {
   // Bridge clients (in bridge-clients subdirectory) share the server's trusted fingerprints
   auto currentPath = instance()->settingsPath();
-  if (currentPath.contains("bridge-clients")) {
+  const bool bridgeClient = instance()->m_bridgeClientMode || currentPath.contains("bridge-clients");
+  if (bridgeClient) {
     auto mainTlsDir = QStringLiteral("%1/%2").arg(UserDir, kTlsDirName);
     return QStringLiteral("%1/%2").arg(mainTlsDir, kTlsFingerprintTrustedServersFilename);
   }

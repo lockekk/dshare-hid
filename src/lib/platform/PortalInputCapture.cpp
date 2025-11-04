@@ -334,6 +334,12 @@ void PortalInputCapture::handleZonesChanged(XdpInputCaptureSession *session, con
     list = g_list_append(list, b);
   }
 
+  // libportal requires non-NULL barriers list, skip if no barriers configured
+  if (list == nullptr) {
+    LOG_DEBUG("no pointer barriers configured, skipping set_pointer_barriers");
+    return;
+  }
+
   xdp_input_capture_session_set_pointer_barriers(
       m_session, list,
       nullptr, // cancellable

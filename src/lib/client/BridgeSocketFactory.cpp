@@ -13,8 +13,6 @@
 #include "net/TCPListenSocket.h"
 #include "net/TCPSocket.h"
 
-#include <QSettings>
-
 BridgeSocketFactory::BridgeSocketFactory(IEventQueue *events, SocketMultiplexer *socketMultiplexer) :
     m_events(events),
     m_socketMultiplexer(socketMultiplexer)
@@ -23,20 +21,15 @@ BridgeSocketFactory::BridgeSocketFactory(IEventQueue *events, SocketMultiplexer 
 
 SecurityLevel BridgeSocketFactory::getServerSecurityLevel() const
 {
-  // Read TLS setting from server's main config file
-  // Note: This is different from the bridge client's own config file
-  QString serverConfigPath = Settings::UserSettingFile;
+  // CLI `--secure` flag (handled by CoreArgParser) stores desired TLS state in settings
+  bool tlsEnabled = Settings::value(Settings::Security::TlsEnabled).toBool();
 
-  QSettings serverConfig(serverConfigPath, QSettings::IniFormat);
-  bool tlsEnabled = serverConfig.value(Settings::Security::TlsEnabled, false).toBool();
-
-  // Bridge clients always use Encrypted (not PeerAuth) to avoid fingerprint verification
-  SecurityLevel level = tlsEnabled ? SecurityLevel::Encrypted : SecurityLevel::PlainText;
+  // Bridge clients follow CLI-selected TLS preference, enforcing PeerAuth when enabled
+  SecurityLevel level = tlsEnabled ? SecurityLevel::PeerAuth : SecurityLevel::PlainText;
 
   LOG_DEBUG1(
-      "bridge client TLS: %s (from server config: %s)",
-      tlsEnabled ? "enabled (Encrypted)" : "disabled (PlainText)",
-      serverConfigPath.toUtf8().constData()
+      "bridge client TLS: %s (source=cli --secure)",
+      tlsEnabled ? "enabled (PeerAuth)" : "disabled (PlainText)"
   );
 
   return level;
@@ -46,7 +39,7 @@ IDataSocket *BridgeSocketFactory::create(
     IArchNetwork::AddressFamily family, SecurityLevel securityLevel
 ) const
 {
-  // Override security level with server's TLS setting
+  // Override security level with CLI-provided TLS setting
   SecurityLevel actualLevel = getServerSecurityLevel();
 
   // Create socket based on security level

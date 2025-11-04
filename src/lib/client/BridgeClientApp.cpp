@@ -39,7 +39,7 @@ deskflow::Screen *BridgeClientApp::createScreen()
 ISocketFactory *BridgeClientApp::getSocketFactory() const
 {
   // Bridge clients use BridgeSocketFactory which:
-  // - Reads TLS setting from server's main config (not bridge client config)
-  // - Uses SecurityLevel::Encrypted (not PeerAuth) when TLS is enabled
+  // - Reads TLS preference provided by CLI (--secure) from Settings
+  // - Uses SecurityLevel::PeerAuth (with fingerprint verification) when TLS is enabled
   return new BridgeSocketFactory(getEvents(), getSocketMultiplexer());
 }
