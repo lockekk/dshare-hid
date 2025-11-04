@@ -45,6 +45,19 @@ public:
   static QString readScreenName(const QString &configPath);
 
   /**
+   * @brief Read serial number from config file
+   * @param configPath Path to config file
+   * @return Serial number, or empty string if not found
+   */
+  static QString readSerialNumber(const QString &configPath);
+
+  /**
+   * @brief Get all bridge client config files
+   * @return List of absolute paths to all .conf files in bridge-clients directory
+   */
+  static QStringList getAllConfigFiles();
+
+  /**
    * @brief Get bridge clients config directory
    * @return Path to ~/.config/deskflow/bridge-clients/
    */

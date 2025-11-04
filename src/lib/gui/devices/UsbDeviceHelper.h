@@ -7,6 +7,7 @@
 #pragma once
 
 #include <QString>
+#include <QMap>
 
 namespace deskflow::gui {
 
@@ -24,6 +25,14 @@ public:
    * On Linux, reads from sysfs: /sys/class/tty/ttyACM0/../../../../serial
    */
   static QString readSerialNumber(const QString &devicePath);
+
+  /**
+   * @brief Get all currently connected USB CDC devices with their serial numbers
+   * @return Map of device path -> serial number
+   *
+   * On Linux, scans /dev/ttyACM* devices and reads their serial numbers
+   */
+  static QMap<QString, QString> getConnectedDevices();
 };
 
 } // namespace deskflow::gui

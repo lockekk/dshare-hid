@@ -87,6 +87,21 @@ public:
    */
   void updateConfig(const QString &screenName, const QString &configPath);
 
+  /**
+   * @brief Set device availability (enable/disable widget)
+   * @param devicePath New device path (empty if device not available)
+   * @param available true if device is plugged in, false to gray out
+   */
+  void setDeviceAvailable(const QString &devicePath, bool available);
+
+  /**
+   * @brief Check if device is available
+   */
+  bool isDeviceAvailable() const
+  {
+    return m_deviceAvailable;
+  }
+
 Q_SIGNALS:
   /**
    * @brief Emitted when connect button is toggled
@@ -111,6 +126,7 @@ private:
   QString m_devicePath;
   QString m_configPath;
   bool m_isConnected = false;
+  bool m_deviceAvailable = false;
 
   QPushButton *m_btnConnect;
   QPushButton *m_btnConfigure;

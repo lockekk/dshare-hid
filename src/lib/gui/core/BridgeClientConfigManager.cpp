@@ -102,6 +102,29 @@ QString BridgeClientConfigManager::readScreenName(const QString &configPath)
   return config.value(Settings::Core::ScreenName).toString();
 }
 
+QString BridgeClientConfigManager::readSerialNumber(const QString &configPath)
+{
+  QSettings config(configPath, QSettings::IniFormat);
+  return config.value(Settings::Bridge::SerialNumber).toString();
+}
+
+QStringList BridgeClientConfigManager::getAllConfigFiles()
+{
+  QString dir = bridgeClientsDir();
+  QDir configDir(dir);
+
+  // Find all .conf files
+  QStringList confFiles = configDir.entryList(QStringList() << "*.conf", QDir::Files);
+
+  // Convert to absolute paths
+  QStringList absolutePaths;
+  for (const QString &filename : confFiles) {
+    absolutePaths.append(configDir.absoluteFilePath(filename));
+  }
+
+  return absolutePaths;
+}
+
 QString BridgeClientConfigManager::generateUniqueConfigPath(const QString &baseName)
 {
   QString dir = bridgeClientsDir();

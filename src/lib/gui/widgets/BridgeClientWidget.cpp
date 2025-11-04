@@ -59,6 +59,25 @@ void BridgeClientWidget::updateConfig(const QString &screenName, const QString &
   setTitle(screenName); // Update the group box title
 }
 
+void BridgeClientWidget::setDeviceAvailable(const QString &devicePath, bool available)
+{
+  m_deviceAvailable = available;
+  m_devicePath = available ? devicePath : QString();
+
+  // Enable/disable the connect button based on device availability
+  m_btnConnect->setEnabled(available);
+
+  // Configure button is always enabled (can configure even if device not plugged in)
+  // But update tooltip to indicate device status
+  if (!available) {
+    m_btnConnect->setToolTip(tr("Device not connected"));
+    setStyleSheet("QGroupBox { color: gray; }");
+  } else {
+    m_btnConnect->setToolTip(tr("Connect/disconnect bridge client"));
+    setStyleSheet("");
+  }
+}
+
 void BridgeClientWidget::onConnectToggled(bool checked)
 {
   m_isConnected = checked;

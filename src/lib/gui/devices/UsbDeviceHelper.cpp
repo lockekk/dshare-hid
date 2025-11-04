@@ -76,4 +76,30 @@ QString UsbDeviceHelper::readSerialNumber(const QString &devicePath)
   return QString();
 }
 
+QMap<QString, QString> UsbDeviceHelper::getConnectedDevices()
+{
+  QMap<QString, QString> devices;
+
+#ifdef Q_OS_LINUX
+  // Scan /dev for ttyACM* devices
+  QDir devDir("/dev");
+  QStringList filters;
+  filters << "ttyACM*";
+  QStringList deviceFiles = devDir.entryList(filters, QDir::System);
+
+  for (const QString &deviceFile : deviceFiles) {
+    QString devicePath = QStringLiteral("/dev/%1").arg(deviceFile);
+    QString serialNumber = readSerialNumber(devicePath);
+
+    if (!serialNumber.isEmpty()) {
+      devices[devicePath] = serialNumber;
+    }
+  }
+
+  qDebug() << "Found" << devices.size() << "connected USB CDC devices";
+#endif
+
+  return devices;
+}
+
 } // namespace deskflow::gui

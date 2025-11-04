@@ -171,6 +171,8 @@ private:
 
   void serverClientsChanged(const QStringList &clients);
 
+  void loadBridgeClientConfigs();
+  void updateBridgeClientDeviceStates();
   void usbDeviceConnected(const deskflow::gui::UsbDeviceInfo &device);
   void usbDeviceDisconnected(const deskflow::gui::UsbDeviceInfo &device);
   void bridgeClientConnectToggled(const QString &devicePath, bool connect);
@@ -196,8 +198,12 @@ private:
   deskflow::gui::ipc::DaemonIpcClient *m_daemonIpcClient = nullptr;
   deskflow::gui::UsbDeviceMonitor *m_usbDeviceMonitor = nullptr;
 
-  // Bridge client widgets: device path -> widget
+  // Bridge client widgets: config path -> widget
   QMap<QString, deskflow::gui::BridgeClientWidget*> m_bridgeClientWidgets;
+
+  // Track device path -> serial number mapping when devices connect
+  // (needed because sysfs disappears when device disconnects)
+  QMap<QString, QString> m_devicePathToSerialNumber;
 
   LogDock *m_logDock;
   QLabel *m_lblSecurityStatus = nullptr;

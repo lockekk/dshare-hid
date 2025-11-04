@@ -147,6 +147,9 @@ MainWindow::MainWindow()
 
   setupTrayIcon();
 
+  // Load bridge client configs and create widgets
+  loadBridgeClientConfigs();
+
   // Setup USB device monitoring (Linux only for now)
 #if defined(Q_OS_LINUX)
   m_usbDeviceMonitor = new LinuxUdevMonitor(this);
@@ -160,15 +163,9 @@ MainWindow::MainWindow()
   // Start monitoring
   if (m_usbDeviceMonitor->startMonitoring()) {
     qDebug() << "USB device monitoring started successfully";
-    // Enumerate existing devices and handle them as if they were just connected
-    const auto devices = m_usbDeviceMonitor->enumerateDevices();
-    qDebug() << "Found" << devices.size() << "existing USB device(s)";
 
-    // Emit connection events for already-connected devices
-    for (const auto &device : devices) {
-      qDebug() << "Processing already-connected device:" << device.devicePath;
-      usbDeviceConnected(device);
-    }
+    // Update device availability states for all widgets based on plugged-in devices
+    updateBridgeClientDeviceStates();
   } else {
     qWarning() << "Failed to start USB device monitoring";
   }
@@ -1277,7 +1274,7 @@ void MainWindow::usbDeviceConnected(const UsbDeviceInfo &device)
            << "product:" << device.productId
            << "serial:" << device.serialNumber;
 
-  // Step 1: Read serial number from CDC device
+  // Read serial number from CDC device
   QString serialNumber = UsbDeviceHelper::readSerialNumber(device.devicePath);
   if (serialNumber.isEmpty()) {
     qWarning() << "Failed to read serial number for device:" << device.devicePath;
@@ -1287,55 +1284,62 @@ void MainWindow::usbDeviceConnected(const UsbDeviceInfo &device)
 
   qDebug() << "Read serial number:" << serialNumber;
 
-  // Step 2: Find matching config file(s) by serial number
+  // Store the mapping of device path -> serial number for later use on disconnect
+  m_devicePathToSerialNumber[device.devicePath] = serialNumber;
+
+  // Find matching config file(s) by serial number
   QStringList matchingConfigs = BridgeClientConfigManager::findConfigsBySerialNumber(serialNumber);
 
   QString configPath;
   if (matchingConfigs.isEmpty()) {
-    // No config found - create default config
+    // No config found - create default config and add widget dynamically
     qDebug() << "No config found for serial number" << serialNumber << ", creating default config";
     configPath = BridgeClientConfigManager::createDefaultConfig(serialNumber, device.devicePath);
-  } else if (matchingConfigs.size() == 1) {
-    // Single match - use it
-    configPath = matchingConfigs.first();
-    qDebug() << "Found matching config:" << configPath;
-  } else {
-    // Multiple matches - use first one (TODO: handle this case better later)
-    configPath = matchingConfigs.first();
-    qWarning() << "Multiple configs found for serial number" << serialNumber << ", using:" << configPath;
+
+    // Create new widget for this config
+    QString screenName = BridgeClientConfigManager::readScreenName(configPath);
+    if (screenName.isEmpty()) {
+      screenName = tr("Unknown Device");
+    }
+
+    auto *widget = new BridgeClientWidget(screenName, device.devicePath, configPath, this);
+
+    // Connect signals
+    connect(widget, &BridgeClientWidget::connectToggled, this, &MainWindow::bridgeClientConnectToggled);
+    connect(widget, &BridgeClientWidget::configureClicked, this, &MainWindow::bridgeClientConfigureClicked);
+
+    // Add to grid layout (3 columns per row)
+    QGridLayout *gridLayout = ui->widgetBridgeClients->findChild<QGridLayout*>("gridLayoutBridgeClients");
+    if (gridLayout) {
+      int count = m_bridgeClientWidgets.size();
+      int row = count / 3;
+      int col = count % 3;
+      gridLayout->addWidget(widget, row, col);
+    }
+
+    // Track widget by config path
+    m_bridgeClientWidgets[configPath] = widget;
+
+    // Set device as available
+    widget->setDeviceAvailable(device.devicePath, true);
+
+    QString message = tr("New bridge client device connected: %1 (%2)").arg(screenName, device.devicePath);
+    setStatus(message);
+    return;
   }
 
-  // Step 3: Read screen name from config
-  QString screenName = BridgeClientConfigManager::readScreenName(configPath);
-  if (screenName.isEmpty()) {
-    screenName = tr("Unknown Device");
+  // Found existing config(s) - enable the widget(s)
+  for (const QString &config : matchingConfigs) {
+    auto it = m_bridgeClientWidgets.find(config);
+    if (it != m_bridgeClientWidgets.end()) {
+      BridgeClientWidget *widget = it.value();
+      widget->setDeviceAvailable(device.devicePath, true);
+
+      QString screenName = widget->screenName();
+      qDebug() << "Enabled widget for config:" << config << "screenName:" << screenName;
+      setStatus(tr("Bridge client device connected: %1 (%2)").arg(screenName, device.devicePath));
+    }
   }
-
-  // Step 4: Create BridgeClientWidget
-  auto *widget = new BridgeClientWidget(screenName, device.devicePath, configPath, this);
-
-  // Connect signals
-  connect(
-      widget, &BridgeClientWidget::connectToggled, this, &MainWindow::bridgeClientConnectToggled
-  );
-  connect(
-      widget, &BridgeClientWidget::configureClicked, this, &MainWindow::bridgeClientConfigureClicked
-  );
-
-  // Step 5: Add to grid layout (3 columns per row)
-  QGridLayout *gridLayout = ui->widgetBridgeClients->findChild<QGridLayout*>("gridLayoutBridgeClients");
-  if (gridLayout) {
-    int count = m_bridgeClientWidgets.size();
-    int row = count / 3;
-    int col = count % 3;
-    gridLayout->addWidget(widget, row, col);
-  }
-
-  // Track widget
-  m_bridgeClientWidgets[device.devicePath] = widget;
-
-  QString message = tr("Pico 2 W device connected: %1 (%2)").arg(screenName, device.devicePath);
-  setStatus(message);
 }
 
 void MainWindow::usbDeviceDisconnected(const UsbDeviceInfo &device)
@@ -1345,28 +1349,60 @@ void MainWindow::usbDeviceDisconnected(const UsbDeviceInfo &device)
            << "vendor:" << device.vendorId
            << "product:" << device.productId;
 
-  // Find and remove the widget for this device
-  if (m_bridgeClientWidgets.contains(device.devicePath)) {
-    BridgeClientWidget *widget = m_bridgeClientWidgets[device.devicePath];
-    QString screenName = widget->screenName();
+  // Get serial number from our stored mapping (can't read from sysfs after disconnect)
+  QString serialNumber;
+  if (m_devicePathToSerialNumber.contains(device.devicePath)) {
+    serialNumber = m_devicePathToSerialNumber[device.devicePath];
+    qDebug() << "Retrieved stored serial number:" << serialNumber << "for device:" << device.devicePath;
+  } else {
+    qWarning() << "No stored serial number found for disconnected device:" << device.devicePath;
+  }
 
-    // Remove from grid layout
-    QGridLayout *gridLayout = ui->widgetBridgeClients->findChild<QGridLayout*>("gridLayoutBridgeClients");
-    if (gridLayout) {
-      gridLayout->removeWidget(widget);
+  // Find widgets with this device and disable them
+  bool found = false;
+  for (auto it = m_bridgeClientWidgets.begin(); it != m_bridgeClientWidgets.end(); ++it) {
+    BridgeClientWidget *widget = it.value();
+    QString configPath = it.key();
+
+    // Check if this widget matches the disconnected device
+    bool matches = false;
+
+    // Method 1: Check by device path
+    if (!device.devicePath.isEmpty() && widget->devicePath() == device.devicePath) {
+      matches = true;
+      qDebug() << "Widget matched by device path:" << device.devicePath;
     }
 
-    // Delete widget
-    widget->deleteLater();
+    // Method 2: Check by serial number from config
+    if (!serialNumber.isEmpty()) {
+      QString configSerialNumber = BridgeClientConfigManager::readSerialNumber(configPath);
+      if (configSerialNumber == serialNumber) {
+        matches = true;
+        qDebug() << "Widget matched by serial number:" << serialNumber;
+      }
+    }
 
-    // Remove from tracking map
-    m_bridgeClientWidgets.remove(device.devicePath);
+    if (matches && widget->isDeviceAvailable()) {
+      // Disable the widget (gray it out)
+      widget->setDeviceAvailable(QString(), false);
 
-    // TODO: Kill corresponding bridge client process if running
+      QString screenName = widget->screenName();
+      qDebug() << "Disabled widget for device:" << device.devicePath << "screenName:" << screenName;
 
-    QString message = tr("Pico 2 W device disconnected: %1 (%2)").arg(screenName, device.devicePath);
-    setStatus(message);
+      // TODO: Kill corresponding bridge client process if running
+
+      QString message = tr("Bridge client device disconnected: %1 (%2)").arg(screenName, device.devicePath);
+      setStatus(message);
+      found = true;
+    }
   }
+
+  if (!found) {
+    qWarning() << "No widget found for disconnected device:" << device.devicePath;
+  }
+
+  // Remove the stored serial number mapping
+  m_devicePathToSerialNumber.remove(device.devicePath);
 }
 
 void MainWindow::bridgeClientConnectToggled(const QString &devicePath, bool connect)
@@ -1417,5 +1453,91 @@ void MainWindow::bridgeClientConfigureClicked(const QString &devicePath, const Q
 
   if (dialog.exec() == QDialog::Accepted) {
     setStatus(tr("Configuration saved for: %1").arg(dialog.screenName()));
+  }
+}
+
+void MainWindow::loadBridgeClientConfigs()
+{
+  qDebug() << "Loading bridge client configurations...";
+
+  // Get all config files
+  QStringList configFiles = BridgeClientConfigManager::getAllConfigFiles();
+  qDebug() << "Found" << configFiles.size() << "bridge client config file(s)";
+
+  // Get grid layout
+  QGridLayout *gridLayout = ui->widgetBridgeClients->findChild<QGridLayout*>("gridLayoutBridgeClients");
+  if (!gridLayout) {
+    qWarning() << "Bridge clients grid layout not found";
+    return;
+  }
+
+  // Create a widget for each config file
+  for (const QString &configPath : configFiles) {
+    QString screenName = BridgeClientConfigManager::readScreenName(configPath);
+    if (screenName.isEmpty()) {
+      screenName = tr("Unknown Device");
+    }
+
+    // Create widget (device path is empty initially, will be set when device is detected)
+    auto *widget = new BridgeClientWidget(screenName, QString(), configPath, this);
+
+    // Connect signals
+    connect(widget, &BridgeClientWidget::connectToggled, this, &MainWindow::bridgeClientConnectToggled);
+    connect(widget, &BridgeClientWidget::configureClicked, this, &MainWindow::bridgeClientConfigureClicked);
+
+    // Add to grid layout (3 columns per row)
+    int count = m_bridgeClientWidgets.size();
+    int row = count / 3;
+    int col = count % 3;
+    gridLayout->addWidget(widget, row, col);
+
+    // Track widget by config path
+    m_bridgeClientWidgets[configPath] = widget;
+
+    qDebug() << "Created widget for config:" << configPath << "screenName:" << screenName;
+  }
+}
+
+void MainWindow::updateBridgeClientDeviceStates()
+{
+  qDebug() << "Updating bridge client device states...";
+
+  // Get all currently connected USB CDC devices with their serial numbers
+  QMap<QString, QString> connectedDevices = UsbDeviceHelper::getConnectedDevices();
+  qDebug() << "Found" << connectedDevices.size() << "connected USB CDC device(s)";
+
+  // For each widget, check if its device is connected
+  for (auto it = m_bridgeClientWidgets.begin(); it != m_bridgeClientWidgets.end(); ++it) {
+    QString configPath = it.key();
+    BridgeClientWidget *widget = it.value();
+
+    // Read serial number from config
+    QString configSerialNumber = BridgeClientConfigManager::readSerialNumber(configPath);
+
+    if (configSerialNumber.isEmpty()) {
+      qWarning() << "Config has no serial number:" << configPath;
+      widget->setDeviceAvailable(QString(), false);
+      continue;
+    }
+
+    // Check if this serial number is in the connected devices
+    bool found = false;
+    QString devicePath;
+    for (auto devIt = connectedDevices.begin(); devIt != connectedDevices.end(); ++devIt) {
+      if (devIt.value() == configSerialNumber) {
+        found = true;
+        devicePath = devIt.key();
+        break;
+      }
+    }
+
+    // Update widget availability
+    widget->setDeviceAvailable(devicePath, found);
+
+    if (found) {
+      qDebug() << "Device available for config:" << configPath << "device:" << devicePath;
+    } else {
+      qDebug() << "Device NOT available for config:" << configPath;
+    }
   }
 }
