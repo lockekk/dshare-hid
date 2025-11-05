@@ -157,6 +157,7 @@ public:
   void addClient(const QString &clientName);
   QString getClientAddress() const;
   void setClientAddress(const QString &address);
+  bool renameScreen(const QString &oldName, const QString &newName);
 
 private:
   void recall();

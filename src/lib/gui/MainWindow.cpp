@@ -1585,13 +1585,15 @@ void MainWindow::bridgeClientConfigureClicked(const QString &devicePath, const Q
   BridgeClientConfigDialog dialog(configPath, this);
 
   // Connect signal to handle config file rename
-  connect(&dialog, &BridgeClientConfigDialog::configChanged, this, [this](const QString &oldConfigPath, const QString &newConfigPath) {
+  connect(&dialog, &BridgeClientConfigDialog::configChanged, this, [this, configPath](const QString &oldConfigPath, const QString &newConfigPath) {
     // Find the widget by old config path
     auto it = m_bridgeClientWidgets.find(oldConfigPath);
     if (it != m_bridgeClientWidgets.end()) {
       BridgeClientWidget *widget = it.value();
 
-      // Read the new screen name from config
+      // Get the old screen name from the widget before updating (file has been renamed already)
+      QString oldScreenName = widget->screenName();
+      // Read the new screen name from the renamed config file
       QString newScreenName = BridgeClientConfigManager::readScreenName(newConfigPath);
 
       // Update the widget with new screen name and config path
@@ -1601,9 +1603,25 @@ void MainWindow::bridgeClientConfigureClicked(const QString &devicePath, const Q
       m_bridgeClientWidgets.remove(oldConfigPath);
       m_bridgeClientWidgets[newConfigPath] = widget;
 
+      // Update the server config to rename the screen
+      if (oldScreenName != newScreenName) {
+        qInfo() << "Renaming bridge client in server config from" << oldScreenName << "to" << newScreenName;
+        if (m_serverConfig.renameScreen(oldScreenName, newScreenName)) {
+          qInfo() << "Successfully renamed bridge client in server config";
+          // Restart the core process if it's running so the changes take effect
+          if (m_coreProcess.isStarted()) {
+            qInfo() << "Restarting core process to apply screen name change";
+            m_coreProcess.restart();
+          }
+        } else {
+          qWarning() << "Failed to rename bridge client in server config";
+        }
+      }
+
       qDebug() << "Bridge client config updated:"
                << "oldConfigPath:" << oldConfigPath
                << "newConfigPath:" << newConfigPath
+               << "oldScreenName:" << oldScreenName
                << "newScreenName:" << newScreenName;
     } else {
       qWarning() << "Widget not found for old config path:" << oldConfigPath;

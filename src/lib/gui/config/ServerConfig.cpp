@@ -476,6 +476,31 @@ bool ServerConfig::findScreenName(const QString &name, int &index)
   return found;
 }
 
+bool ServerConfig::renameScreen(const QString &oldName, const QString &newName)
+{
+  int index = -1;
+  if (!findScreenName(oldName, index)) {
+    qWarning() << "Cannot rename screen: screen not found:" << oldName;
+    return false;
+  }
+
+  // Check if new name already exists (and it's not the same screen)
+  int existingIndex = -1;
+  if (findScreenName(newName, existingIndex) && existingIndex != index) {
+    qWarning() << "Cannot rename screen: new name already exists:" << newName;
+    return false;
+  }
+
+  // Rename the screen
+  m_Screens[index].setName(newName);
+  qInfo() << "Renamed screen from" << oldName << "to" << newName << "at index" << index;
+
+  // Commit changes to persist them
+  commit();
+
+  return true;
+}
+
 bool ServerConfig::fixNoServer(const QString &name, int &index)
 {
   bool fixed = false;
