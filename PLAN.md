@@ -4,6 +4,11 @@
 - Multi-instance support validated in practice: two bridge clients can now connect concurrently to a single server on the same PC.
 - Bridge client temporarily reports a fixed 1920×1080 display size so the server accepts DINF responses during debugging.
 - Hardware bridge target switched from Pico 2 W to ESP32 series modules to fix BLE radio reliability issues observed during field testing.
+- Bridge GUI/firmware usability improvements (Nov 2025):
+  - Config dialog now persists scroll speed and “invert direction” flags, passing `--yscroll` / `--invertScrollDirection` to `deskflow-core`.
+  - BridgePlatformScreen applies the invert flag so BLE scrolling follows the user setting.
+  - Bridge widgets show the detected firmware host OS (iOS/Android/Unknown) and display orientation with per-device icons.
+  - GUI prevents duplicate GUI/server instances more clearly and gracefully shuts down bridge clients when quitting.
 
 ## Problem
 Need to extend PC keyboard/mouse control to mobile devices (iPad/iPhone/Android) that don't support standard Deskflow client installation while relying on a BLE radio that remains stable in typical office environments; the Pico 2 W modules we used initially have unacceptable packet loss, so the plan now standardizes on ESP32 hardware.
@@ -68,6 +73,7 @@ Compatibility requirements:
 - Bridge client configs stored in `~/.config/deskflow/bridge-clients/<name>.conf`
 - GUI loads all existing configs on startup
 - Config contains: serial number, screen dimensions, orientation, screen name, log level
+- Nov 2025: Scroll speed + invert-direction settings added; defaults follow upstream client flags and are passed to bridge launches
 - Serial number used to match USB devices to config files
 - Vendor filter: only USB CDC devices with vendor ID 303a (Espressif) generate configs
 - Config file names mirror the bridge screen name (default `Bridge-<tty>`), preventing duplicate files when the client launches
@@ -83,6 +89,7 @@ Compatibility requirements:
 - Configure button: Disabled when bridge client is connected, enabled when disconnected
   - Prevents configuration changes while the bridge client is actively running
   - Re-enabled automatically when user disconnects the bridge client
+- Host OS + orientation indicators: per-widget icons sourced from firmware handshake + config keep the user informed which device (iOS/Android) is active
 
 **Process Management (✓ Complete)**:
 - Process tracking: `QMap<QString, QProcess*>` keyed by device path
@@ -153,6 +160,7 @@ When disconnecting a bridge client, the GUI:
 3. Waits up to 3 seconds for graceful exit
 4. If still running, sends SIGKILL and waits 1 second for forced termination
 5. Cleans up QProcess and QTimer objects
+6. When the GUI quits, it now stops all bridge client processes first, ensuring CDC handles are released before the app exits.
 
 This ensures the USB CDC device is properly released and available for reconnection without requiring a physical replug.
 
