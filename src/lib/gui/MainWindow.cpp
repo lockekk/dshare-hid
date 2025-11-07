@@ -68,6 +68,20 @@ using namespace deskflow::gui;
 using CoreConnectionState = CoreProcess::ConnectionState;
 using CoreProcessState = CoreProcess::ProcessState;
 
+namespace {
+QString logLevelNameFromIndex(int index)
+{
+  static const QStringList kLogLevels = {
+      QStringLiteral("FATAL"), QStringLiteral("ERROR"),   QStringLiteral("WARNING"), QStringLiteral("NOTE"),
+      QStringLiteral("INFO"),  QStringLiteral("DEBUG"),   QStringLiteral("DEBUG1"), QStringLiteral("DEBUG2")};
+
+  if (index < 0 || index >= kLogLevels.size()) {
+    return QStringLiteral("INFO");
+  }
+  return kLogLevels.at(index);
+}
+} // namespace
+
 MainWindow::MainWindow()
     : ui{std::make_unique<Ui::MainWindow>()},
       m_serverConfig(*this),
@@ -1488,7 +1502,18 @@ void MainWindow::bridgeClientConnectToggled(const QString &devicePath, bool shou
     int screenHeight = config.value(Settings::Bridge::ScreenHeight, 1080).toInt();
     QString screenOrientation = config.value(Settings::Bridge::ScreenOrientation, "landscape").toString();
     QString screenName = config.value(Settings::Core::ScreenName).toString();
-    QString logLevel = config.value(Settings::Log::Level, "INFO").toString();
+    const QVariant logLevelVariant = config.value(Settings::Log::Level, "INFO");
+    QString logLevel = logLevelVariant.toString().trimmed();
+    bool logLevelIsNumeric = false;
+    const int logLevelIndex = logLevelVariant.toInt(&logLevelIsNumeric);
+    if (logLevelIsNumeric) {
+      logLevel = logLevelNameFromIndex(logLevelIndex);
+    } else {
+      logLevel = logLevel.toUpper();
+      if (logLevel.isEmpty()) {
+        logLevel = QStringLiteral("INFO");
+      }
+    }
 
     // Get server hostname and port
     QString serverHost = Settings::value(Settings::Client::RemoteHost).toString();
