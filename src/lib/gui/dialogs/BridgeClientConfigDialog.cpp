@@ -9,8 +9,8 @@
 #include <QHBoxLayout>
 
 namespace {
-constexpr auto kLandscapeIconPath = ":/bridge-client/bridge_client_icon_landspace.png";
-constexpr auto kPortraitIconPath = ":/bridge-client/bridge_client_icon_portrait.png";
+constexpr auto kLandscapeIconPath = ":/bridge-client/client/orientation_landspace.png";
+constexpr auto kPortraitIconPath = ":/bridge-client/client/orientation_portrait.png";
 } // namespace
 #include <QSettings>
 #include <QFileInfo>
