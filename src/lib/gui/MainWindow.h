@@ -182,6 +182,7 @@ private:
   void bridgeClientProcessFinished(const QString &devicePath, int exitCode, QProcess::ExitStatus exitStatus);
   void bridgeClientConnectionTimeout(const QString &devicePath);
   void stopBridgeClient(const QString &devicePath);
+  void stopAllBridgeClients();
 
   inline static const auto m_guiSocketName = QStringLiteral("deskflow-gui");
   inline static const auto m_nameRegEx = QRegularExpression(QStringLiteral("^[\\w\\-_\\.]{0,255}$"));

@@ -48,6 +48,8 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
+#include <QEventLoop>
+#include <QElapsedTimer>
 #include <QNetworkAccessManager>
 #include <QNetworkInterface>
 #include <QPushButton>
@@ -219,6 +221,7 @@ MainWindow::MainWindow()
 MainWindow::~MainWindow()
 {
   m_guiDupeChecker->close();
+  stopAllBridgeClients();
   m_coreProcess.cleanup();
 }
 
@@ -974,6 +977,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
   if (m_saveOnExit) {
     Settings::setValue(Settings::Gui::WindowGeometry, geometry());
   }
+  stopAllBridgeClients();
   qDebug() << "quitting application";
 
   // any connected dock view acitons will be triggered
@@ -2019,4 +2023,34 @@ void MainWindow::stopBridgeClient(const QString &devicePath)
   }
 
   // The process cleanup will be handled in bridgeClientProcessFinished()
+}
+
+void MainWindow::stopAllBridgeClients()
+{
+  if (m_bridgeClientProcesses.isEmpty()) {
+    return;
+  }
+
+  const auto devicePaths = m_bridgeClientProcesses.keys();
+  for (const QString &devicePath : devicePaths) {
+    stopBridgeClient(devicePath);
+  }
+
+  QElapsedTimer timer;
+  timer.start();
+  while (!m_bridgeClientProcesses.isEmpty() && timer.elapsed() < 5000) {
+    QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
+  }
+
+  if (!m_bridgeClientProcesses.isEmpty()) {
+    qWarning() << "Forcing remaining bridge clients to exit";
+    for (auto it = m_bridgeClientProcesses.begin(); it != m_bridgeClientProcesses.end(); ++it) {
+      if (QProcess *process = it.value()) {
+        process->kill();
+        process->waitForFinished(1000);
+        process->deleteLater();
+      }
+    }
+    m_bridgeClientProcesses.clear();
+  }
 }
