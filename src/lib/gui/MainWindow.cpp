@@ -1581,6 +1581,11 @@ void MainWindow::bridgeClientConnectToggled(const QString &devicePath, bool shou
     // Get TLS/secure setting from server configuration
     bool tlsEnabled = Settings::value(Settings::Security::TlsEnabled).toBool();
 
+    const QVariant defaultScrollSpeed = Settings::defaultValue(Settings::Client::ScrollSpeed);
+    int scrollSpeed = config.value(Settings::Client::ScrollSpeed, defaultScrollSpeed).toInt();
+    const QVariant defaultInvertScroll = Settings::defaultValue(Settings::Client::InvertScrollDirection);
+    bool invertScroll = config.value(Settings::Client::InvertScrollDirection, defaultInvertScroll).toBool();
+
     // Build the command
     QStringList command;
     command << "deskflow-core";
@@ -1592,6 +1597,8 @@ void MainWindow::bridgeClientConnectToggled(const QString &devicePath, bool shou
     command << "--log-level" << logLevel;
     command << "--screen-width" << QString::number(screenWidth);
     command << "--screen-height" << QString::number(screenHeight);
+    command << "--yscroll" << QString::number(scrollSpeed);
+    command << "--invertScrollDirection" << (invertScroll ? "true" : "false");
 
     // Print the command
     QString commandString = command.join(" ");

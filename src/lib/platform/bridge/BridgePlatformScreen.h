@@ -38,7 +38,8 @@ public:
       std::shared_ptr<CdcTransport> transport,
       int32_t screenWidth,
       int32_t screenHeight,
-      uint8_t bleIntervalMs
+      uint8_t bleIntervalMs,
+      bool invertScroll
   );
   ~BridgePlatformScreen() override;
 

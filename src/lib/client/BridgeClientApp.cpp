@@ -7,6 +7,7 @@
 
 #include "BridgeSocketFactory.h"
 #include "base/Log.h"
+#include "common/Settings.h"
 #include "deskflow/Screen.h"
 #include "net/SocketMultiplexer.h"
 #include "platform/bridge/BridgePlatformScreen.h"
@@ -33,12 +34,14 @@ deskflow::Screen *BridgeClientApp::createScreen()
   LOG_INFO("BridgeClientApp: creating BridgePlatformScreen");
 
   // Create BridgePlatformScreen instead of platform-specific screen
+  const bool invertScrolling = Settings::value(Settings::Client::InvertScrollDirection).toBool();
   auto *platformScreen = new deskflow::bridge::BridgePlatformScreen(
       getEvents(),
       m_transport,
       m_screenWidth,
       m_screenHeight,
-      m_config.bleIntervalMs
+      m_config.bleIntervalMs,
+      invertScrolling
   );
 
   // Wrap in deskflow::Screen

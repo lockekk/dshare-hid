@@ -54,9 +54,10 @@ BridgePlatformScreen::BridgePlatformScreen(
     std::shared_ptr<CdcTransport> transport,
     int32_t screenWidth,
     int32_t screenHeight,
-    uint8_t bleIntervalMs
+    uint8_t bleIntervalMs,
+    bool invertScroll
 ) :
-    PlatformScreen(events, false), // invertScrollDirection = false by default
+    PlatformScreen(events, invertScroll),
     m_transport(std::move(transport)),
     m_screenWidth(screenWidth),
     m_screenHeight(screenHeight),
@@ -249,6 +250,7 @@ void BridgePlatformScreen::fakeMouseWheel(int32_t, int32_t yDelta) const
     return;
   }
 
+  yDelta = mapClientScrollDirection(yDelta);
   yDelta = std::clamp(yDelta, -128, 127);
   if (!sendMouseScrollEvent(static_cast<int8_t>(yDelta))) {
     LOG_ERR("BridgeScreen: failed to send scroll event");

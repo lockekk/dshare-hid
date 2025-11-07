@@ -7,6 +7,7 @@
 #include <QFormLayout>
 #include <QDialogButtonBox>
 #include <QHBoxLayout>
+#include <QLabel>
 #include <QSettings>
 
 namespace {
@@ -63,6 +64,21 @@ BridgeClientConfigDialog::BridgeClientConfigDialog(const QString &configPath, QW
   orientationLayout->addWidget(m_radioPortrait);
   formLayout->addRow(tr("Screen Orientation:"), orientationLayout);
 
+  auto *scrollLayout = new QHBoxLayout();
+  scrollLayout->setContentsMargins(0, 0, 0, 0);
+  scrollLayout->setSpacing(8);
+  m_checkInvertScroll = new QCheckBox(tr("Invert Direction"), this);
+  scrollLayout->addWidget(m_checkInvertScroll);
+  scrollLayout->addWidget(new QLabel(tr("Speed"), this));
+
+  m_spinScrollSpeed = new QSpinBox(this);
+  m_spinScrollSpeed->setMinimum(1);
+  m_spinScrollSpeed->setMaximum(960);
+  m_spinScrollSpeed->setSingleStep(1);
+  scrollLayout->addWidget(m_spinScrollSpeed);
+  scrollLayout->addStretch();
+  formLayout->addRow(tr("Scroll:"), scrollLayout);
+
   mainLayout->addLayout(formLayout);
 
   // Dialog buttons
@@ -97,6 +113,20 @@ void BridgeClientConfigDialog::loadConfig() {
   m_spinWidth->setValue(width);
   m_spinHeight->setValue(height);
 
+  int scrollSpeed = config
+                        .value(
+                            Settings::Client::ScrollSpeed,
+                            Settings::defaultValue(Settings::Client::ScrollSpeed))
+                        .toInt();
+  m_spinScrollSpeed->setValue(scrollSpeed);
+
+  bool invertScroll = config
+                           .value(
+                               Settings::Client::InvertScrollDirection,
+                               Settings::defaultValue(Settings::Client::InvertScrollDirection))
+                           .toBool();
+  m_checkInvertScroll->setChecked(invertScroll);
+
   // Load screen orientation
   QString orientation = config
                             .value(
@@ -117,6 +147,8 @@ void BridgeClientConfigDialog::saveConfig() {
   config.setValue(Settings::Bridge::ScreenWidth, m_spinWidth->value());
   config.setValue(Settings::Bridge::ScreenHeight, m_spinHeight->value());
   config.setValue(Settings::Bridge::ScreenOrientation, screenOrientation());
+  config.setValue(Settings::Client::ScrollSpeed, m_spinScrollSpeed->value());
+  config.setValue(Settings::Client::InvertScrollDirection, m_checkInvertScroll->isChecked());
 
   config.sync();
 }
@@ -198,4 +230,14 @@ int BridgeClientConfigDialog::screenHeight() const {
 
 QString BridgeClientConfigDialog::screenOrientation() const {
   return m_radioPortrait->isChecked() ? QStringLiteral("portrait") : QStringLiteral("landscape");
+}
+
+int BridgeClientConfigDialog::scrollSpeed() const
+{
+  return m_spinScrollSpeed->value();
+}
+
+bool BridgeClientConfigDialog::invertScroll() const
+{
+  return m_checkInvertScroll->isChecked();
 }
