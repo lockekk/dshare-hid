@@ -67,13 +67,25 @@ void BridgeClientConfigDialog::loadConfig() {
   m_originalScreenName = screenName;
 
   // Load screen dimensions
-  int width = config.value(Settings::Bridge::ScreenWidth, 1920).toInt();
-  int height = config.value(Settings::Bridge::ScreenHeight, 1080).toInt();
+  int width = config
+                 .value(
+                     Settings::Bridge::ScreenWidth,
+                     Settings::defaultValue(Settings::Bridge::ScreenWidth))
+                 .toInt();
+  int height = config
+                  .value(
+                      Settings::Bridge::ScreenHeight,
+                      Settings::defaultValue(Settings::Bridge::ScreenHeight))
+                  .toInt();
   m_spinWidth->setValue(width);
   m_spinHeight->setValue(height);
 
   // Load screen orientation
-  QString orientation = config.value(Settings::Bridge::ScreenOrientation, "landscape").toString();
+  QString orientation = config
+                            .value(
+                                Settings::Bridge::ScreenOrientation,
+                                Settings::defaultValue(Settings::Bridge::ScreenOrientation))
+                            .toString();
   int index = m_comboOrientation->findData(orientation);
   if (index >= 0) {
     m_comboOrientation->setCurrentIndex(index);

@@ -22,18 +22,20 @@ namespace deskflow::bridge {
  * @brief Bridge platform screen implementation
  *
  * This screen implementation converts Deskflow input events (mouse/keyboard)
- * into HID reports and sends them over USB CDC to the Pico 2 W bridge device.
+ * into HID reports and sends them over USB CDC to the bridge firmware device.
  *
  * Key differences from standard platform screens:
  * - No local event injection on the PC
- * - Screen dimensions come from Pico configuration (mobile device screen)
+ * - Screen dimensions are provided by the GUI/CLI (mobile device screen)
  * - Clipboard operations are discarded
  * - Input events are converted to HID reports and sent via CDC
  */
 class BridgePlatformScreen : public PlatformScreen
 {
 public:
-  BridgePlatformScreen(IEventQueue *events, std::shared_ptr<CdcTransport> transport, const PicoConfig &config);
+  BridgePlatformScreen(
+      IEventQueue *events, std::shared_ptr<CdcTransport> transport, int32_t screenWidth, int32_t screenHeight
+  );
   ~BridgePlatformScreen() override;
 
   // IScreen overrides
@@ -123,7 +125,8 @@ private:
   void resetMouseAccumulator() const;
 
   std::shared_ptr<CdcTransport> m_transport;
-  PicoConfig m_config;
+  int32_t m_screenWidth = 0;
+  int32_t m_screenHeight = 0;
   IEventQueue *m_events = nullptr;
 
   // Screen state

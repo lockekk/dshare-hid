@@ -40,11 +40,14 @@ constexpr uint8_t kUsbControlHello = 0x01;
 constexpr uint8_t kUsbControlAck = 0x81;
 
 constexpr size_t kAckProtocolVersionIndex = 1;
+constexpr size_t kAckReservedIndex = 2;
 constexpr size_t kAckHidConnectedIndex = 3;
-constexpr size_t kAckScreenWidthIndex = 4;
-constexpr size_t kAckScreenHeightIndex = 8;
-constexpr size_t kAckScreenRotationIndex = 12;
-constexpr size_t kAckMinimumPayloadSize = kAckScreenRotationIndex + 1;
+constexpr size_t kAckHostOsIndex = 4;
+constexpr size_t kAckBleIntervalIndex = 5;
+constexpr size_t kAckProductionFlagIndex = 6;
+constexpr size_t kAckFirmwareVersionIndex = 7;
+constexpr size_t kAckHardwareVersionIndex = 8;
+constexpr size_t kAckMinimumPayloadSize = kAckHardwareVersionIndex + 1;
 
 constexpr int kHandshakeTimeoutMs = 2000;
 constexpr int kReadPollIntervalMs = 10;
@@ -71,6 +74,18 @@ std::string hexDump(const uint8_t *data, size_t length, size_t maxBytes = 64)
 
   return oss.str();
 }
+
+FirmwareHostOs decodeHostOs(uint8_t value)
+{
+  switch (value) {
+  case 1:
+    return FirmwareHostOs::Ios;
+  case 2:
+    return FirmwareHostOs::Android;
+  default:
+    return FirmwareHostOs::Unknown;
+  }
+}
 } // namespace
 
 CdcTransport::CdcTransport(const QString &devicePath) : m_devicePath(devicePath)
@@ -89,7 +104,7 @@ void CdcTransport::resetState()
   m_lastNonce = 0;
   m_rxBuffer.clear();
   m_hasDeviceConfig = false;
-  m_deviceConfig = PicoConfig{};
+  m_deviceConfig = FirmwareConfig{};
 }
 
 bool CdcTransport::ensureOpen()
@@ -267,39 +282,37 @@ bool CdcTransport::performHandshake()
       m_handshakeComplete = true;
 
       if (framePayload.size() >= kAckMinimumPayloadSize) {
-        const uint32_t screenWidth =
-            static_cast<uint32_t>(framePayload[kAckScreenWidthIndex]) |
-            (static_cast<uint32_t>(framePayload[kAckScreenWidthIndex + 1]) << 8) |
-            (static_cast<uint32_t>(framePayload[kAckScreenWidthIndex + 2]) << 16) |
-            (static_cast<uint32_t>(framePayload[kAckScreenWidthIndex + 3]) << 24);
+        const uint8_t protocolVersion = framePayload[kAckProtocolVersionIndex];
+        const bool hidConnected = framePayload[kAckHidConnectedIndex] != 0;
+        const FirmwareHostOs hostOs = decodeHostOs(framePayload[kAckHostOsIndex]);
+        const uint8_t bleInterval = framePayload[kAckBleIntervalIndex];
+        const bool productionActivated = framePayload[kAckProductionFlagIndex] != 0;
+        const uint8_t firmwareBcd = framePayload[kAckFirmwareVersionIndex];
+        const uint8_t hardwareBcd = framePayload[kAckHardwareVersionIndex];
 
-        const uint32_t screenHeight =
-            static_cast<uint32_t>(framePayload[kAckScreenHeightIndex]) |
-            (static_cast<uint32_t>(framePayload[kAckScreenHeightIndex + 1]) << 8) |
-            (static_cast<uint32_t>(framePayload[kAckScreenHeightIndex + 2]) << 16) |
-            (static_cast<uint32_t>(framePayload[kAckScreenHeightIndex + 3]) << 24);
-
-        const int32_t screenRotation = static_cast<int32_t>(framePayload[kAckScreenRotationIndex]);
-
-        m_deviceConfig.screenWidth = static_cast<int32_t>(screenWidth);
-        m_deviceConfig.screenHeight = static_cast<int32_t>(screenHeight);
-        m_deviceConfig.screenRotation = screenRotation;
+        m_deviceConfig.protocolVersion = protocolVersion;
+        m_deviceConfig.hidConnected = hidConnected;
+        m_deviceConfig.hostOs = hostOs;
+        m_deviceConfig.bleIntervalMs = bleInterval;
+        m_deviceConfig.productionActivated = productionActivated;
+        m_deviceConfig.firmwareVersionBcd = firmwareBcd;
+        m_deviceConfig.hardwareVersionBcd = hardwareBcd;
         m_hasDeviceConfig = true;
 
-        const uint8_t protocolVersion = framePayload[kAckProtocolVersionIndex];
-        const uint8_t hidConnected = framePayload[kAckHidConnectedIndex];
-
         LOG_INFO(
-            "CDC: handshake completed version=%u hid=%u screen=%ux%u rot=%d",
+            "CDC: handshake completed version=%u hid=%u host_os=%s(%u) ble_interval=%ums production=%u fw_bcd=%u hw_bcd=%u",
             protocolVersion,
-            hidConnected,
-            screenWidth,
-            screenHeight,
-            screenRotation
+            hidConnected ? 1 : 0,
+            toString(hostOs),
+            static_cast<unsigned>(framePayload[kAckHostOsIndex]),
+            bleInterval,
+            productionActivated ? 1 : 0,
+            static_cast<unsigned>(firmwareBcd),
+            static_cast<unsigned>(hardwareBcd)
         );
       } else {
         LOG_WARN(
-            "CDC: handshake ACK missing display info (payload=%zu)",
+            "CDC: handshake ACK missing metadata (payload=%zu)",
             framePayload.size()
         );
         LOG_INFO("CDC: handshake completed");

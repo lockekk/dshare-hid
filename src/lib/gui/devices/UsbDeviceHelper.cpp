@@ -188,9 +188,13 @@ bool UsbDeviceHelper::verifyBridgeHandshake(const QString &devicePath, int timeo
   if (transport.hasDeviceConfig()) {
     const auto &cfg = transport.deviceConfig();
     qInfo() << "Bridge handshake successful with" << devicePath
-            << "arch:" << QString::fromStdString(cfg.arch)
-            << "resolution:" << cfg.screenWidth << "x" << cfg.screenHeight
-            << "rotation:" << cfg.screenRotation;
+            << "proto:" << cfg.protocolVersion
+            << "hid:" << (cfg.hidConnected ? 1 : 0)
+            << "host_os:" << cfg.hostOsString()
+            << "ble_interval_ms:" << cfg.bleIntervalMs
+            << "activated:" << (cfg.productionActivated ? 1 : 0)
+            << "fw_bcd:" << cfg.firmwareVersionBcd
+            << "hw_bcd:" << cfg.hardwareVersionBcd;
   } else {
     qInfo() << "Bridge handshake successful with" << devicePath << "(no config payload)";
   }

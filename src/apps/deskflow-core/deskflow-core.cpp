@@ -165,21 +165,21 @@ int main(int argc, char **argv)
       }
 
       if (!transport->hasDeviceConfig()) {
-        LOG_ERR("CDC handshake did not provide display information");
+        LOG_ERR("CDC handshake did not provide metadata");
         return s_exitFailed;
       }
 
-      deskflow::bridge::PicoConfig config = transport->deviceConfig();
-      if (config.arch.empty()) {
-        config.arch = "bridge-default";
-      }
+      deskflow::bridge::FirmwareConfig config = transport->deviceConfig();
 
       LOG_INFO(
-          "Pico handshake: arch=%s screen=%dx%d rotation=%d (info available but not used for screen dimensions)",
-          config.arch.c_str(),
-          config.screenWidth,
-          config.screenHeight,
-          config.screenRotation
+          "Firmware handshake: proto=%u hid_connected=%d host_os=%s ble_interval=%ums activated=%d fw_bcd=%u hw_bcd=%u",
+          config.protocolVersion,
+          config.hidConnected ? 1 : 0,
+          config.hostOsString(),
+          config.bleIntervalMs,
+          config.productionActivated ? 1 : 0,
+          static_cast<unsigned>(config.firmwareVersionBcd),
+          static_cast<unsigned>(config.hardwareVersionBcd)
       );
 
       // Get screen info from CLI arguments (provided by GUI)
@@ -203,13 +203,8 @@ int main(int argc, char **argv)
           screenOrientation.toUtf8().constData()
       );
 
-      // Override PicoConfig with CLI-provided screen info
-      config.screenWidth = screenWidth;
-      config.screenHeight = screenHeight;
-      // Note: screenRotation from Pico handshake is ignored, orientation comes from CLI
-
       // Create and run bridge client
-      BridgeClientApp app(&events, processName, transport, config);
+      BridgeClientApp app(&events, processName, transport, config, screenWidth, screenHeight);
       return app.run();
     } else {
       // Standard client

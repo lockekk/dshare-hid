@@ -82,7 +82,7 @@ struct CoreArgs
 
   // Bridge Client Options
   inline static const auto linkOption =
-      QCommandLineOption("link", "Bridge Client Mode: USB CDC device path for Pico 2 W communication", "device-path");
+      QCommandLineOption("link", "Bridge Client Mode: USB CDC device path for the bridge firmware", "device-path");
 
   inline static const auto screenWidthOption =
       QCommandLineOption("screen-width", "Bridge Client Mode: Screen width in pixels", "width");

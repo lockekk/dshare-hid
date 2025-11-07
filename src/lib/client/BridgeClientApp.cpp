@@ -13,15 +13,18 @@
 
 BridgeClientApp::BridgeClientApp(
     IEventQueue *events, const QString &processName, std::shared_ptr<deskflow::bridge::CdcTransport> transport,
-    const deskflow::bridge::PicoConfig &config
+    const deskflow::bridge::FirmwareConfig &config, int32_t screenWidth, int32_t screenHeight
 ) :
     ClientApp(events, processName),
     m_transport(transport),
-    m_config(config)
+    m_config(config),
+    m_screenWidth(screenWidth),
+    m_screenHeight(screenHeight)
 {
   LOG_INFO(
-      "BridgeClientApp: initialized for arch=%s screen=%dx%d", m_config.arch.c_str(), m_config.screenWidth,
-      m_config.screenHeight
+      "BridgeClientApp: initialized for screen=%dx%d",
+      m_screenWidth,
+      m_screenHeight
   );
 }
 
@@ -30,7 +33,8 @@ deskflow::Screen *BridgeClientApp::createScreen()
   LOG_INFO("BridgeClientApp: creating BridgePlatformScreen");
 
   // Create BridgePlatformScreen instead of platform-specific screen
-  auto *platformScreen = new deskflow::bridge::BridgePlatformScreen(getEvents(), m_transport, m_config);
+  auto *platformScreen =
+      new deskflow::bridge::BridgePlatformScreen(getEvents(), m_transport, m_screenWidth, m_screenHeight);
 
   // Wrap in deskflow::Screen
   return new deskflow::Screen(platformScreen, getEvents());

@@ -52,19 +52,18 @@ std::string hexDump(const uint8_t *data, size_t length, size_t maxBytes = 32)
 }
 
 BridgePlatformScreen::BridgePlatformScreen(
-    IEventQueue *events, std::shared_ptr<CdcTransport> transport, const PicoConfig &config
+    IEventQueue *events, std::shared_ptr<CdcTransport> transport, int32_t screenWidth, int32_t screenHeight
 ) :
     PlatformScreen(events, false), // invertScrollDirection = false by default
     m_transport(std::move(transport)),
-    m_config(config),
+    m_screenWidth(screenWidth),
+    m_screenHeight(screenHeight),
     m_events(events)
 {
   LOG_INFO(
-      "BridgeScreen: initialized for arch=%s screen=%dx%d rotation=%d",
-      m_config.arch.c_str(),
-      m_config.screenWidth,
-      m_config.screenHeight,
-      m_config.screenRotation
+      "BridgeScreen: initialized screen=%dx%d",
+      m_screenWidth,
+      m_screenHeight
   );
 
   if (m_events != nullptr) {
@@ -97,8 +96,8 @@ void BridgePlatformScreen::getShape(int32_t &x, int32_t &y, int32_t &width, int3
 {
   x = 0;
   y = 0;
-  width = m_config.screenWidth;
-  height = m_config.screenHeight;
+  width = m_screenWidth;
+  height = m_screenHeight;
 }
 
 void BridgePlatformScreen::getCursorPos(int32_t &x, int32_t &y) const
@@ -122,7 +121,7 @@ void BridgePlatformScreen::warpCursor(int32_t x, int32_t y)
 {
   m_cursorX = x;
   m_cursorY = y;
-  // Note: Absolute cursor positioning not sent to Pico
+  // Note: Absolute cursor positioning not sent to firmware bridge
   // Mobile devices typically use relative movement
 }
 
@@ -168,8 +167,8 @@ bool BridgePlatformScreen::isAnyMouseButtonDown(uint32_t &buttonID) const
 
 void BridgePlatformScreen::getCursorCenter(int32_t &x, int32_t &y) const
 {
-  x = m_config.screenWidth / 2;
-  y = m_config.screenHeight / 2;
+  x = m_screenWidth / 2;
+  y = m_screenHeight / 2;
 }
 
 void BridgePlatformScreen::fakeMouseButton(ButtonID id, bool press)

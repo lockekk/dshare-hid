@@ -35,7 +35,7 @@ public:
   static QMap<QString, QString> getConnectedDevices();
 
   /**
-   * @brief Check if the device path belongs to a supported bridge device (e.g., Pico 2 W)
+   * @brief Check if the device path belongs to a supported bridge firmware device
    */
   static bool isSupportedBridgeDevice(const QString &devicePath);
 

@@ -76,9 +76,9 @@ QString BridgeClientConfigManager::createDefaultConfig(const QString &serialNumb
 
   // [bridge] section
   config.setValue(Settings::Bridge::SerialNumber, serialNumber);
-  config.setValue(Settings::Bridge::ScreenWidth, 1920);  // Default resolution
-  config.setValue(Settings::Bridge::ScreenHeight, 1080);
-  config.setValue(Settings::Bridge::ScreenOrientation, "landscape");
+  config.setValue(Settings::Bridge::ScreenWidth, Settings::defaultValue(Settings::Bridge::ScreenWidth));
+  config.setValue(Settings::Bridge::ScreenHeight, Settings::defaultValue(Settings::Bridge::ScreenHeight));
+  config.setValue(Settings::Bridge::ScreenOrientation, Settings::defaultValue(Settings::Bridge::ScreenOrientation));
 
   // [client] section
   config.setValue(Settings::Client::InvertScrollDirection, false);

@@ -14,30 +14,48 @@
 
 namespace deskflow::bridge {
 
-/**
- * @brief Pico configuration structure
- */
-struct PicoConfig {
-  std::string arch;           // e.g., "bridge-ios", "bridge-android"
-  int32_t screenWidth = 1080;
-  int32_t screenHeight = 2424;
-  int32_t screenRotation = 0; // 0, 90, 180, 270
-  float screenPhysicalWidth = 0.0f;  // in inches
-  float screenPhysicalHeight = 0.0f; // in inches
-  float screenScaleFactor = 1.0f;
+enum class FirmwareHostOs : uint8_t {
+  Unknown = 0,
+  Ios = 1,
+  Android = 2,
+};
 
-  bool isValid() const
+inline const char *toString(FirmwareHostOs os)
+{
+  switch (os) {
+  case FirmwareHostOs::Ios:
+    return "ios";
+  case FirmwareHostOs::Android:
+    return "android";
+  default:
+    return "unknown";
+  }
+}
+
+/**
+ * @brief Firmware-reported configuration structure
+ */
+struct FirmwareConfig {
+  uint8_t protocolVersion = 0;
+  bool hidConnected = false;
+  FirmwareHostOs hostOs = FirmwareHostOs::Unknown;
+  uint8_t bleIntervalMs = 0;
+  bool productionActivated = false;
+  uint8_t firmwareVersionBcd = 0;
+  uint8_t hardwareVersionBcd = 0;
+
+  const char *hostOsString() const
   {
-    return !arch.empty() && screenWidth > 0 && screenHeight > 0;
+    return toString(hostOs);
   }
 };
 
 /**
- * @brief USB CDC transport helper for Pico 2 W communication
+ * @brief USB CDC transport helper for bridge firmware communication
  *
  * Handles:
  * - Opening/closing CDC device
- * - Configuration exchange with Pico
+ * - Configuration exchange with firmware
  * - Sending HID frames
  * - Receiving responses (if needed)
  */
@@ -64,7 +82,7 @@ public:
   bool isOpen() const;
 
   /**
-   * @brief Send HID event packet to Pico
+   * @brief Send HID event packet to firmware device
    * @return true if successful
    */
   bool sendHidEvent(const HidEventPacket &packet);
@@ -106,7 +124,7 @@ public:
   /**
    * @brief Retrieve configuration discovered during the CDC handshake
    */
-  const PicoConfig &deviceConfig() const
+  const FirmwareConfig &deviceConfig() const
   {
     return m_deviceConfig;
   }
@@ -135,7 +153,7 @@ private:
   std::vector<uint8_t> m_rxBuffer;
   std::string m_lastError;
   bool m_hasDeviceConfig = false;
-  PicoConfig m_deviceConfig;
+  FirmwareConfig m_deviceConfig;
 };
 
 } // namespace deskflow::bridge

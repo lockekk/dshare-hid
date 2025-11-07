@@ -1498,9 +1498,12 @@ void MainWindow::bridgeClientConnectToggled(const QString &devicePath, bool shou
 
     // Read screen dimensions and orientation from config
     QSettings config(configPath, QSettings::IniFormat);
-    int screenWidth = config.value(Settings::Bridge::ScreenWidth, 1920).toInt();
-    int screenHeight = config.value(Settings::Bridge::ScreenHeight, 1080).toInt();
-    QString screenOrientation = config.value(Settings::Bridge::ScreenOrientation, "landscape").toString();
+    const QVariant defaultWidth = Settings::defaultValue(Settings::Bridge::ScreenWidth);
+    const QVariant defaultHeight = Settings::defaultValue(Settings::Bridge::ScreenHeight);
+    const QVariant defaultOrientation = Settings::defaultValue(Settings::Bridge::ScreenOrientation);
+    int screenWidth = config.value(Settings::Bridge::ScreenWidth, defaultWidth).toInt();
+    int screenHeight = config.value(Settings::Bridge::ScreenHeight, defaultHeight).toInt();
+    QString screenOrientation = config.value(Settings::Bridge::ScreenOrientation, defaultOrientation).toString();
     QString screenName = config.value(Settings::Core::ScreenName).toString();
     const QVariant logLevelVariant = config.value(Settings::Log::Level, "INFO");
     QString logLevel = logLevelVariant.toString().trimmed();

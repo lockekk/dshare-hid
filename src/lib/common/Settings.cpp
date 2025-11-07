@@ -192,11 +192,11 @@ QVariant Settings::defaultValue(const QString &key)
   }
 
   if (key == Bridge::ScreenWidth) {
-    return 0; // Populated from Pico device
+    return 1080;
   }
 
   if (key == Bridge::ScreenHeight) {
-    return 0; // Populated from Pico device
+    return 2424;
   }
 
   if (key == Bridge::ScreenOrientation) {
