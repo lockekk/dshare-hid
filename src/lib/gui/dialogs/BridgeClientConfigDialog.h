@@ -3,7 +3,8 @@
 #include <QDialog>
 #include <QLineEdit>
 #include <QSpinBox>
-#include <QComboBox>
+#include <QButtonGroup>
+#include <QRadioButton>
 #include <QPushButton>
 
 namespace deskflow::gui {
@@ -18,6 +19,7 @@ public:
   int screenWidth() const;
   int screenHeight() const;
   QString screenOrientation() const;
+  QString configPath() const { return m_configPath; }
 
 Q_SIGNALS:
   void configChanged(const QString &oldConfigPath, const QString &newConfigPath);
@@ -36,7 +38,9 @@ private:
   QLineEdit *m_editScreenName;
   QSpinBox *m_spinWidth;
   QSpinBox *m_spinHeight;
-  QComboBox *m_comboOrientation;
-};
+  QButtonGroup *m_orientationGroup = nullptr;
+  QRadioButton *m_radioLandscape = nullptr;
+  QRadioButton *m_radioPortrait = nullptr;
+}; 
 
 } // namespace deskflow::gui

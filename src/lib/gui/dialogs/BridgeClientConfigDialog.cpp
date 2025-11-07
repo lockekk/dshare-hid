@@ -6,6 +6,12 @@
 #include <QVBoxLayout>
 #include <QFormLayout>
 #include <QDialogButtonBox>
+#include <QHBoxLayout>
+
+namespace {
+constexpr auto kLandscapeIconPath = ":/bridge-client/bridge_client_icon_landspace.png";
+constexpr auto kPortraitIconPath = ":/bridge-client/bridge_client_icon_portrait.png";
+} // namespace
 #include <QSettings>
 #include <QFileInfo>
 #include <QDir>
@@ -41,10 +47,21 @@ BridgeClientConfigDialog::BridgeClientConfigDialog(const QString &configPath, QW
   formLayout->addRow(tr("Screen Height:"), m_spinHeight);
 
   // Screen Orientation
-  m_comboOrientation = new QComboBox(this);
-  m_comboOrientation->addItem(tr("Landscape"), "landscape");
-  m_comboOrientation->addItem(tr("Portrait"), "portrait");
-  formLayout->addRow(tr("Screen Orientation:"), m_comboOrientation);
+  auto *orientationLayout = new QHBoxLayout();
+  m_orientationGroup = new QButtonGroup(this);
+  m_radioLandscape = new QRadioButton(this);
+  m_radioLandscape->setIcon(QIcon(QString::fromLatin1(kLandscapeIconPath)));
+  m_radioLandscape->setIconSize(QSize(36, 24));
+  m_radioLandscape->setToolTip(tr("Landscape"));
+  m_radioPortrait = new QRadioButton(this);
+  m_radioPortrait->setIcon(QIcon(QString::fromLatin1(kPortraitIconPath)));
+  m_radioPortrait->setIconSize(QSize(36, 24));
+  m_radioPortrait->setToolTip(tr("Portrait"));
+  m_orientationGroup->addButton(m_radioLandscape);
+  m_orientationGroup->addButton(m_radioPortrait);
+  orientationLayout->addWidget(m_radioLandscape);
+  orientationLayout->addWidget(m_radioPortrait);
+  formLayout->addRow(tr("Screen Orientation:"), orientationLayout);
 
   mainLayout->addLayout(formLayout);
 
@@ -86,9 +103,10 @@ void BridgeClientConfigDialog::loadConfig() {
                                 Settings::Bridge::ScreenOrientation,
                                 Settings::defaultValue(Settings::Bridge::ScreenOrientation))
                             .toString();
-  int index = m_comboOrientation->findData(orientation);
-  if (index >= 0) {
-    m_comboOrientation->setCurrentIndex(index);
+  if (orientation == QStringLiteral("landscape")) {
+    m_radioLandscape->setChecked(true);
+  } else {
+    m_radioPortrait->setChecked(true);
   }
 }
 
@@ -98,7 +116,7 @@ void BridgeClientConfigDialog::saveConfig() {
   config.setValue(Settings::Core::ScreenName, m_editScreenName->text());
   config.setValue(Settings::Bridge::ScreenWidth, m_spinWidth->value());
   config.setValue(Settings::Bridge::ScreenHeight, m_spinHeight->value());
-  config.setValue(Settings::Bridge::ScreenOrientation, m_comboOrientation->currentData().toString());
+  config.setValue(Settings::Bridge::ScreenOrientation, screenOrientation());
 
   config.sync();
 }
@@ -179,5 +197,5 @@ int BridgeClientConfigDialog::screenHeight() const {
 }
 
 QString BridgeClientConfigDialog::screenOrientation() const {
-  return m_comboOrientation->currentData().toString();
+  return m_radioPortrait->isChecked() ? QStringLiteral("portrait") : QStringLiteral("landscape");
 }

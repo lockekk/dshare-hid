@@ -1679,6 +1679,11 @@ void MainWindow::bridgeClientConfigureClicked(const QString &devicePath, const Q
   });
 
   if (dialog.exec() == QDialog::Accepted) {
+    const QString finalConfigPath = dialog.configPath();
+    auto it = m_bridgeClientWidgets.find(finalConfigPath);
+    if (it != m_bridgeClientWidgets.end()) {
+      it.value()->updateConfig(dialog.screenName(), finalConfigPath);
+    }
     setStatus(tr("Configuration saved for: %1").arg(dialog.screenName()));
   }
 }

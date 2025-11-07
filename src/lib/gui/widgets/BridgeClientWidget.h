@@ -7,6 +7,7 @@
 #pragma once
 
 #include <QGroupBox>
+#include <QLabel>
 #include <QPushButton>
 #include <QString>
 
@@ -122,6 +123,8 @@ private Q_SLOTS:
   void onConfigureClicked();
 
 private:
+  void refreshOrientationLabel();
+
   QString m_screenName;
   QString m_devicePath;
   QString m_configPath;
@@ -130,6 +133,8 @@ private:
 
   QPushButton *m_btnConnect;
   QPushButton *m_btnConfigure;
+  QLabel *m_orientationLabel;
+  QString m_orientation;
 };
 
 } // namespace deskflow::gui

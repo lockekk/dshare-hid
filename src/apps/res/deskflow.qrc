@@ -143,5 +143,7 @@
         <file>icons/deskflow-light/status/64/security-low.svg</file>
         <file>icons/deskflow-light/status/64/security-medium.svg</file>
         <file>icons/deskflow-light/index.theme</file>
+        <file>bridge-client/bridge_client_icon_landspace.png</file>
+        <file>bridge-client/bridge_client_icon_portrait.png</file>
     </qresource>
 </RCC>

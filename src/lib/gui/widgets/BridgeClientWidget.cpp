@@ -6,7 +6,15 @@
 
 #include "BridgeClientWidget.h"
 
+#include "common/Settings.h"
+
 #include <QHBoxLayout>
+#include <QSettings>
+
+namespace {
+constexpr auto kLandscapeIconPath = ":/bridge-client/bridge_client_icon_landspace.png";
+constexpr auto kPortraitIconPath = ":/bridge-client/bridge_client_icon_portrait.png";
+} // namespace
 
 namespace deskflow::gui {
 
@@ -18,6 +26,9 @@ BridgeClientWidget::BridgeClientWidget(
     m_devicePath(devicePath),
     m_configPath(configPath)
 {
+  setMinimumWidth(360);
+  setMaximumWidth(360);
+
   // Create horizontal layout for buttons
   auto *layout = new QHBoxLayout(this);
   layout->setContentsMargins(8, 8, 8, 8);
@@ -35,14 +46,22 @@ BridgeClientWidget::BridgeClientWidget(
   m_btnConfigure->setMinimumSize(80, 32);
   m_btnConfigure->setToolTip(tr("Configure bridge client settings"));
 
-  // Add buttons to layout
+  // Orientation label placeholder
+  m_orientationLabel = new QLabel(this);
+  m_orientationLabel->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
+  m_orientationLabel->setFixedSize(40, 30);
+
+  // Add buttons and label to layout
   layout->addWidget(m_btnConnect);
   layout->addWidget(m_btnConfigure);
   layout->addStretch(); // Push buttons to the left
+  layout->addWidget(m_orientationLabel);
 
   // Connect signals
   connect(m_btnConnect, &QPushButton::toggled, this, &BridgeClientWidget::onConnectToggled);
   connect(m_btnConfigure, &QPushButton::clicked, this, &BridgeClientWidget::onConfigureClicked);
+
+  refreshOrientationLabel();
 }
 
 void BridgeClientWidget::setConnected(bool connected)
@@ -60,6 +79,31 @@ void BridgeClientWidget::updateConfig(const QString &screenName, const QString &
   m_screenName = screenName;
   m_configPath = configPath;
   setTitle(screenName); // Update the group box title
+  refreshOrientationLabel();
+}
+
+void BridgeClientWidget::refreshOrientationLabel()
+{
+  if (m_configPath.isEmpty()) {
+    m_orientationLabel->setPixmap(QPixmap(QString::fromLatin1(kLandscapeIconPath)));
+    m_orientationLabel->setToolTip(tr("Landscape"));
+    return;
+  }
+
+  QSettings config(m_configPath, QSettings::IniFormat);
+  const QString orientation = config
+                                  .value(
+                                      Settings::Bridge::ScreenOrientation,
+                                      Settings::defaultValue(Settings::Bridge::ScreenOrientation))
+                                  .toString();
+  m_orientation = orientation;
+  const QString normalized = orientation.trimmed().toLower();
+  QString display;
+  const bool portrait = (normalized == QStringLiteral("portrait"));
+  display = portrait ? tr("Portrait") : tr("Landscape");
+  const auto iconPath = portrait ? kPortraitIconPath : kLandscapeIconPath;
+  m_orientationLabel->setPixmap(QPixmap(QString::fromLatin1(iconPath)));
+  m_orientationLabel->setToolTip(display);
 }
 
 void BridgeClientWidget::setDeviceAvailable(const QString &devicePath, bool available)
