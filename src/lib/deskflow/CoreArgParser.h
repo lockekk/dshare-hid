@@ -37,7 +37,6 @@ public:
   QString linkDevice() const;
   int screenWidth() const;
   int screenHeight() const;
-  QString screenOrientation() const;
 
 private:
   [[noreturn]] void showHelpText() const;

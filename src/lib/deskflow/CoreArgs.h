@@ -90,10 +90,6 @@ struct CoreArgs
   inline static const auto screenHeightOption =
       QCommandLineOption("screen-height", "Bridge Client Mode: Screen height in pixels", "height");
 
-  inline static const auto screenOrientationOption = QCommandLineOption(
-      "screen-orientation", "Bridge Client Mode: Screen orientation (landscape/portrait)", "orientation"
-  );
-
   inline static const auto options = {helpOption,
                                       versionOption,
                                       configOption,
@@ -116,6 +112,5 @@ struct CoreArgs
                                       remoteHostOption,
                                       linkOption,
                                       screenWidthOption,
-                                      screenHeightOption,
-                                      screenOrientationOption};
+                                      screenHeightOption};
 };

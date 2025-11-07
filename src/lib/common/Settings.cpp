@@ -200,7 +200,7 @@ QVariant Settings::defaultValue(const QString &key)
   }
 
   if (key == Bridge::ScreenOrientation) {
-    return QString("landscape"); // Default orientation
+    return QString("portrait"); // Default orientation
   }
 
   return QVariant();

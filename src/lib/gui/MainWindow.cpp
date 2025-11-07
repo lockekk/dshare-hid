@@ -1500,10 +1500,24 @@ void MainWindow::bridgeClientConnectToggled(const QString &devicePath, bool shou
     QSettings config(configPath, QSettings::IniFormat);
     const QVariant defaultWidth = Settings::defaultValue(Settings::Bridge::ScreenWidth);
     const QVariant defaultHeight = Settings::defaultValue(Settings::Bridge::ScreenHeight);
-    const QVariant defaultOrientation = Settings::defaultValue(Settings::Bridge::ScreenOrientation);
     int screenWidth = config.value(Settings::Bridge::ScreenWidth, defaultWidth).toInt();
     int screenHeight = config.value(Settings::Bridge::ScreenHeight, defaultHeight).toInt();
+    const QVariant defaultOrientation = Settings::defaultValue(Settings::Bridge::ScreenOrientation);
     QString screenOrientation = config.value(Settings::Bridge::ScreenOrientation, defaultOrientation).toString();
+    const QString orientationLower = screenOrientation.trimmed().toLower();
+    if (orientationLower == QStringLiteral("portrait")) {
+      if (screenWidth > screenHeight) {
+        const int tmp = screenWidth;
+        screenWidth = screenHeight;
+        screenHeight = tmp;
+      }
+    } else if (orientationLower == QStringLiteral("landscape")) {
+      if (screenWidth < screenHeight) {
+        const int tmp = screenWidth;
+        screenWidth = screenHeight;
+        screenHeight = tmp;
+      }
+    }
     QString screenName = config.value(Settings::Core::ScreenName).toString();
     const QVariant logLevelVariant = config.value(Settings::Log::Level, "INFO");
     QString logLevel = logLevelVariant.toString().trimmed();
@@ -1544,7 +1558,6 @@ void MainWindow::bridgeClientConnectToggled(const QString &devicePath, bool shou
     command << "--log-level" << logLevel;
     command << "--screen-width" << QString::number(screenWidth);
     command << "--screen-height" << QString::number(screenHeight);
-    command << "--screen-orientation" << screenOrientation;
 
     // Print the command
     QString commandString = command.join(" ");

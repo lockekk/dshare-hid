@@ -216,8 +216,3 @@ int CoreArgParser::screenHeight() const
   int height = m_parser.value(CoreArgs::screenHeightOption).toInt(&ok);
   return ok ? height : 0;
 }
-
-QString CoreArgParser::screenOrientation() const
-{
-  return m_parser.value(CoreArgs::screenOrientationOption);
-}

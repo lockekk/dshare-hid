@@ -185,7 +185,6 @@ int main(int argc, char **argv)
       // Get screen info from CLI arguments (provided by GUI)
       int screenWidth = parser.screenWidth();
       int screenHeight = parser.screenHeight();
-      QString screenOrientation = parser.screenOrientation();
 
       if (screenWidth <= 0 || screenHeight <= 0) {
         LOG_ERR(
@@ -197,10 +196,9 @@ int main(int argc, char **argv)
       }
 
       LOG_INFO(
-          "Screen config from CLI: %dx%d orientation=%s",
+          "Screen config from CLI: %dx%d",
           screenWidth,
-          screenHeight,
-          screenOrientation.toUtf8().constData()
+          screenHeight
       );
 
       // Create and run bridge client
