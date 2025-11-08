@@ -49,9 +49,11 @@
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QEventLoop>
+#include <QFile>
 #include <QElapsedTimer>
 #include <QNetworkAccessManager>
 #include <QNetworkInterface>
+#include <QPointer>
 #include <QPushButton>
 #include <QRegularExpression>
 #include <QRegularExpressionValidator>
@@ -1358,15 +1360,18 @@ void MainWindow::usbDeviceConnected(const UsbDeviceInfo &device)
   QStringList matchingConfigs = BridgeClientConfigManager::findConfigsBySerialNumber(serialNumber);
 
   deskflow::bridge::FirmwareConfig handshakeConfig;
-  bool haveHandshakeData = false;
-  if (matchingConfigs.isEmpty()) {
-    qInfo() << "Performing bridge handshake for new device" << device.devicePath;
-    if (!UsbDeviceHelper::verifyBridgeHandshake(device.devicePath, &handshakeConfig)) {
-      qWarning() << "Bridge handshake failed or timed out for" << device.devicePath << "- ignoring device";
-      setStatus(tr("Ignoring USB device %1 (handshake failed)").arg(device.devicePath));
-      return;
+  if (!UsbDeviceHelper::verifyBridgeHandshake(device.devicePath, &handshakeConfig)) {
+    qWarning() << "Bridge handshake failed or timed out for" << device.devicePath << "- ignoring device";
+    setStatus(tr("Ignoring USB device %1 (handshake failed)").arg(device.devicePath));
+    return;
+  }
+  const QString handshakeHostOs = QString::fromUtf8(handshakeConfig.hostOsString());
+  QString handshakeDeviceName = QString::fromStdString(handshakeConfig.deviceName);
+  if (handshakeDeviceName.trimmed().isEmpty()) {
+    QString fetchedName;
+    if (fetchFirmwareDeviceName(device.devicePath, fetchedName)) {
+      handshakeDeviceName = fetchedName;
     }
-    haveHandshakeData = true;
   }
 
   // Store the mapping of device path -> serial number for later use on disconnect
@@ -1377,13 +1382,6 @@ void MainWindow::usbDeviceConnected(const UsbDeviceInfo &device)
     // No config found - create default config and add widget dynamically
     qDebug() << "No config found for serial number" << serialNumber << ", creating default config";
     configPath = BridgeClientConfigManager::createDefaultConfig(serialNumber, device.devicePath);
-
-    if (haveHandshakeData) {
-      const QString hostOs = QString::fromUtf8(handshakeConfig.hostOsString());
-      QSettings cfg(configPath, QSettings::IniFormat);
-      cfg.setValue(Settings::Bridge::HostOs, hostOs);
-      cfg.sync();
-    }
 
     // Create new widget for this config
     QString screenName = BridgeClientConfigManager::readScreenName(configPath);
@@ -1411,9 +1409,32 @@ void MainWindow::usbDeviceConnected(const UsbDeviceInfo &device)
 
     // Set device as available
     widget->setDeviceAvailable(device.devicePath, true);
-    if (haveHandshakeData) {
-      widget->setHostOs(QString::fromUtf8(handshakeConfig.hostOsString()));
+
+    QSettings cfg(configPath, QSettings::IniFormat);
+    const QString hostOsToStore = handshakeHostOs.isEmpty()
+                                      ? Settings::defaultValue(Settings::Bridge::HostOs).toString()
+                                      : handshakeHostOs;
+
+    // Always prefer device name from the device itself
+    QString deviceNameToStore = handshakeDeviceName.trimmed();
+    if (deviceNameToStore.isEmpty()) {
+      fetchFirmwareDeviceName(device.devicePath, deviceNameToStore);
     }
+    // Only use config as fallback if device doesn't provide a name
+    if (deviceNameToStore.isEmpty()) {
+      deviceNameToStore = cfg
+                              .value(Settings::Bridge::DeviceName, Settings::defaultValue(Settings::Bridge::DeviceName))
+                              .toString();
+    }
+
+    cfg.setValue(Settings::Bridge::HostOs, hostOsToStore);
+    if (!deviceNameToStore.isEmpty()) {
+      cfg.setValue(Settings::Bridge::DeviceName, deviceNameToStore);
+    }
+    cfg.sync();
+
+    widget->setHostOs(hostOsToStore);
+    widget->setDeviceName(deviceNameToStore);
 
     QString message = tr("New bridge client device connected: %1 (%2)").arg(screenName, device.devicePath);
     setStatus(message);
@@ -1427,11 +1448,33 @@ void MainWindow::usbDeviceConnected(const UsbDeviceInfo &device)
       BridgeClientWidget *widget = it.value();
       widget->setDeviceAvailable(device.devicePath, true);
       QSettings existingConfig(config, QSettings::IniFormat);
-      widget->setHostOs(
-          existingConfig
-              .value(Settings::Bridge::HostOs, Settings::defaultValue(Settings::Bridge::HostOs))
-              .toString()
-      );
+      QString hostOsValue =
+          existingConfig.value(Settings::Bridge::HostOs, Settings::defaultValue(Settings::Bridge::HostOs)).toString();
+
+      if (!handshakeHostOs.isEmpty()) {
+        hostOsValue = handshakeHostOs;
+      }
+
+      // Always prefer device name from the device itself
+      QString deviceNameValue = handshakeDeviceName.trimmed();
+      if (deviceNameValue.isEmpty()) {
+        fetchFirmwareDeviceName(device.devicePath, deviceNameValue);
+      }
+      // Only use config as fallback if device doesn't provide a name
+      if (deviceNameValue.isEmpty()) {
+        deviceNameValue = existingConfig
+                              .value(Settings::Bridge::DeviceName, Settings::defaultValue(Settings::Bridge::DeviceName))
+                              .toString();
+      }
+
+      existingConfig.setValue(Settings::Bridge::HostOs, hostOsValue);
+      if (!deviceNameValue.isEmpty()) {
+        existingConfig.setValue(Settings::Bridge::DeviceName, deviceNameValue);
+      }
+      existingConfig.sync();
+
+      widget->setHostOs(hostOsValue);
+      widget->setDeviceName(deviceNameValue);
 
       QString screenName = widget->screenName();
       qDebug() << "Enabled widget for config:" << config << "screenName:" << screenName;
@@ -1721,11 +1764,65 @@ void MainWindow::bridgeClientConfigureClicked(const QString &devicePath, const Q
 
   if (dialog.exec() == QDialog::Accepted) {
     const QString finalConfigPath = dialog.configPath();
-    auto it = m_bridgeClientWidgets.find(finalConfigPath);
-    if (it != m_bridgeClientWidgets.end()) {
-      it.value()->updateConfig(dialog.screenName(), finalConfigPath);
+    BridgeClientWidget *targetWidget = nullptr;
+    auto widgetIt = m_bridgeClientWidgets.find(finalConfigPath);
+    if (widgetIt != m_bridgeClientWidgets.end()) {
+      targetWidget = widgetIt.value();
+      targetWidget->updateConfig(dialog.screenName(), finalConfigPath);
     }
-    setStatus(tr("Configuration saved for: %1").arg(dialog.screenName()));
+
+    QString statusMessage = tr("Configuration saved for: %1").arg(dialog.screenName());
+    if (dialog.deviceNameChanged()) {
+      QString activeDevicePath = devicePath;
+      if ((activeDevicePath.isEmpty() || !QFile::exists(activeDevicePath)) && targetWidget != nullptr) {
+        activeDevicePath = targetWidget->devicePath();
+      }
+
+      if (activeDevicePath.isEmpty()) {
+        statusMessage = tr("Device name saved. Connect the bridge to apply changes.");
+      } else {
+        QPointer<BridgeClientWidget> widgetPtr(targetWidget);
+        const bool wasConnected = widgetPtr && widgetPtr->isConnected();
+        if (wasConnected) {
+          stopBridgeClient(activeDevicePath);
+        }
+
+        auto applyRename = [this, finalConfigPath, activeDevicePath, widgetPtr, wasConnected, newName = dialog.deviceName()]() {
+          const bool success = applyFirmwareDeviceName(activeDevicePath, newName);
+          QString statusMsg =
+              success ? tr("Firmware device name updated to: %1").arg(newName)
+                      : tr("Failed to update firmware device name.");
+
+          if (success) {
+            QSettings config(finalConfigPath, QSettings::IniFormat);
+            config.setValue(Settings::Bridge::DeviceName, newName);
+            config.sync();
+            if (widgetPtr) {
+              widgetPtr->setDeviceName(newName);
+            }
+          }
+
+          setStatus(statusMsg);
+
+          if (wasConnected && widgetPtr) {
+            QTimer::singleShot(200, this, [this, widgetPtr]() {
+              if (widgetPtr) {
+                bridgeClientConnectToggled(widgetPtr->devicePath(), true);
+              }
+            });
+          }
+        };
+
+        statusMessage = tr("Updating firmware device name...");
+        if (wasConnected) {
+          QTimer::singleShot(500, this, applyRename);
+        } else {
+          applyRename();
+        }
+      }
+    }
+
+    setStatus(statusMessage);
   }
 }
 
@@ -1864,6 +1961,12 @@ void MainWindow::updateBridgeClientDeviceStates()
 
     // Update widget availability
     widget->setDeviceAvailable(devicePath, found);
+    {
+      QSettings cfg(configPath, QSettings::IniFormat);
+      widget->setDeviceName(
+          cfg.value(Settings::Bridge::DeviceName, Settings::defaultValue(Settings::Bridge::DeviceName)).toString()
+      );
+    }
 
     if (found) {
       // Store device path -> serial number mapping for later use
@@ -1890,6 +1993,30 @@ void MainWindow::bridgeClientProcessReadyRead(const QString &devicePath)
   if (!output.isEmpty()) {
     for (const QString &line : output.split('\n', Qt::SkipEmptyParts)) {
       qInfo() << "[Bridge" << devicePath << "]" << line;
+    }
+  }
+
+  // Check for firmware device name in log output
+  static const QRegularExpression deviceNameRegex(R"(CDC:\s+firmware device name='([^']+)')");
+  QRegularExpressionMatch deviceNameMatch = deviceNameRegex.match(output);
+  if (deviceNameMatch.hasMatch()) {
+    QString deviceName = deviceNameMatch.captured(1);
+    qInfo() << "Parsed device name from bridge client log:" << deviceName << "for device:" << devicePath;
+
+    // Find the widget and update device name
+    for (auto it = m_bridgeClientWidgets.begin(); it != m_bridgeClientWidgets.end(); ++it) {
+      BridgeClientWidget *widget = it.value();
+      if (widget->devicePath() == devicePath) {
+        widget->setDeviceName(deviceName);
+
+        // Also update the config file
+        QString configPath = it.key();
+        QSettings cfg(configPath, QSettings::IniFormat);
+        cfg.setValue(Settings::Bridge::DeviceName, deviceName);
+        cfg.sync();
+        qInfo() << "Updated device name to:" << deviceName << "for config:" << configPath;
+        break;
+      }
     }
   }
 
@@ -2060,4 +2187,79 @@ void MainWindow::stopAllBridgeClients()
     }
     m_bridgeClientProcesses.clear();
   }
+}
+
+bool MainWindow::applyFirmwareDeviceName(const QString &devicePath, const QString &deviceName)
+{
+  if (devicePath.isEmpty()) {
+    QMessageBox::warning(this, tr("Device unavailable"), tr("Connect the bridge device before updating its name."));
+    return false;
+  }
+  if (!isValidDeviceName(deviceName)) {
+    QMessageBox::warning(
+        this,
+        tr("Invalid device name"),
+        tr("Device name must use English letters/numbers, spaces or .-_ characters and be at most 22 characters.")
+    );
+    return false;
+  }
+
+  deskflow::bridge::CdcTransport transport(devicePath);
+  if (!transport.open()) {
+    QMessageBox::warning(
+        this,
+        tr("Bridge device error"),
+        tr("Failed to open %1: %2").arg(devicePath, QString::fromStdString(transport.lastError()))
+    );
+    return false;
+  }
+
+  const bool result = transport.setDeviceName(deviceName.toStdString());
+  if (!result) {
+    const QString err = QString::fromStdString(transport.lastError());
+    transport.close();
+    QMessageBox::warning(this, tr("Bridge device error"), tr("Failed to update device name: %1").arg(err));
+    return false;
+  }
+
+  transport.close();
+  return true;
+}
+
+bool MainWindow::isValidDeviceName(const QString &deviceName) const
+{
+  if (deviceName.isEmpty() || deviceName.size() > 22) {
+    return false;
+  }
+  for (const QChar &ch : deviceName) {
+    const ushort code = ch.unicode();
+    if (code > 0x7F)
+      return false;
+    if (!(ch.isLetterOrNumber() || ch == QChar(' ') || ch == QChar('-') || ch == QChar('_') || ch == QChar('.'))) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool MainWindow::fetchFirmwareDeviceName(const QString &devicePath, QString &outName)
+{
+  if (devicePath.isEmpty()) {
+    return false;
+  }
+  deskflow::bridge::CdcTransport transport(devicePath);
+  if (!transport.open()) {
+    qWarning() << "Failed to open bridge device for name fetch" << devicePath
+               << ":" << QString::fromStdString(transport.lastError());
+    return false;
+  }
+  std::string deviceName;
+  const bool ok = transport.fetchDeviceName(deviceName);
+  transport.close();
+  if (!ok) {
+    qWarning() << "Failed to fetch firmware device name:" << QString::fromStdString(transport.lastError());
+    return false;
+  }
+  outName = QString::fromStdString(deviceName);
+  return true;
 }

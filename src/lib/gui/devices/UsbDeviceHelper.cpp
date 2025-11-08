@@ -192,6 +192,18 @@ bool UsbDeviceHelper::verifyBridgeHandshake(
     if (configOut != nullptr) {
       *configOut = cfg;
     }
+
+    std::string deviceName;
+    if (transport.fetchDeviceName(deviceName)) {
+      if (configOut != nullptr) {
+        configOut->deviceName = deviceName;
+      }
+    } else {
+      qWarning() << "Unable to fetch device name:" << QString::fromStdString(transport.lastError());
+    }
+
+    const QString nameForLog = QString::fromStdString(cfg.deviceName);
+
     qInfo() << "Bridge handshake successful with" << devicePath
             << "proto:" << cfg.protocolVersion
             << "hid:" << (cfg.hidConnected ? 1 : 0)
@@ -199,7 +211,8 @@ bool UsbDeviceHelper::verifyBridgeHandshake(
             << "ble_interval_ms:" << cfg.bleIntervalMs
             << "activated:" << (cfg.productionActivated ? 1 : 0)
             << "fw_bcd:" << cfg.firmwareVersionBcd
-            << "hw_bcd:" << cfg.hardwareVersionBcd;
+            << "hw_bcd:" << cfg.hardwareVersionBcd
+            << "name:" << nameForLog;
   } else {
     qInfo() << "Bridge handshake successful with" << devicePath << "(no config payload)";
   }

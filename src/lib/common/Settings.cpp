@@ -207,6 +207,10 @@ QVariant Settings::defaultValue(const QString &key)
     return QStringLiteral("unknown");
   }
 
+  if (key == Bridge::DeviceName) {
+    return QString();
+  }
+
   return QVariant();
 }
 

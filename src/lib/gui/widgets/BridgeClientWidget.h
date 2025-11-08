@@ -101,6 +101,11 @@ public:
   void setHostOs(const QString &hostOs);
 
   /**
+   * @brief Update firmware device name label
+   */
+  void setDeviceName(const QString &deviceName);
+
+  /**
    * @brief Check if device is available
    */
   bool isDeviceAvailable() const
@@ -130,6 +135,7 @@ private Q_SLOTS:
 private:
   void refreshOrientationLabel();
   void refreshHostOsIcon();
+  void refreshDeviceNameLabel();
 
   QString m_screenName;
   QString m_devicePath;
@@ -139,8 +145,10 @@ private:
 
   QPushButton *m_btnConnect;
   QPushButton *m_btnConfigure;
+  QLabel *m_deviceNameLabel;
   QLabel *m_hostOsLabel;
   QLabel *m_orientationLabel;
+  QString m_deviceName;
   QString m_hostOs;
   QString m_orientation;
 };

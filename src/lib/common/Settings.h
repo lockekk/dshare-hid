@@ -97,6 +97,7 @@ public:
     inline static const auto ScreenHeight = QStringLiteral("bridge/screenHeight");
     inline static const auto ScreenOrientation = QStringLiteral("bridge/screenOrientation");
     inline static const auto HostOs = QStringLiteral("bridge/hostOs");
+    inline static const auto DeviceName = QStringLiteral("bridge/deviceName");
   };
 
   // Enums types used in settings

@@ -43,6 +43,7 @@ struct FirmwareConfig {
   bool productionActivated = false;
   uint8_t firmwareVersionBcd = 0;
   uint8_t hardwareVersionBcd = 0;
+  std::string deviceName;
 
   const char *hostOsString() const
   {
@@ -105,6 +106,9 @@ public:
    */
   bool sendKeyboardCompact(uint8_t modifiers, uint8_t keycode, bool isPress);
 
+  bool fetchDeviceName(std::string &outName);
+  bool setDeviceName(const std::string &name);
+
   /**
    * @brief Get last error message
    */
@@ -141,6 +145,7 @@ private:
   bool performHandshake();
   bool sendUsbFrame(uint8_t type, uint8_t flags, const uint8_t *payload, uint16_t length);
   bool sendUsbFrame(uint8_t type, uint8_t flags, const std::vector<uint8_t> &payload);
+  bool waitForConfigResponse(uint8_t &msgType, uint8_t &status, std::vector<uint8_t> &payload, int timeoutMs);
   bool writeAll(const uint8_t *data, size_t length);
   bool readFrame(uint8_t &type, uint8_t &flags, std::vector<uint8_t> &payload, int timeoutMs);
   void resetState();

@@ -23,6 +23,8 @@ public:
   QString configPath() const { return m_configPath; }
   int scrollSpeed() const;
   bool invertScroll() const;
+  QString deviceName() const;
+  bool deviceNameChanged() const;
 
 Q_SIGNALS:
   void configChanged(const QString &oldConfigPath, const QString &newConfigPath);
@@ -39,6 +41,7 @@ private:
   QString m_originalScreenName;
 
   QLineEdit *m_editScreenName;
+  QLineEdit *m_editDeviceName;
   QSpinBox *m_spinWidth;
   QSpinBox *m_spinHeight;
   QSpinBox *m_spinScrollSpeed;
@@ -46,6 +49,7 @@ private:
   QButtonGroup *m_orientationGroup = nullptr;
   QRadioButton *m_radioLandscape = nullptr;
   QRadioButton *m_radioPortrait = nullptr;
+  QString m_originalDeviceName;
 }; 
 
 } // namespace deskflow::gui

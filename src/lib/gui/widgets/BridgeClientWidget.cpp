@@ -29,8 +29,8 @@ BridgeClientWidget::BridgeClientWidget(
     m_devicePath(devicePath),
     m_configPath(configPath)
 {
-  setMinimumWidth(360);
-  setMaximumWidth(360);
+  setMinimumWidth(500);
+  setMaximumWidth(500);
 
   // Create horizontal layout for buttons
   auto *layout = new QHBoxLayout(this);
@@ -49,6 +49,9 @@ BridgeClientWidget::BridgeClientWidget(
   m_btnConfigure->setMinimumSize(80, 32);
   m_btnConfigure->setToolTip(tr("Configure bridge client settings"));
 
+  m_deviceNameLabel = new QLabel(tr("--"), this);
+  m_deviceNameLabel->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
+
   // Host OS and orientation labels
   m_hostOsLabel = new QLabel(this);
   m_hostOsLabel->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
@@ -62,6 +65,7 @@ BridgeClientWidget::BridgeClientWidget(
   layout->addWidget(m_btnConnect);
   layout->addWidget(m_btnConfigure);
   layout->addStretch(); // Push buttons to the left
+  layout->addWidget(m_deviceNameLabel);
   layout->addWidget(m_hostOsLabel);
   layout->addWidget(m_orientationLabel);
 
@@ -69,6 +73,7 @@ BridgeClientWidget::BridgeClientWidget(
   connect(m_btnConnect, &QPushButton::toggled, this, &BridgeClientWidget::onConnectToggled);
   connect(m_btnConfigure, &QPushButton::clicked, this, &BridgeClientWidget::onConfigureClicked);
 
+  refreshDeviceNameLabel();
   refreshHostOsIcon();
   refreshOrientationLabel();
 }
@@ -114,6 +119,14 @@ void BridgeClientWidget::setHostOs(const QString &hostOs)
   m_hostOsLabel->setToolTip(tooltip);
 }
 
+void BridgeClientWidget::setDeviceName(const QString &deviceName)
+{
+  const QString trimmed = deviceName.trimmed();
+  m_deviceName = trimmed;
+  const QString display = trimmed.isEmpty() ? tr("--") : trimmed;
+  m_deviceNameLabel->setText(display);
+}
+
 void BridgeClientWidget::refreshHostOsIcon()
 {
   QString hostOs = Settings::defaultValue(Settings::Bridge::HostOs).toString();
@@ -122,6 +135,16 @@ void BridgeClientWidget::refreshHostOsIcon()
     hostOs = config.value(Settings::Bridge::HostOs, hostOs).toString();
   }
   setHostOs(hostOs);
+}
+
+void BridgeClientWidget::refreshDeviceNameLabel()
+{
+  QString name = Settings::defaultValue(Settings::Bridge::DeviceName).toString();
+  if (!m_configPath.isEmpty()) {
+    QSettings config(m_configPath, QSettings::IniFormat);
+    name = config.value(Settings::Bridge::DeviceName, name).toString();
+  }
+  setDeviceName(name);
 }
 
 void BridgeClientWidget::refreshOrientationLabel()

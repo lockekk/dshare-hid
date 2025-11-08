@@ -183,6 +183,9 @@ private:
   void bridgeClientConnectionTimeout(const QString &devicePath);
   void stopBridgeClient(const QString &devicePath);
   void stopAllBridgeClients();
+  bool applyFirmwareDeviceName(const QString &devicePath, const QString &deviceName);
+  bool isValidDeviceName(const QString &deviceName) const;
+  bool fetchFirmwareDeviceName(const QString &devicePath, QString &outName);
 
   inline static const auto m_guiSocketName = QStringLiteral("deskflow-gui");
   inline static const auto m_nameRegEx = QRegularExpression(QStringLiteral("^[\\w\\-_\\.]{0,255}$"));

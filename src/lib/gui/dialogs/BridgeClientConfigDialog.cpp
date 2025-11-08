@@ -18,6 +18,7 @@ constexpr auto kPortraitIconPath = ":/bridge-client/client/orientation_portrait.
 #include <QDir>
 #include <QMessageBox>
 #include <QRegularExpression>
+#include <QRegularExpressionValidator>
 
 using namespace deskflow::gui;
 
@@ -32,6 +33,13 @@ BridgeClientConfigDialog::BridgeClientConfigDialog(const QString &configPath, QW
   // Screen Name
   m_editScreenName = new QLineEdit(this);
   formLayout->addRow(tr("Screen Name:"), m_editScreenName);
+
+  m_editDeviceName = new QLineEdit(this);
+  m_editDeviceName->setMaxLength(22);
+  m_editDeviceName->setValidator(
+      new QRegularExpressionValidator(QRegularExpression(QStringLiteral("^[A-Za-z0-9 _\\-\\.]{0,22}$")), m_editDeviceName));
+  m_editDeviceName->setPlaceholderText(tr("A-Z, 0-9, spaces, .-_ (max 22 chars)"));
+  formLayout->addRow(tr("Firmware Device Name:"), m_editDeviceName);
 
   // Screen Width
   m_spinWidth = new QSpinBox(this);
@@ -99,6 +107,14 @@ void BridgeClientConfigDialog::loadConfig() {
   m_editScreenName->setText(screenName);
   m_originalScreenName = screenName;
 
+  QString deviceName = config
+                           .value(
+                               Settings::Bridge::DeviceName,
+                               Settings::defaultValue(Settings::Bridge::DeviceName))
+                           .toString();
+  m_editDeviceName->setText(deviceName);
+  m_originalDeviceName = deviceName;
+
   // Load screen dimensions
   int width = config
                  .value(
@@ -147,6 +163,7 @@ void BridgeClientConfigDialog::saveConfig() {
   config.setValue(Settings::Bridge::ScreenWidth, m_spinWidth->value());
   config.setValue(Settings::Bridge::ScreenHeight, m_spinHeight->value());
   config.setValue(Settings::Bridge::ScreenOrientation, screenOrientation());
+  config.setValue(Settings::Bridge::DeviceName, deviceName());
   config.setValue(Settings::Client::ScrollSpeed, m_spinScrollSpeed->value());
   config.setValue(Settings::Client::InvertScrollDirection, m_checkInvertScroll->isChecked());
 
@@ -196,10 +213,24 @@ QString BridgeClientConfigDialog::renameConfigFile(const QString &newScreenName)
 void BridgeClientConfigDialog::onAccepted() {
   QString oldConfigPath = m_configPath;
   QString newScreenName = m_editScreenName->text().trimmed();
+  const QString newDeviceName = deviceName();
 
   // Validate screen name
   if (newScreenName.isEmpty()) {
     QMessageBox::warning(this, tr("Invalid Input"), tr("Screen name cannot be empty."));
+    return;
+  }
+
+  if (newDeviceName.isEmpty()) {
+    QMessageBox::warning(this, tr("Invalid Input"), tr("Device name cannot be empty."));
+    return;
+  }
+  if (!m_editDeviceName->hasAcceptableInput()) {
+    QMessageBox::warning(
+        this,
+        tr("Invalid Input"),
+        tr("Device name may only use English letters, numbers, spaces, '.', '-' or '_' and must be 22 characters or fewer.")
+    );
     return;
   }
 
@@ -240,4 +271,14 @@ int BridgeClientConfigDialog::scrollSpeed() const
 bool BridgeClientConfigDialog::invertScroll() const
 {
   return m_checkInvertScroll->isChecked();
+}
+
+QString BridgeClientConfigDialog::deviceName() const
+{
+  return m_editDeviceName->text().trimmed();
+}
+
+bool BridgeClientConfigDialog::deviceNameChanged() const
+{
+  return deviceName() != m_originalDeviceName;
 }

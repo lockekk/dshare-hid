@@ -79,6 +79,7 @@ QString BridgeClientConfigManager::createDefaultConfig(const QString &serialNumb
   config.setValue(Settings::Bridge::ScreenHeight, Settings::defaultValue(Settings::Bridge::ScreenHeight));
   config.setValue(Settings::Bridge::ScreenOrientation, Settings::defaultValue(Settings::Bridge::ScreenOrientation));
   config.setValue(Settings::Bridge::HostOs, Settings::defaultValue(Settings::Bridge::HostOs));
+  config.setValue(Settings::Bridge::DeviceName, Settings::defaultValue(Settings::Bridge::DeviceName));
   config.setValue(Settings::Bridge::SerialNumber, serialNumber);
 
   // [client] section

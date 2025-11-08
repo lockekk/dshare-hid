@@ -38,6 +38,10 @@ constexpr uint8_t kUsbFrameTypeControl = 0x80;
 
 constexpr uint8_t kUsbControlHello = 0x01;
 constexpr uint8_t kUsbControlAck = 0x81;
+constexpr uint8_t kUsbControlConfigResponse = 0x82;
+
+constexpr uint8_t kUsbConfigGetDeviceName = 0x02;
+constexpr uint8_t kUsbConfigSetDeviceName = 0x03;
 
 constexpr size_t kAckProtocolVersionIndex = 1;
 constexpr size_t kAckReservedIndex = 2;
@@ -51,6 +55,8 @@ constexpr size_t kAckMinimumPayloadSize = kAckHardwareVersionIndex + 1;
 
 constexpr int kHandshakeTimeoutMs = 2000;
 constexpr int kReadPollIntervalMs = 10;
+constexpr int kConfigCommandTimeoutMs = 1000;
+constexpr size_t kMaxDeviceNameBytes = 22;
 
 std::string hexDump(const uint8_t *data, size_t length, size_t maxBytes = 64)
 {
@@ -310,6 +316,14 @@ bool CdcTransport::performHandshake()
             static_cast<unsigned>(firmwareBcd),
             static_cast<unsigned>(hardwareBcd)
         );
+
+        std::string fetchedName;
+        if (fetchDeviceName(fetchedName)) {
+          LOG_INFO("CDC: firmware device name='%s'", fetchedName.c_str());
+        } else {
+          LOG_WARN("CDC: failed to read device name: %s", m_lastError.c_str());
+          m_lastError.clear();
+        }
       } else {
         LOG_WARN(
             "CDC: handshake ACK missing metadata (payload=%zu)",
@@ -508,6 +522,104 @@ bool CdcTransport::sendUsbFrame(uint8_t type, uint8_t flags, const uint8_t *payl
     return false;
   }
 
+  return true;
+}
+
+
+bool CdcTransport::waitForConfigResponse(uint8_t &msgType, uint8_t &status, std::vector<uint8_t> &payload, int timeoutMs)
+{
+  auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(timeoutMs);
+  while (std::chrono::steady_clock::now() < deadline) {
+    uint8_t frameType = 0;
+    uint8_t flags = 0;
+    std::vector<uint8_t> framePayload;
+    if (!readFrame(frameType, flags, framePayload, kReadPollIntervalMs)) {
+      continue;
+    }
+    if (frameType != kUsbFrameTypeControl || framePayload.empty() || framePayload[0] != kUsbControlConfigResponse) {
+      continue;
+    }
+    if (framePayload.size() < 3) {
+      m_lastError = "Config response too short";
+      return false;
+    }
+    msgType = framePayload[1];
+    status = framePayload[2];
+    payload.assign(framePayload.begin() + 3, framePayload.end());
+    return true;
+  }
+  m_lastError = "Timed out waiting for config response";
+  return false;
+}
+
+bool CdcTransport::fetchDeviceName(std::string &outName)
+{
+  if (!ensureOpen()) {
+    return false;
+  }
+
+  std::vector<uint8_t> payload(1);
+  payload[0] = kUsbConfigGetDeviceName;
+  if (!sendUsbFrame(kUsbFrameTypeControl, 0, payload)) {
+    return false;
+  }
+
+  uint8_t msgType = 0;
+  uint8_t status = 0;
+  std::vector<uint8_t> data;
+  if (!waitForConfigResponse(msgType, status, data, kConfigCommandTimeoutMs)) {
+    return false;
+  }
+
+  if (msgType != kUsbConfigGetDeviceName) {
+    m_lastError = "Unexpected config response";
+    return false;
+  }
+  if (status != 0) {
+    m_lastError = "Firmware error code " + std::to_string(status);
+    return false;
+  }
+
+  outName.assign(reinterpret_cast<const char *>(data.data()), data.size());
+  m_deviceConfig.deviceName = outName;
+  return true;
+}
+
+bool CdcTransport::setDeviceName(const std::string &name)
+{
+  if (!ensureOpen()) {
+    return false;
+  }
+  if (name.size() > kMaxDeviceNameBytes) {
+    m_lastError = "Device name must be <= 22 bytes";
+    return false;
+  }
+
+  std::vector<uint8_t> payload(1 + name.size());
+  payload[0] = kUsbConfigSetDeviceName;
+  std::copy(name.begin(), name.end(), payload.begin() + 1);
+
+  if (!sendUsbFrame(kUsbFrameTypeControl, 0, payload)) {
+    return false;
+  }
+
+  uint8_t msgType = 0;
+  uint8_t status = 0;
+  std::vector<uint8_t> data;
+  if (!waitForConfigResponse(msgType, status, data, kConfigCommandTimeoutMs)) {
+    return false;
+  }
+
+  if (msgType != kUsbConfigSetDeviceName) {
+    m_lastError = "Unexpected config response";
+    return false;
+  }
+  if (status != 0) {
+    m_lastError = "Firmware error code " + std::to_string(status);
+    return false;
+  }
+
+  m_deviceConfig.deviceName = name;
   return true;
 }
 
