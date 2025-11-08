@@ -29,8 +29,8 @@ BridgeClientWidget::BridgeClientWidget(
     m_devicePath(devicePath),
     m_configPath(configPath)
 {
-  setMinimumWidth(500);
-  setMaximumWidth(500);
+  setMinimumWidth(480);
+  setMaximumWidth(520);
 
   // Create horizontal layout for buttons
   auto *layout = new QHBoxLayout(this);
@@ -51,6 +51,8 @@ BridgeClientWidget::BridgeClientWidget(
 
   m_deviceNameLabel = new QLabel(tr("--"), this);
   m_deviceNameLabel->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
+  m_deviceNameLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+  m_deviceNameLabel->setMinimumWidth(140);
 
   // Host OS and orientation labels
   m_hostOsLabel = new QLabel(this);
@@ -64,8 +66,8 @@ BridgeClientWidget::BridgeClientWidget(
   // Add buttons and label to layout
   layout->addWidget(m_btnConnect);
   layout->addWidget(m_btnConfigure);
-  layout->addStretch(); // Push buttons to the left
-  layout->addWidget(m_deviceNameLabel);
+  layout->addSpacing(12);
+  layout->addWidget(m_deviceNameLabel, 1);
   layout->addWidget(m_hostOsLabel);
   layout->addWidget(m_orientationLabel);
 
