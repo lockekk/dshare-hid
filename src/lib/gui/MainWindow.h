@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <QHash>
 #include <QMainWindow>
 #include <QMutex>
 #include <QProcess>
@@ -175,7 +176,7 @@ private:
   void updateBridgeClientDeviceStates();
   void usbDeviceConnected(const deskflow::gui::UsbDeviceInfo &device);
   void usbDeviceDisconnected(const deskflow::gui::UsbDeviceInfo &device);
-  void bridgeClientConnectToggled(const QString &devicePath, bool shouldConnect);
+  void bridgeClientConnectToggled(const QString &devicePath, const QString &configPath, bool shouldConnect);
   void bridgeClientConfigureClicked(const QString &devicePath, const QString &configPath);
   Q_INVOKABLE void bridgeClientDeletedFromServerConfig(const QString &configPath);
   void bridgeClientProcessReadyRead(const QString &devicePath);
@@ -186,6 +187,9 @@ private:
   bool applyFirmwareDeviceName(const QString &devicePath, const QString &deviceName);
   bool isValidDeviceName(const QString &deviceName) const;
   bool fetchFirmwareDeviceName(const QString &devicePath, QString &outName);
+  bool acquireBridgeSerialLock(const QString &serialNumber, const QString &configPath);
+  void releaseBridgeSerialLock(const QString &serialNumber, const QString &configPath);
+  void applySerialGroupLockState(const QString &serialNumber);
 
   inline static const auto m_guiSocketName = QStringLiteral("deskflow-gui");
   inline static const auto m_nameRegEx = QRegularExpression(QStringLiteral("^[\\w\\-_\\.]{0,255}$"));
@@ -213,6 +217,12 @@ private:
   // Track device path -> serial number mapping when devices connect
   // (needed because sysfs disappears when device disconnects)
   QMap<QString, QString> m_devicePathToSerialNumber;
+
+  // Serial number -> config path holding the active connection
+  QHash<QString, QString> m_bridgeSerialLocks;
+
+  // Device path -> config path for currently running bridge client process
+  QHash<QString, QString> m_bridgeClientDeviceToConfig;
 
   // Bridge client process management: device path -> QProcess*
   QMap<QString, QProcess*> m_bridgeClientProcesses;

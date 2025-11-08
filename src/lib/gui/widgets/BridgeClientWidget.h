@@ -106,6 +106,13 @@ public:
   void setDeviceName(const QString &deviceName);
 
   /**
+   * @brief Enable/disable controls when another config with the same serial is active
+   * @param locked true to disable controls, false to allow interaction
+   * @param reason Optional tooltip that explains why the controls are disabled
+   */
+  void setGroupLocked(bool locked, const QString &reason = QString());
+
+  /**
    * @brief Check if device is available
    */
   bool isDeviceAvailable() const
@@ -117,9 +124,10 @@ Q_SIGNALS:
   /**
    * @brief Emitted when connect button is toggled
    * @param devicePath Device path
+   * @param configPath Config file path
    * @param connected true to connect, false to disconnect
    */
-  void connectToggled(const QString &devicePath, bool connected);
+  void connectToggled(const QString &devicePath, const QString &configPath, bool connected);
 
   /**
    * @brief Emitted when configure button is clicked
@@ -136,12 +144,15 @@ private:
   void refreshOrientationLabel();
   void refreshHostOsIcon();
   void refreshDeviceNameLabel();
+  void refreshButtonStates();
 
   QString m_screenName;
   QString m_devicePath;
   QString m_configPath;
   bool m_isConnected = false;
   bool m_deviceAvailable = false;
+  bool m_groupLocked = false;
+  QString m_groupLockReason;
 
   QPushButton *m_btnConnect;
   QPushButton *m_btnConfigure;

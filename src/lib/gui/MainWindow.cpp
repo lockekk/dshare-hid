@@ -1550,26 +1550,28 @@ void MainWindow::usbDeviceDisconnected(const UsbDeviceInfo &device)
   m_devicePathToSerialNumber.remove(device.devicePath);
 }
 
-void MainWindow::bridgeClientConnectToggled(const QString &devicePath, bool shouldConnect)
+void MainWindow::bridgeClientConnectToggled(const QString &devicePath, const QString &configPath, bool shouldConnect)
 {
   qDebug() << "Bridge client connect toggled:"
            << "device:" << devicePath
+           << "config:" << configPath
            << "connect:" << shouldConnect;
 
-  if (shouldConnect) {
-    // Find the config file for this device path
-    QString configPath;
-    for (auto it = m_bridgeClientWidgets.begin(); it != m_bridgeClientWidgets.end(); ++it) {
-      BridgeClientWidget *widget = it.value();
-      if (widget->devicePath() == devicePath) {
-        configPath = it.key();
-        break;
-      }
-    }
+  BridgeClientWidget *targetWidget = m_bridgeClientWidgets.value(configPath, nullptr);
+  if (!targetWidget) {
+    qWarning() << "No widget found for config:" << configPath << "device:" << devicePath;
+    setStatus(tr("Error: No configuration found for device: %1").arg(devicePath));
+    return;
+  }
 
-    if (configPath.isEmpty()) {
-      qWarning() << "No config found for device:" << devicePath;
-      setStatus(tr("Error: No configuration found for device: %1").arg(devicePath));
+  const QString serialNumber = BridgeClientConfigManager::readSerialNumber(configPath);
+
+  if (shouldConnect) {
+    if (!acquireBridgeSerialLock(serialNumber, configPath)) {
+      if (targetWidget) {
+        targetWidget->setConnected(false);
+      }
+      setStatus(tr("Another bridge client profile for this device is already connected."));
       return;
     }
 
@@ -1684,6 +1686,7 @@ void MainWindow::bridgeClientConnectToggled(const QString &devicePath, bool shou
       // Clean up
       m_bridgeClientProcesses.remove(devicePath);
       process->deleteLater();
+      releaseBridgeSerialLock(serialNumber, configPath);
 
       // Reset the button state
       if (auto *widget = m_bridgeClientWidgets.value(configPath)) {
@@ -1693,6 +1696,7 @@ void MainWindow::bridgeClientConnectToggled(const QString &devicePath, bool shou
     }
 
     qInfo() << "Bridge client process started for device:" << devicePath << "PID:" << process->processId();
+    m_bridgeClientDeviceToConfig[devicePath] = configPath;
 
     // Start connection timeout timer (5 seconds)
     QTimer *timer = new QTimer(this);
@@ -1805,9 +1809,10 @@ void MainWindow::bridgeClientConfigureClicked(const QString &devicePath, const Q
           setStatus(statusMsg);
 
           if (wasConnected && widgetPtr) {
-            QTimer::singleShot(200, this, [this, widgetPtr]() {
+            const QString widgetConfigPath = finalConfigPath;
+            QTimer::singleShot(200, this, [this, widgetPtr, widgetConfigPath]() {
               if (widgetPtr) {
-                bridgeClientConnectToggled(widgetPtr->devicePath(), true);
+                bridgeClientConnectToggled(widgetPtr->devicePath(), widgetConfigPath, true);
               }
             });
           }
@@ -1978,6 +1983,75 @@ void MainWindow::updateBridgeClientDeviceStates()
   }
 }
 
+bool MainWindow::acquireBridgeSerialLock(const QString &serialNumber, const QString &configPath)
+{
+  if (serialNumber.isEmpty()) {
+    return true;
+  }
+
+  const QString existingConfig = m_bridgeSerialLocks.value(serialNumber);
+  if (!existingConfig.isEmpty() && existingConfig != configPath) {
+    qWarning() << "Serial" << serialNumber << "is already locked by" << existingConfig << "- rejecting" << configPath;
+    return false;
+  }
+
+  m_bridgeSerialLocks.insert(serialNumber, configPath);
+  applySerialGroupLockState(serialNumber);
+  return true;
+}
+
+void MainWindow::releaseBridgeSerialLock(const QString &serialNumber, const QString &configPath)
+{
+  if (serialNumber.isEmpty()) {
+    return;
+  }
+
+  const QString existingConfig = m_bridgeSerialLocks.value(serialNumber);
+  if (existingConfig == configPath) {
+    m_bridgeSerialLocks.remove(serialNumber);
+  }
+
+  applySerialGroupLockState(serialNumber);
+}
+
+void MainWindow::applySerialGroupLockState(const QString &serialNumber)
+{
+  if (serialNumber.isEmpty()) {
+    return;
+  }
+
+  const QString activeConfig = m_bridgeSerialLocks.value(serialNumber);
+  QStringList configs = BridgeClientConfigManager::findConfigsBySerialNumber(serialNumber);
+  if (configs.isEmpty()) {
+    return;
+  }
+
+  const bool shouldLockOthers = configs.size() > 1 && !activeConfig.isEmpty();
+  QString activeScreenName;
+  if (!activeConfig.isEmpty()) {
+    if (BridgeClientWidget *activeWidget = m_bridgeClientWidgets.value(activeConfig, nullptr)) {
+      activeScreenName = activeWidget->screenName();
+    }
+  }
+
+  for (const QString &configPath : configs) {
+    BridgeClientWidget *widget = m_bridgeClientWidgets.value(configPath, nullptr);
+    if (!widget) {
+      continue;
+    }
+
+    if (!shouldLockOthers || configPath == activeConfig) {
+      widget->setGroupLocked(false);
+      continue;
+    }
+
+    const QString tooltip = activeScreenName.isEmpty()
+                                ? tr("Another profile for this device is already connected")
+                                : tr("%1 is already connected for this device").arg(activeScreenName);
+    widget->setGroupLocked(true, tooltip);
+  }
+}
+
 void MainWindow::bridgeClientProcessReadyRead(const QString &devicePath)
 {
   QProcess *process = m_bridgeClientProcesses.value(devicePath);
@@ -2065,22 +2139,40 @@ void MainWindow::bridgeClientProcessFinished(const QString &devicePath, int exit
     process->deleteLater();
   }
 
-  // Find the widget and reset connection state
-  for (auto it = m_bridgeClientWidgets.begin(); it != m_bridgeClientWidgets.end(); ++it) {
-    BridgeClientWidget *widget = it.value();
-    if (widget->devicePath() == devicePath) {
-      widget->setConnected(false);
-      QString screenName = widget->screenName();
+  QString configPath = m_bridgeClientDeviceToConfig.take(devicePath);
+  BridgeClientWidget *matchedWidget = nullptr;
+  if (!configPath.isEmpty()) {
+    matchedWidget = m_bridgeClientWidgets.value(configPath, nullptr);
+  }
 
-      if (exitStatus == QProcess::CrashExit) {
-        setStatus(tr("Bridge client crashed: %1").arg(screenName));
-      } else if (exitCode != 0) {
-        setStatus(tr("Bridge client exited with error: %1 (code %2)").arg(screenName).arg(exitCode));
-      } else {
-        setStatus(tr("Bridge client disconnected: %1").arg(screenName));
+  if (!matchedWidget) {
+    for (auto it = m_bridgeClientWidgets.begin(); it != m_bridgeClientWidgets.end(); ++it) {
+      BridgeClientWidget *widget = it.value();
+      if (widget->devicePath() == devicePath) {
+        matchedWidget = widget;
+        configPath = it.key();
+        break;
       }
-      break;
     }
+  }
+
+  // Find the widget and reset connection state
+  if (matchedWidget) {
+    matchedWidget->setConnected(false);
+    QString screenName = matchedWidget->screenName();
+
+    if (exitStatus == QProcess::CrashExit) {
+      setStatus(tr("Bridge client crashed: %1").arg(screenName));
+    } else if (exitCode != 0) {
+      setStatus(tr("Bridge client exited with error: %1 (code %2)").arg(screenName).arg(exitCode));
+    } else {
+      setStatus(tr("Bridge client disconnected: %1").arg(screenName));
+    }
+  }
+
+  if (!configPath.isEmpty()) {
+    const QString serialNumber = BridgeClientConfigManager::readSerialNumber(configPath);
+    releaseBridgeSerialLock(serialNumber, configPath);
   }
 }
 

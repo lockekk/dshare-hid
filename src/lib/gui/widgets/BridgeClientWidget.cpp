@@ -10,6 +10,7 @@
 
 #include <QHBoxLayout>
 #include <QSettings>
+#include <QSignalBlocker>
 
 namespace {
 constexpr auto kLandscapeIconPath = ":/bridge-client/client/orientation_landspace.png";
@@ -78,16 +79,18 @@ BridgeClientWidget::BridgeClientWidget(
   refreshDeviceNameLabel();
   refreshHostOsIcon();
   refreshOrientationLabel();
+  refreshButtonStates();
 }
 
 void BridgeClientWidget::setConnected(bool connected)
 {
   m_isConnected = connected;
-  m_btnConnect->setChecked(connected);
+  {
+    const QSignalBlocker blocker(m_btnConnect);
+    m_btnConnect->setChecked(connected);
+  }
   m_btnConnect->setText(connected ? tr("Disconnect") : tr("Connect"));
-
-  // Disable Configure button when connected
-  m_btnConfigure->setEnabled(!connected);
+  refreshButtonStates();
 }
 
 void BridgeClientWidget::updateConfig(const QString &screenName, const QString &configPath)
@@ -178,32 +181,62 @@ void BridgeClientWidget::setDeviceAvailable(const QString &devicePath, bool avai
   m_deviceAvailable = available;
   m_devicePath = available ? devicePath : QString();
 
-  // Enable/disable the connect button based on device availability
-  m_btnConnect->setEnabled(available);
+  refreshButtonStates();
 
-  // Configure button is enabled when device is not connected
-  // (can configure even if device not plugged in, but not while connected)
-  m_btnConfigure->setEnabled(!m_isConnected);
-
-  // Update tooltip to indicate device status
   if (!available) {
-    m_btnConnect->setToolTip(tr("Device not connected"));
     setStyleSheet("QGroupBox { color: gray; }");
   } else {
-    m_btnConnect->setToolTip(tr("Connect/disconnect bridge client"));
     setStyleSheet("");
   }
+}
+
+void BridgeClientWidget::setGroupLocked(bool locked, const QString &reason)
+{
+  m_groupLocked = locked;
+  m_groupLockReason = reason;
+  refreshButtonStates();
+}
+
+void BridgeClientWidget::refreshButtonStates()
+{
+  const bool connectEnabled = m_deviceAvailable && (!m_groupLocked || m_isConnected);
+  m_btnConnect->setEnabled(connectEnabled);
+
+  QString connectTooltip;
+  if (!m_deviceAvailable) {
+    connectTooltip = tr("Device not connected");
+  } else if (m_groupLocked && !m_isConnected) {
+    connectTooltip = m_groupLockReason.isEmpty()
+                         ? tr("Another profile for this device is already connected")
+                         : m_groupLockReason;
+  } else {
+    connectTooltip = tr("Connect/disconnect bridge client");
+  }
+  m_btnConnect->setToolTip(connectTooltip);
+
+  const bool configureEnabled = !m_isConnected && !m_groupLocked;
+  m_btnConfigure->setEnabled(configureEnabled);
+
+  QString configureTooltip;
+  if (m_isConnected) {
+    configureTooltip = tr("Disconnect before configuring");
+  } else if (m_groupLocked) {
+    configureTooltip = m_groupLockReason.isEmpty()
+                           ? tr("This profile is locked because another one is connected")
+                           : m_groupLockReason;
+  } else {
+    configureTooltip = tr("Configure bridge client settings");
+  }
+  m_btnConfigure->setToolTip(configureTooltip);
 }
 
 void BridgeClientWidget::onConnectToggled(bool checked)
 {
   m_isConnected = checked;
   m_btnConnect->setText(checked ? tr("Disconnect") : tr("Connect"));
+  refreshButtonStates();
 
-  // Disable Configure button when connected
-  m_btnConfigure->setEnabled(!checked);
-
-  Q_EMIT connectToggled(m_devicePath, checked);
+  Q_EMIT connectToggled(m_devicePath, m_configPath, checked);
 }
 
 void BridgeClientWidget::onConfigureClicked()
