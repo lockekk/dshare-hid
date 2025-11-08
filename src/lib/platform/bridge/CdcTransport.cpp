@@ -140,7 +140,6 @@ bool CdcTransport::open()
     LOG_ERR("CDC: %s", m_lastError.c_str());
     return false;
   }
-
   struct termios tty;
   if (tcgetattr(m_fd, &tty) != 0) {
     m_lastError = "Failed to get terminal attributes";
@@ -251,6 +250,7 @@ bool CdcTransport::performHandshake()
 {
   if (!isOpen()) {
     m_lastError = "Device not open";
+    LOG_ERR("CDC: performHandshake aborted because device is not open.");
     return false;
   }
 
@@ -616,6 +616,7 @@ bool CdcTransport::setDeviceName(const std::string &name)
   }
   if (status != 0) {
     m_lastError = "Firmware error code " + std::to_string(status);
+    LOG_ERR("CDC: setDeviceName firmware returned error=%u", status);
     return false;
   }
 

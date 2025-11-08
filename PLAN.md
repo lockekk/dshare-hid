@@ -9,6 +9,7 @@
   - BridgePlatformScreen applies the invert flag so BLE scrolling follows the user setting.
   - Bridge widgets show the detected firmware host OS (iOS/Android/Unknown) and display orientation with per-device icons.
   - GUI prevents duplicate GUI/server instances more clearly and gracefully shuts down bridge clients when quitting.
+  - Firmware BLE device name is fetched on handshake, displayed in the GUI, stored per-config, and can be edited from the config dialog (writes back via CDC `SET_DEVICE_NAME`).
 
 ## Problem
 Need to extend PC keyboard/mouse control to mobile devices (iPad/iPhone/Android) that don't support standard Deskflow client installation while relying on a BLE radio that remains stable in typical office environments; the Pico 2 W modules we used initially have unacceptable packet loss, so the plan now standardizes on ESP32 hardware.
@@ -74,6 +75,9 @@ Compatibility requirements:
 - GUI loads all existing configs on startup
 - Config contains: serial number, screen dimensions, orientation, screen name, log level
 - Nov 2025: Scroll speed + invert-direction settings added; defaults follow upstream client flags and are passed to bridge launches
+- Firmware device name stored alongside the above:
+  - GUI fetches the name from the ESP32 during handshake (or on demand), shows it on each bridge tile, and persists it in each `.conf`.
+  - Config dialog lets the user edit the name (ASCII, ≤22 chars); applying changes sends CDC `SET_DEVICE_NAME` to the bridge (bridge client is temporarily stopped/restarted if it was connected).
 - Serial number used to match USB devices to config files
 - Vendor filter: only USB CDC devices with vendor ID 303a (Espressif) generate configs
 - Config file names mirror the bridge screen name (default `Bridge-<tty>`), preventing duplicate files when the client launches

@@ -7,6 +7,8 @@
  */
 
 #include "VersionInfo.h"
+#include "arch/Arch.h"
+#include "base/Log.h"
 #include "common/Constants.h"
 #include "common/ExitCodes.h"
 #include "common/UrlConstants.h"
@@ -54,6 +56,11 @@ int main(int argc, char *argv[])
 #if defined(WINAPI_XWINDOWS) or defined(WINAPI_LIBEI)
   deskflow::platform::setAppId();
 #endif
+
+  Arch arch;
+  arch.init();
+
+  Log log;
 
   QCoreApplication::setApplicationName(kAppName);
   QCoreApplication::setOrganizationName(kAppName);
