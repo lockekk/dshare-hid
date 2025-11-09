@@ -20,6 +20,11 @@ if(UNIX AND NOT APPLE)
     devices/UsbDeviceHelper.cpp
     devices/UsbDeviceHelper.h
   )
+elseif(WIN32)
+  set (device_sources
+    devices/UsbDeviceHelper.cpp
+    devices/UsbDeviceHelper.h
+  )
 endif()
 
 add_library(${target} STATIC

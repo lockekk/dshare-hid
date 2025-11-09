@@ -23,7 +23,7 @@ namespace {
 constexpr int kMinMouseDelta = -127;
 constexpr int kMaxMouseDelta = 127;
 constexpr int kDefaultMouseThrottleIntervalMs = 50;
-constexpr int64_t kPendingDeltaLimit = std::numeric_limits<int32_t>::max();
+constexpr int64_t kPendingDeltaLimit = (std::numeric_limits<int32_t>::max)();
 
 std::string hexDump(const uint8_t *data, size_t length, size_t maxBytes = 32)
 {
@@ -31,7 +31,7 @@ std::string hexDump(const uint8_t *data, size_t length, size_t maxBytes = 32)
     return {};
   }
 
-  const size_t limit = std::min(length, maxBytes);
+  const size_t limit = (std::min)(length, maxBytes);
 
   std::ostringstream oss;
   oss << std::hex << std::uppercase << std::setfill('0');
@@ -304,7 +304,7 @@ void BridgePlatformScreen::scheduleMouseFlush(std::chrono::steady_clock::time_po
   }
 
   const bool shouldFlushImmediately =
-      (m_lastMouseFlush == std::chrono::steady_clock::time_point::min()) ||
+      (m_lastMouseFlush == (std::chrono::steady_clock::time_point::min)()) ||
       (now - m_lastMouseFlush >= m_mouseThrottleInterval);
 
   if (shouldFlushImmediately) {
@@ -340,7 +340,7 @@ void BridgePlatformScreen::resetMouseAccumulator() const
 {
   m_pendingDx = 0;
   m_pendingDy = 0;
-  m_lastMouseFlush = std::chrono::steady_clock::time_point::min();
+  m_lastMouseFlush = (std::chrono::steady_clock::time_point::min)();
   cancelMouseFlushTimer();
 }
 

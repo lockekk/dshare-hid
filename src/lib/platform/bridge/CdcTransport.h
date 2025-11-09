@@ -152,7 +152,7 @@ private:
   bool ensureOpen();
 
   QString m_devicePath;
-  int m_fd = -1; // File descriptor (Unix) or HANDLE (Windows)
+  intptr_t m_fd = -1; // File descriptor (Unix) or HANDLE (Windows)
   bool m_handshakeComplete = false;
   uint32_t m_lastNonce = 0;
   std::vector<uint8_t> m_rxBuffer;

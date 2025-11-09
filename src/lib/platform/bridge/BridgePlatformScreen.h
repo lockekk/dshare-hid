@@ -152,7 +152,7 @@ private:
   mutable int64_t m_pendingDx = 0;
   mutable int64_t m_pendingDy = 0;
   mutable std::chrono::steady_clock::time_point m_lastMouseFlush =
-      std::chrono::steady_clock::time_point::min();
+      (std::chrono::steady_clock::time_point::min)();
 };
 
 } // namespace deskflow::bridge

@@ -111,6 +111,12 @@ QString UsbDeviceHelper::readSerialNumber(const QString &devicePath)
 
   qWarning() << "Failed to read serial number for" << devicePath << "after checking"
              << attemptedPaths;
+#elif defined(Q_OS_WIN)
+  // TODO: Add CDC command to read serial number from device firmware
+  // For now, return device path as identifier to allow connection
+  // This enables the connect button until proper serial number reading is implemented
+  Q_UNUSED(devicePath);
+  return devicePath; // Use device path as temporary identifier
 #endif
 
   return QString();
@@ -143,6 +149,20 @@ QMap<QString, QString> UsbDeviceHelper::getConnectedDevices()
   }
 
   qDebug() << "Found" << devices.size() << "connected USB CDC devices";
+#elif defined(Q_OS_WIN)
+  // On Windows, enumerate COM ports
+  // Scan registry for available COM ports
+  for (int i = 1; i <= 256; i++) {
+    QString devicePath = QString("\\\\.\\COM%1").arg(i);
+
+    if (isSupportedBridgeDevice(devicePath)) {
+      QString serialNumber = readSerialNumber(devicePath);
+      devices[devicePath] = serialNumber.isEmpty() ? QString("COM%1").arg(i) : serialNumber;
+      qDebug() << "Found bridge device at" << devicePath;
+    }
+  }
+
+  qDebug() << "Found" << devices.size() << "connected USB CDC devices on Windows";
 #endif
 
   return devices;
@@ -167,6 +187,17 @@ bool UsbDeviceHelper::isSupportedBridgeDevice(const QString &devicePath)
 
   qDebug() << "Device" << devicePath << "has unsupported vendor id" << vendorId;
   return false;
+#elif defined(Q_OS_WIN)
+  // On Windows, try to open and handshake with the device
+  // This is simpler than querying hardware IDs from the registry
+  deskflow::bridge::CdcTransport transport(devicePath);
+  if (!transport.open()) {
+    return false;
+  }
+
+  bool isSupported = transport.hasDeviceConfig();
+  transport.close();
+  return isSupported;
 #else
   Q_UNUSED(devicePath);
   return false;
@@ -177,7 +208,7 @@ bool UsbDeviceHelper::verifyBridgeHandshake(
     const QString &devicePath, deskflow::bridge::FirmwareConfig *configOut, int timeoutMs
 )
 {
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX) || defined(Q_OS_WIN)
   Q_UNUSED(timeoutMs);
 
   deskflow::bridge::CdcTransport transport(devicePath);
@@ -222,6 +253,7 @@ bool UsbDeviceHelper::verifyBridgeHandshake(
 #else
   Q_UNUSED(devicePath)
   Q_UNUSED(timeoutMs)
+  Q_UNUSED(configOut)
   return false;
 #endif
 }

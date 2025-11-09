@@ -64,7 +64,7 @@ std::string hexDump(const uint8_t *data, size_t length, size_t maxBytes = 64)
     return {};
   }
 
-  const size_t limit = std::min(length, maxBytes);
+  const size_t limit = (std::min)(length, maxBytes);
 
   std::ostringstream oss;
   oss << std::hex << std::uppercase << std::setfill('0');
