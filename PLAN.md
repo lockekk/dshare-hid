@@ -1,5 +1,29 @@
 # USB-HID Bridge Device Plan
 
+## Running on Windows (Development)
+
+### Terminal 1: Run daemon in foreground (no service needed)
+```
+build\bin\deskflow-daemon.exe --foreground
+```
+
+### Terminal 2: Run GUI (must be in terminal)
+```
+build\bin\deskflow.exe
+```
+
+**How it works:**
+- The daemon starts and creates a watchdog process manager in `Idle` state
+- The daemon listens for IPC commands from the GUI (via QLocalSocket)
+- When you click "Start" in the GUI, it sends IPC commands to the daemon:
+  - `commandChanged` → Sets the command to run (e.g., `deskflow-core --server ...`)
+  - `elevateModeChanged` → Sets whether to run with elevation
+  - `startProcessRequested` → Triggers the watchdog to start the process
+- The watchdog then spawns `deskflow-core.exe` as a child process
+- The GUI can monitor and control the core process through the daemon
+
+**Note:** The daemon does NOT automatically start deskflow-core on startup. It only creates core instances when commanded via IPC by the GUI.
+
 ## Change Summary
 - Multi-instance support validated in practice: two bridge clients can now connect concurrently to a single server on the same PC.
 - Bridge client temporarily reports a fixed 1920×1080 display size so the server accepts DINF responses during debugging.
