@@ -1116,26 +1116,8 @@ uint8_t BridgePlatformScreen::convertKey(KeyID id, KeyButton button) const
 
 uint8_t BridgePlatformScreen::convertButtonID(ButtonID id) const
 {
-  switch (id) {
-  case 1:
-    return 0x01; // Left
-  case 2:
-    return 0x04; // Right
-  case 3:
-    return 0x02; // Middle
-  case 4:
-    return 0x08; // Back (Button 4)
-  case 5:
-    return 0x10; // Forward (Button 5)
-  case 6:
-    return 0x20; // Button 6
-  case 7:
-    return 0x40; // Button 7
-  case 8:
-    return 0x80; // Button 8
-  default:
-    return 0;
-  }
+  // Return the button ID directly for the firmware
+  return static_cast<uint8_t>(id);
 }
 
 } // namespace deskflow::bridge
