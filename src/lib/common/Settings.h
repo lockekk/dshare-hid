@@ -154,6 +154,7 @@ private:
   Settings(const Settings &other) = delete;
   ~Settings() override = default;
   void cleanSettings();
+  static QString bridgeClientTlsDir();
 
   QSettings *m_settings = nullptr;
   QString m_portableSettingsFile = QStringLiteral("%1/settings/%2.conf");

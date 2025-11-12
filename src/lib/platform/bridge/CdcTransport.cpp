@@ -175,7 +175,7 @@ bool CdcTransport::open()
     return false;
   }
 
-  m_fd = reinterpret_cast<int>(handle);
+  m_fd = reinterpret_cast<intptr_t>(handle);
 
   DCB dcb = {0};
   dcb.DCBlength = sizeof(DCB);

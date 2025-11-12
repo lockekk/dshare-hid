@@ -22,6 +22,8 @@ if(UNIX AND NOT APPLE)
   )
 elseif(WIN32)
   set (device_sources
+    devices/WindowsUsbMonitor.cpp
+    devices/WindowsUsbMonitor.h
     devices/UsbDeviceHelper.cpp
     devices/UsbDeviceHelper.h
   )
@@ -165,6 +167,7 @@ if(WIN32)
     base
     arch
     net
+    setupapi
   )
 endif()
 

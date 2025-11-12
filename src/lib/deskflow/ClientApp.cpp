@@ -112,7 +112,7 @@ deskflow::Screen *ClientApp::createScreen()
 #if WINAPI_MSWINDOWS
   return new deskflow::Screen(
       new MSWindowsScreen(
-          false, Settings::value(Settings::Core::UseHooks).toBool(), getEvents(),
+          false, !Settings::value(Settings::Core::UseHooks).toBool(), getEvents(),
           Settings::value(Settings::Client::LanguageSync).toBool(), invertScrolling
       ),
       getEvents()

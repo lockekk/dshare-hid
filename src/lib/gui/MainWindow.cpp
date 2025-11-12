@@ -37,6 +37,8 @@
 #if defined(Q_OS_LINUX)
 #include "Config.h"
 #include "devices/LinuxUdevMonitor.h"
+#elif defined(Q_OS_WIN)
+#include "devices/WindowsUsbMonitor.h"
 #endif
 
 #include <QCloseEvent>
@@ -171,25 +173,32 @@ MainWindow::MainWindow()
   // Load bridge client configs and create widgets
   loadBridgeClientConfigs();
 
-  // Setup USB device monitoring (Linux only for now)
+  // Setup USB device monitoring
 #if defined(Q_OS_LINUX)
   m_usbDeviceMonitor = new LinuxUdevMonitor(this);
-  // Filter for Espressif vendor ID (0x303a)
-  m_usbDeviceMonitor->setVendorIdFilter(UsbDeviceHelper::kEspressifVendorId);
-  // Connect signals
-  connect(m_usbDeviceMonitor, &UsbDeviceMonitor::deviceConnected,
-          this, &MainWindow::usbDeviceConnected);
-  connect(m_usbDeviceMonitor, &UsbDeviceMonitor::deviceDisconnected,
-          this, &MainWindow::usbDeviceDisconnected);
-  // Start monitoring
-  if (m_usbDeviceMonitor->startMonitoring()) {
-    qDebug() << "USB device monitoring started successfully";
-  } else {
-    qWarning() << "Failed to start USB device monitoring";
-  }
+#elif defined(Q_OS_WIN)
+  m_usbDeviceMonitor = new WindowsUsbMonitor(this);
+#endif
 
-  // Always update device states on startup to detect already-connected devices
-  updateBridgeClientDeviceStates();
+#if defined(Q_OS_LINUX) || defined(Q_OS_WIN)
+  if (m_usbDeviceMonitor) {
+    // Filter for Espressif vendor ID (0x303a)
+    m_usbDeviceMonitor->setVendorIdFilter(UsbDeviceHelper::kEspressifVendorId);
+    // Connect signals
+    connect(m_usbDeviceMonitor, &UsbDeviceMonitor::deviceConnected,
+            this, &MainWindow::usbDeviceConnected);
+    connect(m_usbDeviceMonitor, &UsbDeviceMonitor::deviceDisconnected,
+            this, &MainWindow::usbDeviceDisconnected);
+    // Start monitoring
+    if (m_usbDeviceMonitor->startMonitoring()) {
+      qDebug() << "USB device monitoring started successfully";
+    } else {
+      qWarning() << "Failed to start USB device monitoring";
+    }
+
+    // Always update device states on startup to detect already-connected devices
+    updateBridgeClientDeviceStates();
+  }
 #endif
 
   updateScreenName();

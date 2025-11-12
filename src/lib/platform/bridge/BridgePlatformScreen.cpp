@@ -363,18 +363,20 @@ void BridgePlatformScreen::fakeKeyDown(KeyID id, KeyModifierMask mask, KeyButton
   // Regular keyboard key
   const uint8_t hidKey = convertKey(id, button);
   uint8_t hidModifiers = convertModifiers(mask);
+  uint8_t modifierBit = 0;
 
   if (uint8_t extra = modifierBitForKey(id); extra != 0) {
+    modifierBit = extra;
     hidModifiers |= extra;
   } else if (uint8_t extraBtn = modifierBitForButton(button); extraBtn != 0) {
+    modifierBit = extraBtn;
     hidModifiers |= extraBtn;
   }
 
   m_activeModifiers = mask;
+  m_currentHidModifiers = hidModifiers;
   m_pressedButtons.insert(button);
-  if (hidKey != 0) {
-    m_pressedKeycodes.insert(hidKey);
-  }
+  m_buttonToActiveKey[button] = ActiveKeyState{hidKey, modifierBit};
 
   if (hidKey == 0 && hidModifiers == 0) {
     return;
@@ -389,9 +391,45 @@ bool BridgePlatformScreen::fakeKeyRepeat(
     KeyID id, KeyModifierMask mask, int32_t count, KeyButton button, const std::string &
 )
 {
-  for (int32_t i = 0; i < count; ++i) {
-    fakeKeyDown(id, mask, button, {});
+  LOG_DEBUG("BridgeScreen: key repeat id=0x%04x button=%d count=%d", id, button, count);
+
+  if (count <= 0) {
+    return true;
   }
+
+  const uint16_t consumerCode = convertMediaKeyToConsumerControl(id);
+  if (consumerCode != 0) {
+    for (int32_t i = 0; i < count; ++i) {
+      if (!sendConsumerControlEvent(HidEventType::ConsumerControlPress, consumerCode) ||
+          !sendConsumerControlEvent(HidEventType::ConsumerControlRelease, consumerCode)) {
+        LOG_ERR("BridgeScreen: failed to send consumer control repeat");
+        return false;
+      }
+    }
+    return true;
+  }
+
+  const uint8_t hidKey = convertKey(id, button);
+  uint8_t hidModifiers = convertModifiers(mask);
+
+  if (uint8_t extra = modifierBitForKey(id); extra != 0) {
+    hidModifiers |= extra;
+  } else if (uint8_t extraBtn = modifierBitForButton(button); extraBtn != 0) {
+    hidModifiers |= extraBtn;
+  }
+
+  if (hidKey == 0 && hidModifiers == 0) {
+    return true;
+  }
+
+  for (int32_t i = 0; i < count; ++i) {
+    if (!sendKeyboardEvent(HidEventType::KeyboardPress, hidModifiers, hidKey) ||
+        !sendKeyboardEvent(HidEventType::KeyboardRelease, hidModifiers, hidKey)) {
+      LOG_ERR("BridgeScreen: failed to send keyboard repeat");
+      return false;
+    }
+  }
+
   return true;
 }
 
@@ -413,25 +451,24 @@ bool BridgePlatformScreen::fakeKeyUp(KeyButton button)
   }
 
   // Regular keyboard key
-  const uint8_t hidKey = convertKey(0, button);
-  uint8_t hidModifiers = 0;
+  uint8_t hidKey = 0;
+  uint8_t modifierBit = 0;
+  if (auto infoIt = m_buttonToActiveKey.find(button); infoIt != m_buttonToActiveKey.end()) {
+    hidKey = infoIt->second.hidKey;
+    modifierBit = infoIt->second.modifierBit;
+    m_buttonToActiveKey.erase(infoIt);
+  } else {
+    hidKey = convertKey(0, button);
+  }
 
-  m_pressedKeycodes.erase(hidKey);
   m_pressedButtons.erase(button);
-  if (m_pressedButtons.empty()) {
-    m_activeModifiers = 0;
+  if (modifierBit != 0) {
+    m_currentHidModifiers &= ~modifierBit;
+  } else {
+    m_currentHidModifiers = activeModifierBitmap();
   }
 
-  // Only compute modifiers if we have a valid key to send
-  if (hidKey != 0) {
-    hidModifiers = convertModifiers(m_activeModifiers);
-  }
-
-  if (hidKey == 0 && hidModifiers == 0) {
-    return true;
-  }
-
-  if (!sendKeyboardEvent(HidEventType::KeyboardRelease, hidModifiers, hidKey)) {
+  if (!sendKeyboardEvent(HidEventType::KeyboardRelease, m_currentHidModifiers, hidKey)) {
     LOG_ERR("BridgeScreen: failed to send key release");
   }
   return true;
@@ -449,15 +486,19 @@ void BridgePlatformScreen::fakeAllKeysUp()
   }
 
   // Release all keyboard keys
-  for (uint8_t hidKey : m_pressedKeycodes) {
-    if (!sendKeyboardEvent(HidEventType::KeyboardRelease, 0, hidKey)) {
-      LOG_ERR("BridgeScreen: failed to send key release for %u", hidKey);
+  for (const auto &[button, state] : m_buttonToActiveKey) {
+    if (state.modifierBit != 0) {
+      m_currentHidModifiers &= ~state.modifierBit;
+    }
+    if (!sendKeyboardEvent(HidEventType::KeyboardRelease, m_currentHidModifiers, state.hidKey)) {
+      LOG_ERR("BridgeScreen: failed to send key release for %u", state.hidKey);
     }
   }
 
   m_pressedConsumerControls.clear();
-  m_pressedKeycodes.clear();
   m_pressedButtons.clear();
+  m_buttonToActiveKey.clear();
+  m_currentHidModifiers = 0;
   m_activeModifiers = 0;
 }
 
@@ -840,6 +881,67 @@ uint8_t BridgePlatformScreen::convertKeyID(KeyID id) const
     return static_cast<uint8_t>(0x1E + (id - '1'));
   if (id == '0')
     return 0x27;
+#if defined(Q_OS_WIN)
+  // Windows servers report ASCII symbols for both shifted/unshifted punctuation.
+  // Map them explicitly to the underlying HID key so Shift works transparently.
+  switch (id) {
+  case '-':
+  case '_':
+    return 0x2D;
+  case '=':
+  case '+':
+    return 0x2E;
+  case '[':
+  case '{':
+    return 0x2F;
+  case ']':
+  case '}':
+    return 0x30;
+  case '\\':
+  case '|':
+    return 0x31;
+  case ';':
+  case ':':
+    return 0x33;
+  case '\'':
+  case '"':
+    return 0x34;
+  case '`':
+  case '~':
+    return 0x35;
+  case ',':
+  case '<':
+    return 0x36;
+  case '.':
+  case '>':
+    return 0x37;
+  case '/':
+  case '?':
+    return 0x38;
+  case '!':
+    return 0x1E;
+  case '@':
+    return 0x1F;
+  case '#':
+    return 0x20;
+  case '$':
+    return 0x21;
+  case '%':
+    return 0x22;
+  case '^':
+    return 0x23;
+  case '&':
+    return 0x24;
+  case '*':
+    return 0x25;
+  case '(':
+    return 0x26;
+  case ')':
+    return 0x27;
+  default:
+    break;
+  }
+#endif
 
   switch (id) {
   case 0xFFE5:
@@ -1108,10 +1210,23 @@ uint8_t BridgePlatformScreen::convertKeyButton(KeyButton button) const
 
 uint8_t BridgePlatformScreen::convertKey(KeyID id, KeyButton button) const
 {
+  if (modifierBitForKey(id) != 0 || modifierBitForButton(button) != 0) {
+    return 0;
+  }
+
   if (uint8_t code = convertKeyID(id); code != 0) {
     return code;
   }
   return convertKeyButton(button);
+}
+
+uint8_t BridgePlatformScreen::activeModifierBitmap() const
+{
+  uint8_t mods = 0;
+  for (const auto &entry : m_buttonToActiveKey) {
+    mods |= entry.second.modifierBit;
+  }
+  return mods;
 }
 
 uint8_t BridgePlatformScreen::convertButtonID(ButtonID id) const

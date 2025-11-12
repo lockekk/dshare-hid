@@ -122,6 +122,7 @@ private:
   uint8_t convertKeyButton(KeyButton button) const;
   uint8_t convertKey(KeyID id, KeyButton button) const;
   uint8_t convertButtonID(ButtonID id) const;
+  uint8_t activeModifierBitmap() const;
   void handleMouseFlushTimer(const Event &event) const;
   bool flushPendingMouse(std::chrono::steady_clock::time_point now) const;
   void scheduleMouseFlush(std::chrono::steady_clock::time_point now) const;
@@ -141,9 +142,15 @@ private:
   int32_t m_cursorY = 0;
   uint8_t m_mouseButtons = 0; // HID button bitmap
 
-  std::set<uint8_t> m_pressedKeycodes;
   std::set<KeyButton> m_pressedButtons;
   std::map<KeyButton, uint16_t> m_pressedConsumerControls; // button -> consumer code
+  struct ActiveKeyState
+  {
+    uint8_t hidKey = 0;
+    uint8_t modifierBit = 0;
+  };
+  std::map<KeyButton, ActiveKeyState> m_buttonToActiveKey;
+  uint8_t m_currentHidModifiers = 0;
   KeyModifierMask m_activeModifiers = 0;
 
   bool m_enabled = false;

@@ -7,6 +7,7 @@
 #include "Settings.h"
 
 #include "UrlConstants.h"
+#include "base/Log.h"
 
 #include <QCoreApplication>
 #include <QFile>
@@ -145,8 +146,7 @@ QVariant Settings::defaultValue(const QString &key)
     const auto currentPath = instance()->settingsPath();
     const bool bridgeClient = instance()->m_bridgeClientMode || currentPath.contains("bridge-clients");
     if (bridgeClient) {
-      auto mainTlsDir = QStringLiteral("%1/%2").arg(UserDir, kTlsDirName);
-      return QStringLiteral("%1/%2").arg(mainTlsDir, kTlsCertificateFilename);
+      return QStringLiteral("%1/%2").arg(bridgeClientTlsDir(), kTlsCertificateFilename);
     }
     return QStringLiteral("%1/%2").arg(Settings::tlsDir(), kTlsCertificateFilename);
   }
@@ -265,6 +265,33 @@ QString Settings::tlsDir()
   return QStringLiteral("%1/%2").arg(instance()->settingsPath(), kTlsDirName);
 }
 
+QString Settings::bridgeClientTlsDir()
+{
+  const QString bridgeFolder = QStringLiteral("bridge-clients");
+  const QString currentPath = settingsPath();
+
+  QDir bridgeDir(currentPath);
+  QDir probe = bridgeDir;
+  bool foundBridgeFolder = false;
+  while (true) {
+    if (probe.dirName().compare(bridgeFolder, Qt::CaseInsensitive) == 0) {
+      foundBridgeFolder = true;
+      break;
+    }
+    if (!probe.cdUp()) {
+      break;
+    }
+  }
+
+  if (foundBridgeFolder) {
+    // One level up from "bridge-clients" is the server root that hosts tls/
+    probe.cdUp();
+    return probe.filePath(kTlsDirName);
+  }
+
+  return bridgeDir.filePath(kTlsDirName);
+}
+
 QString Settings::tlsLocalDb()
 {
   return QStringLiteral("%1/%2").arg(instance()->tlsDir(), kTlsFingerprintLocalFilename);
@@ -276,8 +303,7 @@ QString Settings::tlsTrustedServersDb()
   auto currentPath = instance()->settingsPath();
   const bool bridgeClient = instance()->m_bridgeClientMode || currentPath.contains("bridge-clients");
   if (bridgeClient) {
-    auto mainTlsDir = QStringLiteral("%1/%2").arg(UserDir, kTlsDirName);
-    return QStringLiteral("%1/%2").arg(mainTlsDir, kTlsFingerprintTrustedServersFilename);
+    return QStringLiteral("%1/%2").arg(bridgeClientTlsDir(), kTlsFingerprintTrustedServersFilename);
   }
   return QStringLiteral("%1/%2").arg(instance()->tlsDir(), kTlsFingerprintTrustedServersFilename);
 }

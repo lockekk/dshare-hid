@@ -14,6 +14,21 @@
 #include <QFileInfo>
 #include <QStringList>
 #include <QTextStream>
+#include <vector>
+#include <cwchar>
+#include <algorithm>
+
+#ifdef Q_OS_WIN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#include <SetupAPI.h>
+#include <devguid.h>
+#include <initguid.h>
+#include <winreg.h>
+#endif
 
 namespace deskflow::gui {
 
@@ -58,6 +73,95 @@ QString readUsbAttribute(const QString &canonicalDevicePath, const QString &attr
   }
 
   return QString();
+}
+#endif
+
+#ifdef Q_OS_WIN
+QString windowsVendorPattern(const QString &vendorId)
+{
+  return QStringLiteral("VID_%1").arg(vendorId.toUpper());
+}
+
+QString windowsProductPattern(const QString &productId)
+{
+  return QStringLiteral("PID_%1").arg(productId.toUpper());
+}
+
+bool matchesHardwareId(const QString &id, const QString &vendorId, const QString &productId)
+{
+  const QString upper = id.toUpper();
+  const QString vendorPattern = windowsVendorPattern(vendorId);
+  const QString productPattern = windowsProductPattern(productId);
+  if (!upper.contains(vendorPattern)) {
+    return false;
+  }
+  if (productId.isEmpty()) {
+    return true;
+  }
+  return upper.contains(productPattern);
+}
+
+bool deviceMatchesBridge(HDEVINFO infoSet, SP_DEVINFO_DATA &infoData, const QString &vendorId, const QString &productId)
+{
+  std::vector<wchar_t> buffer(1024);
+  DWORD propertyType = 0;
+  while (true) {
+    DWORD requiredSize = 0;
+    if (SetupDiGetDeviceRegistryPropertyW(
+            infoSet,
+            &infoData,
+            SPDRP_HARDWAREID,
+            &propertyType,
+            reinterpret_cast<PBYTE>(buffer.data()),
+            static_cast<DWORD>(buffer.size() * sizeof(wchar_t)),
+            &requiredSize
+        )) {
+      break;
+    }
+    DWORD error = GetLastError();
+    if (error == ERROR_INSUFFICIENT_BUFFER) {
+      const size_t newSize = (requiredSize / sizeof(wchar_t)) + 1;
+      buffer.resize(std::max(buffer.size() * 2, newSize));
+      continue;
+    }
+    return false;
+  }
+
+  if (buffer.empty()) {
+    return false;
+  }
+
+  const wchar_t *entry = buffer.data();
+  while (*entry != L'\0') {
+    const QString hardwareId = QString::fromWCharArray(entry);
+    if (matchesHardwareId(hardwareId, vendorId, productId)) {
+      return true;
+    }
+    entry += wcslen(entry) + 1;
+  }
+
+  return false;
+}
+
+QString getPortName(HDEVINFO infoSet, SP_DEVINFO_DATA &infoData)
+{
+  HKEY key = SetupDiOpenDevRegKey(infoSet, &infoData, DICS_FLAG_GLOBAL, 0, DIREG_DEV, KEY_READ);
+  if (key == INVALID_HANDLE_VALUE) {
+    return QString();
+  }
+
+  wchar_t buffer[256] = {0};
+  DWORD type = 0;
+  DWORD size = sizeof(buffer);
+  QString portName;
+
+  if (RegQueryValueExW(key, L"PortName", nullptr, &type, reinterpret_cast<LPBYTE>(buffer), &size) == ERROR_SUCCESS &&
+      (type == REG_SZ || type == REG_EXPAND_SZ)) {
+    portName = QString::fromWCharArray(buffer).trimmed();
+  }
+
+  RegCloseKey(key);
+  return portName;
 }
 #endif
 
@@ -147,19 +251,39 @@ QMap<QString, QString> UsbDeviceHelper::getConnectedDevices()
 
   qDebug() << "Found" << devices.size() << "connected USB CDC devices";
 #elif defined(Q_OS_WIN)
-  // On Windows, enumerate COM ports
-  // Scan registry for available COM ports
-  for (int i = 1; i <= 256; i++) {
-    QString devicePath = QString("\\\\.\\COM%1").arg(i);
-
-    if (isSupportedBridgeDevice(devicePath)) {
-      QString serialNumber = readSerialNumber(devicePath);
-      devices[devicePath] = serialNumber.isEmpty() ? QString("COM%1").arg(i) : serialNumber;
-      qDebug() << "Found bridge device at" << devicePath;
-    }
+  GUID classGuid = GUID_DEVCLASS_PORTS;
+  HDEVINFO deviceInfoSet = SetupDiGetClassDevsW(&classGuid, nullptr, nullptr, DIGCF_PRESENT);
+  if (deviceInfoSet == INVALID_HANDLE_VALUE) {
+    qWarning() << "Failed to enumerate COM ports:" << GetLastError();
+    return devices;
   }
 
-  qDebug() << "Found" << devices.size() << "connected USB CDC devices on Windows";
+  SP_DEVINFO_DATA devInfoData = {};
+  devInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
+  for (DWORD index = 0; SetupDiEnumDeviceInfo(deviceInfoSet, index, &devInfoData); ++index) {
+    if (!deviceMatchesBridge(
+            deviceInfoSet, devInfoData, UsbDeviceHelper::kEspressifVendorId, UsbDeviceHelper::kEspressifProductId
+        )) {
+      continue;
+    }
+
+    QString portName = getPortName(deviceInfoSet, devInfoData);
+    if (portName.isEmpty() || !portName.startsWith(QStringLiteral("COM"), Qt::CaseInsensitive)) {
+      continue;
+    }
+
+    const QString devicePath = QStringLiteral("\\\\.\\%1").arg(portName);
+    QString serialNumber = readSerialNumber(devicePath);
+    if (serialNumber.isEmpty()) {
+      serialNumber = portName;
+    }
+
+    devices[devicePath] = serialNumber;
+    qDebug() << "Found bridge device at" << devicePath;
+  }
+
+  SetupDiDestroyDeviceInfoList(deviceInfoSet);
+  qDebug() << "Enumerated" << devices.size() << "bridge-capable USB CDC device(s) on Windows";
 #endif
 
   return devices;
