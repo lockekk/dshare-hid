@@ -7,9 +7,13 @@
 
 #include "base/Log.h"
 
+#include <QByteArray>
+#include <QMessageAuthenticationCode>
+#include <QRandomGenerator>
 #include <algorithm>
 #include <array>
 #include <chrono>
+#include <cstring>
 #include <iomanip>
 #include <random>
 #include <sstream>
@@ -59,6 +63,26 @@ constexpr int kHandshakeTimeoutMs = 2000;
 constexpr int kReadPollIntervalMs = 10;
 constexpr int kConfigCommandTimeoutMs = 1000;
 constexpr size_t kMaxDeviceNameBytes = 22;
+constexpr size_t kAuthKeyBytes = 32;
+constexpr size_t kAuthNonceBytes = 8;
+constexpr size_t kAuthTagBytes = 32;
+constexpr size_t kHelloPayloadLen = 1 + 1 + kAuthNonceBytes + kAuthTagBytes;
+constexpr size_t kAckCoreLen = 12;
+constexpr size_t kAckPayloadLen = kAckCoreLen + kAuthNonceBytes + kAuthTagBytes;
+constexpr uint8_t kAuthModeHmacSha256 = 0x01;
+constexpr size_t kAckTotalPayloadWithId = 1 + kAckPayloadLen;
+constexpr size_t kAckDeviceNonceOffset = 1 + kAckCoreLen;
+constexpr size_t kAckTagOffset = kAckDeviceNonceOffset + kAuthNonceBytes;
+
+const uint8_t kHelloLabel[] = {'D', 'F', 'H', 'E', 'L', 'L', 'O'};
+const uint8_t kAckLabel[] = {'D', 'F', 'A', 'C', 'K'};
+
+const std::array<uint8_t, kAuthKeyBytes> kDefaultAuthKey = {
+    0x9C, 0x3B, 0x1F, 0x04, 0xFE, 0x55, 0x80, 0x12,
+    0xD9, 0x47, 0x2A, 0x6C, 0x3F, 0xE5, 0x9B, 0x01,
+    0x75, 0xA1, 0x47, 0x33, 0x2D, 0x84, 0x5F, 0x66,
+    0x08, 0xBB, 0x3D, 0x12, 0x6A, 0x90, 0x4E, 0xD5,
+};
 
 std::string hexDump(const uint8_t *data, size_t length, size_t maxBytes = 64)
 {
@@ -94,10 +118,79 @@ FirmwareHostOs decodeHostOs(uint8_t value)
     return FirmwareHostOs::Unknown;
   }
 }
+
+bool parseHexKeyChar(QChar ch, uint8_t &value)
+{
+  if (ch.isDigit()) {
+    value = static_cast<uint8_t>(ch.unicode() - '0');
+    return true;
+  }
+  if (ch >= QChar('a') && ch <= QChar('f')) {
+    value = static_cast<uint8_t>(10 + (ch.unicode() - 'a'));
+    return true;
+  }
+  if (ch >= QChar('A') && ch <= QChar('F')) {
+    value = static_cast<uint8_t>(10 + (ch.unicode() - 'A'));
+    return true;
+  }
+  return false;
+}
+
+bool parseAuthKeyHex(const QString &hex, std::array<uint8_t, kAuthKeyBytes> &out)
+{
+  const QString trimmed = hex.trimmed();
+  if (trimmed.isEmpty()) {
+    out = kDefaultAuthKey;
+    return true;
+  }
+  if (trimmed.size() != static_cast<int>(kAuthKeyBytes * 2)) {
+    return false;
+  }
+
+  for (int i = 0; i < trimmed.size(); i += 2) {
+    uint8_t hi = 0;
+    uint8_t lo = 0;
+    if (!parseHexKeyChar(trimmed[i], hi) || !parseHexKeyChar(trimmed[i + 1], lo)) {
+      return false;
+    }
+    out[static_cast<size_t>(i / 2)] = static_cast<uint8_t>((hi << 4) | lo);
+  }
+  return true;
+}
+
+QByteArray hmacSha256(const QByteArray &message, const std::array<uint8_t, kAuthKeyBytes> &key)
+{
+  const QByteArray keyBytes(reinterpret_cast<const char *>(key.data()), static_cast<int>(key.size()));
+  return QMessageAuthenticationCode::hash(message, keyBytes, QCryptographicHash::Sha256);
+}
+
+QByteArray makeHelloHmac(const std::array<uint8_t, kAuthNonceBytes> &hostNonce, uint8_t hostVersion,
+                         const std::array<uint8_t, kAuthKeyBytes> &key)
+{
+  QByteArray msg;
+  msg.append(reinterpret_cast<const char *>(kHelloLabel), static_cast<int>(sizeof(kHelloLabel)));
+  msg.append(reinterpret_cast<const char *>(hostNonce.data()), static_cast<int>(hostNonce.size()));
+  msg.append(static_cast<char>(hostVersion));
+  return hmacSha256(msg, key);
+}
+
+QByteArray makeAckHmac(const std::array<uint8_t, kAuthNonceBytes> &hostNonce,
+                       const uint8_t *deviceNonce,
+                       const uint8_t *ackCore,
+                       const std::array<uint8_t, kAuthKeyBytes> &key)
+{
+  QByteArray msg;
+  msg.append(reinterpret_cast<const char *>(kAckLabel), static_cast<int>(sizeof(kAckLabel)));
+  msg.append(reinterpret_cast<const char *>(hostNonce.data()), static_cast<int>(hostNonce.size()));
+  msg.append(reinterpret_cast<const char *>(deviceNonce), static_cast<int>(kAuthNonceBytes));
+  msg.append(reinterpret_cast<const char *>(ackCore), static_cast<int>(kAckCoreLen));
+  return hmacSha256(msg, key);
+}
 } // namespace
 
 CdcTransport::CdcTransport(const QString &devicePath) : m_devicePath(devicePath)
 {
+  m_authKey = kDefaultAuthKey;
   resetState();
 }
 
@@ -109,7 +202,8 @@ CdcTransport::~CdcTransport()
 void CdcTransport::resetState()
 {
   m_handshakeComplete = false;
-  m_lastNonce = 0;
+  m_hostNonce.fill(0);
+  m_hasHostNonce = false;
   m_rxBuffer.clear();
   m_hasDeviceConfig = false;
   m_deviceConfig = FirmwareConfig{};
@@ -256,18 +350,17 @@ bool CdcTransport::performHandshake()
     return false;
   }
 
-  std::random_device rd;
-  std::mt19937 rng(rd());
-  std::uniform_int_distribution<uint32_t> dist;
-  m_lastNonce = dist(rng);
+  quint64 randomValue = QRandomGenerator::global()->generate64();
+  std::memcpy(m_hostNonce.data(), &randomValue, kAuthNonceBytes);
+  m_hasHostNonce = true;
 
-  std::vector<uint8_t> payload(6);
+  std::vector<uint8_t> payload(1 + kHelloPayloadLen);
   payload[0] = kUsbControlHello;
   payload[1] = kUsbLinkVersion;
-  payload[2] = static_cast<uint8_t>(m_lastNonce & 0xFF);
-  payload[3] = static_cast<uint8_t>((m_lastNonce >> 8) & 0xFF);
-  payload[4] = static_cast<uint8_t>((m_lastNonce >> 16) & 0xFF);
-  payload[5] = static_cast<uint8_t>((m_lastNonce >> 24) & 0xFF);
+  payload[2] = kAuthModeHmacSha256;
+  std::memcpy(payload.data() + 3, m_hostNonce.data(), kAuthNonceBytes);
+  const QByteArray helloTag = makeHelloHmac(m_hostNonce, kUsbLinkVersion, m_authKey);
+  std::memcpy(payload.data() + 3 + kAuthNonceBytes, helloTag.constData(), kAuthTagBytes);
 
   if (!sendUsbFrame(kUsbFrameTypeControl, 0, payload)) {
     return false;
@@ -287,6 +380,30 @@ bool CdcTransport::performHandshake()
     }
 
     if (framePayload[0] == kUsbControlAck) {
+      if (!m_hasHostNonce) {
+        m_lastError = "Handshake host nonce not initialized";
+        LOG_ERR("CDC: %s", m_lastError.c_str());
+        return false;
+      }
+
+      if (framePayload.size() < kAckTotalPayloadWithId) {
+        m_lastError = "Handshake ACK payload too short";
+        LOG_ERR("CDC: %s (size=%zu)", m_lastError.c_str(), framePayload.size());
+        return false;
+      }
+
+      const uint8_t *ackCore = framePayload.data() + 1;
+      const uint8_t *deviceNonce = framePayload.data() + kAckDeviceNonceOffset;
+      const uint8_t *ackTag = framePayload.data() + kAckTagOffset;
+
+      const QByteArray computedTag = makeAckHmac(m_hostNonce, deviceNonce, ackCore, m_authKey);
+      if (computedTag.size() != static_cast<int>(kAuthTagBytes) ||
+          std::memcmp(computedTag.constData(), ackTag, kAuthTagBytes) != 0) {
+        m_lastError = "Handshake authentication tag mismatch";
+        LOG_ERR("CDC: %s", m_lastError.c_str());
+        return false;
+      }
+
       m_handshakeComplete = true;
 
       if (framePayload.size() >= kAckMinimumPayloadSize) {
@@ -706,6 +823,24 @@ bool CdcTransport::fetchSerialNumber(std::string &outSerial)
   // Firmware returns any readable string (null-terminated)
   outSerial.assign(reinterpret_cast<const char *>(data.data()), data.size());
   return true;
+}
+
+bool CdcTransport::setAuthKeyHex(const QString &hex)
+{
+  std::array<uint8_t, kAuthKeyBytes> parsed{};
+  if (!parseAuthKeyHex(hex, parsed)) {
+    m_lastError = "Authentication key must be exactly 64 hexadecimal characters";
+    return false;
+  }
+
+  m_authKey = parsed;
+  return true;
+}
+
+bool CdcTransport::isValidAuthKeyHex(const QString &hex)
+{
+  std::array<uint8_t, kAuthKeyBytes> parsed{};
+  return parseAuthKeyHex(hex, parsed);
 }
 
 bool CdcTransport::writeAll(const uint8_t *data, size_t length)

@@ -8,6 +8,7 @@
 #include "HidFrame.h"
 
 #include <QString>
+#include <array>
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -150,7 +151,22 @@ public:
     return m_devicePath;
   }
 
+  /**
+   * @brief Override the authentication key using a 64-character hex string.
+   * @param hex Hexadecimal key or empty string to use the default debug key.
+   * @return true if the key was applied successfully.
+   */
+  bool setAuthKeyHex(const QString &hex);
+
+  /**
+   * @brief Validate whether a string is a valid auth key (64 hex characters or empty).
+   */
+  static bool isValidAuthKeyHex(const QString &hex);
+
 private:
+  static constexpr size_t kAuthKeySize = 32;
+  static constexpr size_t kAuthNonceSize = 8;
+
   bool performHandshake();
   bool sendUsbFrame(uint8_t type, uint8_t flags, const uint8_t *payload, uint16_t length);
   bool sendUsbFrame(uint8_t type, uint8_t flags, const std::vector<uint8_t> &payload);
@@ -163,11 +179,13 @@ private:
   QString m_devicePath;
   intptr_t m_fd = -1; // File descriptor (Unix) or HANDLE (Windows)
   bool m_handshakeComplete = false;
-  uint32_t m_lastNonce = 0;
+  std::array<uint8_t, kAuthNonceSize> m_hostNonce{};
+  bool m_hasHostNonce = false;
   std::vector<uint8_t> m_rxBuffer;
   std::string m_lastError;
   bool m_hasDeviceConfig = false;
   FirmwareConfig m_deviceConfig;
+  std::array<uint8_t, kAuthKeySize> m_authKey{};
 };
 
 } // namespace deskflow::bridge
