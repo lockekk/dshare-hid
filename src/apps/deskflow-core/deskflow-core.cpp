@@ -173,11 +173,10 @@ int main(int argc, char **argv)
       deskflow::bridge::FirmwareConfig config = transport->deviceConfig();
 
       LOG_INFO(
-          "Firmware handshake: proto=%u hid_connected=%d host_os=%s ble_interval=%ums activated=%d fw_bcd=%u hw_bcd=%u",
+          "Firmware handshake: proto=%u hid_connected=%d host_os=%s activated=%d fw_bcd=%u hw_bcd=%u",
           config.protocolVersion,
           config.hidConnected ? 1 : 0,
           config.hostOsString(),
-          config.bleIntervalMs,
           config.productionActivated ? 1 : 0,
           static_cast<unsigned>(config.firmwareVersionBcd),
           static_cast<unsigned>(config.hardwareVersionBcd)

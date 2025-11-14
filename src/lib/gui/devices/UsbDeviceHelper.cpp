@@ -360,7 +360,6 @@ bool UsbDeviceHelper::verifyBridgeHandshake(
             << "proto:" << cfg.protocolVersion
             << "hid:" << (cfg.hidConnected ? 1 : 0)
             << "host_os:" << cfg.hostOsString()
-            << "ble_interval_ms:" << cfg.bleIntervalMs
             << "activated:" << (cfg.productionActivated ? 1 : 0)
             << "fw_bcd:" << cfg.firmwareVersionBcd
             << "hw_bcd:" << cfg.hardwareVersionBcd

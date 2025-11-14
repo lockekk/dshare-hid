@@ -8,7 +8,6 @@
 #include "CdcTransport.h"
 #include "deskflow/PlatformScreen.h"
 
-#include <chrono>
 #include <set>
 #include <map>
 #include <cstdint>
@@ -38,7 +37,6 @@ public:
       std::shared_ptr<CdcTransport> transport,
       int32_t screenWidth,
       int32_t screenHeight,
-      uint8_t bleIntervalMs,
       bool invertScroll
   );
   ~BridgePlatformScreen() override;
@@ -123,19 +121,11 @@ private:
   uint8_t convertKey(KeyID id, KeyButton button) const;
   uint8_t convertButtonID(ButtonID id) const;
   uint8_t activeModifierBitmap() const;
-  void handleMouseFlushTimer(const Event &event) const;
-  bool flushPendingMouse(std::chrono::steady_clock::time_point now) const;
-  void scheduleMouseFlush(std::chrono::steady_clock::time_point now) const;
-  void cancelMouseFlushTimer() const;
-  void armMouseFlushTimer() const;
   void resetMouseAccumulator() const;
 
   std::shared_ptr<CdcTransport> m_transport;
   int32_t m_screenWidth = 0;
   int32_t m_screenHeight = 0;
-  std::chrono::milliseconds m_mouseThrottleInterval{std::chrono::milliseconds(50)};
-  double m_mouseThrottleIntervalSeconds = 0.05;
-  IEventQueue *m_events = nullptr;
 
   // Screen state
   int32_t m_cursorX = 0;
@@ -155,11 +145,6 @@ private:
 
   bool m_enabled = false;
   uint32_t m_sequenceNumber = 0;
-  mutable EventQueueTimer *m_mouseFlushTimer = nullptr;
-  mutable int64_t m_pendingDx = 0;
-  mutable int64_t m_pendingDy = 0;
-  mutable std::chrono::steady_clock::time_point m_lastMouseFlush =
-      (std::chrono::steady_clock::time_point::min)();
 };
 
 } // namespace deskflow::bridge

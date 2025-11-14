@@ -53,7 +53,7 @@ constexpr size_t kAckProtocolVersionIndex = 1;
 constexpr size_t kAckReservedIndex = 2;
 constexpr size_t kAckHidConnectedIndex = 3;
 constexpr size_t kAckHostOsIndex = 4;
-constexpr size_t kAckBleIntervalIndex = 5;
+[[maybe_unused]] constexpr size_t kAckBleIntervalIndex = 5;
 constexpr size_t kAckProductionFlagIndex = 6;
 constexpr size_t kAckFirmwareVersionIndex = 7;
 constexpr size_t kAckHardwareVersionIndex = 8;
@@ -410,7 +410,6 @@ bool CdcTransport::performHandshake()
         const uint8_t protocolVersion = framePayload[kAckProtocolVersionIndex];
         const bool hidConnected = framePayload[kAckHidConnectedIndex] != 0;
         const FirmwareHostOs hostOs = decodeHostOs(framePayload[kAckHostOsIndex]);
-        const uint8_t bleInterval = framePayload[kAckBleIntervalIndex];
         const bool productionActivated = framePayload[kAckProductionFlagIndex] != 0;
         const uint8_t firmwareBcd = framePayload[kAckFirmwareVersionIndex];
         const uint8_t hardwareBcd = framePayload[kAckHardwareVersionIndex];
@@ -418,19 +417,17 @@ bool CdcTransport::performHandshake()
         m_deviceConfig.protocolVersion = protocolVersion;
         m_deviceConfig.hidConnected = hidConnected;
         m_deviceConfig.hostOs = hostOs;
-        m_deviceConfig.bleIntervalMs = bleInterval;
         m_deviceConfig.productionActivated = productionActivated;
         m_deviceConfig.firmwareVersionBcd = firmwareBcd;
         m_deviceConfig.hardwareVersionBcd = hardwareBcd;
         m_hasDeviceConfig = true;
 
         LOG_INFO(
-            "CDC: handshake completed version=%u hid=%u host_os=%s(%u) ble_interval=%ums production=%u fw_bcd=%u hw_bcd=%u",
+            "CDC: handshake completed version=%u hid=%u host_os=%s(%u) production=%u fw_bcd=%u hw_bcd=%u",
             protocolVersion,
             hidConnected ? 1 : 0,
             toString(hostOs),
             static_cast<unsigned>(framePayload[kAckHostOsIndex]),
-            bleInterval,
             productionActivated ? 1 : 0,
             static_cast<unsigned>(firmwareBcd),
             static_cast<unsigned>(hardwareBcd)

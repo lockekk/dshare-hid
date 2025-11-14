@@ -10,11 +10,9 @@
 #include "base/Log.h"
 
 #include <algorithm>
-#include <chrono>
 #include <iomanip>
 #include <cstring>
 #include <sstream>
-#include <limits>
 #include <utility>
 
 namespace deskflow::bridge {
@@ -22,8 +20,6 @@ namespace deskflow::bridge {
 namespace {
 constexpr int kMinMouseDelta = -127;
 constexpr int kMaxMouseDelta = 127;
-constexpr int kDefaultMouseThrottleIntervalMs = 50;
-constexpr int64_t kPendingDeltaLimit = (std::numeric_limits<int32_t>::max)();
 
 std::string hexDump(const uint8_t *data, size_t length, size_t maxBytes = 32)
 {
@@ -54,44 +50,22 @@ BridgePlatformScreen::BridgePlatformScreen(
     std::shared_ptr<CdcTransport> transport,
     int32_t screenWidth,
     int32_t screenHeight,
-    uint8_t bleIntervalMs,
     bool invertScroll
 ) :
     PlatformScreen(events, invertScroll),
     m_transport(std::move(transport)),
     m_screenWidth(screenWidth),
-    m_screenHeight(screenHeight),
-    m_mouseThrottleInterval(
-        std::chrono::milliseconds(
-            bleIntervalMs > 0 ? static_cast<int>(bleIntervalMs) : kDefaultMouseThrottleIntervalMs
-        )
-    ),
-    m_mouseThrottleIntervalSeconds(
-        std::chrono::duration_cast<std::chrono::duration<double>>(m_mouseThrottleInterval).count()
-    ),
-    m_events(events)
+    m_screenHeight(screenHeight)
 {
   LOG_INFO(
-      "BridgeScreen: initialized screen=%dx%d mouseThrottle=%ums (bleInterval=%u)",
+      "BridgeScreen: initialized screen=%dx%d",
       m_screenWidth,
-      m_screenHeight,
-      static_cast<unsigned>(std::chrono::duration_cast<std::chrono::milliseconds>(m_mouseThrottleInterval).count()),
-      static_cast<unsigned>(bleIntervalMs)
+      m_screenHeight
   );
-
-  if (m_events != nullptr) {
-    m_events->addHandler(deskflow::EventTypes::Timer, this, [this](const Event &event) {
-      handleMouseFlushTimer(event);
-    });
-  }
 }
 
 BridgePlatformScreen::~BridgePlatformScreen()
 {
-  if (m_events != nullptr) {
-    cancelMouseFlushTimer();
-    m_events->removeHandler(deskflow::EventTypes::Timer, this);
-  }
 }
 
 void *BridgePlatformScreen::getEventTarget() const
@@ -228,18 +202,24 @@ void BridgePlatformScreen::fakeMouseRelativeMove(int32_t dx, int32_t dy) const
     return;
   }
 
-  m_pendingDx = std::clamp(
-      m_pendingDx + static_cast<int64_t>(dx),
-      -kPendingDeltaLimit,
-      kPendingDeltaLimit
-  );
-  m_pendingDy = std::clamp(
-      m_pendingDy + static_cast<int64_t>(dy),
-      -kPendingDeltaLimit,
-      kPendingDeltaLimit
-  );
+  int64_t remainingDx = dx;
+  int64_t remainingDy = dy;
+  while (remainingDx != 0 || remainingDy != 0) {
+    const int64_t stepDx = std::clamp(
+        remainingDx, static_cast<int64_t>(kMinMouseDelta), static_cast<int64_t>(kMaxMouseDelta)
+    );
+    const int64_t stepDy = std::clamp(
+        remainingDy, static_cast<int64_t>(kMinMouseDelta), static_cast<int64_t>(kMaxMouseDelta)
+    );
 
-  scheduleMouseFlush(std::chrono::steady_clock::now());
+    if (!sendMouseMoveEvent(static_cast<int16_t>(stepDx), static_cast<int16_t>(stepDy))) {
+      LOG_ERR("BridgeScreen: failed to send mouse move");
+      break;
+    }
+
+    remainingDx -= stepDx;
+    remainingDy -= stepDy;
+  }
 }
 
 void BridgePlatformScreen::fakeMouseWheel(int32_t, int32_t yDelta) const
@@ -257,91 +237,9 @@ void BridgePlatformScreen::fakeMouseWheel(int32_t, int32_t yDelta) const
   }
 }
 
-void BridgePlatformScreen::handleMouseFlushTimer(const Event &event) const
-{
-  if (event.getTarget() != this) {
-    return;
-  }
-
-  const auto *timerEvent = static_cast<IEventQueue::TimerEvent *>(event.getData());
-  if (timerEvent == nullptr || timerEvent->m_timer != m_mouseFlushTimer) {
-    return;
-  }
-
-  scheduleMouseFlush(std::chrono::steady_clock::now());
-}
-
-bool BridgePlatformScreen::flushPendingMouse(std::chrono::steady_clock::time_point now) const
-{
-  if (m_pendingDx == 0 && m_pendingDy == 0) {
-    m_lastMouseFlush = now;
-    return false;
-  }
-
-  const int64_t stepDx = std::clamp(
-      m_pendingDx, static_cast<int64_t>(kMinMouseDelta), static_cast<int64_t>(kMaxMouseDelta)
-  );
-  const int64_t stepDy = std::clamp(
-      m_pendingDy, static_cast<int64_t>(kMinMouseDelta), static_cast<int64_t>(kMaxMouseDelta)
-  );
-
-  if (!sendMouseMoveEvent(static_cast<int16_t>(stepDx), static_cast<int16_t>(stepDy))) {
-    LOG_ERR("BridgeScreen: failed to send mouse move");
-  }
-
-  m_pendingDx -= stepDx;
-  m_pendingDy -= stepDy;
-  m_lastMouseFlush = now;
-  return (m_pendingDx != 0 || m_pendingDy != 0);
-}
-
-void BridgePlatformScreen::scheduleMouseFlush(std::chrono::steady_clock::time_point now) const
-{
-  if (m_pendingDx == 0 && m_pendingDy == 0) {
-    cancelMouseFlushTimer();
-    m_lastMouseFlush = now;
-    return;
-  }
-
-  const bool shouldFlushImmediately =
-      (m_lastMouseFlush == (std::chrono::steady_clock::time_point::min)()) ||
-      (now - m_lastMouseFlush >= m_mouseThrottleInterval);
-
-  if (shouldFlushImmediately) {
-    const bool hasRemainder = flushPendingMouse(now);
-    if (hasRemainder) {
-      armMouseFlushTimer();
-    } else {
-      cancelMouseFlushTimer();
-    }
-  } else {
-    armMouseFlushTimer();
-  }
-}
-
-void BridgePlatformScreen::cancelMouseFlushTimer() const
-{
-  if (m_events != nullptr && m_mouseFlushTimer != nullptr) {
-    m_events->deleteTimer(m_mouseFlushTimer);
-    m_mouseFlushTimer = nullptr;
-  }
-}
-
-void BridgePlatformScreen::armMouseFlushTimer() const
-{
-  if (m_events != nullptr && m_mouseFlushTimer == nullptr) {
-    m_mouseFlushTimer = m_events->newTimer(
-        m_mouseThrottleIntervalSeconds, const_cast<BridgePlatformScreen *>(this)
-    );
-  }
-}
-
 void BridgePlatformScreen::resetMouseAccumulator() const
 {
-  m_pendingDx = 0;
-  m_pendingDy = 0;
-  m_lastMouseFlush = (std::chrono::steady_clock::time_point::min)();
-  cancelMouseFlushTimer();
+  // Mouse movement is delivered immediately now.
 }
 
 void BridgePlatformScreen::fakeKeyDown(KeyID id, KeyModifierMask mask, KeyButton button, const std::string &)

@@ -40,7 +40,6 @@ struct FirmwareConfig {
   uint8_t protocolVersion = 0;
   bool hidConnected = false;
   FirmwareHostOs hostOs = FirmwareHostOs::Unknown;
-  uint8_t bleIntervalMs = 0;
   bool productionActivated = false;
   uint8_t firmwareVersionBcd = 0;
   uint8_t hardwareVersionBcd = 0;

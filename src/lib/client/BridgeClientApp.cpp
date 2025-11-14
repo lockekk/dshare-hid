@@ -40,7 +40,6 @@ deskflow::Screen *BridgeClientApp::createScreen()
       m_transport,
       m_screenWidth,
       m_screenHeight,
-      m_config.bleIntervalMs,
       invertScrolling
   );
 
