@@ -63,6 +63,7 @@ struct FirmwareConfig {
 class CdcTransport
 {
 public:
+
   explicit CdcTransport(const QString &devicePath);
   ~CdcTransport();
 
@@ -108,6 +109,7 @@ public:
 
   bool fetchDeviceName(std::string &outName);
   bool setDeviceName(const std::string &name);
+  bool setAllowHidHost(bool allowed);
 
   /**
    * @brief Read serial number from firmware via CDC command

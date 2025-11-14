@@ -43,6 +43,7 @@ constexpr uint8_t kUsbControlConfigResponse = 0x82;
 constexpr uint8_t kUsbConfigGetDeviceName = 0x02;
 constexpr uint8_t kUsbConfigSetDeviceName = 0x03;
 constexpr uint8_t kUsbConfigGetSerialNumber = 0x04;
+constexpr uint8_t kUsbConfigSetAllowHidHost = 0x05;
 
 constexpr size_t kAckProtocolVersionIndex = 1;
 constexpr size_t kAckReservedIndex = 2;
@@ -631,6 +632,45 @@ bool CdcTransport::setDeviceName(const std::string &name)
   }
 
   m_deviceConfig.deviceName = name;
+  return true;
+}
+
+bool CdcTransport::setAllowHidHost(bool allowed)
+{
+  if (!ensureOpen()) {
+    return false;
+  }
+
+  std::vector<uint8_t> payload(2);
+  payload[0] = kUsbConfigSetAllowHidHost;
+  payload[1] = allowed ? 1 : 0;
+
+  if (!sendUsbFrame(kUsbFrameTypeControl, 0, payload)) {
+    return false;
+  }
+
+  uint8_t msgType = 0;
+  uint8_t status = 0;
+  std::vector<uint8_t> data;
+  if (!waitForConfigResponse(msgType, status, data, kConfigCommandTimeoutMs)) {
+    return false;
+  }
+
+  if (msgType != kUsbConfigSetAllowHidHost) {
+    m_lastError = "Unexpected config response";
+    return false;
+  }
+  if (status != 0) {
+    m_lastError = "Firmware error code " + std::to_string(status);
+    LOG_ERR(
+        "CDC: setAllowHidHost firmware returned error=%u (allowed=%u)",
+        status,
+        allowed ? 1 : 0
+    );
+    return false;
+  }
+
+  LOG_INFO("CDC: Set allow HID host -> %s", allowed ? "enabled" : "disabled");
   return true;
 }
 

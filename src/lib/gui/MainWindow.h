@@ -187,6 +187,7 @@ private:
   bool applyFirmwareDeviceName(const QString &devicePath, const QString &deviceName);
   bool isValidDeviceName(const QString &deviceName) const;
   bool fetchFirmwareDeviceName(const QString &devicePath, QString &outName);
+  bool sendBridgeAllowHidHostCommand(const QString &devicePath, bool allowed, QString *errorOut = nullptr);
   bool acquireBridgeSerialLock(const QString &serialNumber, const QString &configPath);
   void releaseBridgeSerialLock(const QString &serialNumber, const QString &configPath);
   void applySerialGroupLockState(const QString &serialNumber);

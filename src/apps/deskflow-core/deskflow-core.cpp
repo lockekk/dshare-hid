@@ -166,6 +166,7 @@ int main(int argc, char **argv)
 
       if (!transport->hasDeviceConfig()) {
         LOG_ERR("CDC handshake did not provide metadata");
+        transport->close();
         return s_exitFailed;
       }
 
@@ -192,6 +193,7 @@ int main(int argc, char **argv)
             screenWidth,
             screenHeight
         );
+        transport->close();
         return s_exitFailed;
       }
 
@@ -202,8 +204,14 @@ int main(int argc, char **argv)
       );
 
       // Create and run bridge client
-      BridgeClientApp app(&events, processName, transport, config, screenWidth, screenHeight);
-      return app.run();
+      int exitCode = s_exitFailed;
+      {
+        BridgeClientApp app(&events, processName, transport, config, screenWidth, screenHeight);
+        exitCode = app.run();
+      }
+
+      transport->close();
+      return exitCode;
     } else {
       // Standard client
       ClientApp app(&events, processName);
