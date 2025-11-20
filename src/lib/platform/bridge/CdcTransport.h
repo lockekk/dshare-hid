@@ -112,8 +112,7 @@ public:
 
   bool fetchDeviceName(std::string &outName);
   bool setDeviceName(const std::string &name);
-  bool setAllowHidHost(bool allowed);
-  bool sendKeepAlive(uint32_t &uptimeSeconds);
+
 
   /**
    * @brief Read serial number from firmware via CDC command

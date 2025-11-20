@@ -22,8 +22,7 @@ namespace deskflow::bridge {
 namespace {
 constexpr int kMinMouseDelta = -127;
 constexpr int kMaxMouseDelta = 127;
-constexpr std::chrono::seconds kKeepAliveInterval(60);
-constexpr double kKeepAliveIntervalSeconds = static_cast<double>(kKeepAliveInterval.count());
+
 
 std::string hexDump(const uint8_t *data, size_t length, size_t maxBytes = 32)
 {
@@ -68,22 +67,12 @@ BridgePlatformScreen::BridgePlatformScreen(
       m_screenHeight
   );
 
-  m_lastCdcCommand = std::chrono::steady_clock::now();
 
-  if (m_events != nullptr) {
-    m_events->addHandler(deskflow::EventTypes::Timer, this, [this](const Event &event) {
-      handleKeepAliveTimer(event);
-    });
-    startKeepAliveTimer();
-  }
 }
 
 BridgePlatformScreen::~BridgePlatformScreen()
 {
-  stopKeepAliveTimer();
-  if (m_events != nullptr) {
-    m_events->removeHandler(deskflow::EventTypes::Timer, this);
-  }
+
 }
 
 void *BridgePlatformScreen::getEventTarget() const
@@ -255,61 +244,7 @@ void BridgePlatformScreen::fakeMouseWheel(int32_t, int32_t yDelta) const
   }
 }
 
-void BridgePlatformScreen::handleKeepAliveTimer(const Event &event) const
-{
-  if (event.getTarget() != this) {
-    return;
-  }
 
-  const auto *timerEvent = static_cast<IEventQueue::TimerEvent *>(event.getData());
-  if (timerEvent == nullptr || timerEvent->m_timer != m_keepAliveTimer) {
-    return;
-  }
-
-  sendKeepAliveIfIdle();
-}
-
-void BridgePlatformScreen::startKeepAliveTimer()
-{
-  if (m_events == nullptr || m_keepAliveTimer != nullptr) {
-    return;
-  }
-  m_keepAliveTimer = m_events->newTimer(kKeepAliveIntervalSeconds, this);
-}
-
-void BridgePlatformScreen::stopKeepAliveTimer()
-{
-  if (m_events != nullptr && m_keepAliveTimer != nullptr) {
-    m_events->deleteTimer(m_keepAliveTimer);
-    m_keepAliveTimer = nullptr;
-  }
-}
-
-void BridgePlatformScreen::sendKeepAliveIfIdle() const
-{
-  if (m_transport == nullptr) {
-    return;
-  }
-
-  const auto now = std::chrono::steady_clock::now();
-  if (m_lastCdcCommand != std::chrono::steady_clock::time_point::min() &&
-      now - m_lastCdcCommand < kKeepAliveInterval) {
-    return;
-  }
-
-  uint32_t uptimeSeconds = 0;
-  if (m_transport->sendKeepAlive(uptimeSeconds)) {
-    LOG_DEBUG("BridgeScreen: keep-alive ack uptime=%us", static_cast<unsigned>(uptimeSeconds));
-    recordCdcCommand(now);
-  } else {
-    LOG_WARN("BridgeScreen: keep-alive failed (%s)", m_transport->lastError().c_str());
-  }
-}
-
-void BridgePlatformScreen::recordCdcCommand(std::chrono::steady_clock::time_point now) const
-{
-  m_lastCdcCommand = now;
-}
 
 void BridgePlatformScreen::resetMouseAccumulator() const
 {
@@ -642,7 +577,7 @@ bool BridgePlatformScreen::sendEvent(HidEventType type, const std::vector<uint8_
     LOG_ERR("BridgeScreen: failed to send HID event type=%u", static_cast<unsigned>(type));
     return false;
   }
-  recordCdcCommand();
+
   return true;
 }
 
@@ -653,7 +588,7 @@ bool BridgePlatformScreen::sendKeyboardEvent(HidEventType type, uint8_t modifier
 
   if (isPress || isRelease) {
     if (m_transport->sendKeyboardCompact(modifiers, keycode, isPress)) {
-      recordCdcCommand();
+
       return true;
     }
     LOG_WARN("BridgeScreen: compact keyboard send failed, falling back to HID payload");
@@ -672,7 +607,7 @@ bool BridgePlatformScreen::sendMouseMoveEvent(int16_t dx, int16_t dy) const
     LOG_ERR("BridgeScreen: failed to send mouse move event");
     return false;
   }
-  recordCdcCommand();
+
   return true;
 }
 
@@ -683,7 +618,7 @@ bool BridgePlatformScreen::sendMouseButtonEvent(HidEventType type, uint8_t butto
 
   if (isPress || isRelease) {
     if (m_transport->sendMouseButtonCompact(buttonMask, isPress)) {
-      recordCdcCommand();
+
       return true;
     }
     LOG_WARN("BridgeScreen: compact mouse button send failed, falling back to HID payload");
@@ -699,7 +634,7 @@ bool BridgePlatformScreen::sendMouseButtonEvent(HidEventType type, uint8_t butto
 bool BridgePlatformScreen::sendMouseScrollEvent(int8_t delta) const
 {
   if (m_transport->sendMouseScrollCompact(delta)) {
-    recordCdcCommand();
+
     return true;
   }
   if (!sendEvent(HidEventType::MouseScroll, {static_cast<uint8_t>(delta)})) {

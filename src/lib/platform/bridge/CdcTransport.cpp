@@ -41,14 +41,14 @@ constexpr uint8_t kUsbFrameTypeHidScrollCompact = 0x05;
 constexpr uint8_t kUsbFrameTypeControl = 0x80;
 
 constexpr uint8_t kUsbControlHello = 0x01;
-constexpr uint8_t kUsbControlKeepAlive = 0x21;
+
 constexpr uint8_t kUsbControlAck = 0x81;
 constexpr uint8_t kUsbControlConfigResponse = 0x82;
 
 constexpr uint8_t kUsbConfigGetDeviceName = 0x02;
 constexpr uint8_t kUsbConfigSetDeviceName = 0x03;
 constexpr uint8_t kUsbConfigGetSerialNumber = 0x04;
-constexpr uint8_t kUsbConfigSetAllowHidHost = 0x05;
+
 
 constexpr size_t kAckCoreLen = 16;
 constexpr size_t kAckProtocolVersionIndex = 1;
@@ -754,78 +754,9 @@ bool CdcTransport::setDeviceName(const std::string &name)
   return true;
 }
 
-bool CdcTransport::setAllowHidHost(bool allowed)
-{
-  if (!ensureOpen()) {
-    return false;
-  }
 
-  std::vector<uint8_t> payload(2);
-  payload[0] = kUsbConfigSetAllowHidHost;
-  payload[1] = allowed ? 1 : 0;
 
-  if (!sendUsbFrame(kUsbFrameTypeControl, 0, payload)) {
-    return false;
-  }
 
-  uint8_t msgType = 0;
-  uint8_t status = 0;
-  std::vector<uint8_t> data;
-  if (!waitForConfigResponse(msgType, status, data, kConfigCommandTimeoutMs)) {
-    return false;
-  }
-
-  if (msgType != kUsbConfigSetAllowHidHost) {
-    m_lastError = "Unexpected config response";
-    return false;
-  }
-  if (status != 0) {
-    m_lastError = "Firmware error code " + std::to_string(status);
-    LOG_ERR(
-        "CDC: setAllowHidHost firmware returned error=%u (allowed=%u)",
-        status,
-        allowed ? 1 : 0
-    );
-    return false;
-  }
-
-  LOG_INFO("CDC: Set allow HID host -> %s", allowed ? "enabled" : "disabled");
-  return true;
-}
-
-bool CdcTransport::sendKeepAlive(uint32_t &uptimeSeconds)
-{
-  uptimeSeconds = 0;
-  if (!ensureOpen()) {
-    return false;
-  }
-
-  const std::vector<uint8_t> payload = {kUsbControlKeepAlive};
-  if (!sendUsbFrame(kUsbFrameTypeControl, 0, payload)) {
-    return false;
-  }
-
-  std::vector<uint8_t> response;
-  if (!waitForControlMessage(kUsbControlKeepAlive, response, kKeepAliveTimeoutMs)) {
-    if (m_lastError.empty()) {
-      m_lastError = "Timed out waiting for KEEP_ALIVE response";
-    }
-    return false;
-  }
-
-  if (response.size() < sizeof(uint32_t)) {
-    m_lastError = "KEEP_ALIVE payload too short";
-    return false;
-  }
-
-  uptimeSeconds = static_cast<uint32_t>(response[0]) |
-                  (static_cast<uint32_t>(response[1]) << 8) |
-                  (static_cast<uint32_t>(response[2]) << 16) |
-                  (static_cast<uint32_t>(response[3]) << 24);
-
-  LOG_DEBUG("CDC: KEEP_ALIVE acknowledged uptime=%us", static_cast<unsigned>(uptimeSeconds));
-  return true;
-}
 
 bool CdcTransport::fetchSerialNumber(std::string &outSerial)
 {

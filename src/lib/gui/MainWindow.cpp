@@ -1642,17 +1642,6 @@ void MainWindow::bridgeClientConnectToggled(const QString &devicePath, const QSt
     const QVariant defaultInvertScroll = Settings::defaultValue(Settings::Client::InvertScrollDirection);
     bool invertScroll = config.value(Settings::Client::InvertScrollDirection, defaultInvertScroll).toBool();
 
-    QString hidCommandError;
-    if (!sendBridgeAllowHidHostCommand(devicePath, true, &hidCommandError)) {
-      qWarning() << "Failed to enable HID host for" << devicePath << ":" << hidCommandError;
-      setStatus(tr("Failed to enable bridge client: %1").arg(hidCommandError));
-      releaseBridgeSerialLock(serialNumber, configPath);
-      if (auto *widget = m_bridgeClientWidgets.value(configPath)) {
-        widget->setConnected(false);
-      }
-      return;
-    }
-
     // Build the command
     QStringList command;
     command << "deskflow-core";
@@ -1733,14 +1722,7 @@ void MainWindow::bridgeClientConnectToggled(const QString &devicePath, const QSt
     // Stop bridge client process
     stopBridgeClient(devicePath);
 
-    if (!devicePath.isEmpty()) {
-      QString hidCommandError;
-      if (!sendBridgeAllowHidHostCommand(devicePath, false, &hidCommandError)) {
-        qWarning() << "Failed to disable HID host for" << devicePath << ":" << hidCommandError;
-      } else {
-        qInfo() << "Bridge HID host disabled for device:" << devicePath;
-      }
-    }
+
   }
 }
 
@@ -2416,33 +2398,4 @@ bool MainWindow::fetchFirmwareDeviceName(const QString &devicePath, QString &out
   return true;
 }
 
-bool MainWindow::sendBridgeAllowHidHostCommand(const QString &devicePath, bool allowed, QString *errorOut)
-{
-  if (devicePath.isEmpty()) {
-    if (errorOut != nullptr) {
-      *errorOut = tr("Bridge device path is empty.");
-    }
-    return false;
-  }
 
-  deskflow::bridge::CdcTransport transport(devicePath);
-  if (!transport.open()) {
-    const QString err = QString::fromStdString(transport.lastError());
-    if (errorOut != nullptr) {
-      *errorOut = tr("Failed to open %1: %2").arg(devicePath, err);
-    }
-    return false;
-  }
-
-  if (!transport.setAllowHidHost(allowed)) {
-    const QString err = QString::fromStdString(transport.lastError());
-    transport.close();
-    if (errorOut != nullptr) {
-      *errorOut = tr("Firmware rejected HID host command: %1").arg(err);
-    }
-    return false;
-  }
-
-  transport.close();
-  return true;
-}
