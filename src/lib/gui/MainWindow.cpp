@@ -30,9 +30,9 @@
 #include "gui/ipc/DaemonIpcClient.h"
 #include "gui/widgets/BridgeClientWidget.h"
 #include "gui/widgets/LogDock.h"
-#include "platform/bridge/CdcTransport.h"
 #include "net/FingerprintDatabase.h"
 #include "platform/Wayland.h"
+#include "platform/bridge/CdcTransport.h"
 
 #if defined(Q_OS_LINUX)
 #include "Config.h"
@@ -44,15 +44,15 @@
 #include <QCloseEvent>
 #include <QCoreApplication>
 #include <QDesktopServices>
+#include <QElapsedTimer>
+#include <QEventLoop>
+#include <QFile>
 #include <QFileDialog>
 #include <QLocalServer>
 #include <QLocalSocket>
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
-#include <QEventLoop>
-#include <QFile>
-#include <QElapsedTimer>
 #include <QNetworkAccessManager>
 #include <QNetworkInterface>
 #include <QPointer>
@@ -78,9 +78,9 @@ using CoreProcessState = CoreProcess::ProcessState;
 namespace {
 QString logLevelNameFromIndex(int index)
 {
-  static const QStringList kLogLevels = {
-      QStringLiteral("FATAL"), QStringLiteral("ERROR"),   QStringLiteral("WARNING"), QStringLiteral("NOTE"),
-      QStringLiteral("INFO"),  QStringLiteral("DEBUG"),   QStringLiteral("DEBUG1"), QStringLiteral("DEBUG2")};
+  static const QStringList kLogLevels = {QStringLiteral("FATAL"),  QStringLiteral("ERROR"), QStringLiteral("WARNING"),
+                                         QStringLiteral("NOTE"),   QStringLiteral("INFO"),  QStringLiteral("DEBUG"),
+                                         QStringLiteral("DEBUG1"), QStringLiteral("DEBUG2")};
 
   if (index < 0 || index >= kLogLevels.size()) {
     return QStringLiteral("INFO");
@@ -185,10 +185,8 @@ MainWindow::MainWindow()
     // Filter for Espressif vendor ID (0x303a)
     m_usbDeviceMonitor->setVendorIdFilter(UsbDeviceHelper::kEspressifVendorId);
     // Connect signals
-    connect(m_usbDeviceMonitor, &UsbDeviceMonitor::deviceConnected,
-            this, &MainWindow::usbDeviceConnected);
-    connect(m_usbDeviceMonitor, &UsbDeviceMonitor::deviceDisconnected,
-            this, &MainWindow::usbDeviceDisconnected);
+    connect(m_usbDeviceMonitor, &UsbDeviceMonitor::deviceConnected, this, &MainWindow::usbDeviceConnected);
+    connect(m_usbDeviceMonitor, &UsbDeviceMonitor::deviceDisconnected, this, &MainWindow::usbDeviceDisconnected);
     // Start monitoring
     if (m_usbDeviceMonitor->startMonitoring()) {
       qDebug() << "USB device monitoring started successfully";
@@ -525,8 +523,7 @@ void MainWindow::coreProcessError(CoreProcess::Error error)
     raise();
     activateWindow();
     QMessageBox::warning(
-        this,
-        tr("Server already running"),
+        this, tr("Server already running"),
         tr("Another Deskflow server instance is already running in the background. Please close the existing server "
            "before starting a new one.")
     );
@@ -1350,9 +1347,7 @@ void MainWindow::remoteHostChanged(const QString &newRemoteHost)
 void MainWindow::usbDeviceConnected(const UsbDeviceInfo &device)
 {
   qDebug() << "USB device connected:"
-           << "path:" << device.devicePath
-           << "vendor:" << device.vendorId
-           << "product:" << device.productId
+           << "path:" << device.devicePath << "vendor:" << device.vendorId << "product:" << device.productId
            << "serial:" << device.serialNumber;
 
   // Read serial number from CDC device
@@ -1403,9 +1398,10 @@ void MainWindow::usbDeviceConnected(const UsbDeviceInfo &device)
     // Connect signals
     connect(widget, &BridgeClientWidget::connectToggled, this, &MainWindow::bridgeClientConnectToggled);
     connect(widget, &BridgeClientWidget::configureClicked, this, &MainWindow::bridgeClientConfigureClicked);
+    connect(widget, &BridgeClientWidget::deleteClicked, this, &MainWindow::bridgeClientDeleteClicked);
 
     // Add to grid layout (3 columns per row)
-    QGridLayout *gridLayout = ui->widgetBridgeClients->findChild<QGridLayout*>("gridLayoutBridgeClients");
+    QGridLayout *gridLayout = ui->widgetBridgeClients->findChild<QGridLayout *>("gridLayoutBridgeClients");
     if (gridLayout) {
       int count = m_bridgeClientWidgets.size();
       int row = count / 3;
@@ -1431,9 +1427,8 @@ void MainWindow::usbDeviceConnected(const UsbDeviceInfo &device)
     }
     // Only use config as fallback if device doesn't provide a name
     if (deviceNameToStore.isEmpty()) {
-      deviceNameToStore = cfg
-                              .value(Settings::Bridge::DeviceName, Settings::defaultValue(Settings::Bridge::DeviceName))
-                              .toString();
+      deviceNameToStore =
+          cfg.value(Settings::Bridge::DeviceName, Settings::defaultValue(Settings::Bridge::DeviceName)).toString();
     }
 
     cfg.setValue(Settings::Bridge::ActivationState, activationToStore);
@@ -1457,10 +1452,10 @@ void MainWindow::usbDeviceConnected(const UsbDeviceInfo &device)
       BridgeClientWidget *widget = it.value();
       widget->setDeviceAvailable(device.devicePath, true);
       QSettings existingConfig(config, QSettings::IniFormat);
-      QString activationValue = existingConfig
-                                    .value(Settings::Bridge::ActivationState,
-                                           Settings::defaultValue(Settings::Bridge::ActivationState))
-                                    .toString();
+      QString activationValue =
+          existingConfig
+              .value(Settings::Bridge::ActivationState, Settings::defaultValue(Settings::Bridge::ActivationState))
+              .toString();
 
       if (!activationState.isEmpty()) {
         activationValue = activationState;
@@ -1473,9 +1468,9 @@ void MainWindow::usbDeviceConnected(const UsbDeviceInfo &device)
       }
       // Only use config as fallback if device doesn't provide a name
       if (deviceNameValue.isEmpty()) {
-        deviceNameValue = existingConfig
-                              .value(Settings::Bridge::DeviceName, Settings::defaultValue(Settings::Bridge::DeviceName))
-                              .toString();
+        deviceNameValue =
+            existingConfig.value(Settings::Bridge::DeviceName, Settings::defaultValue(Settings::Bridge::DeviceName))
+                .toString();
       }
 
       existingConfig.setValue(Settings::Bridge::ActivationState, activationValue);
@@ -1497,9 +1492,7 @@ void MainWindow::usbDeviceConnected(const UsbDeviceInfo &device)
 void MainWindow::usbDeviceDisconnected(const UsbDeviceInfo &device)
 {
   qDebug() << "USB device disconnected:"
-           << "path:" << device.devicePath
-           << "vendor:" << device.vendorId
-           << "product:" << device.productId;
+           << "path:" << device.devicePath << "vendor:" << device.vendorId << "product:" << device.productId;
 
   // Get serial number from our stored mapping (can't read from sysfs after disconnect)
   QString serialNumber;
@@ -1564,9 +1557,7 @@ void MainWindow::usbDeviceDisconnected(const UsbDeviceInfo &device)
 void MainWindow::bridgeClientConnectToggled(const QString &devicePath, const QString &configPath, bool shouldConnect)
 {
   qDebug() << "Bridge client connect toggled:"
-           << "device:" << devicePath
-           << "config:" << configPath
-           << "connect:" << shouldConnect;
+           << "device:" << devicePath << "config:" << configPath << "connect:" << shouldConnect;
 
   BridgeClientWidget *targetWidget = m_bridgeClientWidgets.value(configPath, nullptr);
   if (!targetWidget) {
@@ -1680,10 +1671,12 @@ void MainWindow::bridgeClientConnectToggled(const QString &devicePath, const QSt
     connect(process, &QProcess::readyReadStandardError, this, [this, devicePath]() {
       bridgeClientProcessReadyRead(devicePath);
     });
-    connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this,
-            [this, devicePath](int exitCode, QProcess::ExitStatus exitStatus) {
-              bridgeClientProcessFinished(devicePath, exitCode, exitStatus);
-            });
+    connect(
+        process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this,
+        [this, devicePath](int exitCode, QProcess::ExitStatus exitStatus) {
+          bridgeClientProcessFinished(devicePath, exitCode, exitStatus);
+        }
+    );
 
     // Store the process
     m_bridgeClientProcesses[devicePath] = process;
@@ -1712,72 +1705,68 @@ void MainWindow::bridgeClientConnectToggled(const QString &devicePath, const QSt
     // Start connection timeout timer (5 seconds)
     QTimer *timer = new QTimer(this);
     timer->setSingleShot(true);
-    connect(timer, &QTimer::timeout, this, [this, devicePath]() {
-      bridgeClientConnectionTimeout(devicePath);
-    });
+    connect(timer, &QTimer::timeout, this, [this, devicePath]() { bridgeClientConnectionTimeout(devicePath); });
     m_bridgeClientConnectionTimers[devicePath] = timer;
     timer->start(5000);
 
   } else {
     // Stop bridge client process
     stopBridgeClient(devicePath);
-
-
   }
 }
 
 void MainWindow::bridgeClientConfigureClicked(const QString &devicePath, const QString &configPath)
 {
   qDebug() << "Bridge client configure clicked:"
-           << "device:" << devicePath
-           << "config:" << configPath;
+           << "device:" << devicePath << "config:" << configPath;
 
   // Open configuration dialog
   BridgeClientConfigDialog dialog(configPath, this);
 
   // Connect signal to handle config file rename
-  connect(&dialog, &BridgeClientConfigDialog::configChanged, this, [this, configPath](const QString &oldConfigPath, const QString &newConfigPath) {
-    // Find the widget by old config path
-    auto it = m_bridgeClientWidgets.find(oldConfigPath);
-    if (it != m_bridgeClientWidgets.end()) {
-      BridgeClientWidget *widget = it.value();
+  connect(
+      &dialog, &BridgeClientConfigDialog::configChanged, this,
+      [this, configPath](const QString &oldConfigPath, const QString &newConfigPath) {
+        // Find the widget by old config path
+        auto it = m_bridgeClientWidgets.find(oldConfigPath);
+        if (it != m_bridgeClientWidgets.end()) {
+          BridgeClientWidget *widget = it.value();
 
-      // Get the old screen name from the widget before updating (file has been renamed already)
-      QString oldScreenName = widget->screenName();
-      // Read the new screen name from the renamed config file
-      QString newScreenName = BridgeClientConfigManager::readScreenName(newConfigPath);
+          // Get the old screen name from the widget before updating (file has been renamed already)
+          QString oldScreenName = widget->screenName();
+          // Read the new screen name from the renamed config file
+          QString newScreenName = BridgeClientConfigManager::readScreenName(newConfigPath);
 
-      // Update the widget with new screen name and config path
-      widget->updateConfig(newScreenName, newConfigPath);
+          // Update the widget with new screen name and config path
+          widget->updateConfig(newScreenName, newConfigPath);
 
-      // Update the map: remove old entry and add new entry
-      m_bridgeClientWidgets.remove(oldConfigPath);
-      m_bridgeClientWidgets[newConfigPath] = widget;
+          // Update the map: remove old entry and add new entry
+          m_bridgeClientWidgets.remove(oldConfigPath);
+          m_bridgeClientWidgets[newConfigPath] = widget;
 
-      // Update the server config to rename the screen
-      if (oldScreenName != newScreenName) {
-        qInfo() << "Renaming bridge client in server config from" << oldScreenName << "to" << newScreenName;
-        if (m_serverConfig.renameScreen(oldScreenName, newScreenName)) {
-          qInfo() << "Successfully renamed bridge client in server config";
-          // Restart the core process if it's running so the changes take effect
-          if (m_coreProcess.isStarted()) {
-            qInfo() << "Restarting core process to apply screen name change";
-            m_coreProcess.restart();
+          // Update the server config to rename the screen
+          if (oldScreenName != newScreenName) {
+            qInfo() << "Renaming bridge client in server config from" << oldScreenName << "to" << newScreenName;
+            if (m_serverConfig.renameScreen(oldScreenName, newScreenName)) {
+              qInfo() << "Successfully renamed bridge client in server config";
+              // Restart the core process if it's running so the changes take effect
+              if (m_coreProcess.isStarted()) {
+                qInfo() << "Restarting core process to apply screen name change";
+                m_coreProcess.restart();
+              }
+            } else {
+              qWarning() << "Failed to rename bridge client in server config";
+            }
           }
+
+          qDebug() << "Bridge client config updated:"
+                   << "oldConfigPath:" << oldConfigPath << "newConfigPath:" << newConfigPath
+                   << "oldScreenName:" << oldScreenName << "newScreenName:" << newScreenName;
         } else {
-          qWarning() << "Failed to rename bridge client in server config";
+          qWarning() << "Widget not found for old config path:" << oldConfigPath;
         }
       }
-
-      qDebug() << "Bridge client config updated:"
-               << "oldConfigPath:" << oldConfigPath
-               << "newConfigPath:" << newConfigPath
-               << "oldScreenName:" << oldScreenName
-               << "newScreenName:" << newScreenName;
-    } else {
-      qWarning() << "Widget not found for old config path:" << oldConfigPath;
-    }
-  });
+  );
 
   if (dialog.exec() == QDialog::Accepted) {
     const QString finalConfigPath = dialog.configPath();
@@ -1804,11 +1793,11 @@ void MainWindow::bridgeClientConfigureClicked(const QString &devicePath, const Q
           stopBridgeClient(activeDevicePath);
         }
 
-        auto applyRename = [this, finalConfigPath, activeDevicePath, widgetPtr, wasConnected, newName = dialog.deviceName()]() {
+        auto applyRename = [this, finalConfigPath, activeDevicePath, widgetPtr, wasConnected,
+                            newName = dialog.deviceName()]() {
           const bool success = applyFirmwareDeviceName(activeDevicePath, newName);
-          QString statusMsg =
-              success ? tr("Firmware device name updated to: %1").arg(newName)
-                      : tr("Failed to update firmware device name.");
+          QString statusMsg = success ? tr("Firmware device name updated to: %1").arg(newName)
+                                      : tr("Failed to update firmware device name.");
 
           if (success) {
             QSettings config(finalConfigPath, QSettings::IniFormat);
@@ -1844,6 +1833,62 @@ void MainWindow::bridgeClientConfigureClicked(const QString &devicePath, const Q
   }
 }
 
+void MainWindow::bridgeClientDeleteClicked(const QString &devicePath, const QString &configPath)
+{
+  qDebug() << "Bridge client delete clicked:"
+           << "device:" << devicePath << "config:" << configPath;
+
+  // Check if the client is connected and stop it first
+  auto it = m_bridgeClientWidgets.find(configPath);
+  if (it != m_bridgeClientWidgets.end()) {
+    BridgeClientWidget *widget = it.value();
+    if (widget->isConnected()) {
+      qWarning() << "Cannot delete connected bridge client, disconnecting first";
+      bridgeClientConnectToggled(devicePath, configPath, false);
+    }
+  }
+
+  // Delete the config file
+  QFile configFile(configPath);
+  qDebug() << "Attempting to delete config file:" << configPath;
+  qDebug() << "File exists:" << configFile.exists();
+
+  if (!configFile.exists()) {
+    qWarning() << "Config file does not exist:" << configPath;
+    QMessageBox::warning(this, tr("Delete Failed"), tr("Configuration file does not exist:\n%1").arg(configPath));
+    return;
+  }
+
+  qDebug() << "Calling QFile::remove() on:" << configPath;
+  if (configFile.remove()) {
+    qInfo() << "Successfully deleted config file:" << configPath;
+
+    // TODO: Remove from server config when API allows screen removal
+    // Currently, deleting the config file and widget is the primary functionality
+
+    // Remove the widget
+    if (it != m_bridgeClientWidgets.end()) {
+      BridgeClientWidget *widget = it.value();
+      m_bridgeClientWidgets.erase(it);
+      widget->deleteLater();
+      qDebug() << "Widget removed and scheduled for deletion";
+    }
+
+    // Remove from device tracking
+    m_devicePathToSerialNumber.remove(devicePath);
+    qDebug() << "Device tracking removed for:" << devicePath;
+
+    setStatus(tr("Bridge client configuration deleted"));
+  } else {
+    QString errorMsg = configFile.errorString();
+    qCritical() << "Failed to delete config file:" << configPath << "Error:" << errorMsg;
+    QMessageBox::critical(
+        this, tr("Delete Failed"),
+        tr("Failed to delete the bridge client configuration file.\n\nPath: %1\n\nError: %2").arg(configPath, errorMsg)
+    );
+  }
+}
+
 void MainWindow::bridgeClientDeletedFromServerConfig(const QString &configPath)
 {
   qDebug() << "Bridge client deleted from server config, cleaning up widget:" << configPath;
@@ -1868,11 +1913,11 @@ void MainWindow::bridgeClientDeletedFromServerConfig(const QString &configPath)
   }
 
   // Remove widget from UI
-  QGridLayout *gridLayout = ui->widgetBridgeClients->findChild<QGridLayout*>("gridLayoutBridgeClients");
+  QGridLayout *gridLayout = ui->widgetBridgeClients->findChild<QGridLayout *>("gridLayoutBridgeClients");
   if (gridLayout) {
     gridLayout->removeWidget(widget);
   }
-  widget->hide();  // Hide the widget immediately
+  widget->hide(); // Hide the widget immediately
   widget->deleteLater();
 
   // Remove from tracking map
@@ -1907,7 +1952,7 @@ void MainWindow::loadBridgeClientConfigs()
   qDebug() << "Found" << configFiles.size() << "bridge client config file(s)";
 
   // Get grid layout
-  QGridLayout *gridLayout = ui->widgetBridgeClients->findChild<QGridLayout*>("gridLayoutBridgeClients");
+  QGridLayout *gridLayout = ui->widgetBridgeClients->findChild<QGridLayout *>("gridLayoutBridgeClients");
   if (!gridLayout) {
     qWarning() << "Bridge clients grid layout not found";
     return;
@@ -1930,6 +1975,7 @@ void MainWindow::loadBridgeClientConfigs()
     // Connect signals
     connect(widget, &BridgeClientWidget::connectToggled, this, &MainWindow::bridgeClientConnectToggled);
     connect(widget, &BridgeClientWidget::configureClicked, this, &MainWindow::bridgeClientConfigureClicked);
+    connect(widget, &BridgeClientWidget::deleteClicked, this, &MainWindow::bridgeClientDeleteClicked);
 
     // Add to grid layout (3 columns per row)
     int count = m_bridgeClientWidgets.size();
@@ -2109,8 +2155,8 @@ void MainWindow::bridgeClientProcessReadyRead(const QString &devicePath)
 
   // Check for activation state reported in the handshake log
   static const QRegularExpression activationRegex(
-      R"(Firmware handshake:.*activation_state=([^()]+)\((\d+)\))",
-      QRegularExpression::CaseInsensitiveOption);
+      R"(Firmware handshake:.*activation_state=([^()]+)\((\d+)\))", QRegularExpression::CaseInsensitiveOption
+  );
   QRegularExpressionMatch activationMatch = activationRegex.match(output);
   if (activationMatch.hasMatch()) {
     const int stateCode = activationMatch.captured(2).toInt();
@@ -2137,7 +2183,9 @@ void MainWindow::bridgeClientProcessReadyRead(const QString &devicePath)
   }
 
   // Check for connection success indicators
-  static const QRegularExpression connectedRegex("connected to server|connection established", QRegularExpression::CaseInsensitiveOption);
+  static const QRegularExpression connectedRegex(
+      "connected to server|connection established", QRegularExpression::CaseInsensitiveOption
+  );
   if (connectedRegex.match(output).hasMatch()) {
     qInfo() << "Bridge client connected successfully:" << devicePath;
 
@@ -2163,8 +2211,7 @@ void MainWindow::bridgeClientProcessReadyRead(const QString &devicePath)
 void MainWindow::bridgeClientProcessFinished(const QString &devicePath, int exitCode, QProcess::ExitStatus exitStatus)
 {
   qInfo() << "Bridge client process finished:"
-          << "device:" << devicePath
-          << "exitCode:" << exitCode
+          << "device:" << devicePath << "exitCode:" << exitCode
           << "exitStatus:" << (exitStatus == QProcess::NormalExit ? "normal" : "crashed");
 
   // Stop and clean up the connection timeout timer
@@ -2331,8 +2378,7 @@ bool MainWindow::applyFirmwareDeviceName(const QString &devicePath, const QStrin
   }
   if (!isValidDeviceName(deviceName)) {
     QMessageBox::warning(
-        this,
-        tr("Invalid device name"),
+        this, tr("Invalid device name"),
         tr("Device name must use English letters/numbers, spaces or .-_ characters and be at most 22 characters.")
     );
     return false;
@@ -2341,8 +2387,7 @@ bool MainWindow::applyFirmwareDeviceName(const QString &devicePath, const QStrin
   deskflow::bridge::CdcTransport transport(devicePath);
   if (!transport.open()) {
     QMessageBox::warning(
-        this,
-        tr("Bridge device error"),
+        this, tr("Bridge device error"),
         tr("Failed to open %1: %2").arg(devicePath, QString::fromStdString(transport.lastError()))
     );
     return false;
@@ -2383,8 +2428,8 @@ bool MainWindow::fetchFirmwareDeviceName(const QString &devicePath, QString &out
   }
   deskflow::bridge::CdcTransport transport(devicePath);
   if (!transport.open()) {
-    qWarning() << "Failed to open bridge device for name fetch" << devicePath
-               << ":" << QString::fromStdString(transport.lastError());
+    qWarning() << "Failed to open bridge device for name fetch" << devicePath << ":"
+               << QString::fromStdString(transport.lastError());
     return false;
   }
   std::string deviceName;
@@ -2397,5 +2442,3 @@ bool MainWindow::fetchFirmwareDeviceName(const QString &devicePath, QString &out
   outName = QString::fromStdString(deviceName);
   return true;
 }
-
-

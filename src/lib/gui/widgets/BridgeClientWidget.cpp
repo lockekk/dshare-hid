@@ -9,6 +9,7 @@
 #include "common/Settings.h"
 
 #include <QHBoxLayout>
+#include <QMessageBox>
 #include <QSettings>
 #include <QSignalBlocker>
 
@@ -47,6 +48,11 @@ BridgeClientWidget::BridgeClientWidget(
   m_btnConfigure->setMinimumSize(80, 32);
   m_btnConfigure->setToolTip(tr("Configure bridge client settings"));
 
+  // Create Delete button
+  m_btnDelete = new QPushButton(tr("Delete"), this);
+  m_btnDelete->setMinimumSize(80, 32);
+  m_btnDelete->setToolTip(tr("Delete this bridge client configuration"));
+
   m_deviceNameLabel = new QLabel(tr("--"), this);
   m_deviceNameLabel->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
   m_deviceNameLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
@@ -64,6 +70,7 @@ BridgeClientWidget::BridgeClientWidget(
   // Add buttons and label to layout
   layout->addWidget(m_btnConnect);
   layout->addWidget(m_btnConfigure);
+  layout->addWidget(m_btnDelete);
   layout->addSpacing(12);
   layout->addWidget(m_deviceNameLabel, 1);
   layout->addWidget(m_activationStateLabel);
@@ -72,6 +79,7 @@ BridgeClientWidget::BridgeClientWidget(
   // Connect signals
   connect(m_btnConnect, &QPushButton::toggled, this, &BridgeClientWidget::onConnectToggled);
   connect(m_btnConfigure, &QPushButton::clicked, this, &BridgeClientWidget::onConfigureClicked);
+  connect(m_btnDelete, &QPushButton::clicked, this, &BridgeClientWidget::onDeleteClicked);
 
   refreshDeviceNameLabel();
   refreshActivationStateLabel();
@@ -214,6 +222,21 @@ void BridgeClientWidget::refreshButtonStates()
     configureTooltip = tr("Configure bridge client settings");
   }
   m_btnConfigure->setToolTip(configureTooltip);
+
+  const bool deleteEnabled = !m_isConnected && !m_groupLocked;
+  m_btnDelete->setEnabled(deleteEnabled);
+
+  QString deleteTooltip;
+  if (m_isConnected) {
+    deleteTooltip = tr("Disconnect before deleting");
+  } else if (m_groupLocked) {
+    deleteTooltip = m_groupLockReason.isEmpty()
+                       ? tr("This profile is locked because another one is connected")
+                       : m_groupLockReason;
+  } else {
+    deleteTooltip = tr("Delete this bridge client configuration");
+  }
+  m_btnDelete->setToolTip(deleteTooltip);
 }
 
 void BridgeClientWidget::onConnectToggled(bool checked)
@@ -228,6 +251,22 @@ void BridgeClientWidget::onConnectToggled(bool checked)
 void BridgeClientWidget::onConfigureClicked()
 {
   Q_EMIT configureClicked(m_devicePath, m_configPath);
+}
+
+void BridgeClientWidget::onDeleteClicked()
+{
+  // Show warning and confirmation dialog
+  QMessageBox::StandardButton reply = QMessageBox::question(
+      this,
+      tr("Delete Configuration"),
+      tr("Are you sure you want to delete this bridge client configuration?\n\nThis action cannot be undone."),
+      QMessageBox::Yes | QMessageBox::No,
+      QMessageBox::No
+  );
+
+  if (reply == QMessageBox::Yes) {
+    Q_EMIT deleteClicked(m_devicePath, m_configPath);
+  }
 }
 
 } // namespace deskflow::gui

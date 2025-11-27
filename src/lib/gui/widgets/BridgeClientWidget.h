@@ -136,9 +136,17 @@ Q_SIGNALS:
    */
   void configureClicked(const QString &devicePath, const QString &configPath);
 
+  /**
+   * @brief Emitted when delete button is clicked
+   * @param devicePath Device path
+   * @param configPath Config file path
+   */
+  void deleteClicked(const QString &devicePath, const QString &configPath);
+
 private Q_SLOTS:
   void onConnectToggled(bool checked);
   void onConfigureClicked();
+  void onDeleteClicked();
 
 private:
   void refreshOrientationLabel();
@@ -156,6 +164,7 @@ private:
 
   QPushButton *m_btnConnect;
   QPushButton *m_btnConfigure;
+  QPushButton *m_btnDelete;
   QLabel *m_deviceNameLabel;
   QLabel *m_activationStateLabel;
   QLabel *m_orientationLabel;
