@@ -158,6 +158,9 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
 # Instead use Q_SIGNAL, Q_SLOT and Q_EMIT
 # prevents issues when used with glib for libportal
 add_definitions(-DQT_NO_KEYWORDS)
+if(WIN32)
+    add_definitions(-DNOMINMAX)
+endif()
 include(cmake/Libraries.cmake)
 include(GNUInstallDirs)
 

@@ -174,12 +174,20 @@ void Esp32HidToolsWidget::refreshPorts()
     for (auto it = devices.begin(); it != devices.end(); ++it) {
       QString path = it.key();
       QString serial = it.value();
+      QString displayPath = path;
+      if (displayPath.startsWith(QStringLiteral("\\\\.\\"))) {
+        displayPath = displayPath.mid(4);
+      }
+
       if (serial == "Unknown") {
         qInfo() << "Adding device:" << path;
-        m_portCombo->addItem(path, path);
+        m_portCombo->addItem(displayPath, path);
+      } else if (serial == displayPath) {
+        qInfo() << "Adding device:" << path << "(fallback serial)";
+        m_portCombo->addItem(displayPath, path);
       } else {
         qInfo() << "Adding device:" << path << "Serial:" << serial;
-        m_portCombo->addItem(QString("%1 (%2)").arg(path, serial), path);
+        m_portCombo->addItem(QString("%1 (%2)").arg(displayPath, serial), path);
       }
     }
   }

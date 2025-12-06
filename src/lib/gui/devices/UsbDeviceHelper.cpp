@@ -23,8 +23,8 @@
 #define NOMINMAX
 #endif
 #define WIN32_LEAN_AND_MEAN
-#include <SetupAPI.h>
 #include <Windows.h>
+#include <SetupAPI.h>
 #include <devguid.h>
 #include <initguid.h>
 #include <winreg.h>
