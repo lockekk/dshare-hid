@@ -280,20 +280,19 @@ void Esp32HidToolsWidget::onFlashFactory()
     }
   }
 
-  if (path.isEmpty()) {
-    QMessageBox::warning(this, tr("Error"), tr("Please select a factory package file."));
-    return;
-  }
-
-  std::vector<uint8_t> data = readFile(path);
-  if (data.empty()) {
-    log(tr("Error: Failed to read file or file is empty: %1").arg(path));
-    return;
+  std::vector<uint8_t> data;
+  if (!path.isEmpty()) {
+    data = readFile(path);
+    if (data.empty()) {
+      log(tr("Error: Failed to read file or file is empty: %1").arg(path));
+      // We don't return here yet, because we might not need the file if we are just verifying factory mode.
+      // But if we do need it later, we will check data.empty().
+    }
   }
 
   std::string port = portName.toStdString();
 
-  log(tr("Starting Factory Flash..."));
+  log(tr("Checking device status..."));
 
   // Create a struct to hold result so we can capture it by value
   struct Result
@@ -329,19 +328,62 @@ void Esp32HidToolsWidget::onFlashFactory()
       // Use permissive open to detect if device is in firmware mode (any FW)
       if (cdc.open(true)) {
         // Handshake succeeded -> We are in Firmware Mode!
-        QMetaObject::invokeMethod(this, [this]() {
-          log(tr("Device is already running with factory firmware."));
-          QMessageBox::information(
-              this, tr("Info"), tr("Device is already running with factory firmware, no need to flash again.")
-          );
-        });
-        return;
+        // Check if it is Factory Mode
+        const auto &config = cdc.deviceConfig();
+        if (config.firmwareMode == deskflow::bridge::FirmwareMode::Factory) {
+          QMetaObject::invokeMethod(this, [this]() {
+            log(tr("Device is already running with factory firmware."));
+            log(tr("Attempting to fetch PDEK..."));
+          });
+
+          // Attempt to fetch PDEK using the new tool command
+          std::string pdekInfo;
+          // IMPORTANT: Close the local handle before asking the tool to open it again!
+          cdc.close();
+          FlashResult res = copy_pdek(port.c_str(), pdekInfo, log_cb);
+
+          QMetaObject::invokeMethod(this, [this, res, pdekInfo]() {
+            if (res == FlashResult::OK) {
+              log(tr("PDEK fetched successfully."));
+              log(tr("Device Info: %1").arg(QString::fromStdString(pdekInfo)));
+              m_copyInfoBtn->setEnabled(true);
+              m_copyInfoBtn->setProperty("deviceInfo", QString::fromStdString(pdekInfo));
+              QMessageBox::information(
+                  this, tr("Info"), tr("Device is already running with factory firmware. Device Info has been fetched.")
+              );
+            } else {
+              log(tr("Failed to fetch PDEK from factory mode device."));
+              QMessageBox::warning(
+                  this, tr("Info"), tr("Device is already running with factory firmware, but failed to fetch PDEK.")
+              );
+            }
+          });
+          return;
+        } else {
+          // App Mode
+          QMetaObject::invokeMethod(this, [this]() {
+            log(tr("Device is running Application Firmware."));
+            QMessageBox::warning(
+                this, tr("Wrong Mode"),
+                tr("Device is running Application Firmware. Please enter Bootloader mode to flash Factory Firmware.")
+            );
+          });
+          return;
+        }
       }
       // If open() failed, we assume it's because the device is in Bootloader mode (no handshake support)
       // and proceed to try flashing.
     }
 
     // Note: This calls the blocking C++ API
+    if (data.empty()) {
+      QMetaObject::invokeMethod(this, [this]() {
+        log(tr("Error: No factory package selected."));
+        QMessageBox::warning(this, tr("Error"), tr("Please select a factory package file to flash."));
+      });
+      return;
+    }
+    log(tr("Starting Factory Flash..."));
     FlashResult res = flash_factory(port, data, info, progress_cb, log_cb);
 
     // Update UI on main thread
