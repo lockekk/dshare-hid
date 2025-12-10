@@ -5,6 +5,7 @@
 
 include_directories(./lib)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/lib)
+include_directories(${CMAKE_SOURCE_DIR}/submodules/esp32-hid-tools)
 
 add_subdirectory(lib)
 add_subdirectory(apps)

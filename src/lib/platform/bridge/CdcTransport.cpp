@@ -52,6 +52,7 @@ constexpr uint8_t kUsbConfigGetDeviceName = 0x02;
 constexpr uint8_t kUsbConfigSetDeviceName = 0x03;
 constexpr uint8_t kUsbConfigGetSerialNumber = 0x04;
 constexpr uint8_t kUsbConfigActivateDevice = 0x07;
+constexpr uint8_t kUsbConfigGotoFactory = 0x08;
 
 constexpr size_t kAckCoreLen = 16;
 constexpr size_t kAckProtocolVersionIndex = 1;
@@ -322,6 +323,8 @@ void CdcTransport::close()
   }
 
 #if defined(Q_OS_UNIX)
+  // Flush any pending data to avoid blocking on close if the device is stuck
+  tcflush(m_fd, TCIOFLUSH);
   ::close(m_fd);
 #elif defined(Q_OS_WIN)
   CloseHandle(reinterpret_cast<HANDLE>(m_fd));
@@ -870,6 +873,46 @@ bool CdcTransport::activateDevice(const std::string &licenseCode)
     return false;
   }
 
+  return true;
+}
+
+bool CdcTransport::gotoFactory()
+{
+  if (!ensureOpen()) {
+    return false;
+  }
+
+  LOG_INFO("CDC: Sending gotoFactory command (0x%02X)", kUsbConfigGotoFactory);
+
+  // kUsbConfigGotoFactory = 0x08
+  std::vector<uint8_t> payload(1);
+  payload[0] = kUsbConfigGotoFactory;
+
+  if (!sendUsbFrame(kUsbFrameTypeControl, 0, payload)) {
+    LOG_ERR("CDC: Failed to send gotoFactory command");
+    return false;
+  }
+
+  uint8_t msgType = 0;
+  uint8_t status = 0;
+  std::vector<uint8_t> data;
+  if (!waitForConfigResponse(msgType, status, data, kConfigCommandTimeoutMs)) {
+    LOG_ERR("CDC: Timeout waiting for gotoFactory response");
+    return false;
+  }
+
+  if (msgType != kUsbConfigGotoFactory) {
+    m_lastError = "Unexpected config response";
+    LOG_ERR("CDC: Unexpected response type 0x%02X for gotoFactory", msgType);
+    return false;
+  }
+  if (status != 0) {
+    m_lastError = "Firmware error code " + std::to_string(status);
+    LOG_ERR("CDC: gotoFactory firmware returned error=%u", status);
+    return false;
+  }
+
+  LOG_INFO("CDC: gotoFactory success");
   return true;
 }
 

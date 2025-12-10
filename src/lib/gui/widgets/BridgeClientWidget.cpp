@@ -5,7 +5,6 @@
  */
 
 #include "BridgeClientWidget.h"
-#include "Esp32HidToolsWidget.h"
 
 #include "common/Settings.h"
 
@@ -49,11 +48,6 @@ BridgeClientWidget::BridgeClientWidget(
   m_btnConfigure->setMinimumSize(80, 32);
   m_btnConfigure->setToolTip(tr("Configure bridge client settings"));
 
-  // Create Firmware button
-  m_btnFirmware = new QPushButton(tr("Firmware"), this);
-  m_btnFirmware->setMinimumSize(80, 32);
-  m_btnFirmware->setToolTip(tr("Open firmware update tools"));
-
   // Create Delete button
   m_btnDelete = new QPushButton(tr("Delete"), this);
   m_btnDelete->setMinimumSize(80, 32);
@@ -76,7 +70,6 @@ BridgeClientWidget::BridgeClientWidget(
   // Add buttons and label to layout
   layout->addWidget(m_btnConnect);
   layout->addWidget(m_btnConfigure);
-  layout->addWidget(m_btnFirmware);
   layout->addWidget(m_btnDelete);
   layout->addSpacing(12);
   layout->addWidget(m_deviceNameLabel, 1);
@@ -86,7 +79,6 @@ BridgeClientWidget::BridgeClientWidget(
   // Connect signals
   connect(m_btnConnect, &QPushButton::toggled, this, &BridgeClientWidget::onConnectToggled);
   connect(m_btnConfigure, &QPushButton::clicked, this, &BridgeClientWidget::onConfigureClicked);
-  connect(m_btnFirmware, &QPushButton::clicked, this, &BridgeClientWidget::onFirmwareClicked);
   connect(m_btnDelete, &QPushButton::clicked, this, &BridgeClientWidget::onDeleteClicked);
 
   refreshDeviceNameLabel();
@@ -268,17 +260,6 @@ void BridgeClientWidget::onDeleteClicked()
   if (reply == QMessageBox::Yes) {
     Q_EMIT deleteClicked(m_devicePath, m_configPath);
   }
-}
-
-void BridgeClientWidget::onFirmwareClicked()
-{
-  if (m_isConnected) {
-    m_btnConnect->setChecked(false);
-  }
-  Esp32HidToolsWidget dialog(m_devicePath, this);
-  dialog.exec();
-  refreshButtonStates();
-  Q_EMIT refreshDevicesRequested();
 }
 
 } // namespace deskflow::gui

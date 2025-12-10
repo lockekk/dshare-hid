@@ -146,6 +146,12 @@ public:
   bool activateDevice(const std::string &licenseCode);
 
   /**
+   * @brief Access the device to switch to factory partition
+   * @return true if successful
+   */
+  bool gotoFactory();
+
+  /**
    * @brief Get last error message
    */
   std::string lastError() const

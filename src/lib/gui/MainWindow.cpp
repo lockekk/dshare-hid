@@ -29,6 +29,7 @@
 #include "gui/devices/UsbDeviceHelper.h"
 #include "gui/ipc/DaemonIpcClient.h"
 #include "gui/widgets/BridgeClientWidget.h"
+#include "gui/widgets/Esp32HidToolsWidget.h"
 #include "gui/widgets/LogDock.h"
 #include "net/FingerprintDatabase.h"
 #include "platform/Wayland.h"
@@ -114,7 +115,8 @@ MainWindow::MainWindow()
       m_actionSettings{new QAction(tr("&Preferences"), this)},
       m_actionStartCore{new QAction(tr("&Start"), this)},
       m_actionRestartCore{new QAction(tr("Rest&art"), this)},
-      m_actionStopCore{new QAction(tr("S&top"), this)}
+      m_actionStopCore{new QAction(tr("S&top"), this)},
+      m_actionEsp32HidTools{new QAction(tr("Firmware"), this)}
 {
   ui->setupUi(this);
 
@@ -396,6 +398,7 @@ void MainWindow::connectSlots()
   connect(m_actionStartCore, &QAction::triggered, this, &MainWindow::startCore);
   connect(m_actionRestartCore, &QAction::triggered, this, &MainWindow::resetCore);
   connect(m_actionStopCore, &QAction::triggered, this, &MainWindow::stopCore);
+  connect(m_actionEsp32HidTools, &QAction::triggered, this, &MainWindow::openEsp32HidTools);
 
   connect(&m_versionChecker, &VersionChecker::updateFound, this, &MainWindow::versionCheckerUpdateFound);
 
@@ -603,6 +606,12 @@ void MainWindow::openSettings()
   }
 }
 
+void MainWindow::openEsp32HidTools()
+{
+  Esp32HidToolsWidget dialog("", this);
+  dialog.exec();
+}
+
 void MainWindow::resetCore()
 {
   m_clientConnection.setShowMessage();
@@ -805,6 +814,8 @@ void MainWindow::createMenuBar()
   menuFile->addAction(m_actionStartCore);
   menuFile->addAction(m_actionRestartCore);
   menuFile->addAction(m_actionStopCore);
+  menuFile->addSeparator();
+  menuFile->addAction(m_actionEsp32HidTools);
   menuFile->addSeparator();
   menuFile->addAction(m_actionQuit);
 

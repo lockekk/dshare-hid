@@ -114,6 +114,7 @@ private:
   void openHelpUrl() const;
   void openGetNewVersionUrl() const;
   void openSettings();
+  void openEsp32HidTools();
   void startCore();
   void stopCore();
   bool saveServerConfig();
@@ -214,7 +215,7 @@ private:
   deskflow::gui::UsbDeviceMonitor *m_usbDeviceMonitor = nullptr;
 
   // Bridge client widgets: config path -> widget
-  QMap<QString, deskflow::gui::BridgeClientWidget*> m_bridgeClientWidgets;
+  QMap<QString, deskflow::gui::BridgeClientWidget *> m_bridgeClientWidgets;
 
   // Track device path -> serial number mapping when devices connect
   // (needed because sysfs disappears when device disconnects)
@@ -227,10 +228,10 @@ private:
   QHash<QString, QString> m_bridgeClientDeviceToConfig;
 
   // Bridge client process management: device path -> QProcess*
-  QMap<QString, QProcess*> m_bridgeClientProcesses;
+  QMap<QString, QProcess *> m_bridgeClientProcesses;
 
   // Bridge client connection timeout timers: device path -> QTimer*
-  QMap<QString, QTimer*> m_bridgeClientConnectionTimers;
+  QMap<QString, QTimer *> m_bridgeClientConnectionTimers;
 
   LogDock *m_logDock;
   QLabel *m_lblSecurityStatus = nullptr;
@@ -250,4 +251,5 @@ private:
   QAction *m_actionStartCore = nullptr;
   QAction *m_actionRestartCore = nullptr;
   QAction *m_actionStopCore = nullptr;
+  QAction *m_actionEsp32HidTools = nullptr;
 };

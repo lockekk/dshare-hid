@@ -127,7 +127,6 @@ Q_SIGNALS:
    */
   Q_SIGNAL void connectToggled(const QString &devicePath, const QString &configPath, bool shouldConnect);
   Q_SIGNAL void configureClicked(const QString &devicePath, const QString &configPath);
-  Q_SIGNAL void firmwareClicked(const QString &devicePath, const QString &configPath);
   Q_SIGNAL void deleteClicked(const QString &devicePath, const QString &configPath);
   Q_SIGNAL void refreshDevicesRequested();
 
@@ -136,7 +135,6 @@ private Q_SLOTS:
   void onConnectToggled(bool checked);
   void onConfigureClicked();
   void onDeleteClicked();
-  void onFirmwareClicked();
 
 private:
   void refreshOrientationLabel();

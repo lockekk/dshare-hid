@@ -30,8 +30,11 @@ private Q_SLOTS:
   void refreshPorts();
   void onBrowseFactory();
   void onFlashFactory();
+  void onDownloadAndFlashFactory();
   void onBrowseUpgrade();
-  void onFlashUpgrade();
+  void onCheckUpgrade();
+  void onFlashOnline();
+  void onFlashLocal();
   void onCopyInfo();
   void onCopySerialClicked();
   void onActivateClicked();
@@ -47,12 +50,21 @@ private:
   QLineEdit *m_factoryPathEdit;
   QPushButton *m_factoryBrowseBtn;
   QPushButton *m_factoryFlashBtn;
+  QPushButton *m_downloadFlashBtn;
   QPushButton *m_copyInfoBtn;
 
   // Upgrade Tab
+  // Upgrade Tab
+  // Online Section
+  QLabel *m_lblCurrentVersion;
+  QLabel *m_lblLatestVersion;
+  QPushButton *m_checkUpgradeBtn;
+  QPushButton *m_flashOnlineBtn;
+
+  // Manual Section
   QLineEdit *m_upgradePathEdit;
   QPushButton *m_upgradeBrowseBtn;
-  QPushButton *m_upgradeFlashBtn;
+  QPushButton *m_flashLocalBtn;
 
   // Activation Tab
   QWidget *m_tabActivation;
@@ -75,6 +87,7 @@ private:
   void setControlsEnabled(bool enabled);
   template <typename Function> void runBackgroundTask(Function func);
   std::vector<uint8_t> readFile(const QString &path);
+  void flashFirmware(const std::vector<uint8_t> &data);
   void reject() override;
 };
 
