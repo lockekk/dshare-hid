@@ -11,8 +11,6 @@
 
 #include "gui/config/IServerConfig.h"
 #include "gui/core/CoreProcess.h"
-#include "gui/tls/TlsUtility.h"
-#include "validators/ValidationError.h"
 
 namespace Ui {
 class SettingsDialog;
@@ -33,6 +31,9 @@ public:
 Q_SIGNALS:
   void shown();
 
+protected:
+  void changeEvent(QEvent *e) override;
+
 private:
   void initConnections() const;
   void regenCertificates();
@@ -45,6 +46,7 @@ private:
   void updateTlsControls();
   void updateTlsControlsEnabled();
   void showReadOnlyMessage();
+  void updateText();
 
   /// @brief Load all settings.
   void loadFromConfig();
@@ -64,5 +66,4 @@ private:
   std::unique_ptr<Ui::SettingsDialog> ui;
   const IServerConfig &m_serverConfig;
   const CoreProcess &m_coreProcess;
-  deskflow::gui::TlsUtility m_tlsUtility;
 };

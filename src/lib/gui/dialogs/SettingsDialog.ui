@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>549</width>
-    <height>611</height>
+    <height>755</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,10 +32,7 @@
       <attribute name="title">
        <string>&amp;Regular</string>
       </attribute>
-      <layout class="QVBoxLayout" name="_8">
-       <property name="spacing">
-        <number>15</number>
-       </property>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
         <widget class="QGroupBox" name="groupClientOptions">
          <property name="sizePolicy">
@@ -106,11 +103,11 @@
          <property name="title">
           <string>App</string>
          </property>
-         <layout class="QVBoxLayout" name="_9">
+         <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
            <widget class="QCheckBox" name="cbAutoUpdate">
             <property name="text">
-             <string>Check for updates on startup </string>
+             <string>Check for updates on startup</string>
             </property>
            </widget>
           </item>
@@ -267,12 +264,12 @@
              <widget class="QComboBox" name="comboTlsKeyLength">
               <item>
                <property name="text">
-                <string>2048</string>
+                <string notr="true">2048</string>
                </property>
               </item>
               <item>
                <property name="text">
-                <string>4096</string>
+                <string notr="true">4096</string>
                </property>
               </item>
              </widget>
@@ -337,13 +334,7 @@
       <attribute name="title">
        <string>&amp;Advanced</string>
       </attribute>
-      <layout class="QVBoxLayout" name="_2">
-       <property name="spacing">
-        <number>15</number>
-       </property>
-       <property name="topMargin">
-        <number>9</number>
-       </property>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
         <widget class="QGroupBox" name="groupNetworking">
          <property name="sizePolicy">
@@ -426,7 +417,64 @@
           <property name="verticalSpacing">
            <number>9</number>
           </property>
-          <item row="7" column="0" colspan="4">
+          <item row="3" column="2">
+           <widget class="QLabel" name="lblLogLevel">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Level</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="3">
+           <widget class="QComboBox" name="comboLogLevel">
+            <item>
+             <property name="text">
+              <string>Fatal</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Error</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Warning</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Note</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Info</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Debug</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Debug1</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Debug2</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="8" column="0" colspan="4">
            <widget class="QWidget" name="widgetLogFilename" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
@@ -514,7 +562,14 @@
             </layout>
            </widget>
           </item>
-          <item row="2" column="1">
+          <item row="3" column="0">
+           <widget class="QCheckBox" name="cbLogToFile">
+            <property name="text">
+             <string>Log to file</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
            <spacer name="horizontalSpacer_5">
             <property name="orientation">
              <enum>Qt::Orientation::Horizontal</enum>
@@ -527,77 +582,20 @@
             </property>
            </spacer>
           </item>
-          <item row="2" column="0">
-           <widget class="QCheckBox" name="cbLogToFile">
-            <property name="text">
-             <string>Log to file</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="3">
-           <widget class="QComboBox" name="comboLogLevel">
-            <item>
-             <property name="text">
-              <string>Fatal</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Error</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Warning</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Note</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Info</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Debug</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Debug1</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Debug2</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="2" column="2">
-           <widget class="QLabel" name="lblLogLevel">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Level</string>
-            </property>
-           </widget>
-          </item>
-          <item row="8" column="0" colspan="4">
+          <item row="9" column="0" colspan="4">
            <widget class="QLabel" name="lblDebugWarning">
             <property name="text">
              <string>Using a Debug log level may affect performance. Only use a Debug level if you are attempting to debug an issue or are gathering logs to submit with a bug report.</string>
             </property>
             <property name="wordWrap">
              <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0" colspan="4">
+           <widget class="QCheckBox" name="cbGuiDebug">
+            <property name="text">
+             <string>Enable GUI debug messages</string>
             </property>
            </widget>
           </item>
@@ -639,6 +637,60 @@
         </widget>
        </item>
        <item>
+        <widget class="QWidget" name="widgetLanguage" native="true">
+         <property name="toolTip">
+          <string>Force a language to be used for the GUI.</string>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <widget class="QLabel" name="lblLanguage">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Language</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="comboLanguage"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="widgetWlClipboard" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <item>
+           <widget class="QCheckBox" name="cbUseWlClipboard">
+            <property name="text">
+             <string>Enable wl-clipboard support</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="lblWlClipboard">
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Requires the wl-clipboard package&lt;/p&gt;&lt;p&gt;When using wl-clipboard v2.2.1, there is a focus stealing bug that may make Deskflow harder to use. This has been fixed when using the wl-clipboard master branch, unless your Compositor lacks wlroots-data-control protocol support.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Orientation::Vertical</enum>
@@ -668,7 +720,6 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>tabWidget</tabstop>
   <tabstop>cbLanguageSync</tabstop>
   <tabstop>cbScrollDirection</tabstop>
   <tabstop>cbAutoUpdate</tabstop>

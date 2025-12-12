@@ -7,6 +7,7 @@
  */
 
 #include "ServerConfigDialog.h"
+#include "common/PlatformInfo.h"
 #include "ui_ServerConfigDialog.h"
 
 #include "base/NetworkProtocol.h"
@@ -82,9 +83,9 @@ ServerConfigDialog::ServerConfigDialog(QWidget *parent, ServerConfig &config)
 
   ui->cbRelativeMouseMoves->setChecked(serverConfig().relativeMouseMoves());
 
-#ifndef Q_OS_WIN
-  ui->cbWin32KeepForeground->setVisible(false);
-#endif
+  if (!deskflow::platform::isWindows())
+    ui->cbWin32KeepForeground->setVisible(false);
+
   ui->cbWin32KeepForeground->setChecked(serverConfig().win32KeepForeground());
   connect(ui->cbWin32KeepForeground, &QCheckBox::toggled, this, &ServerConfigDialog::toggleWin32Foreground);
 
@@ -138,6 +139,11 @@ ServerConfigDialog::ServerConfigDialog(QWidget *parent, ServerConfig &config)
   connect(ui->cbCornerBottomRight, &QCheckBox::toggled, this, &ServerConfigDialog::toggleCornerBottomRight);
 
   ui->sbSwitchCornerSize->setValue(serverConfig().switchCornerSize());
+
+  ui->cbDefaultLockToScreenState->setChecked(serverConfig().defaultLockToScreenState());
+  connect(
+      ui->cbDefaultLockToScreenState, &QCheckBox::toggled, this, &ServerConfigDialog::toggleDefaultLockToScreenState
+  );
 
   ui->cbDisableLockToScreen->setChecked(serverConfig().disableLockToScreen());
   connect(ui->cbDisableLockToScreen, &QCheckBox::toggled, this, &ServerConfigDialog::toggleLockToScreen);
@@ -250,7 +256,7 @@ void ServerConfigDialog::removeHotkey()
   onChange();
 }
 
-void ServerConfigDialog::listHotkeysSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
+void ServerConfigDialog::listHotkeysSelectionChanged(const QItemSelection &selected, const QItemSelection &)
 {
   bool itemsSelected = !selected.isEmpty();
   ui->btnEditHotkey->setEnabled(itemsSelected);
@@ -399,7 +405,7 @@ void ServerConfigDialog::toggleCornerTopRight(bool enable)
   onChange();
 }
 
-void ServerConfigDialog::listActionsSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
+void ServerConfigDialog::listActionsSelectionChanged(const QItemSelection &selected, const QItemSelection &)
 {
   bool enabled = !selected.isEmpty();
   ui->btnEditAction->setEnabled(enabled);
@@ -429,6 +435,12 @@ void ServerConfigDialog::toggleSwitchDelay(bool enable)
 void ServerConfigDialog::setSwitchDelay(int delay)
 {
   serverConfig().setSwitchDelay(delay);
+  onChange();
+}
+
+void ServerConfigDialog::toggleDefaultLockToScreenState(bool state)
+{
+  serverConfig().setDefaultLockToScreenState(state);
   onChange();
 }
 
@@ -529,15 +541,12 @@ void ServerConfigDialog::toggleExternalConfig(bool checked)
 
 bool ServerConfigDialog::browseConfigFile()
 {
-#if defined(Q_OS_WIN)
-  static const auto configExt = QStringLiteral("sgc");
-#else
-  static const auto configExt = QStringLiteral("conf");
-#endif
-  static const auto deskflowConfigFilter = QStringLiteral("%1 Configurations (*.%2);;All files (*.*)");
+  //: %1 is replaced with the application names
+  //: (*.conf) and (*.*) should not be translated
+  const auto deskflowConfigFilter = tr("%1 Configurations (*.conf);;All files (*.*)");
 
   QString fileName =
-      QFileDialog::getOpenFileName(this, "Browse for a config file", "", deskflowConfigFilter.arg(kAppName, configExt));
+      QFileDialog::getOpenFileName(this, tr("Browse for a config file"), "", deskflowConfigFilter.arg(kAppName));
 
   if (!fileName.isEmpty()) {
     ui->lineConfigFile->setText(fileName);

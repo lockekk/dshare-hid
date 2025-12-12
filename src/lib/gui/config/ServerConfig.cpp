@@ -9,9 +9,7 @@
 #include "ServerConfig.h"
 
 #include "Hotkey.h"
-#include "MainWindow.h"
 #include "common/Settings.h"
-#include "dialogs/AddClientDialog.h"
 
 #include <QAbstractButton>
 #include <QMessageBox>
@@ -36,11 +34,7 @@ static const struct
 
 const int serverDefaultIndex = 7;
 
-ServerConfig::ServerConfig(MainWindow &mainWindow, int columns, int rows)
-    : m_pMainWindow(&mainWindow),
-      m_Screens(columns),
-      m_Columns(columns),
-      m_Rows(rows)
+ServerConfig::ServerConfig(int columns, int rows) : m_Screens(columns), m_Columns(columns), m_Rows(rows)
 {
   recall();
 }
@@ -59,25 +53,25 @@ bool ServerConfig::save(const QString &fileName) const
 
 bool ServerConfig::operator==(const ServerConfig &sc) const
 {
-  return m_Screens == sc.m_Screens &&                           //
-         m_Columns == sc.m_Columns &&                           //
-         m_Rows == sc.m_Rows &&                                 //
-         m_HasHeartbeat == sc.m_HasHeartbeat &&                 //
-         m_Heartbeat == sc.m_Heartbeat &&                       //
-         m_Protocol == sc.m_Protocol &&                         //
-         m_RelativeMouseMoves == sc.m_RelativeMouseMoves &&     //
-         m_Win32KeepForeground == sc.m_Win32KeepForeground &&   //
-         m_HasSwitchDelay == sc.m_HasSwitchDelay &&             //
-         m_SwitchDelay == sc.m_SwitchDelay &&                   //
-         m_HasSwitchDoubleTap == sc.m_HasSwitchDoubleTap &&     //
-         m_SwitchDoubleTap == sc.m_SwitchDoubleTap &&           //
-         m_SwitchCornerSize == sc.m_SwitchCornerSize &&         //
-         m_SwitchCorners == sc.m_SwitchCorners &&               //
-         m_Hotkeys == sc.m_Hotkeys &&                           //
-         m_DisableLockToScreen == sc.m_DisableLockToScreen &&   //
-         m_ClipboardSharing == sc.m_ClipboardSharing &&         //
-         m_ClipboardSharingSize == sc.m_ClipboardSharingSize && //
-         m_pMainWindow == sc.m_pMainWindow;
+  return m_Screens == sc.m_Screens &&                                   //
+         m_Columns == sc.m_Columns &&                                   //
+         m_Rows == sc.m_Rows &&                                         //
+         m_HasHeartbeat == sc.m_HasHeartbeat &&                         //
+         m_Heartbeat == sc.m_Heartbeat &&                               //
+         m_Protocol == sc.m_Protocol &&                                 //
+         m_RelativeMouseMoves == sc.m_RelativeMouseMoves &&             //
+         m_Win32KeepForeground == sc.m_Win32KeepForeground &&           //
+         m_HasSwitchDelay == sc.m_HasSwitchDelay &&                     //
+         m_SwitchDelay == sc.m_SwitchDelay &&                           //
+         m_HasSwitchDoubleTap == sc.m_HasSwitchDoubleTap &&             //
+         m_SwitchDoubleTap == sc.m_SwitchDoubleTap &&                   //
+         m_SwitchCornerSize == sc.m_SwitchCornerSize &&                 //
+         m_SwitchCorners == sc.m_SwitchCorners &&                       //
+         m_Hotkeys == sc.m_Hotkeys &&                                   //
+         m_DefaultLockToScreenState == sc.m_DefaultLockToScreenState && //
+         m_DisableLockToScreen == sc.m_DisableLockToScreen &&           //
+         m_ClipboardSharing == sc.m_ClipboardSharing &&                 //
+         m_ClipboardSharingSize == sc.m_ClipboardSharingSize;
 }
 
 void ServerConfig::save(QFile &file) const
@@ -122,6 +116,7 @@ void ServerConfig::commit()
   settings().setValue("hasSwitchDoubleTap", hasSwitchDoubleTap());
   settings().setValue("switchDoubleTap", switchDoubleTap());
   settings().setValue("switchCornerSize", switchCornerSize());
+  settings().setValue("defaultLockToScreenState", defaultLockToScreenState());
   settings().setValue("disableLockToScreen", disableLockToScreen());
   settings().setValue("clipboardSharing", clipboardSharing());
   settings().setValue("clipboardSharingSize", QVariant::fromValue(clipboardSharingSize()));
@@ -173,6 +168,7 @@ void ServerConfig::recall()
   haveSwitchDoubleTap(settings().value("hasSwitchDoubleTap", false).toBool());
   setSwitchDoubleTap(settings().value("switchDoubleTap", 250).toInt());
   setSwitchCornerSize(settings().value("switchCornerSize").toInt());
+  setDefaultLockToScreenState(settings().value("defaultLockToScreenState", false).toBool());
   setDisableLockToScreen(settings().value("disableLockToScreen", false).toBool());
   setClipboardSharingSize(
       settings().value("clipboardSharingSize", (int)ServerConfig::defaultClipboardSharingSize()).toULongLong()
@@ -278,6 +274,8 @@ QTextStream &operator<<(QTextStream &outStream, const ServerConfig &config)
   outStream << "\t"
             << "win32KeepForeground = " << (config.win32KeepForeground() ? "true" : "false") << Qt::endl;
   outStream << "\t"
+            << "defaultLockToScreenState = " << (config.defaultLockToScreenState() ? "true" : "false") << Qt::endl;
+  outStream << "\t"
             << "disableLockToScreen = " << (config.disableLockToScreen() ? "true" : "false") << Qt::endl;
   outStream << "\t"
             << "clipboardSharing = " << (config.clipboardSharing() ? "true" : "false") << Qt::endl;
@@ -320,70 +318,6 @@ int ServerConfig::numScreens() const
   }
 
   return rval;
-}
-
-ScreenAddResults ServerConfig::autoAddScreen(const QString name)
-{
-  using enum AddAction;
-  using enum ScreenAddResults;
-
-  int serverIndex = -1;
-  int targetIndex = -1;
-  const auto screenName = Settings::value(Settings::Core::ScreenName).toString();
-  if (!findScreenName(screenName, serverIndex) && !fixNoServer(screenName, serverIndex)) {
-    return AutoAddScreenManualServer;
-  }
-
-  if (findScreenName(name, targetIndex)) {
-    qDebug("ignoring screen already in config: %s", qPrintable(name));
-    return AutoAddScreenIgnore;
-  }
-
-  auto result = static_cast<AddAction>(showAddClientDialog(name));
-
-  if (result == AddClientIgnore) {
-    return AutoAddScreenIgnore;
-  }
-
-  if (result == AddClientOther) {
-    addToFirstEmptyGrid(name);
-    return AutoAddScreenManualClient;
-  }
-
-  bool success = false;
-  int startIndex = serverIndex;
-  int offset = 1;
-  int dirIndex = 0;
-
-  if (result == AddClientLeft) {
-    offset = -1;
-    dirIndex = 1;
-  } else if (result == AddClientUp) {
-    offset = -5;
-    dirIndex = 2;
-  } else if (result == AddClientDown) {
-    offset = 5;
-    dirIndex = 3;
-  }
-
-  int idx = adjacentScreenIndex(startIndex, neighbourDirs[dirIndex].x, neighbourDirs[dirIndex].y);
-  while (idx != -1) {
-    if (screens()[idx].isNull()) {
-      m_Screens[idx].setName(name);
-      success = true;
-      break;
-    }
-
-    startIndex += offset;
-    idx = adjacentScreenIndex(startIndex, neighbourDirs[dirIndex].x, neighbourDirs[dirIndex].y);
-  }
-
-  if (!success) {
-    addToFirstEmptyGrid(name);
-    return AutoAddScreenManualClient;
-  }
-
-  return AutoAddScreenOk;
 }
 
 QString ServerConfig::getServerName() const
@@ -512,32 +446,6 @@ bool ServerConfig::fixNoServer(const QString &name, int &index)
   }
 
   return fixed;
-}
-
-int ServerConfig::showAddClientDialog(const QString &clientName)
-{
-  auto result = static_cast<int>(AddAction::AddClientIgnore);
-
-  if (!m_pMainWindow->isActiveWindow()) {
-    m_pMainWindow->showNormal();
-    m_pMainWindow->activateWindow();
-  }
-
-  AddClientDialog addClientDialog(clientName, m_pMainWindow);
-  addClientDialog.exec();
-  result = static_cast<int>(addClientDialog.addResult());
-
-  return result;
-}
-
-void ServerConfig::addToFirstEmptyGrid(const QString &clientName)
-{
-  for (int i = 0; i < screens().size(); i++) {
-    if (screens()[i].isNull()) {
-      m_Screens[i].setName(clientName);
-      break;
-    }
-  }
 }
 
 size_t ServerConfig::defaultClipboardSharingSize()

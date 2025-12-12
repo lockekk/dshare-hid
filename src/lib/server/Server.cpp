@@ -8,10 +8,8 @@
 
 #include "server/Server.h"
 
-#include "arch/Arch.h"
 #include "base/IEventQueue.h"
 #include "base/Log.h"
-#include "base/TMethodJob.h"
 #include "deskflow/AppUtil.h"
 #include "deskflow/DeskflowException.h"
 #include "deskflow/IPlatformScreen.h"
@@ -20,7 +18,6 @@
 #include "deskflow/ProtocolTypes.h"
 #include "deskflow/Screen.h"
 #include "deskflow/StreamChunker.h"
-#include "mt/Thread.h"
 #include "net/TCPSocket.h"
 #include "server/ClientListener.h"
 #include "server/ClientProxy.h"
@@ -35,7 +32,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
-#include <stdexcept>
 
 using namespace deskflow::server;
 
@@ -134,9 +130,12 @@ Server::Server(ServerConfig &config, PrimaryClient *primaryClient, deskflow::Scr
   m_inputFilter->setPrimaryClient(m_primaryClient);
 
   // Determine if scroll lock is already set. If so, lock the cursor to the
-  // primary screen
-  if (m_primaryClient->getToggleMask() & KeyModifierScrollLock) {
+  // primary screen (unless the user has disabled lock to screen in config)
+  if (!m_disableLockToScreen && (m_primaryClient->getToggleMask() & KeyModifierScrollLock)) {
     LOG_NOTE("scroll lock is on, locking cursor to screen");
+    m_lockedToScreen = true;
+  } else if (m_defaultLockToScreenState) {
+    LOG_NOTE("default screen lock is on, locking cursor to screen");
     m_lockedToScreen = true;
   }
 }
@@ -341,7 +340,9 @@ bool Server::isLockedToScreen() const
 
   // locked if we say we're locked
   if (isLockedToScreenServer()) {
-    LOG_NOTE("cursor is locked to screen, check scroll lock key");
+    if (!m_defaultLockToScreenState) {
+      LOG_NOTE("cursor is locked to screen, check scroll lock key");
+    }
     return true;
   }
 
@@ -1102,6 +1103,8 @@ void Server::processOptions()
       m_switchNeedsAlt = (value != 0);
     } else if (id == kOptionRelativeMouseMoves) {
       newRelativeMoves = (value != 0);
+    } else if (id == kOptionDefaultLockToScreenState) {
+      m_defaultLockToScreenState = (value != 0);
     } else if (id == kOptionDisableLockToScreen) {
       m_disableLockToScreen = (value != 0);
     } else if (id == kOptionClipboardSharing) {

@@ -22,8 +22,6 @@ if(WIN32)
 
 elseif(UNIX)
   set(PLATFORM_CODE
-    unix/ArchDaemonUnix.cpp
-    unix/ArchDaemonUnix.h
     unix/ArchLogUnix.cpp
     unix/ArchLogUnix.h
     unix/ArchMultithreadPosix.cpp
@@ -38,7 +36,6 @@ endif()
 add_library(arch STATIC ${PLATFORM_CODE}
   Arch.cpp
   Arch.h
-  ArchDaemonNone.cpp
   ArchDaemonNone.h
   ArchException.h
   IArchDaemon.h

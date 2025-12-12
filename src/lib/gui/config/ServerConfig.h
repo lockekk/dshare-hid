@@ -23,7 +23,6 @@ class QSettings;
 class QString;
 class QFile;
 class ServerConfigDialog;
-class MainWindow;
 
 namespace deskflow::gui {
 
@@ -32,21 +31,13 @@ const auto kDefaultProtocol = NetworkProtocol::Barrier;
 
 } // namespace deskflow::gui
 
-enum class ScreenAddResults
-{
-  AutoAddScreenOk,
-  AutoAddScreenManualServer,
-  AutoAddScreenManualClient,
-  AutoAddScreenIgnore
-};
-
 class ServerConfig : public ScreenConfig, public deskflow::gui::IServerConfig
 {
   friend class ServerConfigDialog;
   friend QTextStream &operator<<(QTextStream &outStream, const ServerConfig &config);
 
 public:
-  explicit ServerConfig(MainWindow &mainWindow, int columns = kDefaultColumns, int rows = kDefaultRows);
+  explicit ServerConfig(int columns = kDefaultColumns, int rows = kDefaultRows);
   ~ServerConfig() override = default;
 
   bool operator==(const ServerConfig &sc) const;
@@ -122,6 +113,10 @@ public:
   {
     return m_Hotkeys;
   }
+  bool defaultLockToScreenState() const
+  {
+    return m_DefaultLockToScreenState;
+  }
   bool disableLockToScreen() const
   {
     return m_DisableLockToScreen;
@@ -149,7 +144,6 @@ public:
   //
   void commit();
   int numScreens() const;
-  ScreenAddResults autoAddScreen(const QString name);
   QString getServerName() const;
   void updateServerName();
   QString configFile() const;
@@ -227,6 +221,10 @@ private:
   {
     m_SwitchCornerSize = val;
   }
+  void setDefaultLockToScreenState(bool on)
+  {
+    m_DefaultLockToScreenState = on;
+  }
   void setDisableLockToScreen(bool on)
   {
     m_DisableLockToScreen = on;
@@ -249,8 +247,6 @@ private:
   int adjacentScreenIndex(int idx, int deltaColumn, int deltaRow) const;
   bool findScreenName(const QString &name, int &index);
   bool fixNoServer(const QString &name, int &index);
-  int showAddClientDialog(const QString &clientName);
-  void addToFirstEmptyGrid(const QString &clientName);
 
 private:
   bool m_HasHeartbeat = false;
@@ -263,13 +259,13 @@ private:
   bool m_HasSwitchDoubleTap = false;
   int m_SwitchDoubleTap = 0;
   int m_SwitchCornerSize = 0;
+  bool m_DefaultLockToScreenState = false;
   bool m_DisableLockToScreen = false;
   bool m_ClipboardSharing = true;
   QString m_ClientAddress = "";
   QList<bool> m_SwitchCorners;
   HotkeyList m_Hotkeys;
 
-  MainWindow *m_pMainWindow;
   ScreenList m_Screens;
   int m_Columns;
   int m_Rows;

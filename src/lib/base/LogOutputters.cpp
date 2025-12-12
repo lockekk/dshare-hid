@@ -31,11 +31,6 @@ void StopLogOutputter::close()
   // do nothing
 }
 
-void StopLogOutputter::show(bool)
-{
-  // do nothing
-}
-
 bool StopLogOutputter::write(LogLevel, const QString &)
 {
   return false;
@@ -51,11 +46,6 @@ void ConsoleLogOutputter::open(const QString &title)
 }
 
 void ConsoleLogOutputter::close()
-{
-  // do nothing
-}
-
-void ConsoleLogOutputter::show(bool showIfEmpty)
 {
   // do nothing
 }
@@ -87,11 +77,6 @@ void SystemLogOutputter::open(const QString &title)
 void SystemLogOutputter::close()
 {
   ARCH->closeLog();
-}
-
-void SystemLogOutputter::show(bool showIfEmpty)
-{
-  ARCH->showLog(showIfEmpty);
 }
 
 bool SystemLogOutputter::write(LogLevel level, const QString &msg)
@@ -141,7 +126,7 @@ void FileLogOutputter::setLogFilename(const QString &logFile)
   m_fileName = logFile;
 }
 
-bool FileLogOutputter::write(LogLevel level, const QString &message)
+bool FileLogOutputter::write(LogLevel, const QString &message)
 {
   QFile file(m_fileName);
   if (!file.open(QFile::WriteOnly | QFile::Append))
@@ -165,11 +150,6 @@ void FileLogOutputter::open(const QString &title)
 }
 
 void FileLogOutputter::close()
-{
-  // do nothing
-}
-
-void FileLogOutputter::show(bool showIfEmpty)
 {
   // do nothing
 }

@@ -10,7 +10,7 @@
 
 class LogWidget;
 class QLabel;
-class QToolButton;
+class QPushButton;
 
 class LogDock : public QDockWidget
 {
@@ -22,10 +22,11 @@ public:
 
 protected:
   bool eventFilter(QObject *watched, QEvent *event) override;
+  void changeEvent(QEvent *e) override;
 
 private:
   LogWidget *m_textLog = nullptr;
-  QToolButton *m_btnClose = nullptr;
-  QToolButton *m_btnFloat = nullptr;
+  QPushButton *m_btnClose = nullptr;
+  QPushButton *m_btnFloat = nullptr;
   QLabel *m_lblTitle = nullptr;
 };

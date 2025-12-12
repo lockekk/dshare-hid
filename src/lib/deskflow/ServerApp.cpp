@@ -11,10 +11,11 @@
 #include "arch/Arch.h"
 #include "base/IEventQueue.h"
 #include "base/Log.h"
-#include "base/Path.h"
 #include "common/ExitCodes.h"
+#include "common/PlatformInfo.h"
 #include "common/Settings.h"
 #include "deskflow/App.h"
+#include "deskflow/ProtocolTypes.h"
 #include "deskflow/Screen.h"
 #include "deskflow/ScreenException.h"
 #include "net/SocketException.h"
@@ -52,14 +53,7 @@
 #include "platform/OSXScreen.h"
 #endif
 
-#if defined(WINAPI_XWINDOWS) or defined(WINAPI_LIBEI)
-#include "platform/Wayland.h"
-#endif
-
 #include <fstream>
-#include <iostream>
-#include <sstream>
-#include <stdio.h>
 
 using namespace deskflow::server;
 
@@ -76,13 +70,16 @@ ServerApp::ServerApp(IEventQueue *events, const QString &processName) : App(even
 void ServerApp::parseArgs()
 {
   if (const auto address = Settings::value(Settings::Core::Interface).toString(); !address.isEmpty()) {
-    try {
-      *m_deskflowAddress = NetworkAddress(address.toStdString(), kDefaultPort);
-      m_deskflowAddress->resolve();
-    } catch (SocketAddressException &e) {
-      LOG_CRIT("%s: %s" BYE, qPrintable(processName()), e.what(), qPrintable(processName()));
-      bye(s_exitArgs);
-    }
+    *m_deskflowAddress = NetworkAddress(address.toStdString(), Settings::value(Settings::Core::Port).toInt());
+  } else {
+    *m_deskflowAddress = NetworkAddress(Settings::value(Settings::Core::Port).toInt());
+  }
+
+  try {
+    m_deskflowAddress->resolve();
+  } catch (SocketAddressException &e) {
+    LOG_CRIT("%s: %s" BYE, qPrintable(processName()), e.what(), qPrintable(processName()));
+    bye(s_exitArgs);
   }
 }
 
@@ -92,10 +89,17 @@ void ServerApp::reloadSignalHandler(Arch::ThreadSignal, void *)
   events->addEvent(Event(EventTypes::ServerAppReloadConfig, events->getSystemTarget()));
 }
 
+QString ServerApp::currentConfig() const
+{
+  bool useExt = Settings::value(Settings::Server::ExternalConfig).toBool();
+  return useExt ? Settings::value(Settings::Server::ExternalConfigFile).toString()
+                : Settings::defaultValue(Settings::Server::ExternalConfigFile).toString();
+}
+
 void ServerApp::reloadConfig()
 {
   LOG_DEBUG("reload configuration");
-  if (loadConfig(Settings::value(Settings::Server::ExternalConfigFile).toString().toStdString())) {
+  if (loadConfig(currentConfig())) {
     if (m_server != nullptr) {
       m_server->setConfig(*m_config);
     }
@@ -105,26 +109,31 @@ void ServerApp::reloadConfig()
 
 void ServerApp::loadConfig()
 {
-  const auto path = Settings::value(Settings::Server::ExternalConfigFile).toString().toStdString();
-  if (path.empty()) {
+  const auto path = currentConfig();
+  if (path.isEmpty()) {
     LOG_CRIT("no configuration path provided");
     bye(s_exitConfig);
   }
 
   if (!loadConfig(path)) {
-    LOG_CRIT("%s: failed to load config: %s", qPrintable(processName()), path.c_str());
+    LOG_CRIT("%s: failed to load config: %s", qPrintable(processName()), path.toStdString().c_str());
     bye(s_exitConfig);
   }
 }
 
-bool ServerApp::loadConfig(const std::string &pathname)
+bool ServerApp::loadConfig(const QString &filename)
 {
+  const auto path = filename.toStdString();
   try {
     // load configuration
-    LOG_DEBUG("opening configuration \"%s\"", pathname.c_str());
-    std::ifstream configStream(deskflow::filesystem::path(pathname));
+    LOG_DEBUG("opening configuration \"%s\"", path.c_str());
+#ifdef SYSAPI_WIN32
+    std::ifstream configStream(filename.toStdWString());
+#else
+    std::ifstream configStream(path);
+#endif
     if (!configStream.is_open()) {
-      LOG_ERR("cannot open configuration \"%s\"", pathname.c_str());
+      LOG_ERR("cannot open configuration \"%s\"", path.c_str());
       return false;
     }
     configStream >> *m_config;
@@ -132,7 +141,7 @@ bool ServerApp::loadConfig(const std::string &pathname)
     return true;
   } catch (ServerConfigReadException &e) {
     // report error in configuration file
-    LOG_ERR("cannot read configuration \"%s\": %s", pathname.c_str(), e.what());
+    LOG_ERR("cannot read configuration \"%s\": %s", path.c_str(), e.what());
   }
   return false;
 }
@@ -332,18 +341,7 @@ bool ServerApp::initServer()
     return false;
   }
 
-  if (Settings::value(Settings::Core::RestartOnFailure).toBool()) {
-    // install a timer and handler to retry later
-    assert(m_timer == nullptr);
-    LOG_DEBUG("retry in %.0f seconds", retryTime);
-    m_timer = getEvents()->newOneShotTimer(retryTime, nullptr);
-    getEvents()->addHandler(EventTypes::Timer, m_timer, [this](const auto &) { retryHandler(); });
-    m_serverState = Initializing;
-    return true;
-  } else {
-    // don't try again
-    return false;
-  }
+  return false;
 }
 
 deskflow::Screen *ServerApp::openServerScreen()
@@ -392,11 +390,7 @@ bool ServerApp::startServer()
     m_serverState = Started;
     return true;
   } catch (SocketAddressInUseException &e) {
-    if (Settings::value(Settings::Core::RestartOnFailure).toBool()) {
-      LOG_ERR("cannot listen for clients: %s", e.what());
-    } else {
-      LOG_CRIT("cannot listen for clients: %s", e.what());
-    }
+    LOG_CRIT("cannot listen for clients: %s", e.what());
     closeClientListener(listener);
   } catch (BaseException &e) {
     LOG_CRIT("failed to start server: %s", e.what());
@@ -404,19 +398,7 @@ bool ServerApp::startServer()
     return false;
   }
 
-  if (Settings::value(Settings::Core::RestartOnFailure).toBool()) {
-    // install a timer and handler to retry later
-    assert(m_timer == nullptr);
-    const auto retryTime = 10.0;
-    LOG_DEBUG("retry in %.0f seconds", retryTime);
-    m_timer = getEvents()->newOneShotTimer(retryTime, nullptr);
-    getEvents()->addHandler(EventTypes::Timer, m_timer, [this](const auto &) { retryHandler(); });
-    m_serverState = Starting;
-    return true;
-  } else {
-    // don't try again
-    return false;
-  }
+  return false;
 }
 
 deskflow::Screen *ServerApp::createScreen()
@@ -635,20 +617,16 @@ int ServerApp::start()
 
 const char *ServerApp::daemonName() const
 {
-#if SYSAPI_WIN32
-  return "Deskflow Server";
-#elif SYSAPI_UNIX
+  if (deskflow::platform::isWindows())
+    return "Deskflow Server";
   return "deskflow-server";
-#endif
 }
 
 const char *ServerApp::daemonInfo() const
 {
-#if SYSAPI_WIN32
-  return "Shares this computers mouse and keyboard with other computers.";
-#elif SYSAPI_UNIX
+  if (deskflow::platform::isWindows())
+    return "Shares this computers mouse and keyboard with other computers.";
   return "";
-#endif
 }
 
 void ServerApp::startNode()

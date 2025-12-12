@@ -5,6 +5,7 @@
  */
 
 #include "Logger.h"
+#include "common/Settings.h"
 
 #include <QDateTime>
 #include <QDir>
@@ -18,29 +19,23 @@
 namespace deskflow::gui {
 
 const auto kForceDebugMessages = QStringList{
-    "No functional TLS backend was found", "No TLS backend is available",
-    "QSslSocket::connectToHostEncrypted: TLS initialization failed", "Retrying to obtain clipboard.",
-    "Unable to obtain clipboard."
+    QStringLiteral("No functional TLS backend was found"), QStringLiteral("No TLS backend is available"),
+    QStringLiteral("QSslSocket::connectToHostEncrypted: TLS initialization failed"),
+    QStringLiteral("Retrying to obtain clipboard."), QStringLiteral("Unable to obtain clipboard.")
 };
 
-Logger Logger::s_instance;
-
-QString printLine(FILE *out, const QString &type, const QString &message, const QString &fileLine = "")
+QString printLine(FILE *out, const QString &type, const QString &message, const QString &fileLine = {})
 {
+  const auto datetime = QDateTime::currentDateTime().toString(Qt::ISODateWithMs);
+  auto logLine = QStringLiteral("[%1] %2: %3").arg(datetime, type, message);
 
-  auto datetime = QDateTime::currentDateTime().toString("yyyy-MM-ddTHH:mm:ss");
-  auto logLine = QString("[%1] %2: %3").arg(datetime, type, message);
-
-  QTextStream stream(&logLine);
   if (!fileLine.isEmpty()) {
-    stream << "\n\t" + fileLine;
+    logLine.append(QStringLiteral("\n\t%1").arg(fileLine));
   }
 
   // We must return a non-terminated log line, but before returning,
   // stdout/stderr and Windows debug output all expect a terminated line.
-  QString terminatedLogLine = logLine;
-  QTextStream terminatedStream(&terminatedLogLine);
-  terminatedStream << Qt::endl;
+  const auto terminatedLogLine = QStringLiteral("%1\n").arg(logLine);
 
 #if defined(Q_OS_WIN)
   // Debug output is viewable using either VS Code, Visual Studio, DebugView, or
@@ -49,29 +44,14 @@ QString printLine(FILE *out, const QString &type, const QString &message, const 
   // a Windows GUI app.
   OutputDebugStringA(terminatedLogLine.toLocal8Bit().constData());
 #else
-  QTextStream outStream(out);
-  outStream << terminatedLogLine;
+  QTextStream(out) << terminatedLogLine;
 #endif
 
   return logLine;
 }
 
-void Logger::loadEnvVars()
-{
-  m_debug = QVariant(qEnvironmentVariable("DESKFLOW_GUI_DEBUG")).toBool();
-  m_verbose = QVariant(qEnvironmentVariable("DESKFLOW_GUI_VERBOSE")).toBool();
-}
-
-void Logger::logVerbose(const QString &message) const
-{
-  if (m_verbose) {
-    printLine(stdout, "VERBOSE", message);
-  }
-}
-
 void Logger::handleMessage(const QtMsgType type, const QString &fileLine, const QString &message)
 {
-
   auto mutatedType = type;
   if (kForceDebugMessages.contains(message)) {
     mutatedType = QtDebugMsg;
@@ -81,10 +61,9 @@ void Logger::handleMessage(const QtMsgType type, const QString &fileLine, const 
   auto out = stdout;
   switch (mutatedType) {
   case QtDebugMsg:
-    typeString = "DEBUG";
-    if (!m_debug) {
+    if (!m_guiDebug)
       return;
-    }
+    typeString = "DEBUG";
     break;
   case QtInfoMsg:
     typeString = "INFO";
@@ -105,6 +84,24 @@ void Logger::handleMessage(const QtMsgType type, const QString &fileLine, const 
 
   const auto logLine = printLine(out, typeString, message, fileLine);
   Q_EMIT newLine(logLine);
+}
+
+Logger::Logger()
+{
+  m_guiDebug = Settings::value(Settings::Log::GuiDebug).toBool();
+  connect(Settings::instance(), &Settings::settingsChanged, this, &Logger::settingChanged);
+}
+
+Logger::~Logger()
+{
+  disconnect(Settings::instance(), &Settings::settingsChanged, this, &Logger::settingChanged);
+}
+
+void Logger::settingChanged(const QString &key)
+{
+  if (key != Settings::Log::GuiDebug)
+    return;
+  m_guiDebug = Settings::value(Settings::Log::GuiDebug).toBool();
 }
 
 } // namespace deskflow::gui

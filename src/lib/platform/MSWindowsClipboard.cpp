@@ -7,12 +7,10 @@
 
 #include "platform/MSWindowsClipboard.h"
 
-#include "arch/win32/ArchMiscWindows.h"
 #include "base/Log.h"
 #include "platform/MSWindowsClipboardBitmapConverter.h"
 #include "platform/MSWindowsClipboardFacade.h"
 #include "platform/MSWindowsClipboardHTMLConverter.h"
-#include "platform/MSWindowsClipboardTextConverter.h"
 #include "platform/MSWindowsClipboardUTF16Converter.h"
 
 //

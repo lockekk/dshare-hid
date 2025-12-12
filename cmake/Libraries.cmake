@@ -49,6 +49,20 @@ macro(configure_libs)
 
   message(STATUS "Qt version: ${Qt6_VERSION}")
 
+  # Check if <format> header is available
+  check_cxx_source_compiles("
+    #include <format>
+    int main() {
+        char buffer[100];
+        std::format_to_n(buffer, 100, \"test {}\", 42);
+        return 0;
+    }
+    " HAVE_FORMAT)
+
+  if(HAVE_FORMAT)
+    add_definitions(-DHAVE_FORMAT)
+  endif()
+
   option(ENABLE_COVERAGE "Enable test coverage" OFF)
   if(ENABLE_COVERAGE)
     message(STATUS "Enabling code coverage")
@@ -89,6 +103,7 @@ macro(configure_unix_libs)
   include(CheckIncludeFileCXX)
   include(CheckSymbolExists)
   include(CheckCSourceCompiles)
+  include(CheckCXXSourceCompiles)
 
   check_include_files(sys/socket.h HAVE_SYS_SOCKET_H)
   if (NOT HAVE_SYS_SOCKET_H)
@@ -102,30 +117,8 @@ macro(configure_unix_libs)
   endif()
 
   check_function_exists(sigwait HAVE_POSIX_SIGWAIT)
-  check_function_exists(inet_aton HAVE_INET_ATON)
-
-  # For some reason, the check_function_exists macro doesn't detect the
-  # inet_aton on some pure Unix platforms (e.g. sunos5). So we need to do a more
-  # detailed check and also include some extra libs.
-  if(NOT HAVE_INET_ATON)
-    set(CMAKE_REQUIRED_LIBRARIES nsl)
-
-    check_c_source_compiles(
-      "#include <arpa/inet.h>\n int main() { inet_aton (0, 0); }"
-      HAVE_INET_ATON_ADV)
-
-    set(CMAKE_REQUIRED_LIBRARIES)
-
-    if(HAVE_INET_ATON_ADV)
-      # Override the previous fail.
-      set(HAVE_INET_ATON 1)
-
-      # Assume that both nsl and socket will be needed, it seems safe to add
-      # socket on the back of nsl, since socket only ever needed when nsl is
-      # needed.
-      list(APPEND libs nsl socket)
-    endif()
-
+  if (NOT HAVE_POSIX_SIGWAIT)
+    message(FATAL_ERROR "Missing posix sigwait")
   endif()
 
   # pthread is used on both Linux and Mac
@@ -149,10 +142,12 @@ macro(configure_unix_libs)
       ${lib_Foundation} ${lib_Carbon} ${lib_UserNotifications}
     )
 
-    add_definitions(-DWINAPI_CARBON=1 -D_THREAD_SAFE)
+    add_definitions(-DWINAPI_CARBON=1)
   else()
 
-    configure_xorg_libs()
+    if (BUILD_X11_SUPPORT)
+      configure_xorg_libs()
+    endif()
 
     include(FindPkgConfig)
     find_package(PkgConfig)

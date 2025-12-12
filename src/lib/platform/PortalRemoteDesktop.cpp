@@ -150,7 +150,8 @@ void PortalRemoteDesktop::handleInitSession(GObject *object, GAsyncResult *res)
 gboolean PortalRemoteDesktop::initSession()
 {
   if (auto sessionToken = Settings::value(Settings::Client::XdpRestoreToken).toByteArray(); !sessionToken.isEmpty()) {
-    m_sessionRestoreToken = sessionToken.data();
+    free(m_sessionRestoreToken);
+    m_sessionRestoreToken = strdup(sessionToken.data());
   }
 
   LOG_DEBUG("setting up remote desktop session with restore token %s", m_sessionRestoreToken);
@@ -167,7 +168,7 @@ gboolean PortalRemoteDesktop::initSession()
   return false; // don't reschedule
 }
 
-void PortalRemoteDesktop::glibThread(void *)
+void PortalRemoteDesktop::glibThread(const void *)
 {
   auto context = g_main_loop_get_context(m_glibMainLoop);
 

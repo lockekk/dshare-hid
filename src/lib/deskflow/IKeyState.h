@@ -8,12 +8,11 @@
 
 #pragma once
 
-#include "base/Event.h"
-#include "base/EventTypes.h"
 #include "base/IEventQueue.h"
 #include "deskflow/KeyTypes.h"
 
 #include <set>
+#include <string>
 
 //! Key state interface
 /*!
@@ -102,6 +101,16 @@ public:
   pressed and updates the key state.
   */
   virtual void fakeAllKeysUp() = 0;
+
+  //! Clear stale modifiers
+  /*!
+  Clears stuck modifier state in platform-specific keyboard tracking (e.g. XKB).
+  Default implementation does nothing.
+  */
+  virtual void clearStaleModifiers()
+  {
+    // Default implementation does nothing
+  }
 
   //! Fake ctrl+alt+del
   /*!

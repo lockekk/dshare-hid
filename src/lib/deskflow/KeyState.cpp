@@ -760,6 +760,7 @@ void KeyState::updateKeyState()
   }
 
   // get the current modifier state
+  clearStaleModifiers();
   m_mask = pollActiveModifiers();
 
   // set active modifiers
@@ -954,7 +955,7 @@ void KeyState::fakeAllKeysUp()
   m_mask = pollActiveModifiers();
 }
 
-bool KeyState::fakeMediaKey(KeyID id)
+bool KeyState::fakeMediaKey(KeyID)
 {
   return false;
 }

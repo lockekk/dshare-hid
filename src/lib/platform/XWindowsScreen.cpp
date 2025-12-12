@@ -11,7 +11,6 @@
 #include "platform/XWindowsScreen.h"
 
 #include "arch/Arch.h"
-#include "arch/ArchException.h"
 #include "base/IEventQueue.h"
 #include "base/Log.h"
 #include "base/Stopwatch.h"
@@ -20,11 +19,14 @@
 #include "deskflow/Clipboard.h"
 #include "deskflow/KeyMap.h"
 #include "deskflow/ScreenException.h"
+#include "platform/XDGKeyUtil.h"
 #include "platform/XWindowsClipboard.h"
 #include "platform/XWindowsEventQueueBuffer.h"
 #include "platform/XWindowsKeyState.h"
 #include "platform/XWindowsScreenSaver.h"
 #include "platform/XWindowsUtil.h"
+
+#include "Config.h"
 
 #include <X11/X.h>
 #include <X11/Xutil.h>
@@ -740,7 +742,7 @@ int32_t XWindowsScreen::getJumpZoneSize() const
   return 1;
 }
 
-bool XWindowsScreen::isAnyMouseButtonDown(uint32_t &buttonID) const
+bool XWindowsScreen::isAnyMouseButtonDown(uint32_t &) const
 {
   // query the pointer to get the button state
   Window root;
@@ -1735,7 +1737,7 @@ KeyID XWindowsScreen::mapKeyFromX(XKeyEvent *event) const
   LOG_DEBUG2("mapped code=%d to keysym=0x%04x", event->keycode, keysym);
 
   // convert key
-  KeyID result = XWindowsUtil::mapKeySymToKeyID(keysym);
+  KeyID result = XDGKeyUtil::mapKeySymToKeyID(keysym);
   LOG_DEBUG2("mapped keysym=0x%04x to keyID=%d", keysym, result);
   return result;
 }

@@ -23,10 +23,9 @@
 #include "gui/core/CoreProcess.h"
 #include "gui/core/ServerConnection.h"
 #include "gui/core/WaylandWarnings.h"
-#include "gui/tls/TlsUtility.h"
 #include "net/Fingerprint.h"
 
-#ifdef Q_OS_MAC
+#ifdef Q_OS_MACOS
 #include "gui/OSXHelpers.h"
 #endif
 
@@ -41,7 +40,6 @@ class QPushButton;
 class QTextEdit;
 class QComboBox;
 class QTabWidget;
-class QToolButton;
 class QCheckBox;
 class QRadioButton;
 class QMessageBox;
@@ -93,11 +91,17 @@ public:
   {
     return m_serverConfig;
   }
-  void autoAddScreen(const QString &name);
 
   void hide();
 
+protected:
+  void changeEvent(QEvent *e) override;
+
 private:
+  /**
+   * @brief updateText Update all text not in the UI
+   */
+  void updateText();
   void toggleLogVisible(bool visible);
 
   void settingsChanged(const QString &key = QString());
@@ -132,12 +136,11 @@ private:
   void createMenuBar();
   void setupTrayIcon();
   void applyConfig();
-  void setIcon();
+  void setTrayIcon();
   void setStatus(const QString &status);
   void updateFromLogLine(const QString &line);
   void checkConnected(const QString &line);
   void checkFingerprint(const QString &line);
-  [[nodiscard]] QString getTimeStamp() const;
   void closeEvent(QCloseEvent *event) override;
   void secureSocket(bool secureSocket);
   void connectSlots();
@@ -156,6 +159,13 @@ private:
   void daemonIpcClientConnectionFailed();
   void toggleCanRunCore(bool enableButtons);
   void remoteHostChanged(const QString &newRemoteHost);
+  void handleNewClientPromptRequest(const QString &clientName, bool usePeerAuth);
+  /**
+   * @brief showClientError
+   * @param error Error Type
+   * @param address
+   */
+  void showClientError(deskflow::client::ErrorType error, const QString &address);
 
   /**
    * @brief trustedFingerprintDatabase get the FingerprintDatabase for the trusted clients or trusted servers.
@@ -164,12 +174,12 @@ private:
   QString trustedFingerprintDatabase() const;
 
   /**
-   * @brief regenerateLocalFingerprints Generate fingerprints if they are missing
+   * @brief generateCertificate Generate a new certificate
    * @return true when successful
    */
-  bool regenerateLocalFingerprints();
+  bool generateCertificate();
 
-  Fingerprint localFingerprint();
+  Fingerprint m_fingerprint;
 
   void serverClientsChanged(const QStringList &clients);
 
@@ -200,12 +210,12 @@ private:
   VersionChecker m_versionChecker;
   bool m_secureSocket = false;
   bool m_saveOnExit = true;
+  bool m_clientErrorVisible = false;
   deskflow::gui::core::WaylandWarnings m_waylandWarnings;
   ServerConfig m_serverConfig;
   deskflow::gui::CoreProcess m_coreProcess;
   deskflow::gui::ServerConnection m_serverConnection;
   deskflow::gui::ClientConnection m_clientConnection;
-  deskflow::gui::TlsUtility m_tlsUtility;
   QSize m_expandedSize = QSize();
   QStringList m_checkedClients;
   QStringList m_checkedServers;
@@ -236,8 +246,14 @@ private:
   LogDock *m_logDock;
   QLabel *m_lblSecurityStatus = nullptr;
   QLabel *m_lblStatus = nullptr;
-  QToolButton *m_btnFingerprint = nullptr;
+  QPushButton *m_btnFingerprint = nullptr;
   QPushButton *m_btnUpdate = nullptr;
+
+  // Window Menu
+  QMenu *m_menuFile = nullptr;
+  QMenu *m_menuEdit = nullptr;
+  QMenu *m_menuView = nullptr;
+  QMenu *m_menuHelp = nullptr;
 
   // Window Actions
   QAction *m_actionAbout = nullptr;

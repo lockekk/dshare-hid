@@ -6,44 +6,53 @@
  */
 
 #include "LoggerTests.h"
+#include "common/Settings.h"
 
 #include "gui/Logger.h"
 
+#include <QDir>
+#include <QFile>
 #include <QSignalSpy>
 
 using namespace deskflow::gui;
 
+void LoggerTests::initTestCase()
+{
+  QDir dir;
+  QVERIFY(dir.mkpath(m_settingsPath));
+
+  QFile oldSettings(m_settingsFile);
+  if (oldSettings.exists())
+    oldSettings.remove();
+
+  Settings::setSettingsFile(m_settingsFile);
+  Settings::setStateFile(m_stateFile);
+}
+
 void LoggerTests::newLine()
 {
-  Logger logger;
-
-  QSignalSpy spy(&logger, &Logger::newLine);
+  QSignalSpy spy(Logger::instance(), &Logger::newLine);
   QVERIFY(spy.isValid());
 
-  qputenv("DESKFLOW_GUI_DEBUG", "true");
-  logger.loadEnvVars();
-
-  logger.handleMessage(QtDebugMsg, "stub", "test");
+  Settings::setValue(Settings::Log::GuiDebug, true);
+  Logger::instance()->handleMessage(QtDebugMsg, "stub", "test");
 
   QCOMPARE(spy.count(), 1);
   QVERIFY(qvariant_cast<QString>(spy.takeFirst().at(0)).contains("test"));
-  qputenv("DESKFLOW_GUI_DEBUG", "");
+  Settings::setValue(Settings::Log::GuiDebug, false);
 }
 
 void LoggerTests::noNewLine()
 {
-  Logger logger;
   bool newLineEmitted = false;
 
-  QSignalSpy spy(&logger, &Logger::newLine);
+  QSignalSpy spy(Logger::instance(), &Logger::newLine);
   QVERIFY(spy.isValid());
 
-  qputenv("DESKFLOW_GUI_DEBUG", "false");
-  logger.loadEnvVars();
-  logger.handleMessage(QtDebugMsg, "stub", "test");
+  Settings::setValue(Settings::Log::GuiDebug, false);
+  Logger::instance()->handleMessage(QtDebugMsg, "stub", "test");
   QCOMPARE(spy.count(), 0);
   QVERIFY(!newLineEmitted);
-  qputenv("DESKFLOW_GUI_DEBUG", "");
 }
 
 QTEST_MAIN(LoggerTests)

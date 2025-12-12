@@ -59,11 +59,11 @@ FingerprintDialog::FingerprintDialog(
     if (isServer) {
       setWindowTitle(tr("New client connecting"));
       m_lblHeader->setText(body.arg(tr("client")));
-      m_lblFooter->setText(tr("\nDo you want connect to and trust the client?\n"));
+      m_lblFooter->setText(tr("\nTrust client and allow connection?\n"));
     } else {
       setWindowTitle(tr("Connecting to a new server"));
       m_lblHeader->setText(body.arg(tr("server")));
-      m_lblFooter->setText(tr("\nDo you want connect to the server?\n"));
+      m_lblFooter->setText(tr("\nDo you want to connect to the server?\n"));
     }
 
     m_buttonBox->addButton(QDialogButtonBox::Yes);
@@ -125,8 +125,8 @@ void FingerprintDialog::togglePreviewMode(bool hashMode)
 
 void FingerprintDialog::updateModeButton(bool hashMode) const
 {
-  const auto text = tr("Show %1").arg(hashMode ? "Image" : "Hash");
-  const auto toolTip = tr("Display the fingerprint as %1").arg(hashMode ? "an image" : "a hash");
+  const auto text = hashMode ? tr("Show image") : tr("Show hash");
+  const auto toolTip = hashMode ? tr("Display the fingerprint as an image") : tr("Display the fingerprint as a hash");
   m_buttonBox->button(QDialogButtonBox::Help)->setText(text);
   m_buttonBox->button(QDialogButtonBox::Help)->setToolTip(toolTip);
 }

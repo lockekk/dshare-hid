@@ -18,7 +18,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Fallback for when git can not be found
 set(DESKFLOW_VERSION_MAJOR 1)
-set(DESKFLOW_VERSION_MINOR 24)
+set(DESKFLOW_VERSION_MINOR 25)
 set(DESKFLOW_VERSION_PATCH 0)
 set(DESKFLOW_VERSION_TWEAK 0)
 
@@ -82,7 +82,9 @@ project(
   deskflow
   VERSION "${DESKFLOW_VERSION_MAJOR}.${DESKFLOW_VERSION_MINOR}.${DESKFLOW_VERSION_PATCH}.${DESKFLOW_VERSION_TWEAK}"
   DESCRIPTION "Keyboard and mouse sharing utility"
-  LANGUAGES C CXX)
+  HOMEPAGE_URL "https://deskflow.org"
+  LANGUAGES C CXX
+)
 
 # Define Additional "PROJECT" vars for packaging and metadata
 set(CMAKE_PROJECT_PROPER_NAME "Deskflow")
@@ -106,6 +108,7 @@ set(REQUIRED_LIBPORTAL_VERSION 0.8)
 set(REQUIRED_QT_VERSION 6.7.0)
 
 if (WIN32)
+  add_definitions(-DSYSAPI_WIN32 -DWINAPI_MSWINDOWS)
   # VSCMD_ARG_TGT_ARCH is set on CI
   if ("$ENV{VSCMD_ARG_TGT_ARCH}" STREQUAL "")
     # NOT on CI
@@ -145,11 +148,6 @@ if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_definitions(-DNDEBUG)
 endif()
 
-# Set required macOS SDK
-if(APPLE)
-  set(CMAKE_OSX_DEPLOYMENT_TARGET 12)
-endif()
-
 # Set Output Folders
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
@@ -164,35 +162,47 @@ endif()
 include(cmake/Libraries.cmake)
 include(GNUInstallDirs)
 
+#Options for Linux platform support
+if(UNIX AND NOT APPLE)
+  option(BUILD_X11_SUPPORT "Build with x11 support" ON)
+elseif (APPLE)
+  option(BUILD_OSX_BUNDLE "Build mac os bundle" ON)
+endif()
+
+include(cmake/Libraries.cmake)
 configure_libs()
+
+# setup install paths
+include(GNUInstallDirs)
+if (WIN32)
+  set(CMAKE_INSTALL_BINDIR .)
+  set(CMAKE_INSTALL_LIBDIR .)
+  set(CMAKE_INSTALL_LICENSE_DIR .)
+  set(CMAKE_INSTALL_I18N_DIR translations)
+elseif(BUILD_OSX_BUNDLE)
+  set(CMAKE_INSTALL_BINDIR ${CMAKE_PROJECT_PROPER_NAME}.app/Contents/MacOS)
+  set(CMAKE_INSTALL_LICENSE_DIR ${CMAKE_PROJECT_PROPER_NAME}.app/Contents/Resources)
+else()
+  set(CMAKE_INSTALL_LICENSE_DIR ${CMAKE_INSTALL_DATADIR}/licenses/${CMAKE_PROJECT_NAME})
+  set(CMAKE_INSTALL_I18N_DIR ${CMAKE_INSTALL_DATADIR}/${CMAKE_PROJECT_NAME}/translations)
+endif()
 
 add_subdirectory(doc)
 add_subdirectory(src)
-
-# Install License, License is in the App Bundle on mac os (src/gui)
-if(WIN32)
-  install(
-    FILES ${PROJECT_SOURCE_DIR}/LICENSE
-    DESTINATION .
-  )
-  install(
-    FILES ${PROJECT_SOURCE_DIR}/LICENSES/LicenseRef-OpenSSL-Exception.txt
-    DESTINATION .
-    RENAME LICENSE_EXCEPTION
-  )
-elseif(UNIX AND NOT APPLE)
-  install(
-    FILES ${PROJECT_SOURCE_DIR}/LICENSE
-    DESTINATION share/licenses/deskflow
-  )
-  install(
-    FILES ${PROJECT_SOURCE_DIR}/LICENSES/LicenseRef-OpenSSL-Exception.txt
-    DESTINATION share/licenses/deskflow
-    RENAME LICENSE_EXCEPTION
-  )
-endif()
+add_subdirectory(translations)
 
 option(BUILD_INSTALLER "Build installer" ON)
 if(BUILD_INSTALLER)
     add_subdirectory(deploy)
 endif()
+
+install(
+  FILES ${PROJECT_SOURCE_DIR}/LICENSE
+  DESTINATION ${CMAKE_INSTALL_LICENSE_DIR}
+)
+
+install(
+  FILES ${PROJECT_SOURCE_DIR}/LICENSES/LicenseRef-OpenSSL-Exception.txt
+  DESTINATION ${CMAKE_INSTALL_LICENSE_DIR}
+  RENAME LICENSE_EXCEPTION
+)

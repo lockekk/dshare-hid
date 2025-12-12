@@ -12,6 +12,4 @@ class StringTests : public QObject
 private Q_SLOTS:
   void formatWithArgs();
   void formatedString();
-  void intToString();
-  void stringToInt();
 };

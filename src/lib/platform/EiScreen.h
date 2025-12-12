@@ -7,14 +7,13 @@
 
 #pragma once
 
-#include "deskflow/KeyMap.h"
+#include "deskflow/IScreen.h"
 #include "deskflow/PlatformScreen.h"
 #include "platform/XDGPowerManager.h"
 
 #include <libei.h>
-#include <memory>
+#include <map>
 #include <mutex>
-#include <set>
 #include <vector>
 
 struct ei;
@@ -24,10 +23,12 @@ struct ei_device;
 
 namespace deskflow {
 
-class EiClipboard;
+class WlClipboardCollection;
 class EiKeyState;
 class PortalRemoteDesktop;
 class PortalInputCapture;
+
+using ClipboardInfo = IScreen::ClipboardInfo;
 
 //! Implementation of IPlatformScreen for X11
 class EiScreen : public PlatformScreen
@@ -92,6 +93,7 @@ private:
   void initEi();
   void cleanupEi();
   void sendEvent(EventTypes type, void *data);
+  void sendClipboardEvent(EventTypes type, ClipboardID id) const;
   ButtonID mapButtonFromEvdev(ei_event *event) const;
   void onKeyEvent(ei_event *event);
   void onButtonEvent(ei_event *event);
@@ -119,6 +121,9 @@ private:
 
   // keyboard stuff
   EiKeyState *m_keyState = nullptr;
+
+  // clipboard stuff
+  WlClipboardCollection *m_clipboard = nullptr;
 
   std::vector<ei_device *> m_eiDevices;
 
@@ -156,10 +161,10 @@ private:
   {
   public:
     HotKeyItem(std::uint32_t mask, std::uint32_t id);
-    bool operator<(const HotKeyItem &other) const
+    auto operator<=>(const HotKeyItem &other) const
     {
-      return mask < other.mask;
-    };
+      return mask <=> other.mask;
+    }
 
   public:
     std::uint32_t mask = 0;
@@ -173,7 +178,7 @@ private:
     KeyID keyid() const
     {
       return m_id;
-    };
+    }
     bool removeById(std::uint32_t id);
     void addItem(HotKeyItem item);
     std::uint32_t findByMask(std::uint32_t mask) const;

@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include "base/EventTypes.h"
 #include "net/ISocket.h"
 
 #include <memory>
@@ -34,9 +33,4 @@ public:
   virtual std::unique_ptr<IDataSocket> accept() = 0;
 
   //@}
-
-  // ISocket overrides
-  void bind(const NetworkAddress &) override = 0;
-  void close() override = 0;
-  void *getEventTarget() const override = 0;
 };

@@ -7,10 +7,7 @@
 
 #pragma once
 
-#include "common/Settings.h"
 #include "deskflow/IPlatformScreen.h"
-
-#include <stdexcept>
 
 //! Base screen implementation
 /*!
@@ -62,6 +59,7 @@ public:
   KeyModifierMask pollActiveModifiers() const override;
   int32_t pollActiveGroup() const override;
   void pollPressedKeys(KeyButtonSet &pressedKeys) const override;
+  void clearStaleModifiers() override;
 
   // IPlatformScreen overrides
   void enable() override = 0;

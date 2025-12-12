@@ -25,8 +25,6 @@
 
 #pragma once
 
-#include "common/Common.h"
-
 #if SYSAPI_WIN32
 
 #include "arch/win32/ArchDaemonWindows.h"
@@ -36,7 +34,7 @@
 
 #elif SYSAPI_UNIX
 
-#include "arch/unix/ArchDaemonUnix.h"
+#include "arch/ArchDaemonNone.h"
 #include "arch/unix/ArchLogUnix.h"
 #include "arch/unix/ArchMultithreadPosix.h"
 #include "arch/unix/ArchNetworkBSD.h"
@@ -63,7 +61,6 @@ class Arch : public ARCH_DAEMON, public ARCH_LOG, public ARCH_MULTITHREAD, publi
 {
 public:
   Arch();
-  explicit Arch(Arch *arch);
   ~Arch() override = default;
 
 #if SYSAPI_WIN32
@@ -85,11 +82,6 @@ public:
   calling this function.
   */
   static Arch *getInstance();
-
-  static void setInstance(Arch *s)
-  {
-    s_instance = s;
-  }
 
   /**
    * @brief blocks calling thread for timout seconds

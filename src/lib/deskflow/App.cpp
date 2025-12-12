@@ -8,24 +8,19 @@
 #include "deskflow/App.h"
 
 #include "DisplayInvalidException.h"
-#include "VersionInfo.h"
 #include "arch/Arch.h"
 #include "base/Log.h"
 #include "base/LogOutputters.h"
-#include "common/Constants.h"
 #include "common/ExitCodes.h"
+#include "common/PlatformInfo.h"
 #include "common/Settings.h"
 #include "deskflow/DeskflowException.h"
-#include "deskflow/ProtocolTypes.h"
 
 #if SYSAPI_WIN32
 #include "base/IEventQueue.h"
 #endif
 
-#include <iostream>
 #include <stdexcept>
-#include <stdio.h>
-#include <vector>
 
 #if WINAPI_CARBON
 #include "platform/OSXCocoaApp.h"
@@ -108,11 +103,7 @@ int App::run()
 
 int App::daemonMainLoop(int, const char **)
 {
-#if SYSAPI_WIN32
-  SystemLogger sysLogger(daemonName(), false);
-#else
-  SystemLogger sysLogger(daemonName(), true);
-#endif
+  SystemLogger sysLogger(daemonName(), !deskflow::platform::isWindows());
   return mainLoop();
 }
 
@@ -165,7 +156,7 @@ void App::handleScreenError() const
   getEvents()->addEvent(Event(EventTypes::Quit));
 }
 
-void App::runEventsLoop(void *)
+void App::runEventsLoop(const void *)
 {
   m_events->loop();
 

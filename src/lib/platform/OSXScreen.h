@@ -8,7 +8,6 @@
 
 #pragma once
 
-#include "base/EventTypes.h"
 #include "deskflow/PlatformScreen.h"
 #include "platform/OSXClipboard.h"
 #include "platform/OSXPowerManager.h"
@@ -112,7 +111,7 @@ private:
   void sendClipboardEvent(EventTypes type, ClipboardID id) const;
 
   // message handlers
-  bool onMouseMove(CGFloat mx, CGFloat my);
+  bool onMouseMove();
   // mouse button handler.  pressed is true if this is a mousedown
   // event, false if it is a mouseup event.  macButton is the index
   // of the button pressed using the mac button mapping.
@@ -153,7 +152,7 @@ private:
   static pascal OSStatus userSwitchCallback(EventHandlerCallRef nextHandler, EventRef theEvent, void *inUserData);
 
   // sleep / wakeup support
-  void watchSystemPowerThread(void *);
+  void watchSystemPowerThread(const void *);
   static void testCanceled(CFRunLoopTimerRef timer, void *info);
   static void powerChangeCallback(void *refcon, io_service_t service, natural_t messageType, void *messageArgument);
   void handlePowerChangeRequest(natural_t messageType, void *messageArgument);

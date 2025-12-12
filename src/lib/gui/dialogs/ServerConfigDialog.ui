@@ -435,6 +435,13 @@
            </widget>
           </item>
           <item>
+           <widget class="QCheckBox" name="cbDefaultLockToScreenState">
+            <property name="text">
+             <string>Enable lock to computer at startup</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QCheckBox" name="cbRelativeMouseMoves">
             <property name="enabled">
              <bool>true</bool>
@@ -630,7 +637,7 @@
             <item>
              <widget class="QRadioButton" name="rbProtocolSynergy">
               <property name="text">
-               <string>&amp;Synergy</string>
+               <string notr="true">Synergy</string>
               </property>
               <property name="checked">
                <bool>true</bool>
@@ -640,7 +647,7 @@
             <item>
              <widget class="QRadioButton" name="rbProtocolBarrier">
               <property name="text">
-               <string>&amp;Barrier</string>
+               <string notr="true">Barrier</string>
               </property>
              </widget>
             </item>

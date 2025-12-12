@@ -7,7 +7,6 @@
 
 #include "deskflow/PlatformScreen.h"
 #include "base/DirectionTypes.h"
-#include "common/Settings.h"
 #include "deskflow/App.h"
 
 PlatformScreen::PlatformScreen(IEventQueue *events, bool invertScrolling)
@@ -83,6 +82,11 @@ int32_t PlatformScreen::pollActiveGroup() const
 void PlatformScreen::pollPressedKeys(KeyButtonSet &pressedKeys) const
 {
   getKeyState()->pollPressedKeys(pressedKeys);
+}
+
+void PlatformScreen::clearStaleModifiers()
+{
+  getKeyState()->clearStaleModifiers();
 }
 
 int32_t PlatformScreen::mapClientScrollDirection(int32_t x) const

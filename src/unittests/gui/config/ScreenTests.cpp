@@ -19,7 +19,8 @@ void ScreenTests::initTestCase()
   if (oldSettings.exists())
     oldSettings.remove();
 
-  Settings::setSettingFile(m_settingsFile);
+  Settings::setSettingsFile(m_settingsFile);
+  Settings::setStateFile(m_stateFile);
 }
 
 void ScreenTests::basicFunctionality()

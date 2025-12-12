@@ -7,14 +7,15 @@
  */
 
 #include "SettingsDialog.h"
+#include "common/PlatformInfo.h"
 #include "ui_SettingsDialog.h"
 
+#include "common/I18N.h"
 #include "common/Settings.h"
 #include "gui/Messages.h"
-#include "gui/core/CoreProcess.h"
-#include "gui/tls/TlsCertificate.h"
-#include "gui/tls/TlsUtility.h"
+#include "gui/TlsUtility.h"
 
+#include <QComboBox>
 #include <QDir>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -25,28 +26,24 @@ SettingsDialog::SettingsDialog(QWidget *parent, const IServerConfig &serverConfi
     : QDialog(parent),
       ui{std::make_unique<Ui::SettingsDialog>()},
       m_serverConfig(serverConfig),
-      m_coreProcess(coreProcess),
-      m_tlsUtility(this)
+      m_coreProcess(coreProcess)
 {
 
   ui->setupUi(this);
 
-  // Set Tooltip for the logLevel Items
-  ui->comboLogLevel->setItemData(0, tr("Required messages"), Qt::ToolTipRole);
-  ui->comboLogLevel->setItemData(1, tr("Non-fatal errors"), Qt::ToolTipRole);
-  ui->comboLogLevel->setItemData(2, tr("General warnings"), Qt::ToolTipRole);
-  ui->comboLogLevel->setItemData(3, tr("Notable events"), Qt::ToolTipRole);
-  ui->comboLogLevel->setItemData(4, tr("General events [Default]"), Qt::ToolTipRole);
-  ui->comboLogLevel->setItemData(5, tr("Debug entries"), Qt::ToolTipRole);
-  ui->comboLogLevel->setItemData(6, tr("More debug output"), Qt::ToolTipRole);
-  ui->comboLogLevel->setItemData(7, tr("Verbose debug output"), Qt::ToolTipRole);
+  // set up the language combo
+  I18N::reDetectLanguages();
+  ui->comboLanguage->addItems(I18N::detectedLanguages());
+  ui->comboLanguage->setCurrentText(I18N::toNativeName(I18N::currentLanguage()));
+
+  updateText();
 
   ui->comboTlsKeyLength->setItemIcon(0, QIcon::fromTheme(QStringLiteral("security-medium")));
   ui->comboTlsKeyLength->setItemIcon(1, QIcon::fromTheme(QIcon::ThemeIcon::SecurityHigh));
   ui->lblTlsCertInfo->setFixedSize(28, 28);
 
-  ui->rbIconMono->setIcon(QIcon::fromTheme(QStringLiteral("deskflow-symbolic")));
-  ui->rbIconColorful->setIcon(QIcon::fromTheme(QStringLiteral("deskflow")));
+  ui->rbIconMono->setIcon(QIcon::fromTheme(QStringLiteral("%1-symbolic").arg(kRevFqdnName)));
+  ui->rbIconColorful->setIcon(QIcon::fromTheme(kRevFqdnName));
 
   // force the first tab, since qt creator sets the active tab as the last one
   // the developer was looking at, and it's easy to accidentally save that.
@@ -60,6 +57,15 @@ SettingsDialog::SettingsDialog(QWidget *parent, const IServerConfig &serverConfi
   setWindowFlags((windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMinMaxButtonsHint);
 
   initConnections();
+}
+
+void SettingsDialog::changeEvent(QEvent *e)
+{
+  QDialog::changeEvent(e);
+  if (e->type() == QEvent::LanguageChange) {
+    ui->retranslateUi(this);
+    updateText();
+  }
 }
 
 void SettingsDialog::initConnections() const
@@ -77,11 +83,15 @@ void SettingsDialog::initConnections() const
   connect(ui->btnBrowseLog, &QPushButton::clicked, this, &SettingsDialog::browseLogPath);
   connect(ui->cbLogToFile, &QCheckBox::toggled, this, &SettingsDialog::setLogToFile);
   connect(ui->comboLogLevel, &QComboBox::currentIndexChanged, this, &SettingsDialog::logLevelChanged);
+  connect(ui->comboLanguage, &QComboBox::currentTextChanged, this, [](const QString &lang) {
+    const auto shortName = I18N::nativeTo639Name(lang);
+    I18N::setLanguage(shortName);
+  });
 }
 
 void SettingsDialog::regenCertificates()
 {
-  if (m_tlsUtility.generateCertificate()) {
+  if (TlsUtility::generateCertificate()) {
     QMessageBox::information(this, tr("TLS Certificate Regenerated"), tr("TLS certificate regenerated successfully."));
     const auto certificate = Settings::value(Settings::Security::Certificate).toString();
     updateKeyLengthOnFile(certificate);
@@ -134,6 +144,19 @@ void SettingsDialog::showReadOnlyMessage()
   messages::showReadOnlySettings(this, Settings::settingsFile());
 }
 
+void SettingsDialog::updateText()
+{
+  // Set Tooltip for the logLevel Items
+  ui->comboLogLevel->setItemData(0, tr("Required messages"), Qt::ToolTipRole);
+  ui->comboLogLevel->setItemData(1, tr("Non-fatal errors"), Qt::ToolTipRole);
+  ui->comboLogLevel->setItemData(2, tr("General warnings"), Qt::ToolTipRole);
+  ui->comboLogLevel->setItemData(3, tr("Notable events"), Qt::ToolTipRole);
+  ui->comboLogLevel->setItemData(4, tr("General events [Default]"), Qt::ToolTipRole);
+  ui->comboLogLevel->setItemData(5, tr("Debug entries"), Qt::ToolTipRole);
+  ui->comboLogLevel->setItemData(6, tr("More debug output"), Qt::ToolTipRole);
+  ui->comboLogLevel->setItemData(7, tr("Verbose debug output"), Qt::ToolTipRole);
+}
+
 void SettingsDialog::accept()
 {
   Settings::setValue(Settings::Core::Port, ui->sbPort->value());
@@ -154,6 +177,9 @@ void SettingsDialog::accept()
   Settings::setValue(Settings::Gui::SymbolicTrayIcon, ui->rbIconMono->isChecked());
   Settings::setValue(Settings::Security::CheckPeers, ui->cbRequireClientCert->isChecked());
   Settings::setValue(Settings::Client::ScrollSpeed, ui->sbScrollSpeed->value());
+  Settings::setValue(Settings::Core::Language, I18N::nativeTo639Name(ui->comboLanguage->currentText()));
+  Settings::setValue(Settings::Log::GuiDebug, ui->cbGuiDebug->isChecked());
+  Settings::setValue(Settings::Core::UseWlClipboard, ui->cbUseWlClipboard->isChecked());
 
   Settings::ProcessMode mode;
   if (ui->groupService->isChecked())
@@ -180,9 +206,14 @@ void SettingsDialog::loadFromConfig()
   ui->cbElevateDaemon->setChecked(Settings::value(Settings::Daemon::Elevate).toBool());
   ui->cbAutoUpdate->setChecked(Settings::value(Settings::Gui::AutoUpdateCheck).toBool());
   ui->sbScrollSpeed->setValue(Settings::value(Settings::Client::ScrollSpeed).toInt());
+  ui->cbGuiDebug->setChecked(Settings::value(Settings::Log::GuiDebug).toBool());
+  ui->cbUseWlClipboard->setChecked(Settings::value(Settings::Core::UseWlClipboard).toBool());
 
   const auto processMode = Settings::value(Settings::Core::ProcessMode).value<Settings::ProcessMode>();
   ui->groupService->setChecked(processMode == Settings::ProcessMode::Service);
+
+  if (!deskflow::platform::isWindows())
+    ui->groupService->setVisible(false);
 
   if (Settings::value(Settings::Gui::SymbolicTrayIcon).toBool())
     ui->rbIconMono->setChecked(true);
@@ -204,11 +235,9 @@ void SettingsDialog::updateTlsControls()
 
   ui->comboTlsKeyLength->setCurrentText(Settings::value(Settings::Security::KeySize).toString());
 
-  const auto tlsEnabled = Settings::value(Settings::Security::TlsEnabled).toBool();
-
   ui->lineTlsCertPath->setText(certificate);
   ui->cbRequireClientCert->setChecked(Settings::value(Settings::Security::CheckPeers).toBool());
-  ui->groupSecurity->setChecked(tlsEnabled);
+  ui->groupSecurity->setChecked(TlsUtility::isEnabled());
 
   ui->groupSecurity->setEnabled(Settings::isWritable());
 
@@ -236,12 +265,11 @@ bool SettingsDialog::isClientMode() const
 
 void SettingsDialog::updateKeyLengthOnFile(const QString &path)
 {
-  TlsCertificate ssl;
   if (!QFile(path).exists()) {
     qFatal("tls certificate file not found: %s", qUtf8Printable(path));
   }
 
-  auto length = ssl.getCertKeyLength(path);
+  auto length = TlsUtility::getCertKeyLength(path);
   auto labelIcon = QPixmap(QIcon::fromTheme(QIcon::ThemeIcon::SecurityLow).pixmap(24, 24));
   if (length == 2048)
     labelIcon = QPixmap(QIcon::fromTheme(QStringLiteral("security-medium")).pixmap(24, 24));
@@ -271,12 +299,21 @@ void SettingsDialog::updateControls()
   ui->comboTlsKeyLength->setEnabled(writable);
   ui->cbCloseToTray->setEnabled(writable);
 
-  // Handle enable and disable of service items
-  if (Settings::isNativeMode()) {
+  // Portable mode only ever applies to Windows.
+  // Daemon options should only be available on Windows when *not* in portable mode.
+  if (!Settings::isPortableMode()) {
     ui->groupService->setEnabled(writable);
     ui->cbElevateDaemon->setEnabled(writable && serviceChecked);
   } else if (ui->groupService->isVisibleTo(ui->tabAdvanced)) {
     ui->groupService->setVisible(false);
+  }
+
+  // wl-clipboard support only works on wayland.
+  // options should only be available when we are *not* running on wayland.
+  if (deskflow::platform::isWayland()) {
+    ui->cbUseWlClipboard->setEnabled(writable);
+  } else if (ui->widgetWlClipboard->isVisibleTo(ui->tabAdvanced)) {
+    ui->widgetWlClipboard->setVisible(false);
   }
 
   ui->groupClientOptions->setEnabled(writable && isClientMode());

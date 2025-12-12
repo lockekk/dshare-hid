@@ -9,6 +9,9 @@
 
 #include "EventTypes.h"
 
+#include <assert.h>
+#include <cstdlib>
+
 using deskflow::EventTypes;
 
 class EventData
@@ -20,7 +23,7 @@ public:
 
 //! Event
 /*!
-A \c Event holds an event type and a pointer to event data.
+ \c Event holds an event type and a pointer to event data. It is movable, but not copyable
 */
 class Event
 {
@@ -34,6 +37,10 @@ public:
   };
 
   Event() = default;
+  Event(const Event &) = delete;
+  Event(Event &&other) = default;
+  Event &operator=(const Event &) = delete;
+  Event &operator=(Event &&) = default;
 
   //! Create \c Event with data (POD)
   /*!
@@ -44,15 +51,19 @@ public:
   \p target is the intended recipient of the event.
   \p flags is any combination of \c Flags.
   */
-  explicit Event(EventTypes type, void *target = nullptr, void *data = nullptr, Flags flags = EventFlags::NoFlags);
+  explicit Event(EventTypes type, void *target = nullptr, void *data = nullptr, Flags flags = EventFlags::NoFlags)
+      : m_type(type),
+        m_target(target),
+        m_data(data),
+        m_flags(flags)
+  {
+    // do nothing
+  }
 
-  //! Create \c Event with non-POD data
-  /*!
-  \p type of the event
-  \p target is the intended recipient of the event.
-  \p dataObject with event data
-  */
-  explicit Event(EventTypes type, void *target, EventData *dataObject);
+  Event(EventTypes type, void *target, EventData *dataObject) : m_type(type), m_target(target), m_dataObject(dataObject)
+  {
+    // do nothing
+  }
 
   //! @name manipulators
   //@{
@@ -61,14 +72,35 @@ public:
   /*!
   Deletes event data for the given event (using free()).
   */
-  static void deleteData(const Event &);
+  static void deleteData(const Event &event)
+  {
+    switch (event.getType()) {
+      using enum EventTypes;
+    case Unknown:
+    case Quit:
+    case System:
+    case Timer:
+      break;
+
+    default:
+      if ((event.getFlags() & EventFlags::DontFreeData) == 0) {
+        free(event.getData());
+        delete event.getDataObject();
+      }
+      break;
+    }
+  }
 
   //! Set data (non-POD)
   /*!
   Set non-POD (non plain old data), where delete is called when the event
   is deleted, and the destructor is called.
   */
-  void setDataObject(EventData *dataObject);
+  void setDataObject(EventData *dataObject)
+  {
+    assert(m_dataObject == nullptr);
+    m_dataObject = dataObject;
+  };
 
   //@}
   //! @name accessors
@@ -78,19 +110,28 @@ public:
   /*!
   Returns the event type.
   */
-  EventTypes getType() const;
+  EventTypes getType() const
+  {
+    return m_type;
+  }
 
   //! Get the event target
   /*!
   Returns the event target.
   */
-  void *getTarget() const;
+  void *getTarget() const
+  {
+    return m_target;
+  }
 
   //! Get the event data (POD).
   /*!
   Returns the event data (POD).
   */
-  void *getData() const;
+  void *getData() const
+  {
+    return m_data;
+  }
 
   //! Get the event data (non-POD)
   /*!
@@ -98,13 +139,19 @@ public:
   \c getData() is that when delete is called on this data, so non-POD
   (non plain old data) dtor is called.
   */
-  EventData *getDataObject() const;
+  EventData *getDataObject() const
+  {
+    return m_dataObject;
+  }
 
   //! Get event flags
   /*!
   Returns the event flags.
   */
-  Flags getFlags() const;
+  Flags getFlags() const
+  {
+    return m_flags;
+  }
 
   //@}
 

@@ -19,15 +19,16 @@ class Settings : public QObject
   Q_OBJECT
 public:
 #if defined(Q_OS_WIN)
-  inline const static auto UserDir = QStringLiteral("%1/AppData/Local/%2").arg(QDir::homePath(), kAppName);
+  inline const static auto UserDir = QStringLiteral("%1/AppData/Roaming/%2").arg(QDir::homePath(), kAppName);
   inline const static auto SystemDir = QStringLiteral("%1ProgramData/%2").arg(QDir::rootPath(), kAppName);
-#elif defined(Q_OS_MAC)
+#elif defined(Q_OS_MACOS)
   inline const static auto UserDir = QStringLiteral("%1/Library/%2").arg(QDir::homePath(), kAppName);
   inline const static auto SystemDir = QStringLiteral("/Library/%1").arg(kAppName);
 #else
   inline const static auto UserDir = QStringLiteral("%1/.config/%2").arg(QDir::homePath(), kAppName);
   inline const static auto SystemDir = QStringLiteral("/etc/%1").arg(kAppName);
 #endif
+
   inline const static auto UserSettingFile = QStringLiteral("%1/%2.conf").arg(UserDir, kAppName);
   inline const static auto SystemSettingFile = QStringLiteral("%1/%2.conf").arg(SystemDir, kAppName);
 
@@ -48,11 +49,11 @@ public:
     inline static const auto PreventSleep = QStringLiteral("core/preventSleep");
     inline static const auto ProcessMode = QStringLiteral("core/processMode");
     inline static const auto ScreenName = QStringLiteral("core/screenName");
-    inline static const auto StartedBefore = QStringLiteral("core/startedBefore");
     inline static const auto UpdateUrl = QStringLiteral("core/updateUrl");
     inline static const auto Display = QStringLiteral("core/display");
-    inline static const auto RestartOnFailure = QStringLiteral("core/restartOnFailure");
     inline static const auto UseHooks = QStringLiteral("core/useHooks");
+    inline static const auto Language = QStringLiteral("core/language");
+    inline static const auto UseWlClipboard = QStringLiteral("core/wlClipboard");
   };
   struct Daemon
   {
@@ -64,6 +65,7 @@ public:
   struct Gui
   {
     inline static const auto Autohide = QStringLiteral("gui/autoHide");
+    inline static const auto AutoStartCore = QStringLiteral("gui/startCoreWithGui");
     inline static const auto AutoUpdateCheck = QStringLiteral("gui/enableUpdateCheck");
     inline static const auto CloseReminder = QStringLiteral("gui/closeReminder");
     inline static const auto CloseToTray = QStringLiteral("gui/closeToTray");
@@ -71,12 +73,15 @@ public:
     inline static const auto SymbolicTrayIcon = QStringLiteral("gui/symbolicTrayIcon");
     inline static const auto WindowGeometry = QStringLiteral("gui/windowGeometry");
     inline static const auto ShowGenericClientFailureDialog = QStringLiteral("gui/showGenericClientFailureDialog");
+    inline static const auto ShownFirstConnectedMessage = QStringLiteral("gui/shownFirstConnectedMessage");
+    inline static const auto ShownServerFirstStartMessage = QStringLiteral("gui/shownServerFirstStartMessage");
   };
   struct Log
   {
     inline static const auto File = QStringLiteral("log/file");
     inline static const auto Level = QStringLiteral("log/level");
     inline static const auto ToFile = QStringLiteral("log/toFile");
+    inline static const auto GuiDebug = QStringLiteral("log/guiDebug");
   };
   struct Security
   {
@@ -125,17 +130,17 @@ public:
   Q_ENUM(CoreMode)
 
   static Settings *instance();
-  static void setSettingFile(const QString &settingsFile = QString());
+  static void setSettingsFile(const QString &settingsFile = QString());
+  static void setStateFile(const QString &stateFile = QString());
   static void setValue(const QString &key = QString(), const QVariant &value = QVariant());
   static QVariant value(const QString &key = QString());
   static void restoreDefaultSettings();
   static QVariant defaultValue(const QString &key);
   static bool isWritable();
-  static bool isNativeMode();
+  static bool isPortableMode();
   static QString settingsFile();
   static QString settingsPath();
   static QString tlsDir();
-  static QString tlsLocalDb();
   static QString tlsTrustedServersDb();
   static QString tlsTrustedClientsDb();
   static QString logLevelText();
@@ -145,6 +150,7 @@ public:
   static int logLevelToInt(const QString &level = "INFO");
   static void setBridgeClientMode(bool enabled);
   static bool isBridgeClientMode();
+  static QString portableSettingsFile();
 
 Q_SIGNALS:
   void settingsChanged(const QString key);
@@ -157,9 +163,22 @@ private:
   ~Settings() override = default;
   void cleanSettings();
   static QString bridgeClientTlsDir();
+  void cleanStateSettings();
+
+  /**
+   * @brief write an initial screen name
+   */
+  void setupScreenName();
+
+  /**
+   * @brief cleanScreenName ensure a valid screenName from the provided one
+   * @param name any string to be used as the screenName
+   * @return a valid screeName
+   */
+  static QString cleanScreenName(const QString &name);
 
   QSettings *m_settings = nullptr;
-  QString m_portableSettingsFile = QStringLiteral("%1/settings/%2.conf");
+  QSettings *m_stateSettings = nullptr;
   std::shared_ptr<QSettingsProxy> m_settingsProxy;
   bool m_bridgeClientMode = false;
 
@@ -188,18 +207,20 @@ private:
     , Settings::Core::PreventSleep
     , Settings::Core::ProcessMode
     , Settings::Core::ScreenName
-    , Settings::Core::StartedBefore
     , Settings::Core::UpdateUrl
     , Settings::Core::Display
-    , Settings::Core::RestartOnFailure
     , Settings::Core::UseHooks
+    , Settings::Core::UseWlClipboard
+    , Settings::Core::Language
     , Settings::Daemon::Command
     , Settings::Daemon::Elevate
     , Settings::Daemon::LogFile
     , Settings::Log::File
     , Settings::Log::Level
     , Settings::Log::ToFile
+    , Settings::Log::GuiDebug
     , Settings::Gui::Autohide
+    , Settings::Gui::AutoStartCore
     , Settings::Gui::AutoUpdateCheck
     , Settings::Gui::CloseReminder
     , Settings::Gui::CloseToTray
@@ -207,17 +228,44 @@ private:
     , Settings::Gui::SymbolicTrayIcon
     , Settings::Gui::WindowGeometry
     , Settings::Gui::ShowGenericClientFailureDialog
+    , Settings::Gui::ShownFirstConnectedMessage
+    , Settings::Gui::ShownServerFirstStartMessage
     , Settings::Security::Certificate
     , Settings::Security::CheckPeers
     , Settings::Security::KeySize
     , Settings::Security::TlsEnabled
     , Settings::Server::ExternalConfig
     , Settings::Server::ExternalConfigFile
-    , Settings::Bridge::SerialNumber
-    , Settings::Bridge::ScreenWidth
-    , Settings::Bridge::ScreenHeight
-    , Settings::Bridge::ScreenOrientation
-    , Settings::Bridge::BluetoothKeepAlive
   };
+
+  // When checking the default values this list contains the ones that default to false.
+  inline static const QStringList m_defaultFalseValues = {
+      Settings::Gui::Autohide
+    , Settings::Gui::AutoStartCore
+    , Settings::Gui::ShownFirstConnectedMessage
+    , Settings::Gui::ShownServerFirstStartMessage
+    , Settings::Core::PreventSleep
+    , Settings::Core::UseWlClipboard
+    , Settings::Server::ExternalConfig
+    , Settings::Client::InvertScrollDirection
+    , Settings::Log::ToFile
+    , Settings::Log::GuiDebug
+  };
+
+  // When checking the default values this list contains the ones that default to true.
+  inline static const QStringList m_defaultTrueValues = {
+      Settings::Core::UseHooks
+    , Settings::Client::LanguageSync
+    , Settings::Gui::CloseToTray
+    , Settings::Gui::CloseReminder
+    , Settings::Gui::LogExpanded
+    , Settings::Gui::SymbolicTrayIcon
+    , Settings::Gui::ShowGenericClientFailureDialog
+    , Settings::Security::TlsEnabled
+    , Settings::Security::CheckPeers
+  };
+
+  // Settings saved in our State file
+  inline static const QStringList m_stateKeys = { Settings::Gui::WindowGeometry };
   // clang-format on
 };

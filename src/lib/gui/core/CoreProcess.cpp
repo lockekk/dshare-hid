@@ -9,9 +9,8 @@
 
 #include "common/ExitCodes.h"
 #include "gui/ipc/DaemonIpcClient.h"
-#include "tls/TlsUtility.h"
 
-#if defined(Q_OS_MAC)
+#if defined(Q_OS_MACOS)
 #include "OSXHelpers.h"
 #endif
 
@@ -273,7 +272,7 @@ void CoreProcess::handleLogLines(const QString &text)
       continue;
     }
 
-#if defined(Q_OS_MAC)
+#if defined(Q_OS_MACOS)
     // HACK: macOS 10.13.4+ spamming error lines in logs making them
     // impossible to read and debug; giving users a red herring.
     if (line.contains("calling TIS/TSM in non-main thread environment")) {
@@ -315,7 +314,7 @@ void CoreProcess::start(std::optional<ProcessMode> processModeOption)
 
   setProcessState(ProcessState::Starting);
 
-#ifdef Q_OS_MAC
+#ifdef Q_OS_MACOS
   requestOSXNotificationPermission();
 #endif
 
@@ -350,13 +349,13 @@ void CoreProcess::start(std::optional<ProcessMode> processModeOption)
   if (Settings::value(Settings::Log::ToFile).toBool()) {
     const auto logFile = Settings::value(Settings::Log::File).toString();
     QDir(QFileInfo(logFile).absolutePath()).mkpath(".");
-    args.append({QStringLiteral("--log"), logFile});
     qInfo().noquote() << "log file:" << logFile;
   }
 
   if (processMode == ProcessMode::Desktop) {
     startForegroundProcess(args);
   } else if (processMode == ProcessMode::Service) {
+    args.append({QStringLiteral("--settings"), Settings::settingsFile()});
     startProcessFromDaemon(args);
   }
 
@@ -520,7 +519,7 @@ void CoreProcess::checkLogLine(const QString &line)
 
   // server and client processes are not allowed to show notifications.
   // process the log from it and show notification from deskflow instead.
-#ifdef Q_OS_MAC
+#ifdef Q_OS_MACOS
   checkOSXNotification(line);
 #endif
 }
@@ -538,7 +537,7 @@ bool CoreProcess::checkSecureSocket(const QString &line)
   return true;
 }
 
-#ifdef Q_OS_MAC
+#ifdef Q_OS_MACOS
 void CoreProcess::checkOSXNotification(const QString &line)
 {
   static const QString needle = "OSX Notification: ";

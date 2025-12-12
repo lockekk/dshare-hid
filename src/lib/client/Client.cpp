@@ -11,31 +11,23 @@
 #include "arch/Arch.h"
 #include "base/IEventQueue.h"
 #include "base/Log.h"
-#include "base/TMethodJob.h"
 #include "client/ServerProxy.h"
 #include "common/Settings.h"
-#include "deskflow/AppUtil.h"
+#include "deskflow/Clipboard.h"
 #include "deskflow/DeskflowException.h"
 #include "deskflow/IPlatformScreen.h"
 #include "deskflow/PacketStreamFilter.h"
-#include "deskflow/ProtocolTypes.h"
 #include "deskflow/ProtocolUtil.h"
 #include "deskflow/Screen.h"
 #include "deskflow/StreamChunker.h"
-#include "mt/Thread.h"
 #include "net/IDataSocket.h"
 #include "net/ISocketFactory.h"
 #include "net/SecureSocket.h"
 #include "net/TCPSocket.h"
 
-#include <algorithm>
 #include <cstdlib>
 #include <cstring>
-#include <fstream>
-#include <iterator>
 #include <memory>
-#include <sstream>
-#include <stdexcept>
 
 using namespace deskflow::client;
 
@@ -145,7 +137,7 @@ void Client::disconnect(const char *msg)
   if (msg) {
     sendConnectionFailedEvent(msg);
   } else {
-    sendEvent(EventTypes::ClientDisconnected, nullptr);
+    sendEvent(EventTypes::ClientDisconnected);
   }
 }
 
@@ -157,7 +149,7 @@ void Client::refuseConnection(const char *msg)
     auto info = new FailInfo(msg);
     info->m_retry = true;
     Event event(EventTypes::ClientConnectionRefused, getEventTarget(), info, Event::EventFlags::DontFreeData);
-    m_events->addEvent(event);
+    m_events->addEvent(std::move(event));
   }
 }
 
@@ -165,7 +157,7 @@ void Client::handshakeComplete()
 {
   m_ready = true;
   m_screen->enable();
-  sendEvent(EventTypes::ClientConnected, nullptr);
+  sendEvent(EventTypes::ClientConnected);
 }
 
 bool Client::isConnected() const
@@ -370,9 +362,9 @@ void Client::sendClipboard(ClipboardID id)
   }
 }
 
-void Client::sendEvent(EventTypes type, void *data)
+void Client::sendEvent(EventTypes type)
 {
-  m_events->addEvent(Event(type, getEventTarget(), data));
+  m_events->addEvent(Event(type, getEventTarget()));
 }
 
 void Client::sendConnectionFailedEvent(const char *msg)
@@ -380,7 +372,7 @@ void Client::sendConnectionFailedEvent(const char *msg)
   auto *info = new FailInfo(msg);
   info->m_retry = true;
   Event event(EventTypes::ClientConnectionFailed, getEventTarget(), info, Event::EventFlags::DontFreeData);
-  m_events->addEvent(event);
+  m_events->addEvent(std::move(event));
 }
 
 void Client::setupConnecting()
@@ -419,9 +411,6 @@ void Client::setupConnection()
   });
   m_events->addHandler(EventTypes::StreamOutputShutdown, m_stream->getEventTarget(), [this](const auto &) {
     handleDisconnected();
-  });
-  m_events->addHandler(EventTypes::SocketStopRetry, m_stream->getEventTarget(), [this](const auto &) {
-    Settings::setValue(Settings::Core::RestartOnFailure, false);
   });
 }
 
@@ -472,7 +461,6 @@ void Client::cleanupConnection()
     m_events->removeHandler(StreamInputShutdown, m_stream->getEventTarget());
     m_events->removeHandler(StreamOutputShutdown, m_stream->getEventTarget());
     m_events->removeHandler(SocketDisconnected, m_stream->getEventTarget());
-    m_events->removeHandler(SocketStopRetry, m_stream->getEventTarget());
     cleanupStream();
   }
 }
@@ -548,7 +536,7 @@ void Client::handleOutputError()
   cleanupScreen();
   cleanupConnection();
   LOG_WARN("error sending to server");
-  sendEvent(EventTypes::ClientDisconnected, nullptr);
+  sendEvent(EventTypes::ClientDisconnected);
 }
 
 void Client::handleDisconnected()
@@ -557,7 +545,7 @@ void Client::handleDisconnected()
   cleanupScreen();
   cleanupConnection();
   LOG_DEBUG1("disconnected");
-  sendEvent(EventTypes::ClientDisconnected, nullptr);
+  sendEvent(EventTypes::ClientDisconnected);
 }
 
 void Client::handleShapeChanged()

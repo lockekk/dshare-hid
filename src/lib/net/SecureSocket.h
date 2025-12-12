@@ -8,12 +8,12 @@
 #pragma once
 
 #include "net/SecurityLevel.h"
-#include "net/SocketException.h"
 #include "net/TCPSocket.h"
 
 #include <memory>
 #include <mutex>
 
+class Event;
 class IEventQueue;
 class SocketMultiplexer;
 class ISocketMultiplexerJob;
@@ -66,7 +66,7 @@ public:
   JobResult doRead() override;
   JobResult doWrite() override;
   void initSsl(bool server);
-  bool loadCertificates(const std::string &CertFile);
+  bool loadCertificate(const QString &filename);
 
 private:
   // SSL

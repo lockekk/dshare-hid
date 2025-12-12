@@ -11,7 +11,7 @@
 #include "base/Log.h"
 #include "common/Settings.h"
 #include "deskflow/AppUtil.h"
-#include "platform/XWindowsUtil.h"
+#include "platform/XDGKeyUtil.h"
 
 #include <cstddef>
 #include <memory>
@@ -106,7 +106,7 @@ std::int32_t EiKeyState::pollActiveGroup() const
   return xkb_state_serialize_layout(m_xkbState, XKB_STATE_LAYOUT_EFFECTIVE);
 }
 
-void EiKeyState::pollPressedKeys(KeyButtonSet &pressedKeys) const
+void EiKeyState::pollPressedKeys(KeyButtonSet &) const
 {
   // FIXME
   return;
@@ -129,8 +129,10 @@ std::uint32_t EiKeyState::convertModMask(xkb_mod_mask_t xkbModMaskIn) const
     const xkb_mod_mask_t xkbModMask = (1 << xkbModIdx);
 #endif
 
-    // Skip inactive modifiers.
-    if ((xkbModMaskIn & xkbModMask) != xkbModMask)
+    // Skip modifiers that have no XKB mask (not mapped to any real modifier)
+    // or are inactive. Without the xkbModMask == 0 check, modifiers with mask 0
+    // incorrectly pass the test (0 & 0 == 0) and get processed as "active".
+    if (xkbModMask == 0 || (xkbModMaskIn & xkbModMask) != xkbModMask)
       continue;
 
     /* added in libxkbcommon 1.8.0 in the same commit so we have all or none */
@@ -233,28 +235,49 @@ void EiKeyState::getKeyMap(deskflow::KeyMap &keyMap)
         if (nsyms > 1)
           LOG_WARN("multiple keysyms per keycode are not supported, keycode %d", keycode);
 
-        deskflow::KeyMap::KeyItem item{};
         xkb_keysym_t keysym = syms[0];
-        KeySym sym = keysym;
-        item.m_id = XWindowsUtil::mapKeySymToKeyID(sym);
-        item.m_button = static_cast<KeyButton>(keycode) - 8; // X keycode offset
-        item.m_group = group;
 
         // For debugging only
         char keysymName[128] = {0};
         xkb_keysym_get_name(keysym, keysymName, sizeof(keysymName));
 
-        // Set to all modifiers this key may be affected by
+        // Skip XF86_Switch_VT_* keysyms - these are local VT switching actions
+        // that shouldn't be sent over the network. They appear in newer
+        // xkeyboard-config on level 5 of function keys with CTRL+ALT type.
+        if (strncmp(keysymName, "XF86_Switch_VT_", 15) == 0) {
+          LOG_DEBUG2("skipping VT switch keysym %s for keycode %d", keysymName, keycode);
+          continue;
+        }
+
+        deskflow::KeyMap::KeyItem item{};
+        KeySym sym = keysym;
+        item.m_id = XDGKeyUtil::mapKeySymToKeyID(sym);
+        item.m_button = static_cast<KeyButton>(keycode) - 8; // X keycode offset
+        item.m_group = group;
+
+        // xkb_keymap_key_get_mods_for_level() returns ALL modifier combinations
+        // that lead to this level. For example, with CTRL+ALT type, Level1 (F1) can
+        // be accessed via None, Control, or Alt. We want the SIMPLEST (fewest bits)
+        // combination, not the OR of all combinations.
+        //
+        // For modSensitive, we only OR modifiers from this level, not all levels.
+        // This prevents marking F1 as sensitive to Ctrl+Alt just because Level5
+        // (which we skip) uses those modifiers.
         uint32_t modSensitive = 0;
-        for (auto n = 0U; n < nmasks; n++) {
-          modSensitive |= masks[n];
+        uint32_t modRequired = 0xFFFFFFFF;
+        int minBits = 32;
+        for (std::size_t m = 0; m < nmasks; m++) {
+          modSensitive |= masks[m];
+          int bits = __builtin_popcount(masks[m]);
+          if (bits < minBits) {
+            minBits = bits;
+            modRequired = masks[m];
+          }
+        }
+        if (modRequired == 0xFFFFFFFF) {
+          modRequired = 0; // No masks found, use no modifiers
         }
         item.m_sensitive = convertModMask(modSensitive);
-
-        uint32_t modRequired = 0;
-        for (std::size_t m = 0; m < nmasks; m++) {
-          modRequired |= masks[m];
-        }
         item.m_required = convertModMask(modRequired);
 
         assignGeneratedModifiers(keycode, item);
@@ -291,11 +314,25 @@ void EiKeyState::fakeKey(const Keystroke &keystroke)
 
 KeyID EiKeyState::mapKeyFromKeyval(uint32_t keyval) const
 {
-  // FIXME: That might be a bit crude...?
-  xkb_keysym_t xkbKeysym = xkb_state_key_get_one_sym(m_xkbState, keyval);
-  auto keysym = static_cast<KeySym>(xkbKeysym);
+  // Get the base keysym from level 0, ignoring current modifiers.
+  // We need this because with newer xkeyboard-config, function keys use CTRL+ALT type,
+  // and xkb_state_key_get_one_sym() would return XF86_Switch_VT_* when Ctrl+Alt are
+  // pressed, instead of F1. We want to send F1 + modifiers to the server, not the
+  // VT switch action.
+  const auto shifted = xkb_keymap_num_levels_for_key(m_xkbKeymap, keyval, 0);
+  const xkb_keysym_t *syms;
+  int nsyms = xkb_keymap_key_get_syms_by_level(m_xkbKeymap, keyval, 0, shifted, &syms);
 
-  KeyID keyid = XWindowsUtil::mapKeySymToKeyID(keysym);
+  xkb_keysym_t xkbKeysym;
+  if (nsyms > 0) {
+    xkbKeysym = syms[0];
+  } else {
+    // Fallback to state-based lookup if level 0 has no symbols
+    xkbKeysym = xkb_state_key_get_one_sym(m_xkbState, keyval);
+  }
+
+  auto keysym = static_cast<KeySym>(xkbKeysym);
+  KeyID keyid = XDGKeyUtil::mapKeySymToKeyID(keysym);
   LOG_DEBUG1("mapped key: code=%d keysym=0x%04lx to keyID=%d", keyval, keysym, keyid);
 
   return keyid;
@@ -307,4 +344,13 @@ void EiKeyState::updateXkbState(uint32_t keyval, bool isPressed)
   xkb_state_update_key(m_xkbState, keyval, isPressed ? XKB_KEY_DOWN : XKB_KEY_UP);
 }
 
+void EiKeyState::clearStaleModifiers()
+{
+  // Recreate the XKB state to clear stuck modifiers that happen when
+  // modifier keys are press on client and released on server
+  if (m_xkbState) {
+    xkb_state_unref(m_xkbState);
+  }
+  m_xkbState = xkb_state_new(m_xkbKeymap);
+}
 } // namespace deskflow

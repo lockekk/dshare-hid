@@ -8,20 +8,16 @@
 #include "platform/EiEventQueueBuffer.h"
 
 #include "base/Event.h"
+#include "base/EventQueueTimer.h"
 #include "base/EventTypes.h"
 #include "base/IEventQueue.h"
 #include "base/Log.h"
 #include "mt/Thread.h"
 
 #include <cassert>
-#include <cstdio>
 #include <fcntl.h>
 #include <poll.h>
 #include <unistd.h>
-
-class EventQueueTimer
-{
-};
 
 namespace deskflow {
 
@@ -137,7 +133,7 @@ bool EiEventQueueBuffer::isEmpty() const
   return m_queue.empty();
 }
 
-EventQueueTimer *EiEventQueueBuffer::newTimer(double duration, bool oneShot) const
+EventQueueTimer *EiEventQueueBuffer::newTimer(double, bool) const
 {
   return new EventQueueTimer;
 }

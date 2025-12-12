@@ -9,10 +9,7 @@
 
 #include "Fingerprint.h"
 
-#include <cstdint>
-#include <openssl/ossl_typ.h>
-#include <string>
-#include <vector>
+#include <openssl/x509.h>
 
 namespace deskflow {
 
@@ -26,13 +23,9 @@ QString formatSSLFingerprint(const QByteArray &fingerprint, bool enableSeparator
 
 QString formatSSLFingerprintColumns(const QByteArray &fingerprint);
 
-Fingerprint sslCertFingerprint(const X509 *cert, Fingerprint::Type type);
+Fingerprint sslCertFingerprint(const X509 *cert, QCryptographicHash::Algorithm type);
 
-Fingerprint pemFileCertFingerprint(const std::string &path, Fingerprint::Type type);
-
-void generatePemSelfSignedCert(const std::string &path, int keyLength = 2048);
-
-int getCertLength(const std::string &path);
+void generatePemSelfSignedCert(const QString &path, int keyLength = 2048);
 
 QString generateFingerprintArt(const QByteArray &rawDigest);
 } // namespace deskflow

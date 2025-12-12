@@ -10,9 +10,6 @@
 
 #include "arch/Arch.h"
 #include "arch/IArchMultithread.h"
-#include "base/EventTypes.h"
-#include "base/String.h"
-#include "common/Constants.h"
 #include "deskflow/App.h"
 #include "net/NetworkAddress.h"
 #include "server/Config.h"
@@ -59,7 +56,7 @@ public:
   const char *daemonName() const override;
   const char *daemonInfo() const override;
   void loadConfig() override;
-  bool loadConfig(const std::string &pathname) override;
+  bool loadConfig(const QString &filename) override;
   deskflow::Screen *createScreen() override;
   int mainLoop() override;
   int runInner(StartupFunc startup) override;
@@ -110,6 +107,7 @@ private:
   std::unique_ptr<ISocketFactory> getSocketFactory() const;
   NetworkAddress getAddress(const NetworkAddress &address) const;
 
+  QString currentConfig() const;
   bool m_suspended = false;
   Server *m_server = nullptr;
   ServerState m_serverState = ServerState::Uninitialized;

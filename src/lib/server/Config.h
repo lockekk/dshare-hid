@@ -11,7 +11,6 @@
 #include "base/String.h"
 #include "deskflow/IPlatformScreen.h"
 #include "deskflow/OptionTypes.h"
-#include "deskflow/ProtocolTypes.h"
 #include "net/NetworkAddress.h"
 #include "server/InputFilter.h"
 
@@ -35,7 +34,7 @@ template <> struct iterator_traits<deskflow::server::Config>
   using pointer = std::string *;
   using reference = std::string &;
 };
-}; // namespace std
+} // namespace std
 
 namespace deskflow::server {
 
@@ -507,7 +506,7 @@ public:
   ) const;
   IPlatformScreen::KeyInfo *parseKeystroke(const std::string &keystroke) const;
   IPlatformScreen::KeyInfo *parseKeystroke(const std::string &keystroke, const std::set<std::string> &screens) const;
-  IPlatformScreen::ButtonInfo *parseMouse(const std::string &mouse) const;
+  IPlatformScreen::ButtonInfo parseMouse(const std::string &mouse) const;
   KeyModifierMask parseModifier(const std::string &modifiers) const;
   std::istream &getStream() const
   {

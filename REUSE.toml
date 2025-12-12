@@ -26,6 +26,8 @@ path = [
  , "src/apps/deskflow-server/deskflow-server.exe.manifest"
  , "src/apps/res/manpage.txt"
  , "src/apps/res/deskflow.plist.in"
+ , "src/apps/res/entitlements-dev.plist"
+ , "translations/*.ts"
 ]
 SPDX-FileCopyrightText = "Deskflow Developers"
 SPDX-License-Identifier = "MIT"
@@ -34,7 +36,7 @@ SPDX-License-Identifier = "MIT"
 path = [
    "deploy/mac/dmg-background.tiff"
  , "deploy/mac/dmg-volume.icns"
- , "deploy/linux/deskflow.png"
+ , "deploy/linux/org.deskflow.deskflow.png"
  , "deploy/windows/wix-banner.png"
  , "deploy/windows/wix-dialog.png"
  , "src/apps/res/icons/deskflow-**/apps/64/deskflow*.svg"

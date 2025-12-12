@@ -9,10 +9,8 @@
 #pragma once
 
 #include "base/Event.h"
-#include "base/EventTypes.h"
 
 #include <functional>
-#include <string>
 
 class IEventQueueBuffer;
 
@@ -78,7 +76,7 @@ public:
   /*!
   Adds \p event to the end of the queue.
   */
-  virtual void addEvent(const Event &event) = 0;
+  virtual void addEvent(Event &&event) = 0;
 
   //! Create a recurring timer
   /*!
@@ -151,13 +149,6 @@ public:
   //@}
   //! @name accessors
   //@{
-
-  //! Test if queue is empty
-  /*!
-  Returns true iff the queue has no events in it, including timer
-  events.
-  */
-  virtual bool isEmpty() const = 0;
 
   //! Get the system event type target
   /*!

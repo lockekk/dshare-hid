@@ -8,22 +8,19 @@
 
 #include "deskflow/ClientApp.h"
 
-#include "arch/Arch.h"
 #include "base/Event.h"
 #include "base/IEventQueue.h"
 #include "base/Log.h"
 #include "client/Client.h"
-#include "common/Constants.h"
 #include "common/ExitCodes.h"
+#include "common/PlatformInfo.h"
 #include "common/Settings.h"
-#include "deskflow/ProtocolTypes.h"
 #include "deskflow/Screen.h"
 #include "deskflow/ScreenException.h"
 #include "net/NetworkAddress.h"
 #include "net/SocketException.h"
 #include "net/SocketMultiplexer.h"
 #include "net/TCPSocketFactory.h"
-#include "platform/Wayland.h"
 
 #if SYSAPI_WIN32
 #include "arch/win32/ArchMiscWindows.h"
@@ -50,13 +47,7 @@
 #include "platform/OSXScreen.h"
 #endif
 
-#if defined(WINAPI_XWINDOWS) or defined(WINAPI_LIBEI)
-#include "platform/Wayland.h"
-#endif
-
 #include <memory>
-#include <sstream>
-#include <stdio.h>
 
 constexpr static auto s_retryTime = 1.0;
 
@@ -68,18 +59,16 @@ ClientApp::ClientApp(IEventQueue *events, const QString &processName) : App(even
 void ClientApp::parseArgs()
 {
   // save server address
-  if (!Settings::value(Settings::Client::RemoteHost).isNull()) {
+  if (const auto address = Settings::value(Settings::Client::RemoteHost).toString(); !address.isEmpty()) {
     try {
-      *m_serverAddress =
-          NetworkAddress(Settings::value(Settings::Client::RemoteHost).toString().toStdString(), kDefaultPort);
+      *m_serverAddress = NetworkAddress(address.toStdString(), Settings::value(Settings::Core::Port).toInt());
       m_serverAddress->resolve();
     } catch (SocketAddressException &e) {
       // allow an address that we can't look up if we're restartable.
       // we'll try to resolve the address each time we connect to the
       // server.  a bad port will never get better.  patch by Brent
       // Priddy.
-      if (!Settings::value(Settings::Core::RestartOnFailure).toBool() ||
-          e.getError() == SocketAddressException::SocketError::BadPort) {
+      if (e.getError() == SocketAddressException::SocketError::BadPort) {
         LOG_CRIT("%s: %s" BYE, qPrintable(processName()), e.what(), qPrintable(processName()));
         bye(s_exitFailed);
       }
@@ -89,21 +78,16 @@ void ClientApp::parseArgs()
 
 const char *ClientApp::daemonName() const
 {
-#if SYSAPI_WIN32
-  return "Deskflow Client";
-#elif SYSAPI_UNIX
+  if (deskflow::platform::isWindows())
+    return "Deskflow Client";
   return "deskflow-client";
-#endif
 }
 
 const char *ClientApp::daemonInfo() const
 {
-#if SYSAPI_WIN32
-  return "Allows another computer to share it's keyboard and mouse with this "
-         "computer.";
-#elif SYSAPI_UNIX
+  if (deskflow::platform::isWindows())
+    return "Allows another computer to share it's keyboard and mouse with this computer.";
   return "";
-#endif
 }
 
 deskflow::Screen *ClientApp::createScreen()
@@ -209,7 +193,7 @@ void ClientApp::handleClientRefused(const Event &e)
 {
   std::unique_ptr<Client::FailInfo> info(static_cast<Client::FailInfo *>(e.getData()));
 
-  if (!Settings::value(Settings::Core::RestartOnFailure).toBool() || !info->m_retry) {
+  if (!info->m_retry) {
     LOG_ERR("failed to connect to server: %s", info->m_what.c_str());
     getEvents()->addEvent(Event(EventTypes::Quit));
   } else {
@@ -223,9 +207,7 @@ void ClientApp::handleClientRefused(const Event &e)
 void ClientApp::handleClientDisconnected()
 {
   LOG_IPC("disconnected from server");
-  if (!Settings::value(Settings::Core::RestartOnFailure).toBool()) {
-    getEvents()->addEvent(Event(EventTypes::Quit));
-  } else if (!m_suspended) {
+  if (!m_suspended) {
     scheduleClientRestart(s_retryTime);
   }
 }
@@ -300,13 +282,8 @@ bool ClientApp::startClient()
     return false;
   }
 
-  if (Settings::value(Settings::Core::RestartOnFailure).toBool()) {
-    scheduleClientRestart(retryTime);
-    return true;
-  } else {
-    // don't try again
-    return false;
-  }
+  scheduleClientRestart(retryTime);
+  return true;
 }
 
 void ClientApp::stopClient()

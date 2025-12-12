@@ -7,10 +7,10 @@ add_library(base STATIC
   BaseException.cpp
   BaseException.h
   DirectionTypes.h
-  Event.cpp
   Event.h
   EventQueue.cpp
   EventQueue.h
+  EventQueueTimer.h
   EventTypes.h
   FinalAction.h
   FunctionEventJob.cpp
@@ -27,8 +27,6 @@ add_library(base STATIC
   Log.h
   LogLevel.h
   NetworkProtocol.h
-  Path.cpp
-  Path.h
   PriorityQueue.h
   SimpleEventQueueBuffer.cpp
   SimpleEventQueueBuffer.h

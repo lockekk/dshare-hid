@@ -6,14 +6,16 @@
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
 
+#include "CoreArgParser.h"
+
 #include "arch/Arch.h"
 #include "base/EventQueue.h"
 #include "base/Log.h"
 #include "client/BridgeClientApp.h"
+#include "common/Constants.h"
 #include "common/ExitCodes.h"
 #include "common/Settings.h"
 #include "deskflow/ClientApp.h"
-#include "deskflow/CoreArgParser.h"
 #include "deskflow/ServerApp.h"
 #include "platform/bridge/CdcTransport.h"
 
@@ -25,7 +27,6 @@
 #include <QFileInfo>
 #include <QSharedMemory>
 #include <QTextStream>
-#include <iostream>
 
 void showHelp(const CoreArgParser &parser)
 {
@@ -91,16 +92,15 @@ int main(int argc, char **argv)
   }
 
   if (!initialSettingsFile.isEmpty()) {
-    Settings::setSettingFile(initialSettingsFile);
+    Settings::setSettingsFile(initialSettingsFile);
   }
 
   CoreArgParser parser(args);
 
-  // Comment below until we are ready use only this parser
-  // if (!parser.errorText().isEmpty()) {
-  //   QTextStream(stdout) << parser.errorText() << "\nUse --help for more information.";
-  //   return s_exitFailed;
-  // }
+  // Print any parser errors
+  if (!parser.errorText().isEmpty()) {
+    QTextStream(stdout) << parser.errorText() << "\n";
+  }
 
   if (parser.help()) {
     showHelp(parser);
@@ -125,15 +125,14 @@ int main(int argc, char **argv)
 
   // Step 3: Create shared memory segment with the constructed key
   // This is to prevent a new instance from running if one is already running
-  QSharedMemory sharedMemory(sharedMemKey);
+  QSharedMemory sharedMemory(kCoreBinName);
 
   // Attempt to attach first and detach in order to clean up stale shm chunks
   // This can happen if the previous instance was killed or crashed
   if (sharedMemory.attach())
     sharedMemory.detach();
 
-  // If we can create 1 byte of SHM we are the only instance
-  if (!sharedMemory.create(1)) {
+  if (!sharedMemory.create(1) && parser.singleInstanceOnly()) {
     LOG_WARN("an instance of deskflow core is already running");
     return s_exitDuplicate;
   }

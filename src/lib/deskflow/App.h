@@ -9,7 +9,6 @@
 
 #include "base/EventQueue.h"
 #include "base/Log.h"
-#include "common/Common.h"
 #include "deskflow/IApp.h"
 #include "net/SocketMultiplexer.h"
 
@@ -26,7 +25,6 @@ namespace deskflow {
 class Screen;
 }
 
-class ILogOutputter;
 class FileLogOutputter;
 class IEventQueue;
 class SocketMultiplexer;
@@ -53,7 +51,7 @@ public:
 
   virtual void parseArgs() = 0;
   virtual void loadConfig() = 0;
-  virtual bool loadConfig(const std::string &pathname) = 0;
+  virtual bool loadConfig(const QString &filename) = 0;
   virtual const char *daemonInfo() const = 0;
 
   void setByeFunc(void (*bye)(int)) override
@@ -108,7 +106,7 @@ public:
   void handleScreenError() const;
 
 protected:
-  void runEventsLoop(void *);
+  void runEventsLoop(const void *);
 
 private:
   void (*m_bye)(int);

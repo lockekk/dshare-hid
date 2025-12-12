@@ -13,10 +13,8 @@ class UnicodeTests : public QObject
   Q_OBJECT
 private Q_SLOTS:
   void initTestCase();
-  void UTF32ToUTF8();
   void UTF16ToUTF8();
 
 private:
-  Arch m_arch;
   Log m_log;
 };

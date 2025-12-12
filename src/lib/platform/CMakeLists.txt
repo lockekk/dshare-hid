@@ -24,8 +24,6 @@ if(WIN32)
     MSWindowsClipboardFacade.h
     MSWindowsClipboardHTMLConverter.cpp
     MSWindowsClipboardHTMLConverter.h
-    MSWindowsClipboardTextConverter.cpp
-    MSWindowsClipboardTextConverter.h
     MSWindowsClipboardUTF16Converter.cpp
     MSWindowsClipboardUTF16Converter.h
     MSWindowsDebugOutputter.cpp
@@ -99,31 +97,37 @@ elseif(UNIX)
     XDGPortalRegistry.h
     XDGPowerManager.cpp
     XDGPowerManager.h
-    XWindowsClipboard.cpp
-    XWindowsClipboard.h
-    XWindowsClipboardAnyBitmapConverter.cpp
-    XWindowsClipboardAnyBitmapConverter.h
-    XWindowsClipboardBMPConverter.cpp
-    XWindowsClipboardBMPConverter.h
-    XWindowsClipboardHTMLConverter.cpp
-    XWindowsClipboardHTMLConverter.h
-    XWindowsClipboardTextConverter.cpp
-    XWindowsClipboardTextConverter.h
-    XWindowsClipboardUCS2Converter.cpp
-    XWindowsClipboardUCS2Converter.h
-    XWindowsClipboardUTF8Converter.cpp
-    XWindowsClipboardUTF8Converter.h
-    XWindowsEventQueueBuffer.cpp
-    XWindowsEventQueueBuffer.h
-    XWindowsKeyState.cpp
-    XWindowsKeyState.h
-    XWindowsScreen.cpp
-    XWindowsScreen.h
-    XWindowsScreenSaver.cpp
-    XWindowsScreenSaver.h
-    XWindowsUtil.cpp
-    XWindowsUtil.h
+    XDGKeyUtil.h
+    XDGKeyUtil.cpp
   )
+  if (BUILD_X11_SUPPORT)
+    list(APPEND PLATFORM_SOURCES
+      XWindowsClipboard.cpp
+      XWindowsClipboard.h
+      XWindowsClipboardAnyBitmapConverter.cpp
+      XWindowsClipboardAnyBitmapConverter.h
+      XWindowsClipboardBMPConverter.cpp
+      XWindowsClipboardBMPConverter.h
+      XWindowsClipboardHTMLConverter.cpp
+      XWindowsClipboardHTMLConverter.h
+      XWindowsClipboardTextConverter.cpp
+      XWindowsClipboardTextConverter.h
+      XWindowsClipboardUCS2Converter.cpp
+      XWindowsClipboardUCS2Converter.h
+      XWindowsClipboardUTF8Converter.cpp
+      XWindowsClipboardUTF8Converter.h
+      XWindowsEventQueueBuffer.cpp
+      XWindowsEventQueueBuffer.h
+      XWindowsKeyState.cpp
+      XWindowsKeyState.h
+      XWindowsScreen.cpp
+      XWindowsScreen.h
+      XWindowsScreenSaver.cpp
+      XWindowsScreenSaver.h
+      XWindowsUtil.cpp
+      XWindowsUtil.h
+    )
+  endif()
 
   if(LIBEI_FOUND)
     list(APPEND PLATFORM_SOURCES
@@ -133,6 +137,10 @@ elseif(UNIX)
       EiKeyState.h
       EiScreen.cpp
       EiScreen.h
+      WlClipboardCollection.cpp
+      WlClipboardCollection.h
+      WlClipboard.cpp
+      WlClipboard.h
     )
     # The Portal sources also require EI.
     if(LIBPORTAL_FOUND)
@@ -162,7 +170,7 @@ set(BRIDGE_SOURCES
 )
 
 # wayland.h is included to check for wayland support
-add_library(platform STATIC ${PLATFORM_SOURCES} ${BRIDGE_SOURCES} Wayland.h)
+add_library(platform STATIC ${PLATFORM_SOURCES} ${BRIDGE_SOURCES})
 
 target_link_libraries(platform client ${libs})
 

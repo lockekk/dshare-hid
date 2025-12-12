@@ -34,14 +34,8 @@ add_library(${target} STATIC
   ${device_sources}
   Action.cpp
   Action.h
-  DataDownloader.cpp
-  DataDownloader.h
-  devices/UsbDeviceMonitor.cpp
-  devices/UsbDeviceMonitor.h
   Diagnostic.cpp
   Diagnostic.h
-  DotEnv.cpp
-  DotEnv.h
   FileTail.cpp
   FileTail.h
   Hotkey.cpp
@@ -59,6 +53,8 @@ add_library(${target} STATIC
   ScreenSetupModel.h
   Styles.h
   StyleUtils.h
+  TlsUtility.cpp
+  TlsUtility.h
   VersionChecker.cpp
   VersionChecker.h
   config/IServerConfig.h
@@ -72,6 +68,8 @@ add_library(${target} STATIC
   config/ServerConfig.h
   core/BridgeClientConfigManager.cpp
   core/BridgeClientConfigManager.h
+  devices/UsbDeviceMonitor.cpp
+  devices/UsbDeviceMonitor.h
   core/ClientConnection.cpp
   core/ClientConnection.h
   core/CommandProcess.cpp
@@ -90,9 +88,6 @@ add_library(${target} STATIC
   dialogs/ActionDialog.cpp
   dialogs/ActionDialog.h
   dialogs/ActionDialog.ui
-  dialogs/AddClientDialog.cpp
-  dialogs/AddClientDialog.h
-  dialogs/AddClientDialog.ui
   dialogs/BridgeClientConfigDialog.cpp
   dialogs/BridgeClientConfigDialog.h
   dialogs/FingerprintDialog.cpp
@@ -111,10 +106,6 @@ add_library(${target} STATIC
   dialogs/SettingsDialog.ui
   ipc/DaemonIpcClient.cpp
   ipc/DaemonIpcClient.h
-  tls/TlsCertificate.cpp
-  tls/TlsCertificate.h
-  tls/TlsUtility.cpp
-  tls/TlsUtility.h
   validators/AliasValidator.cpp
   validators/AliasValidator.h
   validators/ComputerNameValidator.cpp

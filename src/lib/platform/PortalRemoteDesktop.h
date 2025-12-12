@@ -13,8 +13,6 @@
 #include <glib.h>
 #include <libportal/portal.h>
 
-#include <memory>
-
 namespace deskflow {
 
 class PortalRemoteDesktop
@@ -24,7 +22,7 @@ public:
   ~PortalRemoteDesktop();
 
 private:
-  void glibThread(void *);
+  void glibThread(const void *);
   gboolean timeoutHandler() const;
   gboolean initSession();
   void handleInitSession(GObject *object, GAsyncResult *res);
