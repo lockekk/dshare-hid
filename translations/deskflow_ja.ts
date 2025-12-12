@@ -697,6 +697,10 @@ Error: %2</source>
         <source>Failed to update device name: %1</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Firmware</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NewScreenWidget</name>
