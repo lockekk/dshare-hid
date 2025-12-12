@@ -257,7 +257,7 @@ void BridgePlatformScreen::resetMouseAccumulator() const
 
 void BridgePlatformScreen::fakeKeyDown(KeyID id, KeyModifierMask mask, KeyButton button, const std::string &)
 {
-  LOG_ERR("BridgeScreen: key down id=0x%04x button=%d", id, button);
+  LOG_DEBUG("BridgeScreen: key down id=0x%04x button=%d", id, button);
 
   // Check if this is a media key (consumer control)
   const uint16_t consumerCode = convertMediaKeyToConsumerControl(id);
@@ -346,7 +346,7 @@ bool BridgePlatformScreen::fakeKeyRepeat(
 
 bool BridgePlatformScreen::fakeKeyUp(KeyButton button)
 {
-  LOG_ERR("BridgeScreen: key up button=%d", button);
+  LOG_DEBUG("BridgeScreen: key up button=%d", button);
 
   // Check if this is a consumer control key
   auto it = m_pressedConsumerControls.find(button);
