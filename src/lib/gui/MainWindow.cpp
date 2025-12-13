@@ -9,6 +9,10 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 
+#if defined(Q_OS_WIN)
+#include <windows.h>
+#endif
+
 #include "Diagnostic.h"
 #include "StyleUtils.h"
 #include "VersionInfo.h"
@@ -2374,7 +2378,20 @@ void MainWindow::stopBridgeClient(const QString &devicePath)
   // First, try graceful termination
   // This sends SIGTERM on Unix, which allows the process to clean up
   // and properly release the CDC device
+#if defined(Q_OS_WIN)
+  if (AttachConsole(process->processId())) {
+    SetConsoleCtrlHandler(nullptr, true);
+    GenerateConsoleCtrlEvent(CTRL_C_EVENT, 0);
+    // Give it a moment to process the event
+    process->waitForFinished(1000);
+    FreeConsole();
+    SetConsoleCtrlHandler(nullptr, false);
+  } else {
+    process->terminate();
+  }
+#else
   process->terminate();
+#endif
 
   // Wait up to 3 seconds for graceful shutdown
   if (!process->waitForFinished(3000)) {

@@ -264,6 +264,7 @@ void SocketMultiplexer::lockJobListLock()
 
   // wait for the lock on the lock
   while (*m_jobListLockLocked) {
+    Thread::testCancel();
     m_jobListLockLocked->wait();
   }
 
@@ -281,6 +282,7 @@ void SocketMultiplexer::lockJobList()
 
   // wait for the job list lock
   while (*m_jobListLock) {
+    Thread::testCancel();
     m_jobListLock->wait();
   }
 
