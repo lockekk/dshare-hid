@@ -1,7 +1,5 @@
 /*
- * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2025 Symless Ltd.
- * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
+ * Deskflow-hid -- created by locke.huang@gmail.com
  */
 
 #include "BridgeClientConfigManager.h"

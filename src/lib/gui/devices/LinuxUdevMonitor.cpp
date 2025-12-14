@@ -1,15 +1,25 @@
 // SPDX-FileCopyrightText: 2024 Deskflow Developers
 // SPDX-License-Identifier: MIT
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "LinuxUdevMonitor.h"
 
 #include <libudev.h>
+
+#ifdef size
+#undef size
+#endif
+
 #include <QDebug>
+#include <QSocketNotifier>
 
 namespace deskflow::gui {
 
-LinuxUdevMonitor::LinuxUdevMonitor(QObject *parent)
-    : UsbDeviceMonitor(parent) {
+LinuxUdevMonitor::LinuxUdevMonitor(QObject *parent) : UsbDeviceMonitor(parent)
+{
   // Initialize udev context
   m_udev = udev_new();
   if (!m_udev) {
@@ -17,11 +27,13 @@ LinuxUdevMonitor::LinuxUdevMonitor(QObject *parent)
   }
 }
 
-LinuxUdevMonitor::~LinuxUdevMonitor() {
+LinuxUdevMonitor::~LinuxUdevMonitor()
+{
   cleanup();
 }
 
-bool LinuxUdevMonitor::startMonitoring() {
+bool LinuxUdevMonitor::startMonitoring()
+{
   if (m_monitoring) {
     qDebug() << "USB device monitoring already started";
     return true;
@@ -63,15 +75,15 @@ bool LinuxUdevMonitor::startMonitoring() {
 
   // Create socket notifier to integrate with Qt event loop
   m_notifier = std::make_unique<QSocketNotifier>(fd, QSocketNotifier::Read, this);
-  connect(m_notifier.get(), &QSocketNotifier::activated,
-          this, &LinuxUdevMonitor::handleUdevEvent);
+  connect(m_notifier.get(), &QSocketNotifier::activated, this, &LinuxUdevMonitor::handleUdevEvent);
 
   m_monitoring = true;
   qDebug() << "USB device monitoring started";
   return true;
 }
 
-void LinuxUdevMonitor::stopMonitoring() {
+void LinuxUdevMonitor::stopMonitoring()
+{
   if (!m_monitoring) {
     return;
   }
@@ -81,11 +93,13 @@ void LinuxUdevMonitor::stopMonitoring() {
   qDebug() << "USB device monitoring stopped";
 }
 
-bool LinuxUdevMonitor::isMonitoring() const {
+bool LinuxUdevMonitor::isMonitoring() const
+{
   return m_monitoring;
 }
 
-void LinuxUdevMonitor::handleUdevEvent() {
+void LinuxUdevMonitor::handleUdevEvent()
+{
   qDebug() << "[UdevMonitor] handleUdevEvent() called";
 
   if (!m_monitor) {
@@ -115,20 +129,17 @@ void LinuxUdevMonitor::handleUdevEvent() {
 
   QString actionStr = QString::fromUtf8(action);
 
-  qDebug() << "[UdevMonitor] Extracted info - path:" << info.devicePath
-           << "vendor:" << info.vendorId << "product:" << info.productId;
+  qDebug() << "[UdevMonitor] Extracted info - path:" << info.devicePath << "vendor:" << info.vendorId
+           << "product:" << info.productId;
 
   // Handle add event
   if (actionStr == "add") {
-    qDebug() << "[UdevMonitor] Filter match:" << matchesFilter(info)
-             << "(filter vendor:" << vendorIdFilter() << ")";
+    qDebug() << "[UdevMonitor] Filter match:" << matchesFilter(info) << "(filter vendor:" << vendorIdFilter() << ")";
 
     // Only process if device has valid info and matches filters
     if (!info.devicePath.isEmpty() && matchesFilter(info)) {
       qDebug() << "USB device event: add"
-               << "device:" << info.devicePath
-               << "vendor:" << info.vendorId
-               << "product:" << info.productId;
+               << "device:" << info.devicePath << "vendor:" << info.vendorId << "product:" << info.productId;
 
       // Track this device for removal events
       m_connectedDevices[info.devicePath] = info;
@@ -146,8 +157,7 @@ void LinuxUdevMonitor::handleUdevEvent() {
       UsbDeviceInfo trackedInfo = m_connectedDevices[info.devicePath];
 
       qDebug() << "USB device event: remove"
-               << "device:" << trackedInfo.devicePath
-               << "vendor:" << trackedInfo.vendorId
+               << "device:" << trackedInfo.devicePath << "vendor:" << trackedInfo.vendorId
                << "product:" << trackedInfo.productId;
 
       m_connectedDevices.remove(info.devicePath);
@@ -160,7 +170,8 @@ void LinuxUdevMonitor::handleUdevEvent() {
   udev_device_unref(device);
 }
 
-UsbDeviceInfo LinuxUdevMonitor::extractDeviceInfo(struct udev_device *device) {
+UsbDeviceInfo LinuxUdevMonitor::extractDeviceInfo(struct udev_device *device)
+{
   UsbDeviceInfo info;
 
   if (!device) {
@@ -196,19 +207,20 @@ UsbDeviceInfo LinuxUdevMonitor::extractDeviceInfo(struct udev_device *device) {
   return info;
 }
 
-struct udev_device* LinuxUdevMonitor::getUsbDevice(struct udev_device *device) {
+struct udev_device *LinuxUdevMonitor::getUsbDevice(struct udev_device *device)
+{
   if (!device) {
     return nullptr;
   }
 
   // Walk up the device tree to find the USB device
-  struct udev_device *parent = udev_device_get_parent_with_subsystem_devtype(
-      device, "usb", "usb_device");
+  struct udev_device *parent = udev_device_get_parent_with_subsystem_devtype(device, "usb", "usb_device");
 
   return parent; // Don't unref - parent is owned by child device
 }
 
-QList<UsbDeviceInfo> LinuxUdevMonitor::enumerateDevices() {
+QList<UsbDeviceInfo> LinuxUdevMonitor::enumerateDevices()
+{
   QList<UsbDeviceInfo> devices;
 
   if (!m_udev) {
@@ -232,7 +244,8 @@ QList<UsbDeviceInfo> LinuxUdevMonitor::enumerateDevices() {
   struct udev_list_entry *deviceList = udev_enumerate_get_list_entry(enumerate);
   struct udev_list_entry *entry;
 
-  udev_list_entry_foreach(entry, deviceList) {
+  udev_list_entry_foreach(entry, deviceList)
+  {
     const char *path = udev_list_entry_get_name(entry);
     struct udev_device *device = udev_device_new_from_syspath(m_udev, path);
 
@@ -244,8 +257,7 @@ QList<UsbDeviceInfo> LinuxUdevMonitor::enumerateDevices() {
         devices.append(info);
         // Track this device for removal events
         m_connectedDevices[info.devicePath] = info;
-        qDebug() << "Found USB device:" << info.devicePath
-                 << "vendor:" << info.vendorId
+        qDebug() << "Found USB device:" << info.devicePath << "vendor:" << info.vendorId
                  << "product:" << info.productId;
       }
 
@@ -257,7 +269,8 @@ QList<UsbDeviceInfo> LinuxUdevMonitor::enumerateDevices() {
   return devices;
 }
 
-void LinuxUdevMonitor::cleanup() {
+void LinuxUdevMonitor::cleanup()
+{
   // Disconnect socket notifier
   if (m_notifier) {
     m_notifier->setEnabled(false);

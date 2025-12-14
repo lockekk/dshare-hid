@@ -13,25 +13,8 @@ if(APPLE)
   )
 endif()
 
-if(UNIX AND NOT APPLE)
-  set (device_sources
-    devices/LinuxUdevMonitor.cpp
-    devices/LinuxUdevMonitor.h
-    devices/UsbDeviceHelper.cpp
-    devices/UsbDeviceHelper.h
-  )
-elseif(WIN32)
-  set (device_sources
-    devices/WindowsUsbMonitor.cpp
-    devices/WindowsUsbMonitor.h
-    devices/UsbDeviceHelper.cpp
-    devices/UsbDeviceHelper.h
-  )
-endif()
-
 add_library(${target} STATIC
   ${platform_sources}
-  ${device_sources}
   Action.cpp
   Action.h
   Diagnostic.cpp
@@ -66,10 +49,6 @@ add_library(${target} STATIC
   config/ScreenList.h
   config/ServerConfig.cpp
   config/ServerConfig.h
-  core/BridgeClientConfigManager.cpp
-  core/BridgeClientConfigManager.h
-  devices/UsbDeviceMonitor.cpp
-  devices/UsbDeviceMonitor.h
   core/ClientConnection.cpp
   core/ClientConnection.h
   core/CommandProcess.cpp
@@ -88,8 +67,6 @@ add_library(${target} STATIC
   dialogs/ActionDialog.cpp
   dialogs/ActionDialog.h
   dialogs/ActionDialog.ui
-  dialogs/BridgeClientConfigDialog.cpp
-  dialogs/BridgeClientConfigDialog.h
   dialogs/FingerprintDialog.cpp
   dialogs/FingerprintDialog.h
   dialogs/HotkeyDialog.cpp
@@ -126,10 +103,6 @@ add_library(${target} STATIC
   validators/ValidationError.h
   validators/IpAddressValidator.cpp
   validators/IpAddressValidator.h
-  widgets/BridgeClientWidget.cpp
-  widgets/BridgeClientWidget.h
-  widgets/Esp32HidToolsWidget.cpp
-  widgets/Esp32HidToolsWidget.h
   widgets/FingerprintPreview.cpp
   widgets/FingerprintPreview.h
   widgets/KeySequenceWidget.cpp
@@ -153,9 +126,7 @@ target_link_libraries(
   Qt6::Core
   Qt6::Widgets
   Qt6::Network
-  Qt6::Concurrent
-  flash_tool_lib
-  downloader_lib)
+  Qt6::Concurrent)
 
 if(WIN32)
   target_link_libraries(
@@ -167,13 +138,5 @@ if(WIN32)
   )
 endif()
 
-if(UNIX AND NOT APPLE)
-  # Find libudev for USB device monitoring
-  find_library(UDEV_LIBRARY udev)
-  if(UDEV_LIBRARY)
-    target_link_libraries(${target} ${UDEV_LIBRARY})
-    message(STATUS "Found libudev: ${UDEV_LIBRARY}")
-  else()
-    message(WARNING "libudev not found - USB device monitoring will not be available")
-  endif()
-endif()
+
+include(CMakeLists.user.cmake OPTIONAL)

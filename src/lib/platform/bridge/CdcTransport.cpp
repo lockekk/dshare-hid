@@ -1,6 +1,5 @@
 /*
- * Deskflow -- mouse and keyboard sharing utility
- * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
+ * Deskflow-hid -- created by locke.huang@gmail.com
  */
 
 #include "CdcTransport.h"
@@ -482,14 +481,6 @@ bool CdcTransport::sendHidEvent(const HidEventPacket &packet)
 
   return sendUsbFrame(kUsbFrameTypeHid, 0, payload);
 }
-
-
-
-
-
-
-
-
 
 bool CdcTransport::sendUsbFrame(uint8_t type, uint8_t flags, const std::vector<uint8_t> &payload)
 {

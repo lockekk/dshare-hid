@@ -59,7 +59,11 @@ class DaemonIpcClient;
 
 namespace deskflow::gui {
 class BridgeClientWidget;
-}
+class BridgeClientWidget;
+class UsbDeviceMonitor;
+} // namespace deskflow::gui
+
+class DeskflowHidExtension;
 
 class MainWindow : public QMainWindow
 {
@@ -70,6 +74,7 @@ class MainWindow : public QMainWindow
 
   friend class DeskflowApplication;
   friend class SettingsDialog;
+  friend class DeskflowHidExtension;
 
 public:
   enum class LogLevel
@@ -183,27 +188,6 @@ private:
 
   void serverClientsChanged(const QStringList &clients);
 
-  void loadBridgeClientConfigs();
-  void updateBridgeClientDeviceStates();
-  void usbDeviceConnected(const deskflow::gui::UsbDeviceInfo &device);
-  void usbDeviceDisconnected(const deskflow::gui::UsbDeviceInfo &device);
-  void bridgeClientConnectToggled(const QString &devicePath, const QString &configPath, bool shouldConnect);
-  void bridgeClientConfigureClicked(const QString &devicePath, const QString &configPath);
-  void bridgeClientDeleteClicked(const QString &devicePath, const QString &configPath);
-  Q_INVOKABLE void bridgeClientDeletedFromServerConfig(const QString &configPath);
-  void bridgeClientProcessReadyRead(const QString &devicePath);
-  void bridgeClientProcessFinished(const QString &devicePath, int exitCode, QProcess::ExitStatus exitStatus);
-  void bridgeClientConnectionTimeout(const QString &devicePath);
-  void stopBridgeClient(const QString &devicePath);
-  void stopAllBridgeClients();
-  bool applyFirmwareDeviceName(const QString &devicePath, const QString &deviceName);
-  bool isValidDeviceName(const QString &deviceName) const;
-  bool fetchFirmwareDeviceName(const QString &devicePath, QString &outName);
-
-  bool acquireBridgeSerialLock(const QString &serialNumber, const QString &configPath);
-  void releaseBridgeSerialLock(const QString &serialNumber, const QString &configPath);
-  void applySerialGroupLockState(const QString &serialNumber);
-
   inline static const auto m_guiSocketName = QStringLiteral("deskflow-gui");
   inline static const auto m_nameRegEx = QRegularExpression(QStringLiteral("^[\\w\\-_\\.]{0,255}$"));
 
@@ -222,26 +206,8 @@ private:
   QSystemTrayIcon *m_trayIcon = nullptr;
   QLocalServer *m_guiDupeChecker = nullptr;
   deskflow::gui::ipc::DaemonIpcClient *m_daemonIpcClient = nullptr;
-  deskflow::gui::UsbDeviceMonitor *m_usbDeviceMonitor = nullptr;
 
-  // Bridge client widgets: config path -> widget
-  QMap<QString, deskflow::gui::BridgeClientWidget *> m_bridgeClientWidgets;
-
-  // Track device path -> serial number mapping when devices connect
-  // (needed because sysfs disappears when device disconnects)
-  QMap<QString, QString> m_devicePathToSerialNumber;
-
-  // Serial number -> config path holding the active connection
-  QHash<QString, QString> m_bridgeSerialLocks;
-
-  // Device path -> config path for currently running bridge client process
-  QHash<QString, QString> m_bridgeClientDeviceToConfig;
-
-  // Bridge client process management: device path -> QProcess*
-  QMap<QString, QProcess *> m_bridgeClientProcesses;
-
-  // Bridge client connection timeout timers: device path -> QTimer*
-  QMap<QString, QTimer *> m_bridgeClientConnectionTimers;
+  std::unique_ptr<DeskflowHidExtension> m_deskflowHidExtension;
 
   LogDock *m_logDock;
   QLabel *m_lblSecurityStatus = nullptr;

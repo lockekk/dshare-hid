@@ -1,6 +1,5 @@
 /*
- * Deskflow -- mouse and keyboard sharing utility
- * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
+ * Deskflow-hid -- created by locke.huang@gmail.com
  */
 
 #include "BridgeSocketFactory.h"
@@ -13,9 +12,9 @@
 #include "net/TCPListenSocket.h"
 #include "net/TCPSocket.h"
 
-BridgeSocketFactory::BridgeSocketFactory(IEventQueue *events, SocketMultiplexer *socketMultiplexer) :
-    m_events(events),
-    m_socketMultiplexer(socketMultiplexer)
+BridgeSocketFactory::BridgeSocketFactory(IEventQueue *events, SocketMultiplexer *socketMultiplexer)
+    : m_events(events),
+      m_socketMultiplexer(socketMultiplexer)
 {
 }
 
@@ -27,17 +26,12 @@ SecurityLevel BridgeSocketFactory::getServerSecurityLevel() const
   // Bridge clients follow CLI-selected TLS preference, enforcing PeerAuth when enabled
   SecurityLevel level = tlsEnabled ? SecurityLevel::PeerAuth : SecurityLevel::PlainText;
 
-  LOG_DEBUG1(
-      "bridge client TLS: %s (source=cli --secure)",
-      tlsEnabled ? "enabled (PeerAuth)" : "disabled (PlainText)"
-  );
+  LOG_DEBUG1("bridge client TLS: %s (source=cli --secure)", tlsEnabled ? "enabled (PeerAuth)" : "disabled (PlainText)");
 
   return level;
 }
 
-IDataSocket *BridgeSocketFactory::create(
-    IArchNetwork::AddressFamily family, SecurityLevel securityLevel
-) const
+IDataSocket *BridgeSocketFactory::create(IArchNetwork::AddressFamily family, SecurityLevel securityLevel) const
 {
   // Override security level with CLI-provided TLS setting
   SecurityLevel actualLevel = getServerSecurityLevel();
@@ -52,9 +46,7 @@ IDataSocket *BridgeSocketFactory::create(
   }
 }
 
-IListenSocket *BridgeSocketFactory::createListen(
-    IArchNetwork::AddressFamily family, SecurityLevel securityLevel
-) const
+IListenSocket *BridgeSocketFactory::createListen(IArchNetwork::AddressFamily family, SecurityLevel securityLevel) const
 {
   // Bridge clients don't need listen sockets (they only connect to server)
   // But implement for completeness

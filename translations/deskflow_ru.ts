@@ -142,6 +142,69 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>DeskflowHidExtension</name>
+    <message>
+        <source>ESP32 HID Tools</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unknown Device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bridge client device connected: %1 (%2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bridge client device disconnected: %1 (%2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error: No configuration found for device: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Another bridge client profile for this device is already connected.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Starting bridge client: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to start bridge client: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bridge client configuration deleted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete Failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to delete config</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invalid device name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invalid characters or length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Locked</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Locked by %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>FingerprintDialog</name>
     <message>
         <source>Local Fingerprints</source>
@@ -554,151 +617,6 @@ Valid names:
     </message>
     <message>
         <source>Another Deskflow server instance is already running in the background. Please close the existing server before starting a new one.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to read serial number from device: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ignoring USB device %1 (handshake failed)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Unknown Device</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>New bridge client device connected: %1 (%2)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bridge client device connected: %1 (%2)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bridge client device disconnected: %1 (%2)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Error: No configuration found for device: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Another bridge client profile for this device is already connected.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Starting bridge client: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to start bridge client: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Configuration saved for: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Device name saved. Connect the bridge to apply changes.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Firmware device name updated to: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to update firmware device name.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Updating firmware device name...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Failed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Configuration file does not exist:
-%1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bridge client configuration deleted</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to delete the bridge client configuration file.
-
-Path: %1
-
-Error: %2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Removed bridge client: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Another profile for this device is already connected</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>%1 is already connected for this device</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bridge client connected: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bridge client crashed: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bridge client exited with error: %1 (code %2)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bridge client disconnected: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bridge client connection timeout: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Disconnecting bridge client: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Device unavailable</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Connect the bridge device before updating its name.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Invalid device name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Device name must use English letters/numbers, spaces or .-_ characters and be at most 22 characters.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bridge device error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to open %1: %2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to update device name: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

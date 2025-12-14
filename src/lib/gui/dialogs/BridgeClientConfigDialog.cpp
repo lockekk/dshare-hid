@@ -110,7 +110,9 @@ BridgeClientConfigDialog::BridgeClientConfigDialog(const QString &configPath, QW
   connect(buttonBox, &QDialogButtonBox::accepted, this, &BridgeClientConfigDialog::onAccepted);
   connect(buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
   mainLayout->addWidget(buttonBox);
-
+  /*
+   * Deskflow-hid -- created by locke.huang@gmail.com
+   */
   // Load current config
   loadConfig();
 }
