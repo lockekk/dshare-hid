@@ -7,11 +7,19 @@ set(bridge_sources
     dialogs/BridgeClientConfigDialog.h
     widgets/BridgeClientWidget.cpp
     widgets/BridgeClientWidget.h
-    widgets/Esp32HidToolsWidget.cpp
-    widgets/Esp32HidToolsWidget.h
     DeskflowHidExtension.cpp
     DeskflowHidExtension.h
 )
+
+set(AUTO_AUTH_KEY_PATH "${CMAKE_SOURCE_DIR}/firmware/build_upgrade/deskflow_auth_key.inc")
+if(EXISTS "${AUTO_AUTH_KEY_PATH}")
+  message(STATUS "Integrating custom auth key from: ${AUTO_AUTH_KEY_PATH}")
+
+  configure_file("${AUTO_AUTH_KEY_PATH}" "${CMAKE_BINARY_DIR}/generated/deskflow_auth_key.inc" COPYONLY)
+
+  target_include_directories(gui PRIVATE "${CMAKE_BINARY_DIR}/generated")
+  target_compile_definitions(gui PRIVATE DESKFLOW_USE_GENERATED_AUTH_KEY)
+endif()
 
 if(UNIX AND NOT APPLE)
   list(APPEND bridge_sources
@@ -29,16 +37,26 @@ elseif(WIN32)
   )
 endif()
 
+set(ESP32_HID_TOOLS_DIR "${CMAKE_SOURCE_DIR}/submodules/esp32-hid-tools")
+if(BUILD_HID AND EXISTS "${ESP32_HID_TOOLS_DIR}/CMakeLists.txt")
+  message(STATUS "Enabling ESP32 HID Tools in GUI")
+  list(APPEND bridge_sources
+    widgets/Esp32HidToolsWidget.cpp
+    widgets/Esp32HidToolsWidget.h
+  )
+  target_compile_definitions(gui PRIVATE DESKFLOW_ENABLE_ESP32_HID_TOOLS)
+
+  target_include_directories(gui PRIVATE
+    ${ESP32_HID_TOOLS_DIR}
+  )
+
+  target_link_libraries(gui
+    flash_tool_lib
+    downloader_lib
+  )
+endif()
+
 target_sources(gui PRIVATE ${bridge_sources})
-
-target_include_directories(gui PRIVATE
-  ${CMAKE_SOURCE_DIR}/submodules/esp32-hid-tools
-)
-
-target_link_libraries(gui
-  flash_tool_lib
-  downloader_lib
-)
 
 if(UNIX AND NOT APPLE)
   # Find libudev for USB device monitoring

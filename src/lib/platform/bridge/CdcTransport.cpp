@@ -52,6 +52,7 @@ constexpr uint8_t kUsbConfigSetDeviceName = 0x03;
 constexpr uint8_t kUsbConfigGetSerialNumber = 0x04;
 constexpr uint8_t kUsbConfigActivateDevice = 0x07;
 constexpr uint8_t kUsbConfigGotoFactory = 0x08;
+constexpr uint8_t kUsbControlUnpairAll = 0x30;
 
 constexpr size_t kAckCoreLen = 16;
 constexpr size_t kAckProtocolVersionIndex = 1;
@@ -79,8 +80,12 @@ const uint8_t kHelloLabel[] = {'D', 'F', 'H', 'E', 'L', 'L', 'O'};
 const uint8_t kAckLabel[] = {'D', 'F', 'A', 'C', 'K'};
 
 const std::array<uint8_t, kAuthKeyBytes> kDefaultAuthKey = {
+#ifdef DESKFLOW_USE_GENERATED_AUTH_KEY
+#include "deskflow_auth_key.inc"
+#else
     0x9C, 0x3B, 0x1F, 0x04, 0xFE, 0x55, 0x80, 0x12, 0xD9, 0x47, 0x2A, 0x6C, 0x3F, 0xE5, 0x9B, 0x01,
     0x75, 0xA1, 0x47, 0x33, 0x2D, 0x84, 0x5F, 0x66, 0x08, 0xBB, 0x3D, 0x12, 0x6A, 0x90, 0x4E, 0xD5,
+#endif
 };
 
 std::string hexDump(const uint8_t *data, size_t length, size_t maxBytes = 64)
@@ -104,45 +109,6 @@ std::string hexDump(const uint8_t *data, size_t length, size_t maxBytes = 64)
   }
 
   return oss.str();
-}
-
-bool parseHexKeyChar(QChar ch, uint8_t &value)
-{
-  if (ch.isDigit()) {
-    value = static_cast<uint8_t>(ch.unicode() - '0');
-    return true;
-  }
-  if (ch >= QChar('a') && ch <= QChar('f')) {
-    value = static_cast<uint8_t>(10 + (ch.unicode() - 'a'));
-    return true;
-  }
-  if (ch >= QChar('A') && ch <= QChar('F')) {
-    value = static_cast<uint8_t>(10 + (ch.unicode() - 'A'));
-    return true;
-  }
-  return false;
-}
-
-bool parseAuthKeyHex(const QString &hex, std::array<uint8_t, kAuthKeyBytes> &out)
-{
-  const QString trimmed = hex.trimmed();
-  if (trimmed.isEmpty()) {
-    out = kDefaultAuthKey;
-    return true;
-  }
-  if (trimmed.size() != static_cast<int>(kAuthKeyBytes * 2)) {
-    return false;
-  }
-
-  for (int i = 0; i < trimmed.size(); i += 2) {
-    uint8_t hi = 0;
-    uint8_t lo = 0;
-    if (!parseHexKeyChar(trimmed[i], hi) || !parseHexKeyChar(trimmed[i + 1], lo)) {
-      return false;
-    }
-    out[static_cast<size_t>(i / 2)] = static_cast<uint8_t>((hi << 4) | lo);
-  }
-  return true;
 }
 
 QByteArray hmacSha256(const QByteArray &message, const std::array<uint8_t, kAuthKeyBytes> &key)
@@ -802,22 +768,48 @@ bool CdcTransport::gotoFactory()
   return true;
 }
 
-bool CdcTransport::setAuthKeyHex(const QString &hex)
+bool CdcTransport::unpairAll()
 {
-  std::array<uint8_t, kAuthKeyBytes> parsed{};
-  if (!parseAuthKeyHex(hex, parsed)) {
-    m_lastError = "Authentication key must be exactly 64 hexadecimal characters";
+  if (!ensureOpen()) {
     return false;
   }
 
-  m_authKey = parsed;
-  return true;
-}
+  LOG_INFO("CDC: Sending unpairAll command (0x%02X)", kUsbControlUnpairAll);
 
-bool CdcTransport::isValidAuthKeyHex(const QString &hex)
-{
-  std::array<uint8_t, kAuthKeyBytes> parsed{};
-  return parseAuthKeyHex(hex, parsed);
+  std::vector<uint8_t> payload(1);
+  payload[0] = kUsbControlUnpairAll;
+
+  if (!sendUsbFrame(kUsbFrameTypeControl, 0, payload)) {
+    LOG_ERR("CDC: Failed to send unpairAll command");
+    return false;
+  }
+
+  std::vector<uint8_t> response;
+  if (!waitForControlMessage(kUsbControlAck, response, kConfigCommandTimeoutMs)) {
+    LOG_ERR("CDC: Timeout waiting for unpairAll response");
+    return false;
+  }
+
+  // Response payload is just [status]
+  if (response.size() < 1) {
+    m_lastError = "Invalid unpairAll response";
+    LOG_ERR("CDC: %s", m_lastError.c_str());
+    return false;
+  }
+
+  uint8_t status = response[0];
+  if (status == 1) {
+    LOG_INFO("CDC: unpairAll success (no bonds found)");
+    return true;
+  }
+  if (status != 0) {
+    m_lastError = "Firmware error code " + std::to_string(status);
+    LOG_ERR("CDC: unpairAll firmware returned error=%u", status);
+    return false;
+  }
+
+  LOG_INFO("CDC: unpairAll success");
+  return true;
 }
 
 bool CdcTransport::writeAll(const uint8_t *data, size_t length)

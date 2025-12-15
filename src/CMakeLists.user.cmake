@@ -1,2 +1,15 @@
-add_subdirectory(${CMAKE_SOURCE_DIR}/submodules/esp32-hid-tools ${CMAKE_BINARY_DIR}/submodules/esp32-hid-tools)
-include_directories(${CMAKE_SOURCE_DIR}/submodules/esp32-hid-tools)
+option(BUILD_HID "Build ESP32 HID tools" OFF)
+
+if(BUILD_HID)
+  set(ESP32_HID_TOOLS_DIR "${CMAKE_SOURCE_DIR}/submodules/esp32-hid-tools")
+
+  if(EXISTS "${ESP32_HID_TOOLS_DIR}/CMakeLists.txt")
+    message(STATUS "ESP32 HID Tools: Found at ${ESP32_HID_TOOLS_DIR}")
+    add_subdirectory(${ESP32_HID_TOOLS_DIR} ${CMAKE_BINARY_DIR}/submodules/esp32-hid-tools)
+    include_directories(${ESP32_HID_TOOLS_DIR})
+  else()
+    message(WARNING "ESP32 HID Tools: BUILD_HID is ON but submodule not found at ${ESP32_HID_TOOLS_DIR}")
+  endif()
+else()
+  message(STATUS "ESP32 HID Tools: Disabled (BUILD_HID is OFF)")
+endif()

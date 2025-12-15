@@ -17,7 +17,9 @@
 #include "gui/devices/UsbDeviceHelper.h"
 #include "gui/dialogs/BridgeClientConfigDialog.h"
 #include "gui/widgets/BridgeClientWidget.h"
+#ifdef DESKFLOW_ENABLE_ESP32_HID_TOOLS
 #include "gui/widgets/Esp32HidToolsWidget.h"
+#endif
 
 // #include "platform/bridge/Activation.h"
 #include "platform/bridge/CdcTransport.h"
@@ -105,11 +107,17 @@ void DeskflowHidExtension::setup()
 
 void DeskflowHidExtension::openEsp32HidTools()
 {
+#ifdef DESKFLOW_ENABLE_ESP32_HID_TOOLS
   auto *widget = new Esp32HidToolsWidget(nullptr);
   widget->setAttribute(Qt::WA_DeleteOnClose);
   widget->setWindowTitle(tr("ESP32 HID Tools"));
   widget->resize(800, 600);
   widget->show();
+#else
+  QMessageBox::information(
+      m_mainWindow, tr("Feature Unavailable"), tr("The ESP32 HID Tools module is not available in this build.")
+  );
+#endif
 }
 
 void DeskflowHidExtension::loadBridgeClientConfigs()
@@ -558,7 +566,7 @@ void DeskflowHidExtension::bridgeClientConfigureClicked(const QString &devicePat
   // (Due to token limit I'm simplifying. I will need to edit this file iteratively if it's too big,
   // but the key logic for renaming is critical. I'll implement what I can)
 
-  BridgeClientConfigDialog dialog(configPath, m_mainWindow);
+  BridgeClientConfigDialog dialog(configPath, devicePath, m_mainWindow);
 
   connect(
       &dialog, &BridgeClientConfigDialog::configChanged, this,

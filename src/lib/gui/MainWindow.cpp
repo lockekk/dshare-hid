@@ -34,7 +34,9 @@
 #include "gui/devices/UsbDeviceHelper.h"
 #include "gui/ipc/DaemonIpcClient.h"
 #include "gui/widgets/BridgeClientWidget.h"
+#ifdef DESKFLOW_ENABLE_ESP32_HID_TOOLS
 #include "gui/widgets/Esp32HidToolsWidget.h"
+#endif
 #include "gui/widgets/LogDock.h"
 #include "net/FingerprintDatabase.h"
 #include "platform/bridge/CdcTransport.h"
@@ -728,7 +730,8 @@ void MainWindow::updateNetworkInfo()
     return;
   }
 
-  ui->lblIpAddresses->setText(tr("Suggested IP: %1").arg(suggestedAddress.isEmpty() ? ipList.first() : suggestedAddress)
+  ui->lblIpAddresses->setText(
+      tr("Suggested IP: %1").arg(suggestedAddress.isEmpty() ? ipList.first() : suggestedAddress)
   );
 
   if (auto toolTipBase = tr("<p>If connecting via the hostname fails, try %1</p>"); ipList.count() < 2) {

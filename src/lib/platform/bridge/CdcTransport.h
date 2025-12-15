@@ -110,8 +110,6 @@ public:
    */
   bool sendHidEvent(const HidEventPacket &packet);
 
-
-
   bool fetchDeviceName(std::string &outName);
   bool setDeviceName(const std::string &name);
 
@@ -136,6 +134,12 @@ public:
   bool gotoFactory();
 
   /**
+   * @brief Unpair all bonded devices
+   * @return true if successful
+   */
+  bool unpairAll();
+
+  /**
    * @brief Get last error message
    */
   std::string lastError() const
@@ -158,26 +162,6 @@ public:
   {
     return m_deviceConfig;
   }
-
-  /**
-   * @brief Get the device path
-   */
-  QString devicePath() const
-  {
-    return m_devicePath;
-  }
-
-  /**
-   * @brief Override the authentication key using a 64-character hex string.
-   * @param hex Hexadecimal key or empty string to use the default debug key.
-   * @return true if the key was applied successfully.
-   */
-  bool setAuthKeyHex(const QString &hex);
-
-  /**
-   * @brief Validate whether a string is a valid auth key (64 hex characters or empty).
-   */
-  static bool isValidAuthKeyHex(const QString &hex);
 
   /**
    * @brief Send a keep-alive CDC command to the firmware

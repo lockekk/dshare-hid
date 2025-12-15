@@ -15,7 +15,7 @@ class BridgeClientConfigDialog : public QDialog
   Q_OBJECT
 
 public:
-  explicit BridgeClientConfigDialog(const QString &configPath, QWidget *parent = nullptr);
+  explicit BridgeClientConfigDialog(const QString &configPath, const QString &devicePath, QWidget *parent = nullptr);
 
   QString screenName() const;
   int screenWidth() const;
@@ -36,6 +36,7 @@ Q_SIGNALS:
 
 private Q_SLOTS:
   void onAccepted();
+  void onUnpairAllClicked();
 
 private:
   void loadConfig();
@@ -43,6 +44,7 @@ private:
   QString renameConfigFile(const QString &newScreenName);
 
   QString m_configPath;
+  QString m_devicePath;
   QString m_originalScreenName;
 
   QLineEdit *m_editScreenName;

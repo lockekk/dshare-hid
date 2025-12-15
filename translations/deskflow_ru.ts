@@ -203,6 +203,14 @@ p, li { white-space: pre-wrap; }
         <source>Locked by %1</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Feature Unavailable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The ESP32 HID Tools module is not available in this build.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>FingerprintDialog</name>
@@ -1492,6 +1500,65 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Device name may only use English letters, numbers, spaces, &apos;.&apos;, &apos;-&apos; or &apos;_&apos; and must be 22 characters or fewer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device is not connected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error</source>
+        <translation type="unfinished">Ошибка</translation>
+    </message>
+    <message>
+        <source>Device not found: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connection Failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to open device.
+Please make sure the bridge client is NOT running for this device.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Confirm Unpair</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Success</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to send unpair command.
+Error: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Advanced</source>
+        <translation type="unfinished">Расшириные</translation>
+    </message>
+    <message>
+        <source>Unpair Bluetooth Host</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unpair bonded Bluetooth host</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to unpair bonded host?
+This action cannot be undone.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unpaired successfully.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

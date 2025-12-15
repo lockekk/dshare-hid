@@ -5,10 +5,15 @@
 
 #include <QDialogButtonBox>
 #include <QFormLayout>
+#include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QMessageBox>
+#include <QPushButton>
 #include <QSettings>
 #include <QVBoxLayout>
+
+#include "platform/bridge/CdcTransport.h"
 
 namespace {
 constexpr auto kLandscapeIconPath = ":/bridge-client/client/orientation_landspace.png";
@@ -22,9 +27,12 @@ constexpr auto kPortraitIconPath = ":/bridge-client/client/orientation_portrait.
 
 using namespace deskflow::gui;
 
-BridgeClientConfigDialog::BridgeClientConfigDialog(const QString &configPath, QWidget *parent)
+BridgeClientConfigDialog::BridgeClientConfigDialog(
+    const QString &configPath, const QString &devicePath, QWidget *parent
+)
     : QDialog(parent),
-      m_configPath(configPath)
+      m_configPath(configPath),
+      m_devicePath(devicePath)
 {
   setWindowTitle(tr("Bridge Client Configuration"));
   setMinimumWidth(400);
@@ -98,12 +106,27 @@ BridgeClientConfigDialog::BridgeClientConfigDialog(const QString &configPath, QW
   scrollLayout->addStretch();
   formLayout->addRow(tr("Scroll:"), scrollLayout);
 
+  // Advanced Options Group
+  auto *advancedGroup = new QGroupBox(tr("Advanced"), this);
+  auto *advancedLayout = new QFormLayout(advancedGroup);
+
   // Bluetooth Keep-Alive
   m_checkBluetoothKeepAlive = new QCheckBox(tr("Bluetooth connection follow client"), this);
   m_checkBluetoothKeepAlive->setToolTip(tr("Send keep-alive commands to maintain Bluetooth connection"));
-  formLayout->addRow(QString(), m_checkBluetoothKeepAlive);
+  advancedLayout->addRow(QString(), m_checkBluetoothKeepAlive);
+
+  // Unpair Bluetooth Host Button
+  auto *btnUnpairAll = new QPushButton(tr("Unpair Bluetooth Host"), this);
+  btnUnpairAll->setToolTip(tr("Unpair bonded Bluetooth host"));
+  if (m_devicePath.isEmpty()) {
+    btnUnpairAll->setEnabled(false);
+    btnUnpairAll->setToolTip(tr("Device is not connected"));
+  }
+  connect(btnUnpairAll, &QPushButton::clicked, this, &BridgeClientConfigDialog::onUnpairAllClicked);
+  advancedLayout->addRow(QString(), btnUnpairAll);
 
   mainLayout->addLayout(formLayout);
+  mainLayout->addWidget(advancedGroup);
 
   // Dialog buttons
   auto *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
@@ -304,4 +327,43 @@ bool BridgeClientConfigDialog::deviceNameChanged() const
 bool BridgeClientConfigDialog::bluetoothKeepAlive() const
 {
   return m_checkBluetoothKeepAlive->isChecked();
+}
+
+void BridgeClientConfigDialog::onUnpairAllClicked()
+{
+  if (m_devicePath.isEmpty()) {
+    return;
+  }
+
+  // Check if device path exists
+  if (!QFile::exists(m_devicePath)) {
+    QMessageBox::critical(this, tr("Error"), tr("Device not found: %1").arg(m_devicePath));
+    return;
+  }
+
+  // Try to open transport
+  deskflow::bridge::CdcTransport transport(m_devicePath);
+  if (!transport.open()) {
+    QMessageBox::critical(
+        this, tr("Connection Failed"),
+        tr("Failed to open device.\nPlease make sure the bridge client is NOT running for this device.")
+    );
+    return;
+  }
+
+  if (QMessageBox::question(
+          this, tr("Confirm Unpair"), tr("Are you sure you want to unpair bonded host?\nThis action cannot be undone."),
+          QMessageBox::Yes | QMessageBox::No
+      ) != QMessageBox::Yes) {
+    return;
+  }
+
+  if (transport.unpairAll()) {
+    QMessageBox::information(this, tr("Success"), tr("Unpaired successfully."));
+  } else {
+    QMessageBox::critical(
+        this, tr("Failed"),
+        tr("Failed to send unpair command.\nError: %1").arg(QString::fromStdString(transport.lastError()))
+    );
+  }
 }
