@@ -21,8 +21,10 @@
 #define NOMINMAX
 #endif
 #define WIN32_LEAN_AND_MEAN
-#include <SetupAPI.h>
+// clang-format off
 #include <Windows.h>
+#include <SetupAPI.h>
+// clang-format on
 #include <devguid.h>
 #include <initguid.h>
 #include <winreg.h>
