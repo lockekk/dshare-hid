@@ -146,7 +146,7 @@ public:
   static QSettingsProxy &proxy();
   static void save(bool emitSaving = true);
   static QStringList validKeys();
-  static int logLevelToInt(const QString &level = "INFO");
+  static int logLevelToInt(const QString &level);
   static void setBridgeClientMode(bool enabled);
   static bool isBridgeClientMode();
   static QString portableSettingsFile();

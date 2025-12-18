@@ -41,7 +41,7 @@ void Settings::setSettingsFile(const QString &settingsFile)
 void Settings::setStateFile(const QString &stateFile)
 {
   if (instance()->m_stateSettings->fileName() == stateFile) {
-    qDebug("settings file already set, skipping");
+    qDebug("state file already set, skipping");
     return;
   }
 
@@ -49,7 +49,7 @@ void Settings::setStateFile(const QString &stateFile)
     instance()->m_stateSettings->deleteLater();
 
   instance()->m_stateSettings = new QSettings(stateFile, QSettings::IniFormat, instance());
-  qInfo().noquote() << "settings file changed:" << instance()->m_stateSettings->fileName();
+  qInfo().noquote() << "state file changed:" << instance()->m_stateSettings->fileName();
 }
 
 Settings::Settings(QObject *parent) : QObject(parent)
@@ -120,16 +120,16 @@ QString Settings::cleanScreenName(const QString &name)
   static const auto hyphen = QStringLiteral("-");
   static const auto space = QStringLiteral(" ");
   static const auto underscore = QStringLiteral("_");
-  static const auto peroid = QStringLiteral(".");
+  static const auto period = QStringLiteral(".");
   static const auto nothing = QStringLiteral("");
   static const auto nameRegex = QRegularExpression(QStringLiteral("[^\\w\\-\\.]"));
 
   QString cleanName = name.simplified();
   cleanName.replace(space, underscore);
   cleanName.replace(nameRegex, nothing);
-  while (cleanName.startsWith(hyphen) || cleanName.startsWith(underscore) || cleanName.startsWith(peroid))
+  while (cleanName.startsWith(hyphen) || cleanName.startsWith(underscore) || cleanName.startsWith(period))
     cleanName.removeFirst();
-  while (cleanName.endsWith(hyphen) || cleanName.endsWith(underscore) || cleanName.endsWith(peroid))
+  while (cleanName.endsWith(hyphen) || cleanName.endsWith(underscore) || cleanName.endsWith(period))
     cleanName.removeLast();
   if (cleanName.length() > 255) {
     cleanName.truncate(255);
@@ -140,40 +140,9 @@ QString Settings::cleanScreenName(const QString &name)
 
 int Settings::logLevelToInt(const QString &level)
 {
-  // Can do this better later ?
-  if (level.toUpper() == "FATAL") {
-    return 0;
-  }
-
-  if (level.toUpper() == "ERROR") {
-    return 1;
-  }
-
-  if (level.toUpper() == "WARNING") {
-    return 2;
-  }
-
-  if (level.toUpper() == "NOTE") {
-    return 3;
-  }
-
-  if (level.toUpper() == "INFO") {
+  if (level.isEmpty() || !m_logLevels.contains(level, Qt::CaseInsensitive))
     return 4;
-  }
-
-  if (level.toUpper() == "DEBUG") {
-    return 5;
-  }
-
-  if (level.toUpper() == "DEBUG1") {
-    return 6;
-  }
-
-  if (level.toUpper() == "DEBUG2") {
-    return 7;
-  }
-
-  return 4; // If all else fail return info
+  return static_cast<int>(m_logLevels.indexOf(level, 0, Qt::CaseInsensitive));
 }
 
 void Settings::setBridgeClientMode(bool enabled)
@@ -188,13 +157,11 @@ bool Settings::isBridgeClientMode()
 
 QVariant Settings::defaultValue(const QString &key)
 {
-  if (m_defaultFalseValues.contains(key)) {
+  if (m_defaultFalseValues.contains(key))
     return false;
-  }
 
-  if (m_defaultTrueValues.contains(key)) {
+  if (m_defaultTrueValues.contains(key))
     return true;
-  }
 
   if (key == Gui::WindowGeometry)
     return QRect();
@@ -235,17 +202,14 @@ QVariant Settings::defaultValue(const QString &key)
     if (!Settings::isPortableMode())
       return Settings::ProcessMode::Service;
 #endif
-
     return Settings::ProcessMode::Desktop;
   }
 
-  if (key == Daemon::LogFile) {
+  if (key == Daemon::LogFile)
     return QStringLiteral("%1/%2").arg(Settings::settingsPath(), kDaemonLogFilename);
-  }
 
-  if (key == Client::ScrollSpeed) {
+  if (key == Client::ScrollSpeed)
     return 120;
-  }
 
   if (key == Bridge::SerialNumber) {
     return QString(); // Empty by default, populated from CDC device
