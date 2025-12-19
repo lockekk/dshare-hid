@@ -45,3 +45,9 @@ CMakeFiles/*
 
 # scripts folder
 /scripts
+
+# flatpak
+.flatpak-builder
+repo/*
+*.flatpak
+

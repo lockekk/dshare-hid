@@ -1,5 +1,5 @@
 {
-    "org.deskflow.deskflow": [
+    "org.fs34a.deskflow-hid": [
         "appstream-external-screenshot-url",
         "appstream-screenshots-not-mirrored-in-ostree"
     ]
