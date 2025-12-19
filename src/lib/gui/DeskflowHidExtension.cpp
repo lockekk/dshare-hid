@@ -28,6 +28,8 @@
 #include "devices/LinuxUdevMonitor.h"
 #elif defined(Q_OS_WIN)
 #include "devices/WindowsUsbMonitor.h"
+#elif defined(Q_OS_MAC)
+#include "devices/MacUsbMonitor.h"
 #endif
 
 #include <QCoreApplication>
@@ -77,9 +79,11 @@ void DeskflowHidExtension::setup()
   m_usbDeviceMonitor = new LinuxUdevMonitor(this);
 #elif defined(Q_OS_WIN)
   m_usbDeviceMonitor = new WindowsUsbMonitor(this);
+#elif defined(Q_OS_MAC)
+  m_usbDeviceMonitor = new MacUsbMonitor(this);
 #endif
 
-#if defined(Q_OS_LINUX) || defined(Q_OS_WIN)
+#if defined(Q_OS_LINUX) || defined(Q_OS_WIN) || defined(Q_OS_MAC)
   if (m_usbDeviceMonitor) {
     // Filter for Espressif vendor ID (0x303a)
     m_usbDeviceMonitor->setVendorIdFilter(UsbDeviceHelper::kEspressifVendorId);

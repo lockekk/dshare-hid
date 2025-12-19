@@ -30,6 +30,13 @@
 #include <winreg.h>
 #endif
 
+#ifdef Q_OS_MAC
+#include <CoreFoundation/CoreFoundation.h>
+#include <IOKit/IOKitLib.h>
+#include <IOKit/serial/IOSerialKeys.h>
+#include <IOKit/usb/IOUSBLib.h>
+#endif
+
 namespace deskflow::gui {
 
 namespace {
@@ -164,7 +171,7 @@ QString getPortName(HDEVINFO infoSet, SP_DEVINFO_DATA &infoData)
 
 QString UsbDeviceHelper::readSerialNumber(const QString &devicePath)
 {
-#if defined(Q_OS_LINUX) || defined(Q_OS_WIN)
+#if defined(Q_OS_LINUX) || defined(Q_OS_WIN) || defined(Q_OS_MAC)
   // Read serial number via CDC command from firmware
   // This ensures we only read when device is not opened by bridge client
 
@@ -293,6 +300,97 @@ QMap<QString, QString> UsbDeviceHelper::getConnectedDevices(bool queryDevice)
 
   SetupDiDestroyDeviceInfoList(deviceInfoSet);
   qDebug() << "Enumerated" << devices.size() << "bridge-capable USB CDC device(s) on Windows";
+#elif defined(Q_OS_MAC)
+  // macOS implementation using IOKit
+  io_iterator_t iter = 0;
+  kern_return_t kr =
+      IOServiceGetMatchingServices(kIOMasterPortDefault, IOServiceMatching(kIOUSBDeviceClassName), &iter);
+  if (kr != kIOReturnSuccess) {
+    qWarning() << "Failed to iterate USB devices on macOS";
+    return devices;
+  }
+
+  io_service_t device;
+  while ((device = IOIteratorNext(iter))) {
+    // Check Vendor ID
+    long vid = 0;
+    CFTypeRef vidRef = IORegistryEntryCreateCFProperty(device, CFSTR(kUSBVendorID), kCFAllocatorDefault, 0);
+    if (vidRef) {
+      if (CFGetTypeID(vidRef) == CFNumberGetTypeID()) {
+        CFNumberGetValue((CFNumberRef)vidRef, kCFNumberLongType, &vid);
+      }
+      CFRelease(vidRef);
+    }
+
+    if (vid == 0x303a) { // kEspressifVendorId
+      // Check Product ID
+      long pid = 0;
+      CFTypeRef pidRef = IORegistryEntryCreateCFProperty(device, CFSTR(kUSBProductID), kCFAllocatorDefault, 0);
+      if (pidRef) {
+        if (CFGetTypeID(pidRef) == CFNumberGetTypeID()) {
+          CFNumberGetValue((CFNumberRef)pidRef, kCFNumberLongType, &pid);
+        }
+        CFRelease(pidRef);
+      }
+
+      if (pid == 0x1001) { // kEspressifProductId
+        // Found matching device, look for CDC Modem path
+        QString devicePath;
+        // Search children for IOSerialBSDClient
+        io_iterator_t childIter;
+        if (IORegistryEntryCreateIterator(device, kIOServicePlane, kIORegistryIterateRecursively, &childIter) ==
+            kIOReturnSuccess) {
+          io_service_t child;
+          while ((child = IOIteratorNext(childIter))) {
+            if (IOObjectConformsTo(child, "IOSerialBSDClient")) {
+              CFStringRef pathRef = (CFStringRef)IORegistryEntryCreateCFProperty(
+                  child, CFSTR(kIOCalloutDeviceKey), kCFAllocatorDefault, 0
+              );
+              if (pathRef) {
+                const CFIndex kMaxPath = 1024;
+                char pathBuf[kMaxPath];
+                if (CFStringGetCString(pathRef, pathBuf, kMaxPath, kCFStringEncodingUTF8)) {
+                  devicePath = QString::fromUtf8(pathBuf);
+                }
+                CFRelease(pathRef);
+              }
+            }
+            IOObjectRelease(child);
+            if (!devicePath.isEmpty())
+              break;
+          }
+          IOObjectRelease(childIter);
+        }
+
+        if (!devicePath.isEmpty()) {
+          QString serialNumber;
+          if (queryDevice) {
+            serialNumber = readSerialNumber(devicePath);
+          }
+          if (serialNumber.isEmpty()) {
+            // Fallback to reading from IOKit if possible (though readSerialNumber tries CDC first)
+            // IOKit serial is kUSBSerialNumberString
+            CFStringRef serialRef = (CFStringRef)IORegistryEntryCreateCFProperty(
+                device, CFSTR(kUSBSerialNumberString), kCFAllocatorDefault, 0
+            );
+            if (serialRef) {
+              const CFIndex kMaxSerial = 256;
+              char serialBuf[kMaxSerial];
+              if (CFStringGetCString(serialRef, serialBuf, kMaxSerial, kCFStringEncodingUTF8)) {
+                serialNumber = QString::fromUtf8(serialBuf);
+              }
+              CFRelease(serialRef);
+            }
+          }
+          if (serialNumber.isEmpty())
+            serialNumber = "Unknown";
+          devices[devicePath] = serialNumber;
+        }
+      }
+    }
+    IOObjectRelease(device);
+  }
+  IOObjectRelease(iter);
 #endif
 
   return devices;
@@ -328,6 +426,22 @@ bool UsbDeviceHelper::isSupportedBridgeDevice(const QString &devicePath)
   bool isSupported = transport.hasDeviceConfig();
   transport.close();
   return isSupported;
+#elif defined(Q_OS_MAC)
+  // On macOS we can check IOKit registry property for the device path
+  // Reverse lookup from BSD path to IOUSBDevice is hard without iterating
+  // Simpler to just try handshake if we have path, or trust getConnectedDevices filter
+  // Let's rely on handshake for robust check
+
+  // Note: We could optimize by checking if the path is in the list returned by getConnectedDevices(false)
+  // but that iterates IOKit anyway.
+
+  deskflow::bridge::CdcTransport transport(devicePath);
+  if (!transport.open()) {
+    return false;
+  }
+  bool isSupported = transport.hasDeviceConfig();
+  transport.close();
+  return isSupported;
 #else
   Q_UNUSED(devicePath);
   return false;
@@ -338,7 +452,7 @@ bool UsbDeviceHelper::verifyBridgeHandshake(
     const QString &devicePath, deskflow::bridge::FirmwareConfig *configOut, int timeoutMs
 )
 {
-#if defined(Q_OS_LINUX) || defined(Q_OS_WIN)
+#if defined(Q_OS_LINUX) || defined(Q_OS_WIN) || defined(Q_OS_MAC)
   Q_UNUSED(timeoutMs);
 
   deskflow::bridge::CdcTransport transport(devicePath);

@@ -35,6 +35,17 @@ elseif(WIN32)
     devices/UsbDeviceHelper.cpp
     devices/UsbDeviceHelper.h
   )
+elseif(APPLE)
+  list(APPEND bridge_sources
+    devices/MacUsbMonitor.mm
+    devices/MacUsbMonitor.h
+    devices/UsbDeviceHelper.cpp
+    devices/UsbDeviceHelper.h
+  )
+
+  find_library(IOKIT_LIBRARY IOKit)
+  find_library(COREFOUNDATION_LIBRARY CoreFoundation)
+  target_link_libraries(gui ${IOKIT_LIBRARY} ${COREFOUNDATION_LIBRARY})
 endif()
 
 set(ESP32_HID_TOOLS_DIR "${CMAKE_SOURCE_DIR}/submodules/esp32-hid-tools")
