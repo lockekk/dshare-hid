@@ -180,6 +180,72 @@ void DeskflowHidExtension::loadBridgeClientConfigs()
   }
 }
 
+namespace {
+bool syncDeviceConfigFromDevice(const QString &devicePath, const QString &configPath, bool *outIsBleConnected = nullptr)
+{
+  deskflow::bridge::CdcTransport transport(devicePath);
+  if (!transport.open()) {
+    return false;
+  }
+
+  if (outIsBleConnected) {
+    if (transport.hasDeviceConfig()) {
+      *outIsBleConnected = transport.deviceConfig().isBleConnected;
+    } else {
+      *outIsBleConnected = false;
+    }
+  }
+
+  uint8_t activeProfile = 0;
+  if (transport.hasDeviceConfig()) {
+    activeProfile = transport.deviceConfig().activeProfile;
+  } else {
+    // Fallback? If no handshake config, assume 0 or failing to get profile might be expected.
+    // Try 0?
+    activeProfile = 0;
+  }
+
+  deskflow::bridge::DeviceProfile profile;
+  if (!transport.getProfile(activeProfile, profile)) {
+    return false;
+  }
+
+  std::string deviceName = transport.deviceConfig().deviceName;
+  // If handshake didn't provide name, try fetch
+  if (deviceName.empty()) {
+    transport.fetchDeviceName(deviceName);
+  }
+
+  // Save activation state before closing transport
+  const char *activationStateStr = transport.deviceConfig().activationStateString();
+  QString activationState = QString::fromLatin1(activationStateStr);
+
+  transport.close();
+
+  using namespace deskflow;
+  QSettings config(configPath, QSettings::IniFormat);
+
+  if (!deviceName.empty()) {
+    config.setValue(Settings::Bridge::DeviceName, QString::fromStdString(deviceName));
+  }
+
+  QByteArray nameBytes(profile.hostname, sizeof(profile.hostname));
+  int nullPos = nameBytes.indexOf('\0');
+  if (nullPos >= 0)
+    nameBytes.truncate(nullPos);
+  config.setValue(Settings::Bridge::ActiveProfileHostname, QString::fromUtf8(nameBytes));
+
+  QString orientation = (profile.rotation == 0) ? QStringLiteral("portrait") : QStringLiteral("landscape");
+  config.setValue(Settings::Bridge::ActiveProfileOrientation, orientation);
+
+  // Save activation state from device
+  config.setValue(Settings::Bridge::ActivationState, activationState);
+
+  config.sync();
+  return true;
+}
+} // namespace
+
 void DeskflowHidExtension::updateBridgeClientDeviceStates()
 {
   qDebug() << "Updating bridge client device states...";
@@ -235,6 +301,11 @@ void DeskflowHidExtension::updateBridgeClientDeviceStates()
     if (found) {
       // Store device path -> serial number mapping for later use
       m_devicePathToSerialNumber[devicePath] = configSerialNumber;
+      // Sync profile data from device
+      syncDeviceConfigFromDevice(devicePath, configPath);
+      // Refresh widget
+      widget->updateConfig(widget->screenName(), configPath);
+
       qDebug() << "Device available for config:" << configPath << "device:" << devicePath;
     } else {
       qDebug() << "Device NOT available for config:" << configPath;
@@ -360,60 +431,14 @@ void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
       BridgeClientWidget *widget = it.value();
       widget->setDeviceAvailable(device.devicePath, true);
 
-      // Sync names
-      {
-        QSettings existingConfig(config, QSettings::IniFormat);
+      // Sync profile data from device settings
+      bool isBleConnected = false;
+      syncDeviceConfigFromDevice(device.devicePath, config, &isBleConnected);
 
-        bool isBleConnected = false;
-        if (handshakeDeviceName.isEmpty()) {
-          // If we haven't fetched it yet (e.g. valid match directly), try to fetch
-          // But wait, if we are here, we might not have opened transport yet for this device if we found match by
-          // serial only? usbDeviceConnected logic flow:
-          // 1. read serial (UsbDeviceHelper, no handshake?) - Wait, UsbDeviceHelper::readSerialNumber likely does
-          // handshake or string descriptor read.
-          // 2. If matching config found...
-          // We only called fetchFirmwareDeviceName if NO matching config was found initially?
-          // No, lines 264 logic is for new config.
-          // This block is for "Found existing config".
-          // handshakeDeviceName might be empty if we didn't go through the "new device" block.
+      // Update widget from updated config
+      widget->updateConfig(widget->screenName(), config);
 
-          // Let's check if we can fetch it now.
-          deskflow::bridge::CdcTransport transport(device.devicePath);
-          if (transport.open()) {
-            if (transport.hasDeviceConfig()) {
-              handshakeDeviceName = QString::fromStdString(transport.deviceConfig().deviceName);
-              isBleConnected = transport.deviceConfig().isBleConnected;
-            } else {
-              // Try to fetch name explicitly if handshake didn't give it (old fw?)
-              // But handshake usually gives config.
-              std::string name;
-              if (transport.fetchDeviceName(name)) {
-                handshakeDeviceName = QString::fromStdString(name);
-              }
-            }
-            transport.close();
-          }
-        }
-
-        widget->setBleConnected(isBleConnected);
-
-        QString deviceNameValue = handshakeDeviceName.trimmed();
-        if (deviceNameValue.isEmpty()) {
-          deviceNameValue =
-              existingConfig.value(Settings::Bridge::DeviceName, Settings::defaultValue(Settings::Bridge::DeviceName))
-                  .toString();
-        } else {
-          existingConfig.setValue(Settings::Bridge::DeviceName, deviceNameValue);
-          existingConfig.sync();
-        }
-        widget->setDeviceName(deviceNameValue);
-
-        QString hostnameValue = existingConfig.value(Settings::Bridge::ActiveProfileHostname).toString();
-        widget->setActiveHostname(hostnameValue);
-
-        QString activationValue = existingConfig.value(Settings::Bridge::ActivationState).toString();
-        widget->setActivationState(activationValue);
-      }
+      widget->setBleConnected(isBleConnected);
 
       QString screenName = widget->screenName();
       qDebug() << "Enabled widget for config:" << config << "screenName:" << screenName;

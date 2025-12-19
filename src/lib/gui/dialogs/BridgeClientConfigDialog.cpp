@@ -449,8 +449,18 @@ void BridgeClientConfigDialog::saveConfig()
   // Remove keys that are now managed solely by the device profile
   config.remove(Settings::Client::ScrollSpeed);
   config.remove(Settings::Client::InvertScrollDirection);
-  config.remove(Settings::Bridge::ActiveProfileHostname);
-  config.remove(Settings::Bridge::ActiveProfileOrientation);
+  if (m_deviceActiveProfileIndex >= 0 && m_profileCache.contains(m_deviceActiveProfileIndex)) {
+    const auto &p = m_profileCache[m_deviceActiveProfileIndex];
+
+    QByteArray nameBytes(p.hostname, sizeof(p.hostname));
+    int nullPos = nameBytes.indexOf('\0');
+    if (nullPos >= 0)
+      nameBytes.truncate(nullPos);
+    config.setValue(Settings::Bridge::ActiveProfileHostname, QString::fromUtf8(nameBytes));
+
+    QString orientation = (p.rotation == 0) ? QStringLiteral("portrait") : QStringLiteral("landscape");
+    config.setValue(Settings::Bridge::ActiveProfileOrientation, orientation);
+  }
 
   config.setValue(Settings::Bridge::BluetoothKeepAlive, m_checkBluetoothKeepAlive->isChecked());
 
