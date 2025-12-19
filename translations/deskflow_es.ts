@@ -616,6 +616,14 @@ Nombres válidos:
         <source>Firmware</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Bridge Clients Active</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Please disconnect all bridge clients before using the Firmware tool.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NewScreenWidget</name>

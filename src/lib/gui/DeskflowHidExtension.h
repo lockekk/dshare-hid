@@ -33,6 +33,7 @@ public:
   void setup();
   void shutdown();
   void openEsp32HidTools();
+  bool hasActiveBridgeClients() const;
 
 public Q_SLOTS:
   void bridgeClientDeletedFromServerConfig(const QString &configPath);

@@ -614,6 +614,12 @@ void MainWindow::resetCore()
 void MainWindow::openEsp32HidTools()
 {
   if (m_deskflowHidExtension) {
+    if (m_deskflowHidExtension->hasActiveBridgeClients()) {
+      QMessageBox::warning(
+          this, tr("Bridge Clients Active"), tr("Please disconnect all bridge clients before using the Firmware tool.")
+      );
+      return;
+    }
     m_deskflowHidExtension->openEsp32HidTools();
   }
 }

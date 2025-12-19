@@ -1024,3 +1024,8 @@ void DeskflowHidExtension::applySerialGroupLockState(const QString &serialNumber
     widget->setGroupLocked(true, activeScreenName.isEmpty() ? tr("Locked") : tr("Locked by %1").arg(activeScreenName));
   }
 }
+
+bool DeskflowHidExtension::hasActiveBridgeClients() const
+{
+  return !m_bridgeClientProcesses.isEmpty();
+}
