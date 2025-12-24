@@ -286,7 +286,25 @@ QMap<QString, QString> UsbDeviceHelper::getConnectedDevices(bool queryDevice)
 
     const QString devicePath = QStringLiteral("\\\\.\\%1").arg(portName);
     QString serialNumber;
-    if (queryDevice) {
+
+    // optimization: try to read serial number from device instance ID (registry)
+    // format: USB\VID_v&PID_p\Serial_Number
+    wchar_t instanceId[MAX_PATH] = {0};
+    if (SetupDiGetDeviceInstanceIdW(
+            deviceInfoSet, &devInfoData, instanceId, sizeof(instanceId) / sizeof(wchar_t), nullptr
+        )) {
+      QString instanceIdStr = QString::fromWCharArray(instanceId);
+      int lastSlash = instanceIdStr.lastIndexOf('\\');
+      if (lastSlash != -1) {
+        QString possibleSerial = instanceIdStr.mid(lastSlash + 1);
+        if (!possibleSerial.isEmpty() && !possibleSerial.contains('&')) {
+          serialNumber = possibleSerial;
+          qDebug() << "Read serial number from registry for" << devicePath << ":" << serialNumber;
+        }
+      }
+    }
+
+    if (queryDevice && serialNumber.isEmpty()) {
       serialNumber = readSerialNumber(devicePath);
     }
     if (serialNumber.isEmpty()) {

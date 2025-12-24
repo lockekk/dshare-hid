@@ -270,14 +270,23 @@ bool ClientApp::startClient()
     return true;
   } catch (ScreenUnavailableException &e) {
     LOG_WARN("secondary screen unavailable: %s", e.what());
+    if (m_clientScreen == clientScreen) {
+      m_clientScreen = nullptr;
+    }
     closeClientScreen(clientScreen);
     retryTime = e.getRetryTime();
   } catch (ScreenOpenFailureException &e) {
     LOG_CRIT("failed to start client: %s", e.what());
+    if (m_clientScreen == clientScreen) {
+      m_clientScreen = nullptr;
+    }
     closeClientScreen(clientScreen);
     return false;
   } catch (BaseException &e) {
     LOG_CRIT("failed to start client: %s", e.what());
+    if (m_clientScreen == clientScreen) {
+      m_clientScreen = nullptr;
+    }
     closeClientScreen(clientScreen);
     return false;
   }
@@ -313,8 +322,12 @@ int ClientApp::mainLoop()
   Thread thread(new TMethodJob<ClientApp>(this, &ClientApp::runEventsLoop, nullptr));
 
   // wait until carbon loop is ready
-  OSXScreen *screen = dynamic_cast<OSXScreen *>(m_clientScreen->getPlatformScreen());
-  screen->waitForCarbonLoop();
+  if (m_clientScreen) {
+    OSXScreen *screen = dynamic_cast<OSXScreen *>(m_clientScreen->getPlatformScreen());
+    if (screen) {
+      screen->waitForCarbonLoop();
+    }
+  }
 
   runCocoaApp();
 #else

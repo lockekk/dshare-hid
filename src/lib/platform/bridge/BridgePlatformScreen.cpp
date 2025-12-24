@@ -21,8 +21,8 @@
 namespace deskflow::bridge {
 
 namespace {
-constexpr int kMinMouseDelta = -127;
-constexpr int kMaxMouseDelta = 127;
+constexpr int kMinMouseDelta = -32767;
+constexpr int kMaxMouseDelta = 32767;
 constexpr std::chrono::seconds kKeepAliveInterval(60);
 constexpr double kKeepAliveIntervalSeconds = static_cast<double>(kKeepAliveInterval.count());
 
@@ -298,9 +298,8 @@ void BridgePlatformScreen::fakeKeyDown(KeyID id, KeyModifierMask mask, KeyButton
   }
 }
 
-bool BridgePlatformScreen::fakeKeyRepeat(
-    KeyID id, KeyModifierMask mask, int32_t count, KeyButton button, const std::string &
-)
+bool BridgePlatformScreen::
+    fakeKeyRepeat(KeyID id, KeyModifierMask mask, int32_t count, KeyButton button, const std::string &)
 {
   LOG_DEBUG("BridgeScreen: key repeat id=0x%04x button=%d count=%d", id, button, count);
 
@@ -695,26 +694,47 @@ uint8_t BridgePlatformScreen::modifierBitForKey(KeyID id) const
 
 uint8_t BridgePlatformScreen::modifierBitForButton(KeyButton button) const
 {
+#if defined(__APPLE__)
   switch (button) {
-  case 50:
+  case 57: // macOS Shift_L (56 + 1)
     return 0x02;
-  case 62:
+  case 61: // macOS Shift_R (60 + 1)
     return 0x20;
-  case 37:
+  case 60: // macOS Control_L (59 + 1)
     return 0x01;
-  case 105:
+  case 63: // macOS Control_R (62 + 1)
     return 0x10;
-  case 64:
+  case 59: // macOS Alt_L (58 + 1)
     return 0x04;
-  case 108:
+  case 62: // macOS Alt_R (61 + 1)
     return 0x40;
-  case 133:
+  case 56: // macOS Command (55 + 1)
     return 0x08;
-  case 134:
+  default:
+    return 0;
+  }
+#else
+  switch (button) {
+  case 50: // Linux Shift_L
+    return 0x02;
+  case 62: // Linux Shift_R
+    return 0x20;
+  case 37: // Linux Control_L
+    return 0x01;
+  case 105: // Linux Control_R
+    return 0x10;
+  case 64: // Linux Alt_L
+    return 0x04;
+  case 108: // Linux Alt_R
+    return 0x40;
+  case 133: // Linux Super_L
+    return 0x08;
+  case 134: // Linux Super_R
     return 0x80;
   default:
     return 0;
   }
+#endif
 }
 
 uint16_t BridgePlatformScreen::convertMediaKeyToConsumerControl(KeyID id) const
@@ -776,8 +796,8 @@ uint8_t BridgePlatformScreen::convertKeyID(KeyID id) const
     return static_cast<uint8_t>(0x1E + (id - '1'));
   if (id == '0')
     return 0x27;
-#if defined(Q_OS_WIN)
-  // Windows servers report ASCII symbols for both shifted/unshifted punctuation.
+
+  // Map ASCII symbols for shifted/unshifted punctuation.
   // Map them explicitly to the underlying HID key so Shift works transparently.
   switch (id) {
   case '-':
@@ -836,7 +856,6 @@ uint8_t BridgePlatformScreen::convertKeyID(KeyID id) const
   default:
     break;
   }
-#endif
 
   switch (id) {
   case 0xFFE5:
@@ -945,162 +964,314 @@ uint8_t BridgePlatformScreen::convertKeyID(KeyID id) const
 
 uint8_t BridgePlatformScreen::convertKeyButton(KeyButton button) const
 {
+#if defined(__APPLE__)
   switch (button) {
-  case 10:
-  case 90:
+  case 19: // macOS '1'
     return convertKeyID('1');
-  case 11:
+  case 20: // macOS '2'
     return convertKeyID('2');
-  case 12:
+  case 21: // macOS '3'
     return convertKeyID('3');
-  case 13:
+  case 22: // macOS '4'
     return convertKeyID('4');
-  case 14:
+  case 24: // macOS '5'
     return convertKeyID('5');
-  case 15:
+  case 23: // macOS '6'
     return convertKeyID('6');
-  case 16:
+  case 27: // macOS '7'
     return convertKeyID('7');
-  case 17:
+  case 29: // macOS '8'
     return convertKeyID('8');
-  case 18:
+  case 26: // macOS '9'
     return convertKeyID('9');
-  case 19:
+  case 30: // macOS '0'
     return convertKeyID('0');
-  case 20:
+  case 28: // macOS '-'
     return 0x2d;
-  case 21:
+  case 25: // macOS '='
     return 0x2e;
-  case 22:
+  case 52: // macOS Backspace
     return 0x2a;
-  case 23:
+  case 49: // macOS Tab
     return 0x2b;
-  case 24:
+  case 13: // macOS 'q'
     return convertKeyID('q');
-  case 25:
+  case 14: // macOS 'w'
     return convertKeyID('w');
-  case 26:
+  case 15: // macOS 'e'
     return convertKeyID('e');
-  case 27:
+  case 16: // macOS 'r'
     return convertKeyID('r');
-  case 28:
+  case 18: // macOS 't'
     return convertKeyID('t');
-  case 29:
+  case 17: // macOS 'y'
     return convertKeyID('y');
-  case 30:
+  case 33: // macOS 'u'
     return convertKeyID('u');
-  case 31:
+  case 35: // macOS 'i'
     return convertKeyID('i');
-  case 32:
+  case 32: // macOS 'o', Linux 'o' (overlap)
     return convertKeyID('o');
-  case 33:
+  case 36: // macOS 'p'
     return convertKeyID('p');
-  case 34:
+  case 34: // macOS '[', Linux '[' (overlap)
     return 0x2f;
-  case 35:
+  case 31: // macOS ']'
     return 0x30;
-  case 36:
+  case 37: // macOS Enter
     return 0x28;
-  case 38:
+  case 1: // macOS 'a'
     return convertKeyID('a');
-  case 39:
+  case 2: // macOS 's'
     return convertKeyID('s');
-  case 40:
+  case 3: // macOS 'd'
     return convertKeyID('d');
-  case 41:
+  case 4: // macOS 'f'
     return convertKeyID('f');
-  case 42:
+  case 6: // macOS 'g'
     return convertKeyID('g');
-  case 43:
+  case 5: // macOS 'h'
     return convertKeyID('h');
-  case 44:
+  case 39: // macOS 'j'
     return convertKeyID('j');
-  case 45:
+  case 41: // macOS 'k'
     return convertKeyID('k');
-  case 46:
+  case 38: // macOS 'l'
     return convertKeyID('l');
-  case 47:
+  case 42: // macOS ';'
     return 0x33;
-  case 48:
+  case 40: // macOS '\''
     return 0x34;
-  case 49:
+  case 51: // macOS '`'
     return 0x35;
-  case 51:
+  case 43: // macOS '\'
     return 0x31;
-  case 52:
+  case 7: // macOS 'z'
     return convertKeyID('z');
-  case 53:
+  case 8: // macOS 'x'
     return convertKeyID('x');
-  case 54:
+  case 9: // macOS 'c'
     return convertKeyID('c');
-  case 55:
+  case 10: // macOS 'v'
     return convertKeyID('v');
-  case 56:
+  case 12: // macOS 'b'
     return convertKeyID('b');
-  case 57:
+  case 46: // macOS 'n'
     return convertKeyID('n');
-  case 58:
+  case 47: // macOS 'm'
     return convertKeyID('m');
-  case 59:
+  case 44: // macOS ','
     return 0x36;
-  case 60:
+  case 48: // macOS '.'
     return 0x37;
-  case 61:
+  case 45: // macOS '/'
     return 0x38;
-  case 65:
+  case 50: // macOS Space
     return 0x2c;
-  case 66:
+  case 58: // macOS CapsLock
     return 0x39;
-  case 67:
+  case 123: // macOS F1
     return 0x3A;
-  case 68:
+  case 121: // macOS F2
     return 0x3B;
-  case 69:
+  case 100: // macOS F3
     return 0x3C;
-  case 70:
+  case 119: // macOS F4
     return 0x3D;
-  case 71:
+  case 97: // macOS F5
     return 0x3E;
-  case 72:
+  case 98: // macOS F6
     return 0x3F;
-  case 73:
+  case 99: // macOS F7
     return 0x40;
-  case 74:
+  case 101: // macOS F8
     return 0x41;
-  case 75:
+  case 102: // macOS F9
     return 0x42;
-  case 76:
+  case 110: // macOS F10
     return 0x43;
-  case 77:
+  case 72: // macOS Numlock (Clear)
     return 0x53;
-  case 78:
-    return 0x47;
-  case 107:
-    return 0x46;
-  case 111:
+  case 127: // macOS Up
     return 0x52;
-  case 113:
+  case 124: // macOS Left
     return 0x50;
-  case 114:
+  case 125: // macOS Right
     return 0x4F;
-  case 116:
+  case 126: // macOS Down
     return 0x51;
-  case 118:
+  case 115: // macOS Help
     return 0x49;
-  case 119:
+  case 118: // macOS Delete
     return 0x4C;
-  case 127:
-    return 0x48;
-  case 95:
+  case 104: // macOS F11
     return 0x44;
-  case 96:
+  case 112: // macOS F12
     return 0x45;
-  case 135:
+  case 111: // macOS F13 (Help/Insert on some, or just F13)
     return 0x65;
   default:
     LOG_DEBUG2("BridgeScreen: unmapped button code %u", button);
     return 0;
   }
+#else
+  switch (button) {
+  case 10: // Linux '1'
+  case 90: // Linux '1' (alt?)
+    return convertKeyID('1');
+  case 11: // Linux '2'
+    return convertKeyID('2');
+  case 12: // Linux '3'
+    return convertKeyID('3');
+  case 13: // Linux '4'
+    return convertKeyID('4');
+  case 14: // Linux '5'
+    return convertKeyID('5');
+  case 15: // Linux '6'
+    return convertKeyID('6');
+  case 16: // Linux '7'
+    return convertKeyID('7');
+  case 17: // Linux '8'
+    return convertKeyID('8');
+  case 18: // Linux '9'
+    return convertKeyID('9');
+  case 19: // Linux '0'
+    return convertKeyID('0');
+  case 20: // Linux '-'
+    return 0x2d;
+  case 21: // Linux '='
+    return 0x2e;
+  case 22: // Linux Backspace
+    return 0x2a;
+  case 23: // Linux Tab
+    return 0x2b;
+  case 24: // Linux 'q'
+    return convertKeyID('q');
+  case 25: // Linux 'w'
+    return convertKeyID('w');
+  case 26: // Linux 'e'
+    return convertKeyID('e');
+  case 27: // Linux 'r'
+    return convertKeyID('r');
+  case 28: // Linux 't'
+    return convertKeyID('t');
+  case 29: // Linux 'y'
+    return convertKeyID('y');
+  case 30: // Linux 'u'
+    return convertKeyID('u');
+  case 31: // Linux 'i'
+    return convertKeyID('i');
+  case 32: // Linux 'o'
+    return convertKeyID('o');
+  case 33: // Linux 'p'
+    return convertKeyID('p');
+  case 34: // Linux '['
+    return 0x2f;
+  case 35: // Linux ']'
+    return 0x30;
+  case 36: // Linux Enter
+    return 0x28;
+  case 38: // Linux 'a'
+    return convertKeyID('a');
+  case 39: // Linux 's'
+    return convertKeyID('s');
+  case 40: // Linux 'd'
+    return convertKeyID('d');
+  case 41: // Linux 'f'
+    return convertKeyID('f');
+  case 42: // Linux 'g'
+    return convertKeyID('g');
+  case 43: // Linux 'h'
+    return convertKeyID('h');
+  case 44: // Linux 'j'
+    return convertKeyID('j');
+  case 45: // Linux 'k'
+    return convertKeyID('k');
+  case 46: // Linux 'l'
+    return convertKeyID('l');
+  case 47: // Linux ';'
+    return 0x33;
+  case 48: // Linux '\''
+    return 0x34;
+  case 49: // Linux '`'
+    return 0x35;
+  case 51: // Linux '\'
+    return 0x31;
+  case 52: // Linux 'z'
+    return convertKeyID('z');
+  case 53: // Linux 'x'
+    return convertKeyID('x');
+  case 54: // Linux 'c'
+    return convertKeyID('c');
+  case 55: // Linux 'v'
+    return convertKeyID('v');
+  case 56: // Linux 'b'
+    return convertKeyID('b');
+  case 57: // Linux 'n'
+    return convertKeyID('n');
+  case 58: // Linux 'm'
+    return convertKeyID('m');
+  case 59: // Linux ','
+    return 0x36;
+  case 60: // Linux '.'
+    return 0x37;
+  case 61: // Linux '/'
+    return 0x38;
+  case 65: // Linux Space
+    return 0x2c;
+  case 66: // Linux CapsLock
+    return 0x39;
+  case 67: // Linux F1
+    return 0x3A;
+  case 68: // Linux F2
+    return 0x3B;
+  case 69: // Linux F3
+    return 0x3C;
+  case 70: // Linux F4
+    return 0x3D;
+  case 71: // Linux F5
+    return 0x3E;
+  case 72: // Linux F6
+    return 0x3F;
+  case 73: // Linux F7
+    return 0x40;
+  case 74: // Linux F8
+    return 0x41;
+  case 75: // Linux F9
+    return 0x42;
+  case 76: // Linux F10
+    return 0x43;
+  case 77: // Linux NumLock
+    return 0x53;
+  case 78: // Linux ScrollLock
+    return 0x47;
+  case 107: // Linux PrintScreen
+    return 0x46;
+  case 111: // Linux Up
+    return 0x52;
+  case 113: // Linux Left
+    return 0x50;
+  case 114: // Linux Right
+    return 0x4F;
+  case 116: // Linux Down
+    return 0x51;
+  case 118: // Linux Insert
+    return 0x49;
+  case 119: // Linux Delete
+    return 0x4C;
+  case 127: // Linux Pause
+    return 0x48;
+  case 95: // Linux F11
+    return 0x44;
+  case 96: // Linux F12
+    return 0x45;
+  case 135: // Linux Menu
+    return 0x65;
+  default:
+    LOG_DEBUG2("BridgeScreen: unmapped button code %u", button);
+    return 0;
+  }
+#endif
 }
 
 uint8_t BridgePlatformScreen::convertKey(KeyID id, KeyButton button) const

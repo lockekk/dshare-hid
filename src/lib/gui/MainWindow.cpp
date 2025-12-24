@@ -79,10 +79,10 @@
 
 using namespace deskflow::gui;
 
-void MainWindow::bridgeClientDeletedFromServerConfig(const QString &configPath)
+void MainWindow::deleteBridgeClientConfig(const QString &configPath)
 {
   if (m_deskflowHidExtension) {
-    m_deskflowHidExtension->bridgeClientDeletedFromServerConfig(configPath);
+    m_deskflowHidExtension->deleteBridgeClientConfig(configPath);
   }
 }
 
@@ -130,8 +130,11 @@ MainWindow::MainWindow()
       m_actionSettings{new QAction(this)},
       m_actionStartCore{new QAction(this)},
       m_actionRestartCore{new QAction(this)},
-      m_actionStopCore{new QAction(this)},
+      m_actionStopCore{new QAction(this)}
+#ifdef DESKFLOW_ENABLE_ESP32_HID_TOOLS
+      ,
       m_actionEsp32HidTools{new QAction(this)}
+#endif
 {
   ui->setupUi(this);
 
@@ -383,7 +386,9 @@ void MainWindow::connectSlots()
   connect(m_actionStartCore, &QAction::triggered, this, &MainWindow::startCore);
   connect(m_actionRestartCore, &QAction::triggered, this, &MainWindow::resetCore);
   connect(m_actionStopCore, &QAction::triggered, this, &MainWindow::stopCore);
+#ifdef DESKFLOW_ENABLE_ESP32_HID_TOOLS
   connect(m_actionEsp32HidTools, &QAction::triggered, this, &MainWindow::openEsp32HidTools);
+#endif
 
   connect(&m_versionChecker, &VersionChecker::updateFound, this, &MainWindow::versionCheckerUpdateFound);
 
@@ -743,8 +748,7 @@ void MainWindow::updateNetworkInfo()
     return;
   }
 
-  ui->lblIpAddresses->setText(
-      tr("Suggested IP: %1").arg(suggestedAddress.isEmpty() ? ipList.first() : suggestedAddress)
+  ui->lblIpAddresses->setText(tr("Suggested IP: %1").arg(suggestedAddress.isEmpty() ? ipList.first() : suggestedAddress)
   );
 
   if (auto toolTipBase = tr("<p>If connecting via the hostname fails, try %1</p>"); ipList.count() < 2) {
@@ -810,8 +814,10 @@ void MainWindow::createMenuBar()
   m_menuFile->addAction(m_actionRestartCore);
   m_menuFile->addAction(m_actionStopCore);
   m_menuFile->addSeparator();
+#ifdef DESKFLOW_ENABLE_ESP32_HID_TOOLS
   m_menuFile->addAction(m_actionEsp32HidTools);
   m_menuFile->addSeparator();
+#endif
   m_menuFile->addAction(m_actionQuit);
 
   m_menuEdit->addAction(m_actionSettings);
@@ -1193,7 +1199,9 @@ void MainWindow::updateText()
   m_actionStartCore->setText(tr("&Start"));
   m_actionRestartCore->setText(tr("Rest&art"));
   m_actionStopCore->setText(tr("S&top"));
+#ifdef DESKFLOW_ENABLE_ESP32_HID_TOOLS
   m_actionEsp32HidTools->setText(tr("Firmware"));
+#endif
   //: %1 will be the replaced with the appname
   m_actionAbout->setText(tr("About %1...").arg(kAppName));
 
@@ -1288,12 +1296,11 @@ void MainWindow::setHostName()
     if (existingScreen) {
       body = tr("Screen name already exists");
     } else {
-      body =
-          tr("The name you have chosen is invalid.\n\n"
-             "Valid names:\n"
-             "• Use letters and numbers\n"
-             "• May also use _ or -\n"
-             "• Are between 1 and 255 characters");
+      body = tr("The name you have chosen is invalid.\n\n"
+                "Valid names:\n"
+                "• Use letters and numbers\n"
+                "• May also use _ or -\n"
+                "• Are between 1 and 255 characters");
     }
     QMessageBox::information(this, title, body);
     return;

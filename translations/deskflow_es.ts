@@ -162,10 +162,6 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Another bridge client profile for this device is already connected.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Starting bridge client: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1721,6 +1717,70 @@ Duplicate: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>User Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Email:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Request Options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Free trial for 7 days</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>I am ok with free trial and want to buy full license</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Skip trial and buy Full licensed version</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Already licensed, but want bump profiles</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device Secret:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Serial Number:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Total Profiles:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Generate Request File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy content</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Email</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Log Output:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2065,27 +2125,19 @@ Duplicate: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Device State Refreshed. Serial: %1, Mode: Factory</source>
+        <source>Device State Refreshed. Serial: %1, Mode: Factory, Secret: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Device State Refreshed. Serial: %1, State: %2</source>
+        <source>Device State Refreshed. Serial: %1, State: %2, Profiles: %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>State: Error</source>
+        <source>Erased Device Detected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Failed to refresh state: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Serial number copied to clipboard.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Please enter an activation key.</source>
+        <source>No valid firmware detected on the device. Please go to the &apos;Factory Mode&apos; tab and flash &apos;Online&apos; first.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2102,6 +2154,105 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Activation failed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input Required</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Please enter your name and email address.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Serial number missing. Please check device connection.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Selection Required</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Please select one of the order options.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Missing Secret</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device Secret (PDEK) is required for this option. Please ensure the device is in Factory Mode and the secret has been fetched correctly.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save Request File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Text Files (*.txt)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Request file generated: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Request file generated successfully!
+
+Please send this file or its content (with payment if applicable) to deskflow.hid@gmail.com.
+Your firmware will be back in 24 hours.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to save request file: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to save request file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Order content copied to clipboard.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copied</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Order content successfully copied to clipboard.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Email client opened.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to open email client.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to open your default email client.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>State: Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to refresh state: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Serial number copied to clipboard.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Please enter an activation key.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

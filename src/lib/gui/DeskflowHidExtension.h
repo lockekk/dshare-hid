@@ -35,8 +35,11 @@ public:
   void openEsp32HidTools();
   bool hasActiveBridgeClients() const;
 
+  void pauseUsbMonitoring();
+  void resumeUsbMonitoring();
+
 public Q_SLOTS:
-  void bridgeClientDeletedFromServerConfig(const QString &configPath);
+  void deleteBridgeClientConfig(const QString &configPath);
 
 private Q_SLOTS:
   void usbDeviceConnected(const deskflow::gui::UsbDeviceInfo &device);

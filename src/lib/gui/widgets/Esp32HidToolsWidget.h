@@ -11,6 +11,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QRadioButton>
 #include <QTabWidget>
 #include <QTextEdit>
 #include <cstdint>
@@ -38,7 +39,11 @@ private Q_SLOTS:
   void onCopyInfo();
   void onCopySerialClicked();
   void onActivateClicked();
+  void onPortChanged(int index);
   void onTabChanged(int index);
+  void onGenerateOrder();
+  void onCopyOrderContent();
+  void onEmailOrder();
 
 private:
   void refreshDeviceState();
@@ -75,6 +80,20 @@ private:
   QLineEdit *m_lineActivationKey;
   QPushButton *m_btnActivate;
 
+  // Order Tab
+  QLineEdit *m_orderName;
+  QLineEdit *m_orderEmail;
+  QRadioButton *m_orderOption1;
+  QRadioButton *m_orderOption2;
+  QRadioButton *m_orderOption3;
+  QRadioButton *m_orderOption4;
+  QLineEdit *m_orderDeviceSecret;
+  QLabel *m_orderSerialLabel;
+  QComboBox *m_orderTotalProfiles;
+  QPushButton *m_btnGenerateOrder;
+  QPushButton *m_btnCopyOrder;
+  QPushButton *m_btnEmailOrder;
+
   // Common
   QTextEdit *m_logOutput;
 
@@ -88,6 +107,7 @@ private:
   template <typename Function> void runBackgroundTask(Function func);
   std::vector<uint8_t> readFile(const QString &path);
   void flashFirmware(const std::vector<uint8_t> &data);
+  QString composeOrderContent(QString &outPrefix, int &outOption);
   void reject() override;
 };
 

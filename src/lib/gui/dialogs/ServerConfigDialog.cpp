@@ -485,13 +485,12 @@ void ServerConfigDialog::onScreenDeleted(const QString &screenName)
 
   // Ask user if they want to delete the bridge client configuration as well
   QMessageBox::StandardButton reply = QMessageBox::question(
-      this,
-      tr("Delete Bridge Client Configuration"),
+      this, tr("Delete Bridge Client Configuration"),
       tr("The screen '%1' is a bridge client.\n\nDo you want to delete its configuration file as well?\n\n"
          "If you choose 'Yes', the bridge client widget will be removed from the main window.\n"
-         "If you choose 'No', the bridge client configuration will be kept and can still be used.").arg(screenName),
-      QMessageBox::Yes | QMessageBox::No,
-      QMessageBox::No
+         "If you choose 'No', the bridge client configuration will be kept and can still be used.")
+          .arg(screenName),
+      QMessageBox::Yes | QMessageBox::No, QMessageBox::No
   );
 
   if (reply != QMessageBox::Yes) {
@@ -499,32 +498,26 @@ void ServerConfigDialog::onScreenDeleted(const QString &screenName)
     return;
   }
 
-  // Delete the bridge client configuration
-  if (BridgeClientConfigManager::deleteConfig(configPath)) {
-    qInfo() << "Successfully deleted bridge client configuration for:" << screenName;
+  // Delegate deletion to MainWindow so it can stop the process first
+  QWidget *mainWindow = parentWidget();
+  while (mainWindow && !qobject_cast<QMainWindow *>(mainWindow)) {
+    mainWindow = mainWindow->parentWidget();
+  }
 
-    // Emit a signal to MainWindow to remove the widget
-    // We'll use a custom event or find the MainWindow parent
-    QWidget *mainWindow = parentWidget();
-    while (mainWindow && !qobject_cast<QMainWindow*>(mainWindow)) {
-      mainWindow = mainWindow->parentWidget();
-    }
-
-    if (mainWindow) {
-      // Use QMetaObject to invoke the deletion handler on MainWindow
-      QMetaObject::invokeMethod(
-          mainWindow,
-          "bridgeClientDeletedFromServerConfig",
-          Qt::QueuedConnection,
-          Q_ARG(QString, configPath)
+  if (mainWindow) {
+    qInfo() << "Delegating bridge client config deletion to MainWindow:" << screenName;
+    // Use QMetaObject to invoke the deletion handler on MainWindow
+    // This will stop the process, remove the widget, and THEN delete the file.
+    QMetaObject::invokeMethod(mainWindow, "deleteBridgeClientConfig", Qt::QueuedConnection, Q_ARG(QString, configPath));
+  } else {
+    qWarning() << "Could not find MainWindow to delegate deletion. Fallback to direct deletion (risky).";
+    if (BridgeClientConfigManager::deleteConfig(configPath)) {
+      qInfo() << "Successfully deleted bridge client configuration via fallback:" << screenName;
+    } else {
+      QMessageBox::warning(
+          this, tr("Deletion Failed"), tr("Failed to delete bridge client configuration file for '%1'.").arg(screenName)
       );
     }
-  } else {
-    QMessageBox::warning(
-        this,
-        tr("Deletion Failed"),
-        tr("Failed to delete bridge client configuration file for '%1'.").arg(screenName)
-    );
   }
 }
 

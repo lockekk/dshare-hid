@@ -19,6 +19,10 @@
 #include "deskflow/ServerApp.h"
 #include "platform/bridge/CdcTransport.h"
 
+#ifndef _WIN32
+#include <signal.h>
+#endif
+
 #if SYSAPI_WIN32
 #include "arch/win32/ArchMiscWindows.h"
 #include <QCoreApplication>
@@ -45,6 +49,11 @@ int main(int argc, char **argv)
 
   Arch arch;
   arch.init();
+
+#ifndef _WIN32
+  // Prevent process termination on broken pipe (e.g. client disconnects)
+  signal(SIGPIPE, SIG_IGN);
+#endif
 
   Log log;
 

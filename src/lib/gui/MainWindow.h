@@ -143,7 +143,7 @@ private:
   void applyConfig();
 
 public:
-  Q_SLOT void bridgeClientDeletedFromServerConfig(const QString &configPath);
+  Q_SLOT void deleteBridgeClientConfig(const QString &configPath);
 
 private:
   void setTrayIcon();
@@ -238,5 +238,7 @@ private:
   QAction *m_actionStartCore = nullptr;
   QAction *m_actionRestartCore = nullptr;
   QAction *m_actionStopCore = nullptr;
+#ifdef DESKFLOW_ENABLE_ESP32_HID_TOOLS
   QAction *m_actionEsp32HidTools = nullptr;
+#endif
 };
