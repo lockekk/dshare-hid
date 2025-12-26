@@ -32,9 +32,9 @@ Run these commands from the root of the repository.
 
 2.  **Create Bundle**
     Package the build into a single `.flatpak` file.
-    *   **App ID**: `org.fs34a.deskflow-hid`
+    *   **App ID**: `org.deskflow-hid.deskflow-hid`
     ```bash
-    flatpak build-bundle repo deskflow-1.25.0-linux-x86_64.flatpak org.fs34a.deskflow-hid
+    flatpak build-bundle repo deskflow-1.25.0-linux-x86_64.flatpak org.deskflow-hid.deskflow-hid
     ```
 
 ### Installing & Running
@@ -46,14 +46,14 @@ Run these commands from the root of the repository.
 
 2.  **Run**
     ```bash
-    flatpak run org.fs34a.deskflow-hid
+    flatpak run org.deskflow-hid.deskflow-hid
     ```
 
 ### Uninstalling & Reinstalling
 
 *   **Uninstall**
     ```bash
-    flatpak uninstall --user org.fs34a.deskflow-hid
+    flatpak uninstall --user org.deskflow-hid.deskflow-hid
     ```
 
 *   **Reinstall (Update)**

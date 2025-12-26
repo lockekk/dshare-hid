@@ -556,7 +556,7 @@ void Esp32HidToolsWidget::onDownloadAndFlashFactory()
 
   auto task = [this, port]() {
     // 1. Download
-    GithubDownloader downloader("fs34a", "deskflow-hid-release");
+    GithubDownloader downloader("deskflow-hid", "deskflow-hid-release");
     QMetaObject::invokeMethod(this, [this]() { log(tr("Downloading flash_payloads.fzip...")); });
 
     // Attempt download (in-memory)
@@ -706,8 +706,8 @@ void Esp32HidToolsWidget::onCheckUpgrade()
   std::string port = portName.toStdString();
 
   auto task = [this, port]() {
-    // Check for "fs34a" / "deskflow-hid-release"
-    GithubDownloader downloader("fs34a", "deskflow-hid-release");
+    // Check for "deskflow-hid" / "deskflow-hid-release"
+    GithubDownloader downloader("deskflow-hid", "deskflow-hid-release");
     auto latestTag = downloader.get_latest_tag();
     if (latestTag.empty()) {
       QMetaObject::invokeMethod(this, [this]() {
@@ -868,7 +868,7 @@ void Esp32HidToolsWidget::onFlashOnline()
   // We can reuse runBackgroundTask for download + flash chain.
 
   auto task = [this]() {
-    GithubDownloader downloader("fs34a", "deskflow-hid-release");
+    GithubDownloader downloader("deskflow-hid", "deskflow-hid-release");
     auto dl = downloader.download_first_asset_by_suffix_to_memory(".uzip");
 
     QMetaObject::invokeMethod(this, [this, dl]() {
