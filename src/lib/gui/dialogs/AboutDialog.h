@@ -25,6 +25,13 @@ private:
   std::unique_ptr<Ui::AboutDialog> ui;
   void copyVersionText() const;
 
+  inline static const QString kSupportEmail = QStringLiteral("deskflow.hid@gmail.com");
+
+  inline static const auto s_hidDevs = QStringList{
+      // Deskflow-HID maintainer
+      QStringLiteral("Locke Huang"),
+  };
+
   inline static const auto s_awesomeDevs = QStringList{
       // Chris is the ultimate creator, and the one who started it all in 2001.
       QStringLiteral("Chris Schoeneman"),
@@ -70,8 +77,5 @@ private:
 
       // Deskflow maintainers
       QStringLiteral("Chris Rizzitello"),
-
-      // Deskflow-HID maintainer
-      QStringLiteral("Locke Huang"),
   };
 };
