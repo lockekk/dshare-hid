@@ -1789,6 +1789,10 @@ Duplicate: %1</source>
         <translation>邮箱：</translation>
     </message>
     <message>
+        <source>Flash failed, %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Free trial for 7 days</source>
         <translation>7 天免费试用</translation>
     </message>
@@ -1978,7 +1982,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Factory Flash Failed! Error code: %1</source>
-        <translation>工厂固件烧录失败！错误代码：%1</translation>
+        <translation type="vanished">工厂固件烧录失败！错误代码：%1</translation>
     </message>
     <message>
         <source>Starting Download &amp; Flash process...</source>
@@ -2030,7 +2034,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Flash Failed! Error code: %1</source>
-        <translation>烧录失败！错误代码：%1</translation>
+        <translation type="vanished">烧录失败！错误代码：%1</translation>
     </message>
     <message>
         <source>Paypal Seller: &lt;b&gt;&lt;font color=&apos;red&apos;&gt;%1&lt;/font&gt;&lt;/b&gt;</source>
@@ -2042,7 +2046,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Flashing failed. Error code: %1</source>
-        <translation>烧录失败。错误代码：%1</translation>
+        <translation type="vanished">烧录失败。错误代码：%1</translation>
     </message>
     <message>
         <source>This process permanently converts your ESP32 into a Deskflow-HID device. This is irreversible and blocks non-Deskflow firmware.
@@ -2222,7 +2226,7 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Flash failed. Error code: %1</source>
-        <translation>烧录失败。错误代码：%1</translation>
+        <translation type="vanished">烧录失败。错误代码：%1</translation>
     </message>
     <message>
         <source>Flash failed: %1</source>

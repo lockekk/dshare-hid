@@ -1974,7 +1974,7 @@ Duplicate: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Factory Flash Failed! Error code: %1</source>
+        <source>Flash failed, %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2026,19 +2026,11 @@ Duplicate: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Flash Failed! Error code: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Paypal Seller: &lt;b&gt;&lt;font color=&apos;red&apos;&gt;%1&lt;/font&gt;&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>PayPal Transaction ID:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Flashing failed. Error code: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2211,10 +2203,6 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Firmware upgrade successful.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Flash failed. Error code: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

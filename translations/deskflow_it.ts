@@ -1789,6 +1789,10 @@ Duplicato: %1</translation>
         <translation>Email:</translation>
     </message>
     <message>
+        <source>Flash failed, %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Free trial for 7 days</source>
         <translation>Prova gratuita per 7 giorni</translation>
     </message>
@@ -1978,7 +1982,7 @@ Duplicato: %1</translation>
     </message>
     <message>
         <source>Factory Flash Failed! Error code: %1</source>
-        <translation>Flash Fabbrica Fallito! Codice errore: %1</translation>
+        <translation type="vanished">Flash Fabbrica Fallito! Codice errore: %1</translation>
     </message>
     <message>
         <source>Starting Download &amp; Flash process...</source>
@@ -2030,7 +2034,7 @@ Duplicato: %1</translation>
     </message>
     <message>
         <source>Flash Failed! Error code: %1</source>
-        <translation>Flash Fallito! Codice errore: %1</translation>
+        <translation type="vanished">Flash Fallito! Codice errore: %1</translation>
     </message>
     <message>
         <source>Paypal Seller: &lt;b&gt;&lt;font color=&apos;red&apos;&gt;%1&lt;/font&gt;&lt;/b&gt;</source>
@@ -2042,7 +2046,7 @@ Duplicato: %1</translation>
     </message>
     <message>
         <source>Flashing failed. Error code: %1</source>
-        <translation>Flash fallito. Codice errore: %1</translation>
+        <translation type="vanished">Flash fallito. Codice errore: %1</translation>
     </message>
     <message>
         <source>This process permanently converts your ESP32 into a Deskflow-HID device. This is irreversible and blocks non-Deskflow firmware.
@@ -2220,7 +2224,7 @@ Prossimo passo: Flashare firmware per dispositivo. Vai alla scheda &apos;Ordina&
     </message>
     <message>
         <source>Flash failed. Error code: %1</source>
-        <translation>Flash fallito. Codice errore: %1</translation>
+        <translation type="vanished">Flash fallito. Codice errore: %1</translation>
     </message>
     <message>
         <source>Flash failed: %1</source>

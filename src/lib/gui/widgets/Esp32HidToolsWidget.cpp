@@ -595,7 +595,7 @@ void Esp32HidToolsWidget::onFlashFactory()
 
         showFactoryFlashSuccess();
       } else {
-        log(tr("Factory Flash Failed! Error code: %1").arg(static_cast<int>(res)));
+        log(tr("Flash failed, %1").arg(QString::fromStdString(flashResultToString(res))));
       }
     });
   };
@@ -690,8 +690,9 @@ void Esp32HidToolsWidget::onDownloadAndFlashFactory()
         m_copyInfoBtn->setProperty("deviceInfo", QString::fromStdString(info));
         showFactoryFlashSuccess();
       } else {
-        log(tr("Flash Failed! Error code: %1").arg(static_cast<int>(res)));
-        QMessageBox::critical(this, tr("Error"), tr("Flashing failed. Error code: %1").arg(static_cast<int>(res)));
+        QString errorMsg = QString::fromStdString(flashResultToString(res));
+        log(tr("Flash failed, %1").arg(errorMsg));
+        QMessageBox::critical(this, tr("Error"), tr("Flash failed, %1").arg(errorMsg));
       }
     });
   };
@@ -1062,9 +1063,11 @@ void Esp32HidToolsWidget::flashFirmware(const std::vector<uint8_t> &firmwareData
           QMessageBox::information(this, tr("Success"), tr("Firmware upgrade successful."));
         });
       } else {
-        log_cb_func(std::string("Flash failed with error code: ") + std::to_string((int)res));
-        QMetaObject::invokeMethod(this, [this, res]() {
-          QMessageBox::critical(this, tr("Error"), tr("Flash failed. Error code: %1").arg((int)res));
+        QString errorMsg = QString::fromStdString(flashResultToString(res));
+        log_cb_func(tr("Flash failed, %1").arg(errorMsg).toStdString()
+        ); // log_cb takes std::string, but log takes QString. log_cb calls log.
+        QMetaObject::invokeMethod(this, [this, errorMsg]() {
+          QMessageBox::critical(this, tr("Error"), tr("Flash failed, %1").arg(errorMsg));
         });
       }
     } catch (const std::exception &e) {
