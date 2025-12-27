@@ -27,7 +27,9 @@ BridgeClientWidget::BridgeClientWidget(
       m_screenName(screenName),
       m_serialNumber(serialNumber),
       m_devicePath(devicePath),
-      m_configPath(configPath)
+      m_configPath(configPath),
+      m_deviceAvailable(false),
+      m_serverReady(false)
 {
   setMinimumWidth(100);
   setMaximumWidth(16777215); // QWIDGETSIZE_MAX
@@ -93,13 +95,34 @@ BridgeClientWidget::BridgeClientWidget(
 
 void BridgeClientWidget::setConnected(bool connected)
 {
+  if (m_isConnected == connected)
+    return;
+
   m_isConnected = connected;
   {
     const QSignalBlocker blocker(m_btnConnect);
     m_btnConnect->setChecked(connected);
   }
   m_btnConnect->setText(connected ? tr("Disconnect") : tr("Connect"));
+
+  updateActivationVisibility();
   setActiveHostname(m_activeHostname);
+  refreshButtonStates();
+}
+
+void BridgeClientWidget::resetConnectionStatus()
+{
+  setActivationState("");
+  setDeviceName("");
+  updateActivationVisibility();
+}
+
+void BridgeClientWidget::setServerReady(bool ready)
+{
+  if (m_serverReady == ready)
+    return;
+
+  m_serverReady = ready;
   refreshButtonStates();
 }
 
@@ -123,6 +146,10 @@ void BridgeClientWidget::setActivationState(const QString &activationState)
   m_activationState = normalized;
   m_activationStateLabel->setText(normalized);
   m_activationStateLabel->setToolTip(normalized);
+
+  m_activationStateLabel->setStyleSheet(QStringLiteral(""));
+
+  updateActivationVisibility();
 }
 
 void BridgeClientWidget::setDeviceName(const QString &deviceName)
@@ -138,8 +165,11 @@ void BridgeClientWidget::setActiveHostname(const QString &hostname)
   m_activeHostname = hostname.trimmed();
   m_activeHostnameLabel->setText(m_activeHostname);
 
-  if (m_isConnected && m_isBleConnected) {
+  if (m_isBleConnected && m_isConnected) {
+    // Issue 14: Only red if BOTH bridge is connected AND BLE is connected
     m_activeHostnameLabel->setStyleSheet(QStringLiteral("color: red; font-weight: normal;"));
+  } else if (m_isConnected) {
+    m_activeHostnameLabel->setStyleSheet(QStringLiteral("")); // Default color
   } else {
     m_activeHostnameLabel->setStyleSheet(QStringLiteral("color: gray; font-weight: normal;"));
   }
@@ -208,13 +238,20 @@ void BridgeClientWidget::setDeviceAvailable(const QString &devicePath, bool avai
   m_deviceNameLabel->setEnabled(available);
   m_activeHostnameLabel->setEnabled(available);
   m_orientationLabel->setEnabled(available);
-  m_activationStateLabel->setVisible(available);
+  updateActivationVisibility();
 
   if (!available) {
     setStyleSheet("QGroupBox { color: gray; }");
   } else {
     setStyleSheet("");
   }
+}
+
+void BridgeClientWidget::updateActivationVisibility()
+{
+  m_activationStateLabel->setVisible(
+      m_deviceAvailable && m_isConnected && !m_activationState.isEmpty() && m_activationState != "unknown"
+  );
 }
 
 void BridgeClientWidget::setGroupLocked(bool locked, const QString &reason)
@@ -226,12 +263,15 @@ void BridgeClientWidget::setGroupLocked(bool locked, const QString &reason)
 
 void BridgeClientWidget::refreshButtonStates()
 {
-  const bool connectEnabled = m_deviceAvailable && (!m_groupLocked || m_isConnected);
+  const bool connectEnabled =
+      m_deviceAvailable && (!m_groupLocked || m_isConnected) && (m_serverReady || m_isConnected);
   m_btnConnect->setEnabled(connectEnabled);
 
   QString connectTooltip;
   if (!m_deviceAvailable) {
     connectTooltip = tr("Device not connected");
+  } else if (!m_serverReady && !m_isConnected) {
+    connectTooltip = tr("Waiting for server to start...");
   } else if (m_groupLocked && !m_isConnected) {
     connectTooltip =
         m_groupLockReason.isEmpty() ? tr("Another profile for this device is already connected") : m_groupLockReason;

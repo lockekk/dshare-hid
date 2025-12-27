@@ -87,6 +87,12 @@ public:
   void setConnected(bool connected);
 
   /**
+   * @brief Set server ready state
+   */
+  void setServerReady(bool ready);
+  void resetConnectionStatus();
+
+  /**
    * @brief Update screen name and config path
    * @param screenName New screen name
    * @param configPath New config file path
@@ -154,6 +160,7 @@ private Q_SLOTS:
   void onConfigureClicked();
 
 private:
+  void updateActivationVisibility();
   void refreshActivationStateLabel();
   void refreshDeviceNameLabel();
   void refreshOrientationLabel();
@@ -166,6 +173,7 @@ private:
   QString m_configPath;
   bool m_isConnected = false;
   bool m_deviceAvailable = false;
+  bool m_serverReady = false;
   bool m_groupLocked = false;
   QString m_groupLockReason;
 

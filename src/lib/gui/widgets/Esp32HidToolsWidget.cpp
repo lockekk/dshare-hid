@@ -5,6 +5,7 @@
 #include "Esp32HidToolsWidget.h"
 #include <QApplication>
 #include <QClipboard>
+#include <QDateTime>
 #include <QDesktopServices>
 #include <QEvent>
 #include <QFile>
@@ -212,14 +213,54 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
   // Options
   auto *optionsGroup = new QGroupBox(tr("Order Options"));
   auto *optionsLayout = new QVBoxLayout(optionsGroup);
-  m_orderOption1 = new QRadioButton(tr("Free trial for 7 days"));
-  m_orderOption2 = new QRadioButton(tr("I am ok with free trial and want to buy full license"));
-  m_orderOption3 = new QRadioButton(tr("Skip trial and buy Full licensed version"));
-  m_orderOption4 = new QRadioButton(tr("Already licensed, but want bump profiles"));
+  m_orderOption1 = new QRadioButton(tr("Request 7-Day Free Trial"));
+  m_orderOption2 = new QRadioButton(tr("Purchase Full License"));
+  m_orderOption3 = new QRadioButton(tr("Skip Trial & Purchase Full License"));
+  m_orderOption4 = new QRadioButton(tr("Upgrade Profile Capacity"));
   optionsLayout->addWidget(m_orderOption1);
   optionsLayout->addWidget(m_orderOption2);
   optionsLayout->addWidget(m_orderOption3);
+  optionsLayout->addWidget(m_orderOption3);
   optionsLayout->addWidget(m_orderOption4);
+
+  // Payments Group
+  auto *paymentsGroup = new QGroupBox(tr("Payments"));
+  auto *paymentsLayout = new QGridLayout(paymentsGroup);
+
+  // Cost
+  m_lblPaymentDetails = new QLabel(tr("Payment Details: Free Trial ($0.00)"));
+  QFont fontPayment = m_lblPaymentDetails->font();
+  fontPayment.setBold(true);
+  m_lblPaymentDetails->setFont(fontPayment);
+
+  // Reference NO
+  m_paymentRefNo = new QLineEdit();
+  m_paymentRefNo->setReadOnly(true);
+  m_paymentRefNo->setToolTip(tr("Please put this Reference No. in your PayPal payment message/note."));
+
+  // Transaction ID
+  m_paymentTransId = new QLineEdit();
+  m_paymentTransId->setPlaceholderText(tr("Paste your PayPal Transaction ID here"));
+
+  // Configured via build system (CMake)
+#ifndef DESKFLOW_PAYPAL_ACCOUNT
+#define DESKFLOW_PAYPAL_ACCOUNT "sb-uqhcf48362835@business.example.com"
+#endif
+
+  m_lblPaymentOwner =
+      new QLabel(QString(tr("Paypal Seller: <b><font color='red'>%1</font></b>")).arg(DESKFLOW_PAYPAL_ACCOUNT));
+  m_lblPaymentOwner->setTextInteractionFlags(Qt::TextSelectableByMouse); // Enable copy
+
+  paymentsLayout->addWidget(m_lblPaymentDetails, 0, 0, 1, 2); // Span 2 cols
+  paymentsLayout->addWidget(m_lblPaymentOwner, 1, 0, 1, 2);   // Span 2 cols
+  paymentsLayout->addWidget(new QLabel(tr("Reference NO.:")), 2, 0);
+  paymentsLayout->addWidget(m_paymentRefNo, 2, 1);
+
+  paymentsLayout->addWidget(new QLabel(tr("PayPal Transaction ID:")), 3, 0);
+  paymentsLayout->addWidget(m_paymentTransId, 3, 1);
+
+  m_btnPayNow = new QPushButton(tr("Pay Now (Secure PayPal Link)"));
+  paymentsLayout->addWidget(m_btnPayNow, 4, 0, 1, 2);
 
   // Device Info
   auto *deviceInfoGroup = new QGroupBox(tr("Device Information"));
@@ -229,9 +270,9 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
   m_orderSerialLabel = new QLabel(tr("-"));
   m_orderSerialLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
   m_orderTotalProfiles = new QComboBox();
-  for (int i = 2; i <= 6; ++i) {
-    m_orderTotalProfiles->addItem(QString::number(i), i);
-  }
+  m_orderTotalProfiles->addItem("2", 2);
+  m_orderTotalProfiles->addItem("4", 4);
+  m_orderTotalProfiles->addItem("6", 6);
 
   deviceInfoLayout->addWidget(new QLabel(tr("Device Secret:")), 0, 0);
   deviceInfoLayout->addWidget(m_orderDeviceSecret, 0, 1);
@@ -252,6 +293,7 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
   orderLayout->addWidget(userInfoGroup);
   orderLayout->addWidget(optionsGroup);
   orderLayout->addWidget(deviceInfoGroup);
+  orderLayout->addWidget(paymentsGroup);
   orderLayout->addLayout(orderButtonLayout);
   orderLayout->addStretch();
 
@@ -287,6 +329,21 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
   connect(m_refreshPortsBtn, &QPushButton::clicked, this, &Esp32HidToolsWidget::refreshPorts);
   connect(m_portCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &Esp32HidToolsWidget::onPortChanged);
 
+  connect(m_orderOption1, &QRadioButton::toggled, this, &Esp32HidToolsWidget::updatePaymentDetails);
+  connect(m_orderOption2, &QRadioButton::toggled, this, &Esp32HidToolsWidget::updatePaymentDetails);
+  connect(m_orderOption3, &QRadioButton::toggled, this, &Esp32HidToolsWidget::updatePaymentDetails);
+  connect(m_orderOption4, &QRadioButton::toggled, this, &Esp32HidToolsWidget::updatePaymentDetails);
+  connect(
+      m_orderTotalProfiles, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
+      &Esp32HidToolsWidget::updatePaymentDetails
+  );
+
+  // Update Reference No (Timestamp) - Call once or on specific triggers
+  updatePaymentReference();
+
+  connect(m_btnPayNow, &QPushButton::clicked, this, &Esp32HidToolsWidget::onPayNowClicked);
+
+  updatePaymentDetails();
   refreshPorts();
 }
 
@@ -427,6 +484,10 @@ void Esp32HidToolsWidget::onFlashFactory()
     }
   }
 
+  if (!confirmFactoryFlash()) {
+    return;
+  }
+
   std::string port = portName.toStdString();
 
   log(tr("Checking device status..."));
@@ -531,6 +592,8 @@ void Esp32HidToolsWidget::onFlashFactory()
         log(tr("Device Info: %1").arg(QString::fromStdString(info)));
         m_copyInfoBtn->setEnabled(true);
         m_copyInfoBtn->setProperty("deviceInfo", QString::fromStdString(info));
+
+        showFactoryFlashSuccess();
       } else {
         log(tr("Factory Flash Failed! Error code: %1").arg(static_cast<int>(res)));
       }
@@ -549,6 +612,10 @@ void Esp32HidToolsWidget::onDownloadAndFlashFactory()
       QMessageBox::warning(this, tr("Error"), tr("Please select a valid serial port."));
       return;
     }
+  }
+
+  if (!confirmFactoryFlash()) {
+    return;
   }
 
   log(tr("Starting Download & Flash process..."));
@@ -621,7 +688,7 @@ void Esp32HidToolsWidget::onDownloadAndFlashFactory()
         log(tr("Device Info: %1").arg(QString::fromStdString(info)));
         m_copyInfoBtn->setEnabled(true);
         m_copyInfoBtn->setProperty("deviceInfo", QString::fromStdString(info));
-        QMessageBox::information(this, tr("Success"), tr("Firmware downloaded and flashed successfully!"));
+        showFactoryFlashSuccess();
       } else {
         log(tr("Flash Failed! Error code: %1").arg(static_cast<int>(res)));
         QMessageBox::critical(this, tr("Error"), tr("Flashing failed. Error code: %1").arg(static_cast<int>(res)));
@@ -630,6 +697,28 @@ void Esp32HidToolsWidget::onDownloadAndFlashFactory()
   };
 
   runBackgroundTask(task);
+}
+
+bool Esp32HidToolsWidget::confirmFactoryFlash()
+{
+  const QString message = tr("This process permanently converts your ESP32 into a Deskflow-HID device. "
+                             "This is irreversible and blocks non-Deskflow firmware.\n\n"
+                             "Do you want to proceed?");
+
+  QMessageBox::StandardButton reply =
+      QMessageBox::question(this, tr("Confirm Factory Flash"), message, QMessageBox::Yes | QMessageBox::No);
+
+  return (reply == QMessageBox::Yes);
+}
+
+void Esp32HidToolsWidget::showFactoryFlashSuccess()
+{
+  QMessageBox::information(
+      this, tr("Success"),
+      tr("Factory firmware flashed successfully.\n\n"
+         "Next step: You need to flash the per-device firmware to use the device. "
+         "Please switch to the 'Order' tab to request it.")
+  );
 }
 
 void Esp32HidToolsWidget::onCopyInfo()
@@ -1309,6 +1398,29 @@ QString deskflow::gui::Esp32HidToolsWidget::composeOrderContent(QString &outPref
     return QString();
   }
 
+  // Calculate Price using helper
+  OrderPrice priceInfo = calculateOrderPrice(outOption, totalProfiles);
+  double price = priceInfo.price;
+  QString priceDesc = priceInfo.desc;
+
+  // Append Payment Info
+  content.append(QString("Payment Details: %1 = Total $%2 USD\n").arg(priceDesc, QString::number(price, 'f', 2)));
+  content.append(QString("Paypal Seller: %1\n").arg(DESKFLOW_PAYPAL_ACCOUNT));
+
+  // Validation: If price > 0, Transaction ID is required
+  if (price > 0.01) {
+    QString transId = m_paymentTransId->text().trimmed();
+    if (transId.isEmpty()) {
+      QMessageBox::warning(
+          this, tr("Missing Transaction ID"), tr("Please enter your PayPal Transaction ID for verification.")
+      );
+      return QString();
+    }
+    content.append(QString("PayPal Transaction ID: %1\n").arg(transId));
+  }
+
+  content.append(QString("Reference No: %1\n").arg(m_paymentRefNo->text()));
+
   // Validate Secret for options 1 and 3
   if ((outOption == 1 || outOption == 3) && secret.isEmpty()) {
     QMessageBox::critical(
@@ -1320,6 +1432,158 @@ QString deskflow::gui::Esp32HidToolsWidget::composeOrderContent(QString &outPref
   }
 
   return content;
+}
+
+deskflow::gui::OrderPrice deskflow::gui::Esp32HidToolsWidget::calculateOrderPrice(int option, int totalProfiles)
+{
+  double price = 0.0;
+  QString priceDesc;
+
+  if (option == 1) { // Free Trial
+    price = 0.0;
+    priceDesc = "Free Trial";
+  } else if (option == 2 || option == 3) { // Full License
+    price += DESKFLOW_PRICE_LICENSE;
+    // Add-ons for profiles
+    if (totalProfiles == 4)
+      price += DESKFLOW_PRICE_PROFILE_4;
+    else if (totalProfiles == 6)
+      price += DESKFLOW_PRICE_PROFILE_6;
+
+    priceDesc =
+        QString("License($%1) + %2 Profiles(%3)")
+            .arg(QString::number(DESKFLOW_PRICE_LICENSE, 'f', 2))
+            .arg(totalProfiles)
+            .arg(
+                totalProfiles == 2
+                    ? "$0.00"
+                    : (totalProfiles == 4 ? QString("$%1").arg(QString::number(DESKFLOW_PRICE_PROFILE_4, 'f', 2))
+                                          : QString("$%1").arg(QString::number(DESKFLOW_PRICE_PROFILE_6, 'f', 2)))
+            );
+  } else if (option == 4) { // Only Bump Profiles
+    // Base price 0, only profile cost
+    if (totalProfiles == 4)
+      price += DESKFLOW_PRICE_PROFILE_4;
+    else if (totalProfiles == 6)
+      price += DESKFLOW_PRICE_PROFILE_6;
+
+    priceDesc =
+        QString("Bump Profiles to %1 (%2)")
+            .arg(totalProfiles)
+            .arg(
+                totalProfiles == 2
+                    ? "$0.00"
+                    : (totalProfiles == 4 ? QString("$%1").arg(QString::number(DESKFLOW_PRICE_PROFILE_4, 'f', 2))
+                                          : QString("$%1").arg(QString::number(DESKFLOW_PRICE_PROFILE_6, 'f', 2)))
+            );
+  }
+
+  return {price, priceDesc};
+}
+
+void deskflow::gui::Esp32HidToolsWidget::updatePaymentDetails()
+{
+  int option = -1;
+  if (m_orderOption1->isChecked())
+    option = 1;
+  else if (m_orderOption2->isChecked())
+    option = 2;
+  else if (m_orderOption3->isChecked())
+    option = 3;
+  else if (m_orderOption4->isChecked())
+    option = 4;
+
+  int totalProfiles = m_orderTotalProfiles->currentData().toInt();
+  OrderPrice priceInfo = calculateOrderPrice(option, totalProfiles);
+
+  if (option == -1) {
+    m_lblPaymentDetails->setText("Select an option");
+    return;
+  }
+
+  m_lblPaymentDetails->setText(
+      QString("Payment Details: %1 = Total $%2 USD").arg(priceInfo.desc, QString::number(priceInfo.price, 'f', 2))
+  );
+}
+
+void deskflow::gui::Esp32HidToolsWidget::updatePaymentReference()
+{
+  // Use UTC timestamp as requested (Cross-platform)
+  qint64 timestamp = QDateTime::currentMSecsSinceEpoch();
+  m_paymentRefNo->setText(QString::number(timestamp));
+}
+
+void deskflow::gui::Esp32HidToolsWidget::onPayNowClicked()
+{
+  int option = -1;
+  if (m_orderOption1->isChecked())
+    option = 1;
+  else if (m_orderOption2->isChecked())
+    option = 2;
+  else if (m_orderOption3->isChecked())
+    option = 3;
+  else if (m_orderOption4->isChecked())
+    option = 4;
+
+  int totalProfiles = m_orderTotalProfiles->currentData().toInt();
+  OrderPrice priceInfo = calculateOrderPrice(option, totalProfiles);
+  double price = priceInfo.price;
+  QString priceDesc = priceInfo.desc;
+
+  if (price <= 0.01) {
+    QMessageBox::information(this, tr("Free"), tr("No payment is required for this option."));
+    return;
+  }
+
+  // Construct PayPal URL
+  // Configured via build system (CMake)
+#ifndef DESKFLOW_PAYPAL_URL
+#define DESKFLOW_PAYPAL_URL "https://www.sandbox.paypal.com/cgi-bin/webscr"
+#endif
+
+#ifndef DESKFLOW_PAYPAL_ACCOUNT
+#define DESKFLOW_PAYPAL_ACCOUNT "sb-uqhcf48362835@business.example.com"
+#endif
+
+  QString baseUrl = DESKFLOW_PAYPAL_URL;
+  QString business = DESKFLOW_PAYPAL_ACCOUNT;
+
+  QString refNo = m_paymentRefNo->text();
+  if (refNo.isEmpty()) {
+    updatePaymentReference();
+    refNo = m_paymentRefNo->text();
+  }
+
+  QString itemName = QString("Deskflow-HID: %1").arg(priceDesc);
+
+  QUrlQuery query;
+  query.addQueryItem("cmd", "_xclick");
+  query.addQueryItem("business", business);
+  query.addQueryItem("currency_code", "USD");
+  query.addQueryItem("amount", QString::number(price, 'f', 2));
+  query.addQueryItem("item_name", itemName);
+  query.addQueryItem("custom", refNo);
+
+  QUrl url(baseUrl);
+  url.setQuery(query);
+
+  // Confirmation Dialog
+  QString msg = tr("You are about to open PayPal to pay <b>$%1 USD</b> to <b>%2</b>.<br><br>"
+                   "Product: %3<br>"
+                   "Reference: %4<br><br>"
+                   "Please confirm to proceed to PayPal.")
+                    .arg(QString::number(price, 'f', 2))
+                    .arg(business)
+                    .arg(itemName)
+                    .arg(refNo);
+
+  if (QMessageBox::question(this, tr("Confirm Payment"), msg) != QMessageBox::Yes) {
+    return;
+  }
+
+  if (!QDesktopServices::openUrl(url)) {
+    QMessageBox::warning(this, tr("Error"), tr("Failed to open web browser. Please visit PayPal manually."));
+  }
 }
 
 void deskflow::gui::Esp32HidToolsWidget::onGenerateOrder()

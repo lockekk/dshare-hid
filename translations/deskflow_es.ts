@@ -170,6 +170,10 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Error: Cannot connect. Device path is empty.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Already connected via another profile</source>
         <translation type="unfinished"></translation>
     </message>
@@ -188,6 +192,18 @@ File -&gt; Firmware -&gt; Order.</source>
     </message>
     <message>
         <source>Failed to start bridge client: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Server is down. Auto-connect will resume once the server starts.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connection failed. Retrying auto-connect (%1/3)...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auto-connect failed. Giving up after 3 attempts.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1503,6 +1519,14 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Auto-connect when USB device plugged in</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Automatically connect to the Deskflow server when the device is plugged in.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Profiles (Device)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1639,6 +1663,10 @@ Duplicate: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Waiting for server to start...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Another profile for this device is already connected</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1771,6 +1799,46 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Already licensed, but want bump profiles</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Payments</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Request 7-Day Free Trial</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Purchase Full License</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Skip Trial &amp; Purchase Full License</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Upgrade Profile Capacity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Payment Details: Free Trial ($0.00)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Please put this Reference No. in your PayPal payment message/note.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Paste your PayPal Transaction ID here</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reference NO.:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pay Now (Secure PayPal Link)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1958,15 +2026,35 @@ Duplicate: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Firmware downloaded and flashed successfully!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Flash Failed! Error code: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Paypal Seller: &lt;b&gt;&lt;font color=&apos;red&apos;&gt;%1&lt;/font&gt;&lt;/b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PayPal Transaction ID:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Flashing failed. Error code: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This process permanently converts your ESP32 into a Deskflow-HID device. This is irreversible and blocks non-Deskflow firmware.
+
+Do you want to proceed?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Confirm Factory Flash</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Factory firmware flashed successfully.
+
+Next step: You need to flash the per-device firmware to use the device. Please switch to the &apos;Order&apos; tab to request it.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2206,11 +2294,39 @@ Duplicate: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Missing Transaction ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Please enter your PayPal Transaction ID for verification.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Missing Secret</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Device Secret (PDEK) is required for this option. Please ensure the device is in Factory Mode and the secret has been fetched correctly.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Free</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No payment is required for this option.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You are about to open PayPal to pay &lt;b&gt;$%1 USD&lt;/b&gt; to &lt;b&gt;%2&lt;/b&gt;.&lt;br&gt;&lt;br&gt;Product: %3&lt;br&gt;Reference: %4&lt;br&gt;&lt;br&gt;Please confirm to proceed to PayPal.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Confirm Payment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to open web browser. Please visit PayPal manually.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

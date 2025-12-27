@@ -39,6 +39,7 @@ public:
   QString deviceName() const;
   bool deviceNameChanged() const;
   bool bluetoothKeepAlive() const;
+  bool autoConnect() const;
 
 Q_SIGNALS:
   void configChanged(const QString &oldConfigPath, const QString &newConfigPath);
@@ -67,6 +68,7 @@ private:
   QSpinBox *m_spinScrollSpeed;
   QCheckBox *m_checkInvertScroll;
   QCheckBox *m_checkBluetoothKeepAlive;
+  QCheckBox *m_checkAutoConnect;
 
   // Profile UI
   QGroupBox *m_profileGroup = nullptr;

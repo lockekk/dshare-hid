@@ -107,6 +107,16 @@ void DeskflowHidExtension::setup()
 
   loadBridgeClientConfigs();
 
+  // Connect to server process state/connection signals
+  if (m_mainWindow) {
+    connect(
+        &m_mainWindow->m_coreProcess, &CoreProcess::connectionStateChanged, this,
+        &DeskflowHidExtension::onServerConnectionStateChanged
+    );
+    // Query initial state (Issue 3)
+    onServerConnectionStateChanged(m_mainWindow->m_coreProcess.connectionState());
+  }
+
   // Check initially connected devices
   if (m_usbDeviceMonitor) {
     updateBridgeClientDeviceStates();
@@ -361,6 +371,7 @@ void DeskflowHidExtension::updateBridgeClientDeviceStates()
 
     // Update widget availability
     widget->setDeviceAvailable(devicePath, found);
+    widget->setServerReady(isServerReady());
     {
       using namespace deskflow;
       QSettings cfg(configPath, QSettings::IniFormat);
@@ -377,14 +388,31 @@ void DeskflowHidExtension::updateBridgeClientDeviceStates()
     if (found) {
       // Store device path -> serial number mapping for later use
       m_devicePathToSerialNumber[devicePath] = configSerialNumber;
-      // Sync profile data from device
-      if (!m_bridgeClientProcesses.contains(devicePath)) {
-        syncDeviceConfigFromDevice(devicePath, configPath);
-      }
-      // Refresh widget
-      widget->updateConfig(widget->screenName(), configPath);
 
       qDebug() << "Device available for config:" << configPath << "device:" << devicePath;
+
+      // STARTUP AUTO-CONNECT FIX: Check if we should auto-connect this device found at startup
+      bool isBleConnected = false;
+      if (!m_bridgeClientProcesses.contains(devicePath)) {
+        syncDeviceConfigFromDevice(devicePath, configPath, &isBleConnected);
+        widget->setBleConnected(isBleConnected);
+
+        QSettings configSettings(configPath, QSettings::IniFormat);
+        if (configSettings.value(Settings::Bridge::AutoConnect, false).toBool()) {
+          if (!m_manuallyDisconnectedSerials.contains(configSerialNumber)) {
+            if (isServerReady()) {
+              qInfo() << "Auto-connecting device at startup:" << widget->screenName() << "(" << devicePath << ")";
+              bridgeClientConnectToggled(devicePath, configPath, true);
+            } else {
+              qInfo() << "Server not ready, wait for server to start for auto-connect at startup for:"
+                      << widget->screenName();
+            }
+          }
+        }
+      }
+
+      // Refresh widget
+      widget->updateConfig(widget->screenName(), configPath);
     } else {
       qDebug() << "Device NOT available for config:" << configPath;
     }
@@ -592,6 +620,7 @@ void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
     if (it != m_bridgeClientWidgets.end()) {
       BridgeClientWidget *widget = it.value();
       widget->setDeviceAvailable(device.devicePath, true);
+      widget->setServerReady(isServerReady());
 
       // Sync profile data from device settings
       bool isBleConnected = false;
@@ -610,6 +639,23 @@ void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
       if (m_mainWindow) {
         m_mainWindow->setStatus(tr("Bridge client device plugged in: %1").arg(screenName));
       }
+      m_manuallyDisconnectedSerials.remove(serialNumber);
+      m_connectionAttempts.remove(config);
+
+      // Handle auto-connect
+      QSettings configSettings(config, QSettings::IniFormat);
+      if (configSettings.value(Settings::Bridge::AutoConnect, false).toBool()) {
+        if (!m_manuallyDisconnectedSerials.contains(serialNumber)) {
+          if (isServerReady()) {
+            qInfo() << "Auto-connecting device:" << screenName << "(" << device.devicePath << ")";
+            bridgeClientConnectToggled(device.devicePath, config, true);
+          } else {
+            qInfo() << "Server not ready, wait for server to start for auto-connect of:" << screenName;
+          }
+        } else {
+          qInfo() << "Auto-connect skipped for" << screenName << "due to manual disconnect.";
+        }
+      }
     }
   }
 }
@@ -620,7 +666,17 @@ void DeskflowHidExtension::usbDeviceDisconnected(const UsbDeviceInfo &device)
 
   QString serialNumber;
   if (m_devicePathToSerialNumber.contains(device.devicePath)) {
-    serialNumber = m_devicePathToSerialNumber[device.devicePath];
+    serialNumber = m_devicePathToSerialNumber.take(device.devicePath);
+    // Don't remove from configuredSerialNumbers here, as the config still exists
+    // just the device is unplugged.
+
+    // Remove from resume set to prevent stale restarts
+    m_resumeConnectionAfterServerRestart.remove(device.devicePath);
+
+    // Stop process if running
+    if (m_bridgeClientProcesses.contains(device.devicePath)) {
+      stopBridgeClient(device.devicePath);
+    }
   } else {
     qWarning() << "No stored serial number found for disconnected device:" << device.devicePath;
   }
@@ -654,6 +710,18 @@ void DeskflowHidExtension::usbDeviceDisconnected(const UsbDeviceInfo &device)
       }
     }
   }
+  m_manuallyDisconnectedSerials.remove(serialNumber);
+
+  // Also clear connection attempts if we didn't find it in pending but it was active
+  if (!serialNumber.isEmpty()) {
+    QStringList allConfigs = BridgeClientConfigManager::getAllConfigFiles();
+    for (const auto &path : allConfigs) {
+      if (BridgeClientConfigManager::readSerialNumber(path) == serialNumber) {
+        m_connectionAttempts.remove(path);
+      }
+    }
+  }
+
   m_devicePathToSerialNumber.remove(device.devicePath);
 }
 
@@ -664,16 +732,34 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
   qDebug() << "Bridge client connect toggled:"
            << "device:" << devicePath << "config:" << configPath << "connect:" << shouldConnect;
 
+  const QString serialNumber = BridgeClientConfigManager::readSerialNumber(configPath);
+  if (shouldConnect) {
+    m_manuallyDisconnectedSerials.remove(serialNumber);
+  } else {
+    m_manuallyDisconnectedSerials.insert(serialNumber);
+  }
+
   BridgeClientWidget *targetWidget = m_bridgeClientWidgets.value(configPath, nullptr);
+
   if (!targetWidget) {
-    qWarning() << "No widget found for config:" << configPath << "device:" << devicePath;
+    qWarning() << "No widget found for config:" << configPath;
     if (m_mainWindow) {
       m_mainWindow->setStatus(tr("Error: No configuration found for device: %1").arg(devicePath));
     }
     return;
   }
 
-  const QString serialNumber = BridgeClientConfigManager::readSerialNumber(configPath);
+  if (shouldConnect && devicePath.isEmpty()) {
+    qWarning() << "Cannot connect: empty device path for config:" << configPath;
+    if (m_mainWindow) {
+      m_mainWindow->setStatus(tr("Error: Cannot connect. Device path is empty."));
+    }
+    return;
+  }
+
+  if (targetWidget->isConnected() != shouldConnect) {
+    targetWidget->setConnected(shouldConnect);
+  }
 
   if (shouldConnect) {
     if (m_bridgeClientProcesses.contains(devicePath)) {
@@ -737,10 +823,12 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
               targetWidget->setConnected(false);
             }
 
-            QMessageBox::warning(
-                m_mainWindow, tr("Activation Required"),
-                tr("Free trial is expired. Please consider purchasing a license via \nFile -> Firmware -> Order.")
-            );
+            if (m_mainWindow) {
+              QMessageBox::warning(
+                  m_mainWindow, tr("Activation Required"),
+                  tr("Free trial is expired. Please consider purchasing a license via \nFile -> Firmware -> Order.")
+              );
+            }
             releaseBridgeSerialLock(serialNumber, configPath);
             return;
           }
@@ -1100,42 +1188,86 @@ void DeskflowHidExtension::bridgeClientProcessReadyRead(const QString &devicePat
   output += process->readAllStandardError();
 
   if (!output.isEmpty()) {
-    for (const QString &line : output.split('\n', Qt::SkipEmptyParts)) {
-      qDebug() << "[Bridge" << devicePath << "]" << line;
-    }
-  }
+    // Regex for checking connection success
+    static const QRegularExpression connectedRegex(
+        "connected to server|connection established", QRegularExpression::CaseInsensitiveOption
+    );
+    // Regex for device name
+    static const QRegularExpression deviceNameRegex(R"(CDC:\s+firmware device name='([^']+)')");
+    // Regex for activation state
+    static const QRegularExpression activationRegex(R"(CDC:\s+handshake completed.*activation_state=(.*?)(?=\s+\w+=|$))"
+    );
+    // Regex for BLE status
+    static const QRegularExpression bleRegex(R"(ble=(YES|NO))");
 
-  static const QRegularExpression deviceNameRegex(R"(CDC:\s+firmware device name='([^']+)')");
-  QRegularExpressionMatch deviceNameMatch = deviceNameRegex.match(output);
-  if (deviceNameMatch.hasMatch()) {
-    QString deviceName = deviceNameMatch.captured(1);
-    for (auto it = m_bridgeClientWidgets.begin(); it != m_bridgeClientWidgets.end(); ++it) {
-      if (it.value()->devicePath() == devicePath) {
-        it.value()->setDeviceName(deviceName);
-        using namespace deskflow;
-        QSettings cfg(it.key(), QSettings::IniFormat);
-        cfg.setValue(Settings::Bridge::DeviceName, deviceName);
-        cfg.sync();
-        // Also ensure hostname is up to date (though unrelated to this regex match, good to sync)
-        it.value()->setActiveHostname(cfg.value(Settings::Bridge::ActiveProfileHostname).toString());
-        break;
+    for (const QString &line : output.split('\n', Qt::SkipEmptyParts)) {
+      // Keep qInfo for now to verify the fix with user
+      qInfo() << "[Bridge" << devicePath << "]" << line;
+
+      // Check connection success
+      if (connectedRegex.match(line).hasMatch()) {
+        if (m_bridgeClientDeviceToConfig.contains(devicePath)) {
+          m_connectionAttempts.remove(m_bridgeClientDeviceToConfig[devicePath]);
+        }
+        // Stop timer if connected
+        if (QTimer *timer = m_bridgeClientConnectionTimers.value(devicePath)) {
+          timer->stop();
+          timer->deleteLater();
+          m_bridgeClientConnectionTimers.remove(devicePath);
+        }
+      }
+
+      // Check device name
+      QRegularExpressionMatch deviceNameMatch = deviceNameRegex.match(line);
+      if (deviceNameMatch.hasMatch()) {
+        QString deviceName = deviceNameMatch.captured(1);
+        qInfo() << "Bridge client detected device name:" << deviceName;
+        for (auto it = m_bridgeClientWidgets.begin(); it != m_bridgeClientWidgets.end(); ++it) {
+          if (it.value()->devicePath() == devicePath) {
+            it.value()->setDeviceName(deviceName);
+            using namespace deskflow;
+            QSettings cfg(it.key(), QSettings::IniFormat);
+            cfg.setValue(Settings::Bridge::DeviceName, deviceName);
+            cfg.sync();
+            it.value()->setActiveHostname(cfg.value(Settings::Bridge::ActiveProfileHostname).toString());
+            break;
+          }
+        }
+      }
+
+      // Check activation state
+      QRegularExpressionMatch activationMatch = activationRegex.match(line);
+      if (activationMatch.hasMatch()) {
+        QString activationState = activationMatch.captured(1);
+        // Remove (0) or similar (N) suffix if present
+        static const QRegularExpression parenRegex(R"(\(\d+\))");
+        activationState.remove(parenRegex);
+        activationState = activationState.trimmed();
+
+        qInfo() << "Bridge client detected activation state:" << activationState;
+        for (auto it = m_bridgeClientWidgets.begin(); it != m_bridgeClientWidgets.end(); ++it) {
+          if (it.value()->devicePath() == devicePath) {
+            it.value()->setActivationState(activationState);
+            QSettings cfg(it.key(), QSettings::IniFormat);
+            cfg.setValue(Settings::Bridge::ActivationState, activationState);
+            cfg.sync();
+            break;
+          }
+        }
+      }
+
+      // Check BLE status
+      QRegularExpressionMatch bleMatch = bleRegex.match(line);
+      if (bleMatch.hasMatch()) {
+        bool isBleConnected = (bleMatch.captured(1) == QStringLiteral("YES"));
+        for (auto it = m_bridgeClientWidgets.begin(); it != m_bridgeClientWidgets.end(); ++it) {
+          if (it.value()->devicePath() == devicePath) {
+            it.value()->setBleConnected(isBleConnected);
+            break;
+          }
+        }
       }
     }
-  }
-
-  // Activation check logic
-  // ...
-
-  static const QRegularExpression connectedRegex(
-      "connected to server|connection established", QRegularExpression::CaseInsensitiveOption
-  );
-  if (connectedRegex.match(output).hasMatch()) {
-    if (QTimer *timer = m_bridgeClientConnectionTimers.value(devicePath)) {
-      timer->stop();
-      timer->deleteLater();
-      m_bridgeClientConnectionTimers.remove(devicePath);
-    }
-    // status update
   }
 }
 
@@ -1166,7 +1298,54 @@ void DeskflowHidExtension::bridgeClientProcessFinished(
     if (auto *w = m_bridgeClientWidgets.value(configPath)) {
       w->setConnected(false);
       w->setBleConnected(false);
+      w->resetConnectionStatus();
     }
+
+    // Handle retries if this was an abnormal exit
+    bool isError = (exitCode != 0 || exitStatus != QProcess::NormalExit);
+    if (isError) {
+      QSettings configSettings(configPath, QSettings::IniFormat);
+      if (configSettings.value(Settings::Bridge::AutoConnect, false).toBool() &&
+          !m_manuallyDisconnectedSerials.contains(serial)) {
+
+        // Abort retries immediately if server is down
+        if (!isServerReady()) {
+          qInfo() << "Server is down, aborting auto-connect retries for" << configPath
+                  << ". Waiting for server to start.";
+          if (m_mainWindow) {
+            m_mainWindow->setStatus(tr("Server is down. Auto-connect will resume once the server starts."));
+          }
+          return;
+        }
+
+        int attempts = m_connectionAttempts.value(configPath, 0);
+        if (attempts < 3) {
+          attempts++;
+          m_connectionAttempts[configPath] = attempts;
+          qInfo() << "Auto-connect retry" << attempts << "/3 for" << configPath;
+          if (m_mainWindow) {
+            m_mainWindow->setStatus(tr("Connection failed. Retrying auto-connect (%1/3)...").arg(attempts));
+          }
+          QTimer::singleShot(2000, this, [this, configPath]() {
+            // Fetch current state from widget (Issue 4, 7)
+            auto *widget = m_bridgeClientWidgets.value(configPath);
+            if (widget && m_connectionAttempts.contains(configPath)) {
+              QString currentDevicePath = widget->devicePath();
+              if (!currentDevicePath.isEmpty() && widget->isDeviceAvailable()) {
+                bridgeClientConnectToggled(currentDevicePath, configPath, true);
+              }
+            }
+          });
+          return; // Don't reset attempts yet
+        } else {
+          qWarning() << "Auto-connect failed after 3 attempts for" << configPath;
+          if (m_mainWindow) {
+            m_mainWindow->setStatus(tr("Auto-connect failed. Giving up after 3 attempts."));
+          }
+        }
+      }
+    }
+    m_connectionAttempts.remove(configPath);
   }
 }
 
@@ -1197,13 +1376,21 @@ void DeskflowHidExtension::stopBridgeClient(const QString &devicePath)
     m_bridgeClientProcesses.remove(devicePath);
   }
 
-  // We don't release the lock here anymore; we let bridgeClientProcessFinished handle it
-  // to ensure the port is free only AFTER the process has exited.
-  QString configPath = m_bridgeClientDeviceToConfig.take(devicePath);
+  // Release serial lock on stop
+  // Note: We MUST release it here because we called process->disconnect() above,
+  // so the bridgeClientProcessFinished slot will NOT fire.
+  QString configPath = m_bridgeClientDeviceToConfig.value(devicePath);
+  if (!configPath.isEmpty()) {
+    QString serialNumber = BridgeClientConfigManager::readSerialNumber(configPath);
+    releaseBridgeSerialLock(serialNumber, configPath);
+  }
+
+  configPath = m_bridgeClientDeviceToConfig.take(devicePath);
   if (!configPath.isEmpty()) {
     if (auto *w = m_bridgeClientWidgets.value(configPath)) {
       w->setConnected(false);
       w->setBleConnected(false);
+      w->resetConnectionStatus();
     }
   }
 }
@@ -1211,10 +1398,9 @@ void DeskflowHidExtension::stopBridgeClient(const QString &devicePath)
 void DeskflowHidExtension::stopAllBridgeClients()
 {
   qInfo() << "Stopping all bridge clients...";
-  // Stop all processes
-  auto keys = m_bridgeClientProcesses.keys();
-  for (const auto &k : keys) {
-    stopBridgeClient(k);
+  QStringList activeDevices = m_bridgeClientProcesses.keys();
+  for (const QString &devicePath : activeDevices) {
+    stopBridgeClient(devicePath);
   }
 
   // Ensure all widgets are reset, even if they don't have a running process
@@ -1222,11 +1408,15 @@ void DeskflowHidExtension::stopAllBridgeClients()
     it.value()->setConnected(false);
   }
 
-  // Clear all tracking maps just in case
+  // Clear all tracking maps
   m_bridgeClientProcesses.clear();
   m_bridgeClientDeviceToConfig.clear();
   m_bridgeClientConnectionTimers.clear();
-  m_bridgeSerialLocks.clear();
+  m_devicePathToSerialNumber.clear();
+
+  // Clear tracking maps (Issue 2)
+  m_manuallyDisconnectedSerials.clear();
+  m_connectionAttempts.clear();
 }
 
 bool DeskflowHidExtension::applyFirmwareDeviceName(const QString &devicePath, const QString &deviceName)
@@ -1339,4 +1529,75 @@ void DeskflowHidExtension::applySerialGroupLockState(const QString &serialNumber
 bool DeskflowHidExtension::hasActiveBridgeClients() const
 {
   return !m_bridgeClientProcesses.isEmpty();
+}
+
+void DeskflowHidExtension::onServerConnectionStateChanged(CoreProcess::ConnectionState state)
+{
+  const bool isReady =
+      (state == CoreProcess::ConnectionState::Listening || state == CoreProcess::ConnectionState::Connected);
+  // Issue 10: Connecting state handling (logging only)
+  if (state == CoreProcess::ConnectionState::Connecting) {
+    qInfo() << "Server is connecting...";
+  }
+
+  // Update all widgets
+  for (BridgeClientWidget *w : m_bridgeClientWidgets.values()) {
+    w->setServerReady(isReady);
+  }
+
+  if (isReady) {
+    // Check all widgets for auto-connect
+    for (auto it = m_bridgeClientWidgets.begin(); it != m_bridgeClientWidgets.end(); ++it) {
+      const QString &configPath = it.key();
+      BridgeClientWidget *widget = it.value();
+      if (widget->isDeviceAvailable()) {
+        QSettings configSettings(configPath, QSettings::IniFormat);
+        if (configSettings.value(Settings::Bridge::AutoConnect, false).toBool()) {
+          QString serial = widget->serialNumber();
+          if (!m_manuallyDisconnectedSerials.contains(serial)) {
+            qInfo() << "Server ready. Triggering auto-connect for:" << widget->screenName();
+            bridgeClientConnectToggled(widget->devicePath(), configPath, true);
+          }
+        }
+      }
+    }
+
+    // Resume connections that were interrupted by server restart
+    if (!m_resumeConnectionAfterServerRestart.isEmpty()) {
+      qInfo() << "Resuming connections for" << m_resumeConnectionAfterServerRestart.size()
+              << "devices after server restart";
+      auto it = m_resumeConnectionAfterServerRestart.begin();
+      while (it != m_resumeConnectionAfterServerRestart.end()) {
+        const QString &devicePath = it.key();
+        const QString &configPath = it.value();
+        if (!configPath.isEmpty()) {
+          bridgeClientConnectToggled(devicePath, configPath, true);
+        }
+        ++it;
+      }
+      m_resumeConnectionAfterServerRestart.clear();
+    }
+  } else if (state == CoreProcess::ConnectionState::Disconnected) {
+    // Server explicitly stopped: stop all active bridge clients
+    qInfo() << "Server disconnected. Stopping all active bridge clients.";
+
+    // Capture active clients to resume later if this is a restart
+    m_resumeConnectionAfterServerRestart.clear();
+    QStringList activeDevices = m_bridgeClientProcesses.keys();
+    for (const QString &devicePath : activeDevices) {
+      QString configPath = m_bridgeClientDeviceToConfig.value(devicePath);
+      if (!configPath.isEmpty()) {
+        m_resumeConnectionAfterServerRestart.insert(devicePath, configPath);
+      }
+      stopBridgeClient(devicePath);
+    }
+  }
+}
+
+bool DeskflowHidExtension::isServerReady() const
+{
+  if (!m_mainWindow)
+    return false;
+  auto state = m_mainWindow->m_coreProcess.connectionState();
+  return state == CoreProcess::ConnectionState::Listening || state == CoreProcess::ConnectionState::Connected;
 }

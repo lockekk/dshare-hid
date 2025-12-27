@@ -17,6 +17,12 @@
 
 namespace deskflow::gui {
 
+struct OrderPrice
+{
+  double price;
+  QString desc;
+};
+
 class Esp32HidToolsWidget : public QDialog
 {
   Q_OBJECT
@@ -42,9 +48,14 @@ private Q_SLOTS:
   void onGenerateOrder();
   void onCopyOrderContent();
   void onEmailOrder();
+  void updatePaymentDetails();
+  void updatePaymentReference();
+  void onPayNowClicked();
 
 private:
   void refreshDeviceState();
+  bool confirmFactoryFlash();
+  void showFactoryFlashSuccess();
   // Port Selection
   QComboBox *m_portCombo;
   QPushButton *m_refreshPortsBtn;
@@ -88,6 +99,11 @@ private:
   QLineEdit *m_orderDeviceSecret;
   QLabel *m_orderSerialLabel;
   QComboBox *m_orderTotalProfiles;
+  QLabel *m_lblPaymentDetails;
+  QLabel *m_lblPaymentOwner;
+  QLineEdit *m_paymentRefNo;
+  QLineEdit *m_paymentTransId;
+  QPushButton *m_btnPayNow;
   QPushButton *m_btnGenerateOrder;
   QPushButton *m_btnCopyOrder;
   QPushButton *m_btnEmailOrder;
@@ -106,6 +122,7 @@ private:
   template <typename Function> void runBackgroundTask(Function func);
   std::vector<uint8_t> readFile(const QString &path);
   void flashFirmware(const std::vector<uint8_t> &data);
+  OrderPrice calculateOrderPrice(int option, int totalProfiles);
   QString composeOrderContent(QString &outPrefix, int &outOption);
   void reject() override;
   void changeEvent(QEvent *event) override;

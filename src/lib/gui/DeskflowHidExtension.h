@@ -8,9 +8,11 @@
 #include <QMap>
 #include <QObject>
 #include <QProcess>
+#include <QSet>
 #include <QTimer>
 #include <memory>
 
+#include "gui/core/CoreProcess.h"
 #include "gui/devices/UsbDeviceMonitor.h"
 
 class QMainWindow;
@@ -50,6 +52,7 @@ private Q_SLOTS:
   void bridgeClientProcessReadyRead(const QString &devicePath);
   void bridgeClientProcessFinished(const QString &devicePath, int exitCode, QProcess::ExitStatus exitStatus);
   void bridgeClientConnectionTimeout(const QString &devicePath);
+  void onServerConnectionStateChanged(deskflow::gui::CoreProcess::ConnectionState state);
 
 private:
   void loadBridgeClientConfigs();
@@ -59,6 +62,7 @@ private:
   bool applyFirmwareDeviceName(const QString &devicePath, const QString &deviceName);
   bool isValidDeviceName(const QString &deviceName) const;
   bool fetchFirmwareDeviceName(const QString &devicePath, QString &outName);
+  bool isServerReady() const;
   bool
   syncDeviceConfigFromDevice(const QString &devicePath, const QString &configPath, bool *outIsBleConnected = nullptr);
 
@@ -77,8 +81,17 @@ private:
   // (needed because sysfs disappears when device disconnects)
   QMap<QString, QString> m_devicePathToSerialNumber;
 
+  // Track manual disconnect: serial number -> bool
+  QSet<QString> m_manuallyDisconnectedSerials;
+
+  // Track retry count: config path -> count
+  QMap<QString, int> m_connectionAttempts;
+
   // Serial number -> config path holding the active connection
   QHash<QString, QString> m_bridgeSerialLocks;
+
+  // Track config paths that should be reconnected after server restart
+  QMap<QString, QString> m_resumeConnectionAfterServerRestart;
 
   // Device path -> config path for currently running bridge client process
   QHash<QString, QString> m_bridgeClientDeviceToConfig;

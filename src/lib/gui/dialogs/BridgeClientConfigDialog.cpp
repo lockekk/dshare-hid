@@ -83,6 +83,11 @@ BridgeClientConfigDialog::BridgeClientConfigDialog(
   m_checkBluetoothKeepAlive->setToolTip(tr("Disconnects from the host device when you stop using Deskflow."));
   advancedLayout->addWidget(m_checkBluetoothKeepAlive);
 
+  // Auto-connect
+  m_checkAutoConnect = new QCheckBox(tr("Auto-connect when USB device plugged in"), this);
+  m_checkAutoConnect->setToolTip(tr("Automatically connect to the Deskflow server when the device is plugged in."));
+  advancedLayout->addWidget(m_checkAutoConnect);
+
   mainLayout->addWidget(advancedGroup);
 
   // Dialog buttons
@@ -305,10 +310,14 @@ void BridgeClientConfigDialog::loadConfig()
   m_editDeviceName->setText(deviceName);
   m_originalDeviceName = deviceName;
 
-  bool bluetoothKeepAlive =
+  bool btKeepAlive =
       config.value(Settings::Bridge::BluetoothKeepAlive, Settings::defaultValue(Settings::Bridge::BluetoothKeepAlive))
           .toBool();
-  m_checkBluetoothKeepAlive->setChecked(bluetoothKeepAlive);
+  m_checkBluetoothKeepAlive->setChecked(btKeepAlive);
+
+  bool autoConnect =
+      config.value(Settings::Bridge::AutoConnect, Settings::defaultValue(Settings::Bridge::AutoConnect)).toBool();
+  m_checkAutoConnect->setChecked(autoConnect);
 
   QString activationState =
       config.value(Settings::Bridge::ActivationState, Settings::defaultValue(Settings::Bridge::ActivationState))
@@ -609,6 +618,7 @@ void BridgeClientConfigDialog::saveConfig()
   }
 
   config.setValue(Settings::Bridge::BluetoothKeepAlive, m_checkBluetoothKeepAlive->isChecked());
+  config.setValue(Settings::Bridge::AutoConnect, m_checkAutoConnect->isChecked());
 
   config.sync();
 }
@@ -745,6 +755,11 @@ bool BridgeClientConfigDialog::deviceNameChanged() const
 bool BridgeClientConfigDialog::bluetoothKeepAlive() const
 {
   return m_checkBluetoothKeepAlive->isChecked();
+}
+
+bool BridgeClientConfigDialog::autoConnect() const
+{
+  return m_checkAutoConnect->isChecked();
 }
 
 QString BridgeClientConfigDialog::screenName() const

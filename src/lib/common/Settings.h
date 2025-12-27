@@ -105,6 +105,7 @@ public:
     inline static const auto ActiveProfileHostname = QStringLiteral("bridge/activeProfileHostname");
     inline static const auto ActiveProfileOrientation = QStringLiteral("bridge/activeProfileOrientation");
     inline static const auto BluetoothKeepAlive = QStringLiteral("bridge/bluetoothKeepAlive");
+    inline static const auto AutoConnect = QStringLiteral("bridge/autoConnect");
   };
 
   // Enums types used in settings
@@ -237,6 +238,7 @@ private:
     , Settings::Server::ExternalConfig
     , Settings::Server::ExternalConfigFile
     , Settings::Bridge::ActiveProfileOrientation
+    , Settings::Bridge::AutoConnect
   };
 
   // When checking the default values this list contains the ones that default to false.
@@ -251,6 +253,7 @@ private:
     , Settings::Client::InvertScrollDirection
     , Settings::Log::ToFile
     , Settings::Log::GuiDebug
+    , Settings::Bridge::AutoConnect
   };
 
   // When checking the default values this list contains the ones that default to true.
