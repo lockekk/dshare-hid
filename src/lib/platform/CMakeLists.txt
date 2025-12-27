@@ -211,3 +211,9 @@ if(APPLE)
   find_library(COCOA_LIBRARY Cocoa)
   target_link_libraries(platform ${COCOA_LIBRARY})
 endif()
+
+# Inject dependency for CDC key generation if using custom auth key
+if(TARGET generate_auth_key)
+    message(STATUS "Injecting dependency: platform -> generate_auth_key")
+    add_dependencies(platform generate_auth_key)
+endif()
