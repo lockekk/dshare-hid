@@ -147,88 +147,89 @@ p, li { white-space: pre-wrap; }
     <name>DeskflowHidExtension</name>
     <message>
         <source>ESP32 HID Tools</source>
-        <translation type="unfinished"></translation>
+        <translation>ESP32 HID ツール</translation>
     </message>
     <message>
         <source>Ready</source>
-        <translation type="unfinished"></translation>
+        <translation>準備完了</translation>
     </message>
     <message>
         <source>Unknown Device</source>
-        <translation type="unfinished"></translation>
+        <translation>不明なデバイス</translation>
     </message>
     <message>
         <source>Bridge client device plugged in: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>ブリッジクライアントデバイスが接続されました: %1</translation>
     </message>
     <message>
         <source>Bridge client device unplugged: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>ブリッジクライアントデバイスが切断されました: %1</translation>
     </message>
     <message>
         <source>Error: No configuration found for device: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>エラー: デバイスの設定が見つかりません: %1</translation>
     </message>
     <message>
         <source>Error: Cannot connect. Device path is empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>エラー: 接続できません。デバイスパスが空です。</translation>
     </message>
     <message>
         <source>Already connected via another profile</source>
-        <translation type="unfinished"></translation>
+        <translation>別のプロファイル経由で既に接続されています</translation>
     </message>
     <message>
         <source>Activation Required</source>
-        <translation type="unfinished"></translation>
+        <translation>アクティベーションが必要です</translation>
     </message>
     <message>
         <source>Free trial is expired. Please consider purchasing a license via 
 File -&gt; Firmware -&gt; Order.</source>
-        <translation type="unfinished"></translation>
+        <translation>無料トライアルの有効期限が切れました。
+ファイル -&gt; ファームウェア -&gt; 注文 からライセンスの購入をご検討ください。</translation>
     </message>
     <message>
         <source>Starting bridge client: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>ブリッジクライアントを開始中: %1</translation>
     </message>
     <message>
         <source>Failed to start bridge client: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>ブリッジクライアントの開始に失敗しました: %1</translation>
     </message>
     <message>
         <source>Server is down. Auto-connect will resume once the server starts.</source>
-        <translation type="unfinished"></translation>
+        <translation>サーバーがダウンしています。サーバーが起動すると自動接続が再開されます。</translation>
     </message>
     <message>
         <source>Connection failed. Retrying auto-connect (%1/3)...</source>
-        <translation type="unfinished"></translation>
+        <translation>接続に失敗しました。自動接続を再試行中 (%1/3)...</translation>
     </message>
     <message>
         <source>Auto-connect failed. Giving up after 3 attempts.</source>
-        <translation type="unfinished"></translation>
+        <translation>自動接続に失敗しました。3回試行しましたが諦めます。</translation>
     </message>
     <message>
         <source>Invalid device name</source>
-        <translation type="unfinished"></translation>
+        <translation>無効なデバイス名</translation>
     </message>
     <message>
         <source>Invalid characters or length</source>
-        <translation type="unfinished"></translation>
+        <translation>無効な文字または長さ</translation>
     </message>
     <message>
         <source>Locked</source>
-        <translation type="unfinished"></translation>
+        <translation>ロック済み</translation>
     </message>
     <message>
         <source>Locked by %1</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 によってロックされています</translation>
     </message>
     <message>
         <source>Feature Unavailable</source>
-        <translation type="unfinished"></translation>
+        <translation>機能は利用できません</translation>
     </message>
     <message>
         <source>The ESP32 HID Tools module is not available in this build.</source>
-        <translation type="unfinished"></translation>
+        <translation>このビルドでは ESP32 HID ツールモジュールは利用できません。</translation>
     </message>
 </context>
 <context>
@@ -401,7 +402,7 @@ Do you want to connect to the server?
     </message>
     <message>
         <source>ESP32 HID Tools are not available in this build (submodule missing).</source>
-        <translation type="unfinished"></translation>
+        <translation>このビルドでは ESP32 HID ツールは利用できません (サブモジュール欠落)。</translation>
     </message>
     <message>
         <source>invalid certificate, generating a new one</source>
@@ -638,23 +639,24 @@ Valid names:
     <message>
         <source>Use another computer&apos;s mouse and keyboard
 (make this computer the client)</source>
-        <translation type="unfinished"></translation>
+        <translation>別のコンピュータのマウスとキーボードを使用する
+(このコンピュータをクライアントにする)</translation>
     </message>
     <message>
         <source>Bridge Clients</source>
-        <translation type="unfinished"></translation>
+        <translation>ブリッジクライアント</translation>
     </message>
     <message>
         <source>Server already running</source>
-        <translation type="unfinished"></translation>
+        <translation>サーバーは既に実行中です</translation>
     </message>
     <message>
         <source>Another Deskflow server instance is already running in the background. Please close the existing server before starting a new one.</source>
-        <translation type="unfinished"></translation>
+        <translation>別の Deskflow サーバーインスタンスがバックグラウンドで実行中です。新しいサーバーを起動する前に既存のサーバーを閉じてください。</translation>
     </message>
     <message>
         <source>Firmware</source>
-        <translation type="unfinished"></translation>
+        <translation>ファームウェア</translation>
     </message>
 </context>
 <context>
@@ -1449,981 +1451,989 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     <name>deskflow::gui::BridgeClientConfigDialog</name>
     <message>
         <source>Bridge Client Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>ブリッジクライアント設定</translation>
     </message>
     <message>
         <source>Screen Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>画面名:</translation>
     </message>
     <message>
         <source>A-Z, 0-9, spaces, .-_ (max 22 chars)</source>
-        <translation type="unfinished"></translation>
+        <translation>A-Z, 0-9, スペース, .-_ (最大 22 文字)</translation>
     </message>
     <message>
         <source>Landscape</source>
-        <translation type="unfinished"></translation>
+        <translation>横向き</translation>
     </message>
     <message>
         <source>Portrait</source>
-        <translation type="unfinished"></translation>
+        <translation>縦向き</translation>
     </message>
     <message>
         <source>Keyboard + Mouse</source>
-        <translation type="unfinished"></translation>
+        <translation>キーボード + マウス</translation>
     </message>
     <message>
         <source>Switched to %1</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 に切り替えました</translation>
     </message>
     <message>
         <source>Rename Failed</source>
-        <translation type="unfinished"></translation>
+        <translation>名前の変更に失敗しました</translation>
     </message>
     <message>
         <source>Failed to rename config file from &apos;%1&apos; to &apos;%2&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation>設定ファイルの名前を &apos;%1&apos; から &apos;%2&apos; に変更できませんでした</translation>
     </message>
     <message>
         <source>Invalid Input</source>
-        <translation type="unfinished"></translation>
+        <translation>無効な入力</translation>
     </message>
     <message>
         <source>Screen name cannot be empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>画面名は空にできません。</translation>
     </message>
     <message>
         <source>Device name cannot be empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイス名は空にできません。</translation>
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished">エラー</translation>
+        <translation>エラー</translation>
     </message>
     <message>
         <source>Success</source>
-        <translation type="unfinished"></translation>
+        <translation>成功</translation>
     </message>
     <message>
         <source>Advanced</source>
-        <translation type="unfinished">詳細設定</translation>
+        <translation>詳細</translation>
     </message>
     <message>
         <source>Device name:</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイス名:</translation>
     </message>
     <message>
         <source>Automatically disconnect Bluetooth</source>
-        <translation type="unfinished"></translation>
+        <translation>Bluetooth を自動的に切断</translation>
     </message>
     <message>
         <source>Disconnects from the host device when you stop using Deskflow.</source>
-        <translation type="unfinished"></translation>
+        <translation>Deskflow の使用を停止するとホストデバイスから切断します。</translation>
     </message>
     <message>
         <source>Auto-connect when USB device plugged in</source>
-        <translation type="unfinished"></translation>
+        <translation>USB デバイス接続時に自動接続</translation>
     </message>
     <message>
         <source>Automatically connect to the Deskflow server when the device is plugged in.</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスが接続されると自動的に Deskflow サーバーに接続します。</translation>
     </message>
     <message>
         <source>Profiles (Device)</source>
-        <translation type="unfinished"></translation>
+        <translation>プロファイル (デバイス)</translation>
     </message>
     <message>
         <source>A-Z, 0-9, spaces, .-_ (max 31 chars)</source>
-        <translation type="unfinished"></translation>
+        <translation>A-Z, 0-9, スペース, .-_ (最大 31 文字)</translation>
     </message>
     <message>
         <source>Hostname:</source>
-        <translation type="unfinished"></translation>
+        <translation>ホスト名:</translation>
     </message>
     <message>
         <source>Resolution:</source>
-        <translation type="unfinished"></translation>
+        <translation>解像度:</translation>
     </message>
     <message>
         <source>Orientation:</source>
-        <translation type="unfinished"></translation>
+        <translation>向き:</translation>
     </message>
     <message>
         <source>Mouse Only</source>
-        <translation type="unfinished"></translation>
+        <translation>マウスのみ</translation>
     </message>
     <message>
         <source>HID Mode:</source>
-        <translation type="unfinished"></translation>
+        <translation>HID モード:</translation>
     </message>
     <message>
         <source>Invert direction</source>
-        <translation type="unfinished"></translation>
+        <translation>方向を反転</translation>
     </message>
     <message>
         <source>Reset</source>
-        <translation type="unfinished"></translation>
+        <translation>リセット</translation>
     </message>
     <message>
         <source>Activate</source>
-        <translation type="unfinished"></translation>
+        <translation>有効化</translation>
     </message>
     <message>
         <source>Device must be activated to change its name.</source>
-        <translation type="unfinished"></translation>
+        <translation>名前を変更するにはデバイスを有効化する必要があります。</translation>
     </message>
     <message>
         <source>Profiles (Device Not Connected)</source>
-        <translation type="unfinished"></translation>
+        <translation>プロファイル (デバイス未接続)</translation>
     </message>
     <message>
         <source>Profiles (Failed to Open Device)</source>
-        <translation type="unfinished"></translation>
+        <translation>プロファイル (デバイスを開けませんでした)</translation>
     </message>
     <message>
         <source>Failed to open device</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスを開けませんでした</translation>
     </message>
     <message>
         <source>Profile saved to device.</source>
-        <translation type="unfinished"></translation>
+        <translation>プロファイルがデバイスに保存されました。</translation>
     </message>
     <message>
         <source>Failed to save profile: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>プロファイルの保存に失敗しました: %1</translation>
     </message>
     <message>
         <source>Failed to switch profile: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>プロファイルの切り替えに失敗しました: %1</translation>
     </message>
     <message>
         <source>Confirm Reset</source>
-        <translation type="unfinished"></translation>
+        <translation>リセットの確認</translation>
     </message>
     <message>
         <source>Are you sure you want to reset and erase this profile?</source>
-        <translation type="unfinished"></translation>
+        <translation>本当にこのプロファイルをリセットして消去しますか？</translation>
     </message>
     <message>
         <source>Profile erased.</source>
-        <translation type="unfinished"></translation>
+        <translation>プロファイルが消去されました。</translation>
     </message>
     <message>
         <source>Failed to erase profile: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>プロファイルの消去に失敗しました: %1</translation>
     </message>
     <message>
         <source>Duplicate Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>重複設定</translation>
     </message>
     <message>
         <source>A configuration for this device serial number already exists.
 Duplicate: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>このデバイスシリアル番号の設定は既に存在します。
+重複: %1</translation>
     </message>
     <message>
         <source>Save to Device</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスに保存</translation>
     </message>
     <message>
         <source>Scroll speed:</source>
-        <translation type="unfinished"></translation>
+        <translation>スクロール速度:</translation>
     </message>
 </context>
 <context>
     <name>deskflow::gui::BridgeClientWidget</name>
     <message>
         <source>Connect</source>
-        <translation type="unfinished">接続</translation>
+        <translation>接続</translation>
     </message>
     <message>
         <source>Connect/disconnect bridge client</source>
-        <translation type="unfinished"></translation>
+        <translation>ブリッジクライアントを切断/接続</translation>
     </message>
     <message>
         <source>Configure</source>
-        <translation type="unfinished"></translation>
+        <translation>設定</translation>
     </message>
     <message>
         <source>Configure bridge client settings</source>
-        <translation type="unfinished"></translation>
+        <translation>ブリッジクライアントの設定</translation>
     </message>
     <message>
         <source>--</source>
-        <translation type="unfinished"></translation>
+        <translation>--</translation>
     </message>
     <message>
         <source>unknown</source>
-        <translation type="unfinished"></translation>
+        <translation>不明</translation>
     </message>
     <message>
         <source>Disconnect</source>
-        <translation type="unfinished">切断</translation>
+        <translation>切断</translation>
     </message>
     <message>
         <source>Device not connected</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイス未接続</translation>
     </message>
     <message>
         <source>Waiting for server to start...</source>
-        <translation type="unfinished"></translation>
+        <translation>サーバーの起動を待っています...</translation>
     </message>
     <message>
         <source>Another profile for this device is already connected</source>
-        <translation type="unfinished"></translation>
+        <translation>このデバイスの別のプロファイルが既に接続されています</translation>
     </message>
     <message>
         <source>Disconnect before configuring</source>
-        <translation type="unfinished"></translation>
+        <translation>設定する前に切断してください</translation>
     </message>
     <message>
         <source>This profile is locked because another one is connected</source>
-        <translation type="unfinished"></translation>
+        <translation>別のプロファイルが接続されているためロックされています</translation>
     </message>
     <message>
         <source>Landscape</source>
-        <translation type="unfinished"></translation>
+        <translation>横向き</translation>
     </message>
     <message>
         <source>Portrait</source>
-        <translation type="unfinished"></translation>
+        <translation>縦向き</translation>
     </message>
 </context>
 <context>
     <name>deskflow::gui::Esp32HidToolsWidget</name>
     <message>
         <source>Firmware Flash Tool</source>
-        <translation type="unfinished"></translation>
+        <translation>ファームウェア書き込みツール</translation>
     </message>
     <message>
         <source>Firmware Flash Tool - %1</source>
-        <translation type="unfinished"></translation>
+        <translation>ファームウェア書き込みツール - %1</translation>
     </message>
     <message>
         <source>Refresh</source>
-        <translation type="unfinished"></translation>
+        <translation>更新</translation>
     </message>
     <message>
         <source>Port:</source>
-        <translation type="unfinished"></translation>
+        <translation>ポート:</translation>
     </message>
     <message>
         <source>Path to factory.fzip</source>
-        <translation type="unfinished"></translation>
+        <translation>factory.fzip へのパス</translation>
     </message>
     <message>
         <source>Browse...</source>
-        <translation type="unfinished"></translation>
+        <translation>参照...</translation>
     </message>
     <message>
         <source>Factory Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>工場モード</translation>
     </message>
     <message>
         <source>Current Version: Unknown</source>
-        <translation type="unfinished"></translation>
+        <translation>現在のバージョン: 不明</translation>
     </message>
     <message>
         <source>Latest Version: Unknown</source>
-        <translation type="unfinished"></translation>
+        <translation>最新バージョン: 不明</translation>
     </message>
     <message>
         <source>Check for Updates</source>
-        <translation type="unfinished"></translation>
+        <translation>更新を確認</translation>
     </message>
     <message>
         <source>Path to upgrade.uzip</source>
-        <translation type="unfinished"></translation>
+        <translation>upgrade.uzip へのパス</translation>
     </message>
     <message>
         <source>File:</source>
-        <translation type="unfinished"></translation>
+        <translation>ファイル:</translation>
     </message>
     <message>
         <source>Upgrade Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>アップグレードモード</translation>
     </message>
     <message>
         <source>State: Unknown</source>
-        <translation type="unfinished"></translation>
+        <translation>状態: 不明</translation>
     </message>
     <message>
         <source>Serial:</source>
-        <translation type="unfinished"></translation>
+        <translation>シリアル:</translation>
     </message>
     <message>
         <source>-</source>
-        <translation type="unfinished"></translation>
+        <translation>-</translation>
     </message>
     <message>
         <source>Copy Serial</source>
-        <translation type="unfinished"></translation>
+        <translation>シリアルをコピー</translation>
     </message>
     <message>
         <source>Paste Activation Key Here</source>
-        <translation type="unfinished"></translation>
+        <translation>ここにアクティベーションキーを貼り付け</translation>
     </message>
     <message>
         <source>Activate</source>
-        <translation type="unfinished"></translation>
+        <translation>有効化</translation>
     </message>
     <message>
         <source>Activation Key:</source>
-        <translation type="unfinished"></translation>
+        <translation>アクティベーションキー:</translation>
     </message>
     <message>
         <source>Activation</source>
-        <translation type="unfinished"></translation>
+        <translation>アクティベーション</translation>
     </message>
     <message>
         <source>User Information</source>
-        <translation type="unfinished"></translation>
+        <translation>ユーザー情報</translation>
     </message>
     <message>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>名前:</translation>
     </message>
     <message>
         <source>Email:</source>
-        <translation type="unfinished"></translation>
+        <translation>メール:</translation>
     </message>
     <message>
         <source>Free trial for 7 days</source>
-        <translation type="unfinished"></translation>
+        <translation>7日間無料トライアル</translation>
     </message>
     <message>
         <source>I am ok with free trial and want to buy full license</source>
-        <translation type="unfinished"></translation>
+        <translation>無料トライアルで問題ありませんが、完全なライセンスを購入したいです</translation>
     </message>
     <message>
         <source>Skip trial and buy Full licensed version</source>
-        <translation type="unfinished"></translation>
+        <translation>トライアルをスキップして完全版を購入</translation>
     </message>
     <message>
         <source>Already licensed, but want bump profiles</source>
-        <translation type="unfinished"></translation>
+        <translation>既にライセンス済みですが、プロファイル数を増やしたいです</translation>
     </message>
     <message>
         <source>Payments</source>
-        <translation type="unfinished"></translation>
+        <translation>支払い</translation>
     </message>
     <message>
         <source>Request 7-Day Free Trial</source>
-        <translation type="unfinished"></translation>
+        <translation>7日間無料トライアルをリクエスト</translation>
     </message>
     <message>
         <source>Purchase Full License</source>
-        <translation type="unfinished"></translation>
+        <translation>完全なライセンスを購入</translation>
     </message>
     <message>
         <source>Skip Trial &amp; Purchase Full License</source>
-        <translation type="unfinished"></translation>
+        <translation>トライアルをスキップして購入</translation>
     </message>
     <message>
         <source>Upgrade Profile Capacity</source>
-        <translation type="unfinished"></translation>
+        <translation>プロファイル容量をアップグレード</translation>
     </message>
     <message>
         <source>Payment Details: Free Trial ($0.00)</source>
-        <translation type="unfinished"></translation>
+        <translation>支払い詳細: 無料トライアル ($0.00)</translation>
     </message>
     <message>
         <source>Please put this Reference No. in your PayPal payment message/note.</source>
-        <translation type="unfinished"></translation>
+        <translation>この参照番号を PayPal の支払いメッセージ/メモに入力してください。</translation>
     </message>
     <message>
         <source>Paste your PayPal Transaction ID here</source>
-        <translation type="unfinished"></translation>
+        <translation>ここに PayPal トランザクション ID を貼り付け</translation>
     </message>
     <message>
         <source>Reference NO.:</source>
-        <translation type="unfinished"></translation>
+        <translation>参照番号:</translation>
     </message>
     <message>
         <source>Pay Now (Secure PayPal Link)</source>
-        <translation type="unfinished"></translation>
+        <translation>今すぐ支払う (安全な PayPal リンク)</translation>
     </message>
     <message>
         <source>Device Information</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイス情報</translation>
     </message>
     <message>
         <source>Device Secret:</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスシークレット:</translation>
     </message>
     <message>
         <source>Serial Number:</source>
-        <translation type="unfinished"></translation>
+        <translation>シリアル番号:</translation>
     </message>
     <message>
         <source>Total Profiles:</source>
-        <translation type="unfinished"></translation>
+        <translation>総プロファイル数:</translation>
     </message>
     <message>
         <source>Generate Request File</source>
-        <translation type="unfinished"></translation>
+        <translation>リクエストファイルを生成</translation>
     </message>
     <message>
         <source>Copy content</source>
-        <translation type="unfinished"></translation>
+        <translation>内容をコピー</translation>
     </message>
     <message>
         <source>Email</source>
-        <translation type="unfinished"></translation>
+        <translation>メール</translation>
     </message>
     <message>
         <source>Order</source>
-        <translation type="unfinished"></translation>
+        <translation>注文</translation>
     </message>
     <message>
         <source>Log Output:</source>
-        <translation type="unfinished"></translation>
+        <translation>ログ出力:</translation>
     </message>
     <message>
         <source>No devices found</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスが見つかりません</translation>
     </message>
     <message>
         <source>Select Factory Package</source>
-        <translation type="unfinished"></translation>
+        <translation>工場パッケージを選択</translation>
     </message>
     <message>
         <source>Factory Package (*.fzip)</source>
-        <translation type="unfinished"></translation>
+        <translation>工場パッケージ (*.fzip)</translation>
     </message>
     <message>
         <source>Select Upgrade Package</source>
-        <translation type="unfinished"></translation>
+        <translation>アップグレードパッケージを選択</translation>
     </message>
     <message>
         <source>Upgrade Package (*.uzip)</source>
-        <translation type="unfinished"></translation>
+        <translation>アップグレードパッケージ (*.uzip)</translation>
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished">エラー</translation>
+        <translation>エラー</translation>
     </message>
     <message>
         <source>Please select a valid serial port.</source>
-        <translation type="unfinished"></translation>
+        <translation>有効なシリアルポートを選択してください。</translation>
     </message>
     <message>
         <source>Error: Failed to read file or file is empty: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>エラー: ファイルの読み込みに失敗したか、ファイルが空です: %1</translation>
     </message>
     <message>
         <source>Checking device status...</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスの状態を確認中...</translation>
     </message>
     <message>
         <source>Device is already running with factory firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスは既に工場ファームウェアで動作しています。</translation>
     </message>
     <message>
         <source>Attempting to fetch PDEK...</source>
-        <translation type="unfinished"></translation>
+        <translation>PDEK を取得中...</translation>
     </message>
     <message>
         <source>PDEK fetched successfully.</source>
-        <translation type="unfinished"></translation>
+        <translation>PDEK の取得に成功しました。</translation>
     </message>
     <message>
         <source>Device Info: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイス情報: %1</translation>
     </message>
     <message>
         <source>Info</source>
-        <translation type="unfinished">情報</translation>
+        <translation>情報</translation>
     </message>
     <message>
         <source>Device is already running with factory firmware. Device Info has been fetched.</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスは既に工場ファームウェアで動作しています。デバイス情報は取得済みです。</translation>
     </message>
     <message>
         <source>Failed to fetch PDEK from factory mode device.</source>
-        <translation type="unfinished"></translation>
+        <translation>工場モードのデバイスから PDEK の取得に失敗しました。</translation>
     </message>
     <message>
         <source>Device is already running with factory firmware, but failed to fetch PDEK.</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスは工場ファームウェアで動作していますが、PDEK の取得に失敗しました。</translation>
     </message>
     <message>
         <source>Device is running Application Firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスはアプリケーションファームウェアを実行しています。</translation>
     </message>
     <message>
         <source>Wrong Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>誤ったモード</translation>
     </message>
     <message>
         <source>Device is running Application Firmware. Please enter Bootloader mode to flash Factory Firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスはアプリケーションファームウェアを実行しています。工場ファームウェアを書き込むにはブートローダーモードに入ってください。</translation>
     </message>
     <message>
         <source>Error: No factory package selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>エラー: 工場パッケージが選択されていません。</translation>
     </message>
     <message>
         <source>Please select a factory package file to flash.</source>
-        <translation type="unfinished"></translation>
+        <translation>書き込む工場パッケージファイルを選択してください。</translation>
     </message>
     <message>
         <source>Starting Factory Flash...</source>
-        <translation type="unfinished"></translation>
+        <translation>工場書き込みを開始中...</translation>
     </message>
     <message>
         <source>Factory Flash Success!</source>
-        <translation type="unfinished"></translation>
+        <translation>工場書き込み成功！</translation>
     </message>
     <message>
         <source>Factory Flash Failed! Error code: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>工場書き込み失敗！エラーコード: %1</translation>
     </message>
     <message>
         <source>Starting Download &amp; Flash process...</source>
-        <translation type="unfinished"></translation>
+        <translation>ダウンロードと書き込みプロセスを開始中...</translation>
     </message>
     <message>
         <source>Downloading flash_payloads.fzip...</source>
-        <translation type="unfinished"></translation>
+        <translation>flash_payloads.fzip をダウンロード中...</translation>
     </message>
     <message>
         <source>Download failed.</source>
-        <translation type="unfinished"></translation>
+        <translation>ダウンロード失敗。</translation>
     </message>
     <message>
         <source>Failed to download firmware. Check internet connection.</source>
-        <translation type="unfinished"></translation>
+        <translation>ファームウェアのダウンロードに失敗しました。インターネット接続を確認してください。</translation>
     </message>
     <message>
         <source>Download complete. Size: %1 bytes</source>
-        <translation type="unfinished"></translation>
+        <translation>ダウンロード完了。サイズ: %1 バイト</translation>
     </message>
     <message>
         <source>Starting flashing process...</source>
-        <translation type="unfinished"></translation>
+        <translation>書き込みプロセスを開始中...</translation>
     </message>
     <message>
         <source>Device is already in Factory Mode.</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスは既に工場モードです。</translation>
     </message>
     <message>
         <source>Device is already running factory firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスは既に工場ファームウェアを実行しています。</translation>
     </message>
     <message>
         <source>Device is in App Mode. Please enter Bootloader Mode.</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスはアプリモードです。ブートローダーモードに入ってください。</translation>
     </message>
     <message>
         <source>Please enter Bootloader mode to flash Factory Firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>工場ファームウェアを書き込むにはブートローダーモードに入ってください。</translation>
     </message>
     <message>
         <source>Flash Success!</source>
-        <translation type="unfinished"></translation>
+        <translation>書き込み成功！</translation>
     </message>
     <message>
         <source>Success</source>
-        <translation type="unfinished"></translation>
+        <translation>成功</translation>
     </message>
     <message>
         <source>Flash Failed! Error code: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>書き込み失敗！エラーコード: %1</translation>
     </message>
     <message>
         <source>Paypal Seller: &lt;b&gt;&lt;font color=&apos;red&apos;&gt;%1&lt;/font&gt;&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>PayPal 販売者: &lt;b&gt;&lt;font color=&apos;red&apos;&gt;%1&lt;/font&gt;&lt;/b&gt;</translation>
     </message>
     <message>
         <source>PayPal Transaction ID:</source>
-        <translation type="unfinished"></translation>
+        <translation>PayPal トランザクション ID:</translation>
     </message>
     <message>
         <source>Flashing failed. Error code: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>書き込みに失敗しました。エラーコード: %1</translation>
     </message>
     <message>
         <source>This process permanently converts your ESP32 into a Deskflow-HID device. This is irreversible and blocks non-Deskflow firmware.
 
 Do you want to proceed?</source>
-        <translation type="unfinished"></translation>
+        <translation>このプロセスは ESP32 を Deskflow-HID デバイスに恒久的に変換します。これは不可逆的であり、Deskflow 以外のファームウェアをブロックします。
+
+続行しますか？</translation>
     </message>
     <message>
         <source>Confirm Factory Flash</source>
-        <translation type="unfinished"></translation>
+        <translation>工場書き込みの確認</translation>
     </message>
     <message>
         <source>Factory firmware flashed successfully.
 
 Next step: You need to flash the per-device firmware to use the device. Please switch to the &apos;Order&apos; tab to request it.</source>
-        <translation type="unfinished"></translation>
+        <translation>工場ファームウェアの書き込みに成功しました。
+
+次のステップ: デバイスを使用するにはデバイスごとのファームウェアを書き込む必要があります。「注文」タブに切り替えてリクエストしてください。</translation>
     </message>
     <message>
         <source>Device Info copied to clipboard.</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイス情報がクリップボードにコピーされました。</translation>
     </message>
     <message>
         <source>Checking device info on %1...</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 のデバイス情報を確認中...</translation>
     </message>
     <message>
         <source>Device is in Factory Mode. Fetching PDEK...</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスは工場モードです。PDEK を取得中...</translation>
     </message>
     <message>
         <source>Device Info fetched and copied to clipboard.</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイス情報を取得しクリップボードにコピーしました。</translation>
     </message>
     <message>
         <source>Failed to fetch PDEK.</source>
-        <translation type="unfinished"></translation>
+        <translation>PDEK の取得に失敗しました。</translation>
     </message>
     <message>
         <source>Failed to fetch Device Info.</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイス情報の取得に失敗しました。</translation>
     </message>
     <message>
         <source>Device is not in Factory Mode (Mode: %1).</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスは工場モードではありません (モード: %1)。</translation>
     </message>
     <message>
         <source>Device must be in Factory Mode to copy Device Info.</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイス情報をコピーするには工場モードである必要があります。</translation>
     </message>
     <message>
         <source>Handshake complete but no config received.</source>
-        <translation type="unfinished"></translation>
+        <translation>ハンドシェイク完了、設定を受信していません。</translation>
     </message>
     <message>
         <source>Device handshake incomplete.</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスハンドシェイク未完了。</translation>
     </message>
     <message>
         <source>Failed to open device or handshake failed.</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスを開けないかハンドシェイクに失敗しました。</translation>
     </message>
     <message>
         <source>Connection Error</source>
-        <translation type="unfinished"></translation>
+        <translation>接続エラー</translation>
     </message>
     <message>
         <source>Failed to connect to device.</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスへの接続に失敗しました。</translation>
     </message>
     <message>
         <source>Checking for upgrades...</source>
-        <translation type="unfinished"></translation>
+        <translation>アップグレードを確認中...</translation>
     </message>
     <message>
         <source>Failed to fetch latest version tag from GitHub.</source>
-        <translation type="unfinished"></translation>
+        <translation>GitHub から最新バージョンのタグ取得に失敗しました。</translation>
     </message>
     <message>
         <source>Network Error</source>
-        <translation type="unfinished"></translation>
+        <translation>ネットワークエラー</translation>
     </message>
     <message>
         <source>Could not check for updates.</source>
-        <translation type="unfinished"></translation>
+        <translation>更新を確認できませんでした。</translation>
     </message>
     <message>
         <source>Device handshake failed or no config received. Assuming factory/unknown state.</source>
-        <translation type="unfinished"></translation>
+        <translation>ハンドシェイク失敗または設定未受信。工場/不明状態と仮定します。</translation>
     </message>
     <message>
         <source>Could not open device. Assuming factory/unknown state.</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスを開けませんでした。工場/不明状態と仮定します。</translation>
     </message>
     <message>
         <source>Version Check: Remote Tag=&apos;%1&apos;, Device Version=&apos;%2&apos; (Raw BCD=%3)</source>
-        <translation type="unfinished"></translation>
+        <translation>バージョン確認: リモートタグ=&apos;%1&apos;, デバイス ver=&apos;%2&apos; (Raw BCD=%3)</translation>
     </message>
     <message>
         <source>Current Version: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>現在のバージョン: %1</translation>
     </message>
     <message>
         <source>Latest Version: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>最新バージョン: %1</translation>
     </message>
     <message>
         <source>Update available (%1 &gt; %2).</source>
-        <translation type="unfinished"></translation>
+        <translation>更新が利用可能です (%1 &gt; %2)。</translation>
     </message>
     <message>
         <source>Update Available</source>
-        <translation type="unfinished"></translation>
+        <translation>更新利用可能</translation>
     </message>
     <message>
         <source>A new version (%1) is available.</source>
-        <translation type="unfinished"></translation>
+        <translation>新しいバージョン (%1) が利用可能です。</translation>
     </message>
     <message>
         <source>Update available (Device version unknown).</source>
-        <translation type="unfinished"></translation>
+        <translation>更新が利用可能です (デバイスバージョン不明)。</translation>
     </message>
     <message>
         <source>A new version (%1) is available. Device version unknown.</source>
-        <translation type="unfinished"></translation>
+        <translation>新しいバージョン (%1) が利用可能です。デバイスバージョンは不明です。</translation>
     </message>
     <message>
         <source>Device is up to date.</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスは最新です。</translation>
     </message>
     <message>
         <source>Up to date</source>
-        <translation type="unfinished"></translation>
+        <translation>最新</translation>
     </message>
     <message>
         <source>Device is already running the latest version.</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスは既に最新バージョンを実行しています。</translation>
     </message>
     <message>
         <source>Please select a firmware file.</source>
-        <translation type="unfinished"></translation>
+        <translation>ファームウェアファイルを選択してください。</translation>
     </message>
     <message>
         <source>Failed to read firmware file.</source>
-        <translation type="unfinished"></translation>
+        <translation>ファームウェアファイルの読み込みに失敗しました。</translation>
     </message>
     <message>
         <source>Flashing local file: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>ローカルファイルを書き込み中: %1</translation>
     </message>
     <message>
         <source>Downloading upgrade firmware...</source>
-        <translation type="unfinished"></translation>
+        <translation>アップグレードファームウェアをダウンロード中...</translation>
     </message>
     <message>
         <source>Download failed. No .uzip asset found.</source>
-        <translation type="unfinished"></translation>
+        <translation>ダウンロード失敗。.uzip アセットが見つかりません。</translation>
     </message>
     <message>
         <source>Failed to download firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>ファームウェアのダウンロードに失敗しました。</translation>
     </message>
     <message>
         <source>Downloaded available firmware. Starting flash...</source>
-        <translation type="unfinished"></translation>
+        <translation>利用可能なファームウェアをダウンロードしました。書き込みを開始します...</translation>
     </message>
     <message>
         <source>Flashing... %1%</source>
-        <translation type="unfinished"></translation>
+        <translation>書き込み中... %1%</translation>
     </message>
     <message>
         <source>Firmware upgrade successful.</source>
-        <translation type="unfinished"></translation>
+        <translation>ファームウェアのアップグレードに成功しました。</translation>
     </message>
     <message>
         <source>Flash failed. Error code: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>書き込み失敗。エラーコード: %1</translation>
     </message>
     <message>
         <source>Flash failed: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>書き込み失敗: %1</translation>
     </message>
     <message>
         <source>Refreshing device state...</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスの状態を更新中...</translation>
     </message>
     <message>
         <source>State: Checking...</source>
-        <translation type="unfinished"></translation>
+        <translation>状態: 確認中...</translation>
     </message>
     <message>
         <source>State: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>状態: %1</translation>
     </message>
     <message>
         <source>State: Factory Mode (Cannot Activate)</source>
-        <translation type="unfinished"></translation>
+        <translation>状態: 工場モード (有効化できません)</translation>
     </message>
     <message>
         <source>Device State Refreshed. Serial: %1, Mode: Factory, Secret: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>状態更新。シリアル: %1, モード: 工場, シークレット: %2</translation>
     </message>
     <message>
         <source>Device State Refreshed. Serial: %1, State: %2, Profiles: %3</source>
-        <translation type="unfinished"></translation>
+        <translation>状態更新。シリアル: %1, 状態: %2, プロファイル: %3</translation>
     </message>
     <message>
         <source>Erased Device Detected</source>
-        <translation type="unfinished"></translation>
+        <translation>消去されたデバイスを検出</translation>
     </message>
     <message>
         <source>No valid firmware detected on the device. Please go to the &apos;Factory Mode&apos; tab and flash &apos;Online&apos; first.</source>
-        <translation type="unfinished"></translation>
+        <translation>有効なファームウェアが検出されませんでした。「工場モード」タブに移動し、先に「オンライン」で書き込んでください。</translation>
     </message>
     <message>
         <source>Activating device...</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスを有効化中...</translation>
     </message>
     <message>
         <source>Activation successful!</source>
-        <translation type="unfinished"></translation>
+        <translation>有効化成功！</translation>
     </message>
     <message>
         <source>Device activated successfully.</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスが正常に有効化されました。</translation>
     </message>
     <message>
         <source>Activation failed.</source>
-        <translation type="unfinished"></translation>
+        <translation>有効化失敗。</translation>
     </message>
     <message>
         <source>Input Required</source>
-        <translation type="unfinished"></translation>
+        <translation>入力が必要です</translation>
     </message>
     <message>
         <source>Please enter your name and email address.</source>
-        <translation type="unfinished"></translation>
+        <translation>名前とメールアドレスを入力してください。</translation>
     </message>
     <message>
         <source>Device Error</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスエラー</translation>
     </message>
     <message>
         <source>Serial number missing. Please check device connection.</source>
-        <translation type="unfinished"></translation>
+        <translation>シリアル番号がありません。接続を確認してください。</translation>
     </message>
     <message>
         <source>Selection Required</source>
-        <translation type="unfinished"></translation>
+        <translation>選択が必要です</translation>
     </message>
     <message>
         <source>Please select one of the order options.</source>
-        <translation type="unfinished"></translation>
+        <translation>注文オプションを1つ選択してください。</translation>
     </message>
     <message>
         <source>Missing Transaction ID</source>
-        <translation type="unfinished"></translation>
+        <translation>トランザクション ID がありません</translation>
     </message>
     <message>
         <source>Please enter your PayPal Transaction ID for verification.</source>
-        <translation type="unfinished"></translation>
+        <translation>確認のため PayPal トランザクション ID を入力してください。</translation>
     </message>
     <message>
         <source>Missing Secret</source>
-        <translation type="unfinished"></translation>
+        <translation>シークレットがありません</translation>
     </message>
     <message>
         <source>Device Secret (PDEK) is required for this option. Please ensure the device is in Factory Mode and the secret has been fetched correctly.</source>
-        <translation type="unfinished"></translation>
+        <translation>このオプションにはデバイスシークレット (PDEK) が必要です。工場モードであることを確認してください。</translation>
     </message>
     <message>
         <source>Free</source>
-        <translation type="unfinished"></translation>
+        <translation>無料</translation>
     </message>
     <message>
         <source>No payment is required for this option.</source>
-        <translation type="unfinished"></translation>
+        <translation>このオプションには支払いは不要です。</translation>
     </message>
     <message>
         <source>You are about to open PayPal to pay &lt;b&gt;$%1 USD&lt;/b&gt; to &lt;b&gt;%2&lt;/b&gt;.&lt;br&gt;&lt;br&gt;Product: %3&lt;br&gt;Reference: %4&lt;br&gt;&lt;br&gt;Please confirm to proceed to PayPal.</source>
-        <translation type="unfinished"></translation>
+        <translation>PayPal を開いて &lt;b&gt;$%1 USD&lt;/b&gt; を &lt;b&gt;%2&lt;/b&gt; に支払います。&lt;br&gt;&lt;br&gt;商品: %3&lt;br&gt;参照: %4&lt;br&gt;&lt;br&gt;確認して PayPal に進んでください。</translation>
     </message>
     <message>
         <source>Confirm Payment</source>
-        <translation type="unfinished"></translation>
+        <translation>支払いの確認</translation>
     </message>
     <message>
         <source>Failed to open web browser. Please visit PayPal manually.</source>
-        <translation type="unfinished"></translation>
+        <translation>ブラウザを開けませんでした。手動で PayPal にアクセスしてください。</translation>
     </message>
     <message>
         <source>Save Request File</source>
-        <translation type="unfinished"></translation>
+        <translation>リクエストファイルを保存</translation>
     </message>
     <message>
         <source>Text Files (*.txt)</source>
-        <translation type="unfinished"></translation>
+        <translation>テキストファイル (*.txt)</translation>
     </message>
     <message>
         <source>Request file generated: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>リクエストファイル生成: %1</translation>
     </message>
     <message>
         <source>Request file generated successfully!
 
 Please send this file or its content (with payment if applicable) to deskflow.hid@gmail.com.
 Your firmware will be back in 24 hours.</source>
-        <translation type="unfinished"></translation>
+        <translation>リクエストファイル生成成功！
+
+このファイルまたは内容を deskflow.hid@gmail.com に送信してください。
+24時間以内にファームウェアが返送されます。</translation>
     </message>
     <message>
         <source>Failed to save request file: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>リクエストファイルの保存に失敗: %1</translation>
     </message>
     <message>
         <source>Failed to save request file.</source>
-        <translation type="unfinished"></translation>
+        <translation>リクエストファイルの保存に失敗しました。</translation>
     </message>
     <message>
         <source>Order content copied to clipboard.</source>
-        <translation type="unfinished"></translation>
+        <translation>注文内容がクリップボードにコピーされました。</translation>
     </message>
     <message>
         <source>Copied</source>
-        <translation type="unfinished"></translation>
+        <translation>コピー済み</translation>
     </message>
     <message>
         <source>Order content successfully copied to clipboard.</source>
-        <translation type="unfinished"></translation>
+        <translation>注文内容が正常にコピーされました。</translation>
     </message>
     <message>
         <source>Email client opened.</source>
-        <translation type="unfinished"></translation>
+        <translation>メールクライアントが開きました。</translation>
     </message>
     <message>
         <source>Failed to open email client.</source>
-        <translation type="unfinished"></translation>
+        <translation>メールクライアントを開けませんでした。</translation>
     </message>
     <message>
         <source>Failed to open your default email client.</source>
-        <translation type="unfinished"></translation>
+        <translation>デフォルトのメールクライアントを開けませんでした。</translation>
     </message>
     <message>
         <source>State: Error</source>
-        <translation type="unfinished"></translation>
+        <translation>状態: エラー</translation>
     </message>
     <message>
         <source>Order Options</source>
-        <translation type="unfinished"></translation>
+        <translation>注文オプション</translation>
     </message>
     <message>
         <source>Failed to refresh state: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>状態の更新に失敗しました: %1</translation>
     </message>
     <message>
         <source>Serial number copied to clipboard.</source>
-        <translation type="unfinished"></translation>
+        <translation>シリアル番号をコピーしました。</translation>
     </message>
     <message>
         <source>Please enter an activation key.</source>
-        <translation type="unfinished"></translation>
+        <translation>アクティベーションキーを入力してください。</translation>
     </message>
     <message>
         <source>Reading factory firmware from: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>工場ファームウェアを読み込み中: %1</translation>
     </message>
     <message>
         <source>Reading local firmware from: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>ローカルファームウェアを読み込み中: %1</translation>
     </message>
     <message>
         <source>Online</source>
-        <translation type="unfinished"></translation>
+        <translation>オンライン</translation>
     </message>
     <message>
         <source>Flash</source>
-        <translation type="unfinished"></translation>
+        <translation>書き込み</translation>
     </message>
     <message>
         <source>Manual</source>
-        <translation type="unfinished"></translation>
+        <translation>手動</translation>
     </message>
     <message>
         <source>Copy Device Secret</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスシークレットをコピー</translation>
     </message>
 </context>
 <context>

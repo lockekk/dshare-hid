@@ -149,88 +149,89 @@ p, li { white-space: pre-wrap; }
     <name>DeskflowHidExtension</name>
     <message>
         <source>ESP32 HID Tools</source>
-        <translation type="unfinished"></translation>
+        <translation>Инструменты ESP32 HID</translation>
     </message>
     <message>
         <source>Ready</source>
-        <translation type="unfinished"></translation>
+        <translation>Готово</translation>
     </message>
     <message>
         <source>Unknown Device</source>
-        <translation type="unfinished"></translation>
+        <translation>Неизвестное устройство</translation>
     </message>
     <message>
         <source>Bridge client device plugged in: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Подключено устройство клиента моста: %1</translation>
     </message>
     <message>
         <source>Bridge client device unplugged: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Отключено устройство клиента моста: %1</translation>
     </message>
     <message>
         <source>Error: No configuration found for device: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка: Конфигурация для устройства не найдена: %1</translation>
     </message>
     <message>
         <source>Error: Cannot connect. Device path is empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка: Невозможно подключиться. Путь к устройству пуст.</translation>
     </message>
     <message>
         <source>Already connected via another profile</source>
-        <translation type="unfinished"></translation>
+        <translation>Уже подключено через другой профиль</translation>
     </message>
     <message>
         <source>Activation Required</source>
-        <translation type="unfinished"></translation>
+        <translation>Требуется активация</translation>
     </message>
     <message>
         <source>Free trial is expired. Please consider purchasing a license via 
 File -&gt; Firmware -&gt; Order.</source>
-        <translation type="unfinished"></translation>
+        <translation>Истекла бесплатная пробная версия. Пожалуйста, рассмотрите покупку лицензии через 
+Файл -&gt; Прошивка -&gt; Заказ.</translation>
     </message>
     <message>
         <source>Starting bridge client: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Запуск клиента моста: %1</translation>
     </message>
     <message>
         <source>Failed to start bridge client: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось запустить клиент моста: %1</translation>
     </message>
     <message>
         <source>Server is down. Auto-connect will resume once the server starts.</source>
-        <translation type="unfinished"></translation>
+        <translation>Сервер недоступен. Автоматическое подключение возобновится после запуска сервера.</translation>
     </message>
     <message>
         <source>Connection failed. Retrying auto-connect (%1/3)...</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка подключения. Повторная попытка автоматического подключения (%1/3)...</translation>
     </message>
     <message>
         <source>Auto-connect failed. Giving up after 3 attempts.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка автоматического подключения. Отмена после 3 попыток.</translation>
     </message>
     <message>
         <source>Invalid device name</source>
-        <translation type="unfinished"></translation>
+        <translation>Неверное имя устройства</translation>
     </message>
     <message>
         <source>Invalid characters or length</source>
-        <translation type="unfinished"></translation>
+        <translation>Неверные символы или длина</translation>
     </message>
     <message>
         <source>Locked</source>
-        <translation type="unfinished"></translation>
+        <translation>Заблокировано</translation>
     </message>
     <message>
         <source>Locked by %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Заблокировано %1</translation>
     </message>
     <message>
         <source>Feature Unavailable</source>
-        <translation type="unfinished"></translation>
+        <translation>Функция недоступна</translation>
     </message>
     <message>
         <source>The ESP32 HID Tools module is not available in this build.</source>
-        <translation type="unfinished"></translation>
+        <translation>Модуль инструментов ESP32 HID недоступен в этой сборке.</translation>
     </message>
 </context>
 <context>
@@ -403,7 +404,7 @@ Do you want to connect to the server?
     </message>
     <message>
         <source>ESP32 HID Tools are not available in this build (submodule missing).</source>
-        <translation type="unfinished"></translation>
+        <translation>Инструменты ESP32 HID недоступны в этой сборке (отсутствует подмодуль).</translation>
     </message>
     <message>
         <source>invalid certificate, generating a new one</source>
@@ -642,23 +643,24 @@ Valid names:
     <message>
         <source>Use another computer&apos;s mouse and keyboard
 (make this computer the client)</source>
-        <translation type="unfinished"></translation>
+        <translation>Использовать мышь и клавиатуру другого компьютера
+(сделать этот компьютер клиентом)</translation>
     </message>
     <message>
         <source>Bridge Clients</source>
-        <translation type="unfinished"></translation>
+        <translation>Клиенты моста</translation>
     </message>
     <message>
         <source>Server already running</source>
-        <translation type="unfinished"></translation>
+        <translation>Сервер уже запущен</translation>
     </message>
     <message>
         <source>Another Deskflow server instance is already running in the background. Please close the existing server before starting a new one.</source>
-        <translation type="unfinished"></translation>
+        <translation>Другой экземпляр сервера Deskflow уже запущен в фоновом режиме. Пожалуйста, закройте существующий сервер перед запуском нового.</translation>
     </message>
     <message>
         <source>Firmware</source>
-        <translation type="unfinished"></translation>
+        <translation>Прошивка</translation>
     </message>
 </context>
 <context>
@@ -1453,981 +1455,989 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     <name>deskflow::gui::BridgeClientConfigDialog</name>
     <message>
         <source>Bridge Client Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Конфигурация клиента моста</translation>
     </message>
     <message>
         <source>Screen Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя экрана:</translation>
     </message>
     <message>
         <source>A-Z, 0-9, spaces, .-_ (max 22 chars)</source>
-        <translation type="unfinished"></translation>
+        <translation>A-Z, 0-9, пробелы, .-_ (макс. 22 символа)</translation>
     </message>
     <message>
         <source>Landscape</source>
-        <translation type="unfinished"></translation>
+        <translation>Альбомная</translation>
     </message>
     <message>
         <source>Portrait</source>
-        <translation type="unfinished"></translation>
+        <translation>Портретная</translation>
     </message>
     <message>
         <source>Keyboard + Mouse</source>
-        <translation type="unfinished"></translation>
+        <translation>Клавиатура + Мышь</translation>
     </message>
     <message>
         <source>Switched to %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Переключено на %1</translation>
     </message>
     <message>
         <source>Rename Failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка переименования</translation>
     </message>
     <message>
         <source>Failed to rename config file from &apos;%1&apos; to &apos;%2&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось переименовать файл конфигурации с &apos;%1&apos; на &apos;%2&apos;</translation>
     </message>
     <message>
         <source>Invalid Input</source>
-        <translation type="unfinished"></translation>
+        <translation>Неверный ввод</translation>
     </message>
     <message>
         <source>Screen name cannot be empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя экрана не может быть пустым.</translation>
     </message>
     <message>
         <source>Device name cannot be empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя устройства не может быть пустым.</translation>
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished">Ошибка</translation>
+        <translation>Ошибка</translation>
     </message>
     <message>
         <source>Success</source>
-        <translation type="unfinished"></translation>
+        <translation>Успех</translation>
     </message>
     <message>
         <source>Advanced</source>
-        <translation type="unfinished">Расшириные</translation>
+        <translation>Дополнительно</translation>
     </message>
     <message>
         <source>Device name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя устройства:</translation>
     </message>
     <message>
         <source>Automatically disconnect Bluetooth</source>
-        <translation type="unfinished"></translation>
+        <translation>Автоматически отключать Bluetooth</translation>
     </message>
     <message>
         <source>Disconnects from the host device when you stop using Deskflow.</source>
-        <translation type="unfinished"></translation>
+        <translation>Отключается от хост-устройства, когда вы прекращаете использовать Deskflow.</translation>
     </message>
     <message>
         <source>Auto-connect when USB device plugged in</source>
-        <translation type="unfinished"></translation>
+        <translation>Автоматическое подключение при подключении USB-устройства</translation>
     </message>
     <message>
         <source>Automatically connect to the Deskflow server when the device is plugged in.</source>
-        <translation type="unfinished"></translation>
+        <translation>Автоматически подключаться к серверу Deskflow при подключении устройства.</translation>
     </message>
     <message>
         <source>Profiles (Device)</source>
-        <translation type="unfinished"></translation>
+        <translation>Профили (Устройство)</translation>
     </message>
     <message>
         <source>A-Z, 0-9, spaces, .-_ (max 31 chars)</source>
-        <translation type="unfinished"></translation>
+        <translation>A-Z, 0-9, пробелы, .-_ (макс. 31 символ)</translation>
     </message>
     <message>
         <source>Hostname:</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя хоста:</translation>
     </message>
     <message>
         <source>Resolution:</source>
-        <translation type="unfinished"></translation>
+        <translation>Разрешение:</translation>
     </message>
     <message>
         <source>Orientation:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ориентация:</translation>
     </message>
     <message>
         <source>Mouse Only</source>
-        <translation type="unfinished"></translation>
+        <translation>Только мышь</translation>
     </message>
     <message>
         <source>HID Mode:</source>
-        <translation type="unfinished"></translation>
+        <translation>Режим HID:</translation>
     </message>
     <message>
         <source>Invert direction</source>
-        <translation type="unfinished"></translation>
+        <translation>Инвертировать направление</translation>
     </message>
     <message>
         <source>Reset</source>
-        <translation type="unfinished"></translation>
+        <translation>Сброс</translation>
     </message>
     <message>
         <source>Activate</source>
-        <translation type="unfinished"></translation>
+        <translation>Активировать</translation>
     </message>
     <message>
         <source>Device must be activated to change its name.</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройство должно быть активировано для изменения имени.</translation>
     </message>
     <message>
         <source>Profiles (Device Not Connected)</source>
-        <translation type="unfinished"></translation>
+        <translation>Профили (Устройство не подключено)</translation>
     </message>
     <message>
         <source>Profiles (Failed to Open Device)</source>
-        <translation type="unfinished"></translation>
+        <translation>Профили (Ошибка открытия устройства)</translation>
     </message>
     <message>
         <source>Failed to open device</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось открыть устройство</translation>
     </message>
     <message>
         <source>Profile saved to device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Профиль сохранен на устройстве.</translation>
     </message>
     <message>
         <source>Failed to save profile: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка сохранения профиля: %1</translation>
     </message>
     <message>
         <source>Failed to switch profile: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка переключения профиля: %1</translation>
     </message>
     <message>
         <source>Confirm Reset</source>
-        <translation type="unfinished"></translation>
+        <translation>Подтвердить сброс</translation>
     </message>
     <message>
         <source>Are you sure you want to reset and erase this profile?</source>
-        <translation type="unfinished"></translation>
+        <translation>Вы уверены, что хотите сбросить и стереть этот профиль?</translation>
     </message>
     <message>
         <source>Profile erased.</source>
-        <translation type="unfinished"></translation>
+        <translation>Профиль стерт.</translation>
     </message>
     <message>
         <source>Failed to erase profile: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка стирания профиля: %1</translation>
     </message>
     <message>
         <source>Duplicate Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Дублирующая конфигурация</translation>
     </message>
     <message>
         <source>A configuration for this device serial number already exists.
 Duplicate: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Конфигурация для этого серийного номера устройства уже существует.
+Дубликат: %1</translation>
     </message>
     <message>
         <source>Save to Device</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить на устройство</translation>
     </message>
     <message>
         <source>Scroll speed:</source>
-        <translation type="unfinished"></translation>
+        <translation>Скорость прокрутки:</translation>
     </message>
 </context>
 <context>
     <name>deskflow::gui::BridgeClientWidget</name>
     <message>
         <source>Connect</source>
-        <translation type="unfinished">Подключиться</translation>
+        <translation>Подключить</translation>
     </message>
     <message>
         <source>Connect/disconnect bridge client</source>
-        <translation type="unfinished"></translation>
+        <translation>Подключить/отключить клиент моста</translation>
     </message>
     <message>
         <source>Configure</source>
-        <translation type="unfinished"></translation>
+        <translation>Настроить</translation>
     </message>
     <message>
         <source>Configure bridge client settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Настроить параметры клиента моста</translation>
     </message>
     <message>
         <source>--</source>
-        <translation type="unfinished"></translation>
+        <translation>--</translation>
     </message>
     <message>
         <source>unknown</source>
-        <translation type="unfinished"></translation>
+        <translation>неизвестно</translation>
     </message>
     <message>
         <source>Disconnect</source>
-        <translation type="unfinished">Отключиться</translation>
+        <translation>Отключить</translation>
     </message>
     <message>
         <source>Device not connected</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройство не подключено</translation>
     </message>
     <message>
         <source>Waiting for server to start...</source>
-        <translation type="unfinished"></translation>
+        <translation>Ожидание запуска сервера...</translation>
     </message>
     <message>
         <source>Another profile for this device is already connected</source>
-        <translation type="unfinished"></translation>
+        <translation>Другой профиль для этого устройства уже подключен</translation>
     </message>
     <message>
         <source>Disconnect before configuring</source>
-        <translation type="unfinished"></translation>
+        <translation>Отключитесь перед настройкой</translation>
     </message>
     <message>
         <source>This profile is locked because another one is connected</source>
-        <translation type="unfinished"></translation>
+        <translation>Этот профиль заблокирован, так как подключен другой</translation>
     </message>
     <message>
         <source>Landscape</source>
-        <translation type="unfinished"></translation>
+        <translation>Альбомная</translation>
     </message>
     <message>
         <source>Portrait</source>
-        <translation type="unfinished"></translation>
+        <translation>Портретная</translation>
     </message>
 </context>
 <context>
     <name>deskflow::gui::Esp32HidToolsWidget</name>
     <message>
         <source>Firmware Flash Tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Инструмент прошивки</translation>
     </message>
     <message>
         <source>Firmware Flash Tool - %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Инструмент прошивки - %1</translation>
     </message>
     <message>
         <source>Refresh</source>
-        <translation type="unfinished"></translation>
+        <translation>Обновить</translation>
     </message>
     <message>
         <source>Port:</source>
-        <translation type="unfinished"></translation>
+        <translation>Порт:</translation>
     </message>
     <message>
         <source>Path to factory.fzip</source>
-        <translation type="unfinished"></translation>
+        <translation>Путь к factory.fzip</translation>
     </message>
     <message>
         <source>Browse...</source>
-        <translation type="unfinished"></translation>
+        <translation>Обзор...</translation>
     </message>
     <message>
         <source>Factory Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Заводской режим</translation>
     </message>
     <message>
         <source>Current Version: Unknown</source>
-        <translation type="unfinished"></translation>
+        <translation>Текущая версия: Неизвестно</translation>
     </message>
     <message>
         <source>Latest Version: Unknown</source>
-        <translation type="unfinished"></translation>
+        <translation>Последняя версия: Неизвестно</translation>
     </message>
     <message>
         <source>Check for Updates</source>
-        <translation type="unfinished"></translation>
+        <translation>Проверить обновления</translation>
     </message>
     <message>
         <source>Path to upgrade.uzip</source>
-        <translation type="unfinished"></translation>
+        <translation>Путь к upgrade.uzip</translation>
     </message>
     <message>
         <source>File:</source>
-        <translation type="unfinished"></translation>
+        <translation>Файл:</translation>
     </message>
     <message>
         <source>Upgrade Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Режим обновления</translation>
     </message>
     <message>
         <source>State: Unknown</source>
-        <translation type="unfinished"></translation>
+        <translation>Состояние: Неизвестно</translation>
     </message>
     <message>
         <source>Serial:</source>
-        <translation type="unfinished"></translation>
+        <translation>Серийный номер:</translation>
     </message>
     <message>
         <source>-</source>
-        <translation type="unfinished"></translation>
+        <translation>-</translation>
     </message>
     <message>
         <source>Copy Serial</source>
-        <translation type="unfinished"></translation>
+        <translation>Копировать серийный номер</translation>
     </message>
     <message>
         <source>Paste Activation Key Here</source>
-        <translation type="unfinished"></translation>
+        <translation>Вставьте ключ активации здесь</translation>
     </message>
     <message>
         <source>Activate</source>
-        <translation type="unfinished"></translation>
+        <translation>Активировать</translation>
     </message>
     <message>
         <source>Activation Key:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ключ активации:</translation>
     </message>
     <message>
         <source>Activation</source>
-        <translation type="unfinished"></translation>
+        <translation>Активация</translation>
     </message>
     <message>
         <source>User Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Информация о пользователе</translation>
     </message>
     <message>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя:</translation>
     </message>
     <message>
         <source>Email:</source>
-        <translation type="unfinished"></translation>
+        <translation>Email:</translation>
     </message>
     <message>
         <source>Free trial for 7 days</source>
-        <translation type="unfinished"></translation>
+        <translation>Бесплатная пробная версия на 7 дней</translation>
     </message>
     <message>
         <source>I am ok with free trial and want to buy full license</source>
-        <translation type="unfinished"></translation>
+        <translation>Я согласен с пробной версией и хочу купить полную лицензию</translation>
     </message>
     <message>
         <source>Skip trial and buy Full licensed version</source>
-        <translation type="unfinished"></translation>
+        <translation>Пропустить пробную версию и купить полную лицензию</translation>
     </message>
     <message>
         <source>Already licensed, but want bump profiles</source>
-        <translation type="unfinished"></translation>
+        <translation>Уже есть лицензия, но хочу увеличить количество профилей</translation>
     </message>
     <message>
         <source>Payments</source>
-        <translation type="unfinished"></translation>
+        <translation>Платежи</translation>
     </message>
     <message>
         <source>Request 7-Day Free Trial</source>
-        <translation type="unfinished"></translation>
+        <translation>Запросить 7-дневную бесплатную пробную версию</translation>
     </message>
     <message>
         <source>Purchase Full License</source>
-        <translation type="unfinished"></translation>
+        <translation>Купить полную лицензию</translation>
     </message>
     <message>
         <source>Skip Trial &amp; Purchase Full License</source>
-        <translation type="unfinished"></translation>
+        <translation>Пропустить пробную версию и купить полную лицензию</translation>
     </message>
     <message>
         <source>Upgrade Profile Capacity</source>
-        <translation type="unfinished"></translation>
+        <translation>Увеличить количество профилей</translation>
     </message>
     <message>
         <source>Payment Details: Free Trial ($0.00)</source>
-        <translation type="unfinished"></translation>
+        <translation>Детали платежа: Бесплатная пробная версия ($0.00)</translation>
     </message>
     <message>
         <source>Please put this Reference No. in your PayPal payment message/note.</source>
-        <translation type="unfinished"></translation>
+        <translation>Пожалуйста, укажите этот номер ссылки в сообщении/примечании к платежу PayPal.</translation>
     </message>
     <message>
         <source>Paste your PayPal Transaction ID here</source>
-        <translation type="unfinished"></translation>
+        <translation>Вставьте свой ID транзакции PayPal здесь</translation>
     </message>
     <message>
         <source>Reference NO.:</source>
-        <translation type="unfinished"></translation>
+        <translation>Номер ссылки:</translation>
     </message>
     <message>
         <source>Pay Now (Secure PayPal Link)</source>
-        <translation type="unfinished"></translation>
+        <translation>Оплатить сейчас (Безопасная ссылка PayPal)</translation>
     </message>
     <message>
         <source>Device Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Информация об устройстве</translation>
     </message>
     <message>
         <source>Device Secret:</source>
-        <translation type="unfinished"></translation>
+        <translation>Секрет устройства:</translation>
     </message>
     <message>
         <source>Serial Number:</source>
-        <translation type="unfinished"></translation>
+        <translation>Серийный номер:</translation>
     </message>
     <message>
         <source>Total Profiles:</source>
-        <translation type="unfinished"></translation>
+        <translation>Всего профилей:</translation>
     </message>
     <message>
         <source>Generate Request File</source>
-        <translation type="unfinished"></translation>
+        <translation>Создать файл запроса</translation>
     </message>
     <message>
         <source>Copy content</source>
-        <translation type="unfinished"></translation>
+        <translation>Копировать содержимое</translation>
     </message>
     <message>
         <source>Email</source>
-        <translation type="unfinished"></translation>
+        <translation>Email</translation>
     </message>
     <message>
         <source>Order</source>
-        <translation type="unfinished"></translation>
+        <translation>Заказ</translation>
     </message>
     <message>
         <source>Log Output:</source>
-        <translation type="unfinished"></translation>
+        <translation>Вывод лога:</translation>
     </message>
     <message>
         <source>No devices found</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройства не найдены</translation>
     </message>
     <message>
         <source>Select Factory Package</source>
-        <translation type="unfinished"></translation>
+        <translation>Выберите заводской пакет</translation>
     </message>
     <message>
         <source>Factory Package (*.fzip)</source>
-        <translation type="unfinished"></translation>
+        <translation>Заводской пакет (*.fzip)</translation>
     </message>
     <message>
         <source>Select Upgrade Package</source>
-        <translation type="unfinished"></translation>
+        <translation>Выберите пакет обновления</translation>
     </message>
     <message>
         <source>Upgrade Package (*.uzip)</source>
-        <translation type="unfinished"></translation>
+        <translation>Пакет обновления (*.uzip)</translation>
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished">Ошибка</translation>
+        <translation>Ошибка</translation>
     </message>
     <message>
         <source>Please select a valid serial port.</source>
-        <translation type="unfinished"></translation>
+        <translation>Пожалуйста, выберите допустимый последовательный порт.</translation>
     </message>
     <message>
         <source>Error: Failed to read file or file is empty: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка: Не удалось прочитать файл или файл пуст: %1</translation>
     </message>
     <message>
         <source>Checking device status...</source>
-        <translation type="unfinished"></translation>
+        <translation>Проверка состояния устройства...</translation>
     </message>
     <message>
         <source>Device is already running with factory firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройство уже работает с заводской прошивкой.</translation>
     </message>
     <message>
         <source>Attempting to fetch PDEK...</source>
-        <translation type="unfinished"></translation>
+        <translation>Попытка получить PDEK...</translation>
     </message>
     <message>
         <source>PDEK fetched successfully.</source>
-        <translation type="unfinished"></translation>
+        <translation>PDEK успешно получен.</translation>
     </message>
     <message>
         <source>Device Info: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Информация об устройстве: %1</translation>
     </message>
     <message>
         <source>Info</source>
-        <translation type="unfinished">Инфа</translation>
+        <translation>Информация</translation>
     </message>
     <message>
         <source>Device is already running with factory firmware. Device Info has been fetched.</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройство уже работает с заводской прошивкой. Информация об устройстве получена.</translation>
     </message>
     <message>
         <source>Failed to fetch PDEK from factory mode device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось получить PDEK с устройства в заводском режиме.</translation>
     </message>
     <message>
         <source>Device is already running with factory firmware, but failed to fetch PDEK.</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройство уже работает с заводской прошивкой, но не удалось получить PDEK.</translation>
     </message>
     <message>
         <source>Device is running Application Firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройство работает с прошивкой приложения.</translation>
     </message>
     <message>
         <source>Wrong Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Неверный режим</translation>
     </message>
     <message>
         <source>Device is running Application Firmware. Please enter Bootloader mode to flash Factory Firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройство работает с прошивкой приложения. Пожалуйста, войдите в режим загрузчика для прошивки заводской прошивки.</translation>
     </message>
     <message>
         <source>Error: No factory package selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка: Заводской пакет не выбран.</translation>
     </message>
     <message>
         <source>Please select a factory package file to flash.</source>
-        <translation type="unfinished"></translation>
+        <translation>Пожалуйста, выберите файл заводского пакета для прошивки.</translation>
     </message>
     <message>
         <source>Starting Factory Flash...</source>
-        <translation type="unfinished"></translation>
+        <translation>Запуск заводской прошивки...</translation>
     </message>
     <message>
         <source>Factory Flash Success!</source>
-        <translation type="unfinished"></translation>
+        <translation>Заводская прошивка успешна!</translation>
     </message>
     <message>
         <source>Factory Flash Failed! Error code: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Заводская прошивка не удалась! Код ошибки: %1</translation>
     </message>
     <message>
         <source>Starting Download &amp; Flash process...</source>
-        <translation type="unfinished"></translation>
+        <translation>Запуск процесса загрузки и прошивки...</translation>
     </message>
     <message>
         <source>Downloading flash_payloads.fzip...</source>
-        <translation type="unfinished"></translation>
+        <translation>Загрузка flash_payloads.fzip...</translation>
     </message>
     <message>
         <source>Download failed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Загрузка не удалась.</translation>
     </message>
     <message>
         <source>Failed to download firmware. Check internet connection.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось загрузить прошивку. Проверьте интернет-соединение.</translation>
     </message>
     <message>
         <source>Download complete. Size: %1 bytes</source>
-        <translation type="unfinished"></translation>
+        <translation>Загрузка завершена. Размер: %1 байт</translation>
     </message>
     <message>
         <source>Starting flashing process...</source>
-        <translation type="unfinished"></translation>
+        <translation>Запуск процесса прошивки...</translation>
     </message>
     <message>
         <source>Device is already in Factory Mode.</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройство уже в заводском режиме.</translation>
     </message>
     <message>
         <source>Device is already running factory firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройство уже работает с заводской прошивкой.</translation>
     </message>
     <message>
         <source>Device is in App Mode. Please enter Bootloader Mode.</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройство в режиме приложения. Пожалуйста, войдите в режим загрузчика.</translation>
     </message>
     <message>
         <source>Please enter Bootloader mode to flash Factory Firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>Пожалуйста, войдите в режим загрузчика для прошивки заводской прошивки.</translation>
     </message>
     <message>
         <source>Flash Success!</source>
-        <translation type="unfinished"></translation>
+        <translation>Прошивка успешна!</translation>
     </message>
     <message>
         <source>Success</source>
-        <translation type="unfinished"></translation>
+        <translation>Успех</translation>
     </message>
     <message>
         <source>Flash Failed! Error code: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Прошивка не удалась! Код ошибки: %1</translation>
     </message>
     <message>
         <source>Paypal Seller: &lt;b&gt;&lt;font color=&apos;red&apos;&gt;%1&lt;/font&gt;&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Продавец PayPal: &lt;b&gt;&lt;font color=&apos;red&apos;&gt;%1&lt;/font&gt;&lt;/b&gt;</translation>
     </message>
     <message>
         <source>PayPal Transaction ID:</source>
-        <translation type="unfinished"></translation>
+        <translation>ID транзакции PayPal:</translation>
     </message>
     <message>
         <source>Flashing failed. Error code: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Прошивка не удалась. Код ошибки: %1</translation>
     </message>
     <message>
         <source>This process permanently converts your ESP32 into a Deskflow-HID device. This is irreversible and blocks non-Deskflow firmware.
 
 Do you want to proceed?</source>
-        <translation type="unfinished"></translation>
+        <translation>Этот процесс навсегда преобразует ваш ESP32 в устройство Deskflow-HID. Это необратимо и блокирует прошивки, отличные от Deskflow.
+
+Вы хотите продолжить?</translation>
     </message>
     <message>
         <source>Confirm Factory Flash</source>
-        <translation type="unfinished"></translation>
+        <translation>Подтвердить заводскую прошивку</translation>
     </message>
     <message>
         <source>Factory firmware flashed successfully.
 
 Next step: You need to flash the per-device firmware to use the device. Please switch to the &apos;Order&apos; tab to request it.</source>
-        <translation type="unfinished"></translation>
+        <translation>Заводская прошивка успешно прошита.
+
+Следующий шаг: Вам необходимо прошить прошивку для конкретного устройства, чтобы использовать его. Пожалуйста, переключитесь на вкладку &apos;Заказ&apos; для запроса.</translation>
     </message>
     <message>
         <source>Device Info copied to clipboard.</source>
-        <translation type="unfinished"></translation>
+        <translation>Информация об устройстве скопирована в буфер обмена.</translation>
     </message>
     <message>
         <source>Checking device info on %1...</source>
-        <translation type="unfinished"></translation>
+        <translation>Проверка информации об устройстве на %1...</translation>
     </message>
     <message>
         <source>Device is in Factory Mode. Fetching PDEK...</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройство в заводском режиме. Получение PDEK...</translation>
     </message>
     <message>
         <source>Device Info fetched and copied to clipboard.</source>
-        <translation type="unfinished"></translation>
+        <translation>Информация об устройстве получена и скопирована в буфер обмена.</translation>
     </message>
     <message>
         <source>Failed to fetch PDEK.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось получить PDEK.</translation>
     </message>
     <message>
         <source>Failed to fetch Device Info.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось получить информацию об устройстве.</translation>
     </message>
     <message>
         <source>Device is not in Factory Mode (Mode: %1).</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройство не в заводском режиме (Режим: %1).</translation>
     </message>
     <message>
         <source>Device must be in Factory Mode to copy Device Info.</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройство должно быть в заводском режиме для копирования информации об устройстве.</translation>
     </message>
     <message>
         <source>Handshake complete but no config received.</source>
-        <translation type="unfinished"></translation>
+        <translation>Рукопожатие завершено, но конфигурация не получена.</translation>
     </message>
     <message>
         <source>Device handshake incomplete.</source>
-        <translation type="unfinished"></translation>
+        <translation>Рукопожатие устройства не завершено.</translation>
     </message>
     <message>
         <source>Failed to open device or handshake failed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось открыть устройство или рукопожатие не удалось.</translation>
     </message>
     <message>
         <source>Connection Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка подключения</translation>
     </message>
     <message>
         <source>Failed to connect to device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось подключиться к устройству.</translation>
     </message>
     <message>
         <source>Checking for upgrades...</source>
-        <translation type="unfinished"></translation>
+        <translation>Проверка обновлений...</translation>
     </message>
     <message>
         <source>Failed to fetch latest version tag from GitHub.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось получить последний тег версии с GitHub.</translation>
     </message>
     <message>
         <source>Network Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка сети</translation>
     </message>
     <message>
         <source>Could not check for updates.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось проверить наличие обновлений.</translation>
     </message>
     <message>
         <source>Device handshake failed or no config received. Assuming factory/unknown state.</source>
-        <translation type="unfinished"></translation>
+        <translation>Рукопожатие устройства не удалось или конфигурация не получена. Предпологается заводское/неизвестное состояние.</translation>
     </message>
     <message>
         <source>Could not open device. Assuming factory/unknown state.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось открыть устройство. Предпологается заводское/неизвестное состояние.</translation>
     </message>
     <message>
         <source>Version Check: Remote Tag=&apos;%1&apos;, Device Version=&apos;%2&apos; (Raw BCD=%3)</source>
-        <translation type="unfinished"></translation>
+        <translation>Проверка версии: Удаленный тег=&apos;%1&apos;, Версия устройства=&apos;%2&apos; (Raw BCD=%3)</translation>
     </message>
     <message>
         <source>Current Version: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Текущая версия: %1</translation>
     </message>
     <message>
         <source>Latest Version: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Последняя версия: %1</translation>
     </message>
     <message>
         <source>Update available (%1 &gt; %2).</source>
-        <translation type="unfinished"></translation>
+        <translation>Доступно обновление (%1 &gt; %2).</translation>
     </message>
     <message>
         <source>Update Available</source>
-        <translation type="unfinished"></translation>
+        <translation>Доступно обновление</translation>
     </message>
     <message>
         <source>A new version (%1) is available.</source>
-        <translation type="unfinished"></translation>
+        <translation>Доступна новая версия (%1).</translation>
     </message>
     <message>
         <source>Update available (Device version unknown).</source>
-        <translation type="unfinished"></translation>
+        <translation>Доступно обновление (версия устройства неизвестна).</translation>
     </message>
     <message>
         <source>A new version (%1) is available. Device version unknown.</source>
-        <translation type="unfinished"></translation>
+        <translation>Доступна новая версия (%1). Версия устройства неизвестна.</translation>
     </message>
     <message>
         <source>Device is up to date.</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройство обновлено.</translation>
     </message>
     <message>
         <source>Up to date</source>
-        <translation type="unfinished"></translation>
+        <translation>Обновлено</translation>
     </message>
     <message>
         <source>Device is already running the latest version.</source>
-        <translation type="unfinished"></translation>
+        <translation>На устройстве уже установлена последняя версия.</translation>
     </message>
     <message>
         <source>Please select a firmware file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Пожалуйста, выберите файл прошивки.</translation>
     </message>
     <message>
         <source>Failed to read firmware file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось прочитать файл прошивки.</translation>
     </message>
     <message>
         <source>Flashing local file: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Прошивка локального файла: %1</translation>
     </message>
     <message>
         <source>Downloading upgrade firmware...</source>
-        <translation type="unfinished"></translation>
+        <translation>Загрузка прошивки обновления...</translation>
     </message>
     <message>
         <source>Download failed. No .uzip asset found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Загрузка не удалась. Ресурс .uzip не найден.</translation>
     </message>
     <message>
         <source>Failed to download firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось загрузить прошивку.</translation>
     </message>
     <message>
         <source>Downloaded available firmware. Starting flash...</source>
-        <translation type="unfinished"></translation>
+        <translation>Доступная прошивка загружена. Запуск прошивки...</translation>
     </message>
     <message>
         <source>Flashing... %1%</source>
-        <translation type="unfinished"></translation>
+        <translation>Прошивка... %1%</translation>
     </message>
     <message>
         <source>Firmware upgrade successful.</source>
-        <translation type="unfinished"></translation>
+        <translation>Обновление прошивки успешно.</translation>
     </message>
     <message>
         <source>Flash failed. Error code: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Прошивка не удалась. Код ошибки: %1</translation>
     </message>
     <message>
         <source>Flash failed: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Прошивка не удалась: %1</translation>
     </message>
     <message>
         <source>Refreshing device state...</source>
-        <translation type="unfinished"></translation>
+        <translation>Обновление состояния устройства...</translation>
     </message>
     <message>
         <source>State: Checking...</source>
-        <translation type="unfinished"></translation>
+        <translation>Состояние: Проверка...</translation>
     </message>
     <message>
         <source>State: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Состояние: %1</translation>
     </message>
     <message>
         <source>State: Factory Mode (Cannot Activate)</source>
-        <translation type="unfinished"></translation>
+        <translation>Состояние: Заводской режим (Невозможно активировать)</translation>
     </message>
     <message>
         <source>Device State Refreshed. Serial: %1, Mode: Factory, Secret: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Состояние устройства обновлено. Серийный номер: %1, Режим: Заводской, Секрет: %2</translation>
     </message>
     <message>
         <source>Device State Refreshed. Serial: %1, State: %2, Profiles: %3</source>
-        <translation type="unfinished"></translation>
+        <translation>Состояние устройства обновлено. Серийный номер: %1, Состояние: %2, Профили: %3</translation>
     </message>
     <message>
         <source>Erased Device Detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Обнаружено стертое устройство</translation>
     </message>
     <message>
         <source>No valid firmware detected on the device. Please go to the &apos;Factory Mode&apos; tab and flash &apos;Online&apos; first.</source>
-        <translation type="unfinished"></translation>
+        <translation>На устройстве не обнаружено действительной прошивки. Пожалуйста, перейдите на вкладку &apos;Заводской режим&apos; и сначала прошейте &apos;Онлайн&apos;.</translation>
     </message>
     <message>
         <source>Activating device...</source>
-        <translation type="unfinished"></translation>
+        <translation>Активация устройства...</translation>
     </message>
     <message>
         <source>Activation successful!</source>
-        <translation type="unfinished"></translation>
+        <translation>Активация успешна!</translation>
     </message>
     <message>
         <source>Device activated successfully.</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройство успешно активировано.</translation>
     </message>
     <message>
         <source>Activation failed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Активация не удалась.</translation>
     </message>
     <message>
         <source>Input Required</source>
-        <translation type="unfinished"></translation>
+        <translation>Требуется ввод</translation>
     </message>
     <message>
         <source>Please enter your name and email address.</source>
-        <translation type="unfinished"></translation>
+        <translation>Пожалуйста, введите ваше имя и адрес электронной почты.</translation>
     </message>
     <message>
         <source>Device Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка устройства</translation>
     </message>
     <message>
         <source>Serial number missing. Please check device connection.</source>
-        <translation type="unfinished"></translation>
+        <translation>Отсутствует серийный номер. Пожалуйста, проверьте подключение устройства.</translation>
     </message>
     <message>
         <source>Selection Required</source>
-        <translation type="unfinished"></translation>
+        <translation>Требуется выбор</translation>
     </message>
     <message>
         <source>Please select one of the order options.</source>
-        <translation type="unfinished"></translation>
+        <translation>Пожалуйста, выберите один из вариантов заказа.</translation>
     </message>
     <message>
         <source>Missing Transaction ID</source>
-        <translation type="unfinished"></translation>
+        <translation>Отсутствует ID транзакции</translation>
     </message>
     <message>
         <source>Please enter your PayPal Transaction ID for verification.</source>
-        <translation type="unfinished"></translation>
+        <translation>Пожалуйста, введите ваш ID транзакции PayPal для проверки.</translation>
     </message>
     <message>
         <source>Missing Secret</source>
-        <translation type="unfinished"></translation>
+        <translation>Отсутствует секрет</translation>
     </message>
     <message>
         <source>Device Secret (PDEK) is required for this option. Please ensure the device is in Factory Mode and the secret has been fetched correctly.</source>
-        <translation type="unfinished"></translation>
+        <translation>Для этой опции требуется секрет устройства (PDEK). Пожалуйста, убедитесь, что устройство находится в заводском режиме и секрет был получен правильно.</translation>
     </message>
     <message>
         <source>Free</source>
-        <translation type="unfinished"></translation>
+        <translation>Бесплатно</translation>
     </message>
     <message>
         <source>No payment is required for this option.</source>
-        <translation type="unfinished"></translation>
+        <translation>Для этой опции оплата не требуется.</translation>
     </message>
     <message>
         <source>You are about to open PayPal to pay &lt;b&gt;$%1 USD&lt;/b&gt; to &lt;b&gt;%2&lt;/b&gt;.&lt;br&gt;&lt;br&gt;Product: %3&lt;br&gt;Reference: %4&lt;br&gt;&lt;br&gt;Please confirm to proceed to PayPal.</source>
-        <translation type="unfinished"></translation>
+        <translation>Вы собираетесь открыть PayPal для оплаты &lt;b&gt;$%1 USD&lt;/b&gt; получателю &lt;b&gt;%2&lt;/b&gt;.&lt;br&gt;&lt;br&gt;Продукт: %3&lt;br&gt;Ссылка: %4&lt;br&gt;&lt;br&gt;Пожалуйста, подтвердите переход на PayPal.</translation>
     </message>
     <message>
         <source>Confirm Payment</source>
-        <translation type="unfinished"></translation>
+        <translation>Подтвердить оплату</translation>
     </message>
     <message>
         <source>Failed to open web browser. Please visit PayPal manually.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось открыть веб-браузер. Пожалуйста, посетите PayPal вручную.</translation>
     </message>
     <message>
         <source>Save Request File</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить файл запроса</translation>
     </message>
     <message>
         <source>Text Files (*.txt)</source>
-        <translation type="unfinished"></translation>
+        <translation>Текстовые файлы (*.txt)</translation>
     </message>
     <message>
         <source>Request file generated: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Файл запроса создан: %1</translation>
     </message>
     <message>
         <source>Request file generated successfully!
 
 Please send this file or its content (with payment if applicable) to deskflow.hid@gmail.com.
 Your firmware will be back in 24 hours.</source>
-        <translation type="unfinished"></translation>
+        <translation>Файл запроса успешно создан!
+
+Пожалуйста, отправьте этот файл или его содержимое (с оплатой, если применимо) на deskflow.hid@gmail.com.
+Ваша прошивка вернется через 24 часа.</translation>
     </message>
     <message>
         <source>Failed to save request file: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось сохранить файл запроса: %1</translation>
     </message>
     <message>
         <source>Failed to save request file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось сохранить файл запроса.</translation>
     </message>
     <message>
         <source>Order content copied to clipboard.</source>
-        <translation type="unfinished"></translation>
+        <translation>Содержимое заказа скопировано в буфер обмена.</translation>
     </message>
     <message>
         <source>Copied</source>
-        <translation type="unfinished"></translation>
+        <translation>Скопировано</translation>
     </message>
     <message>
         <source>Order content successfully copied to clipboard.</source>
-        <translation type="unfinished"></translation>
+        <translation>Содержимое заказа успешно скопировано в буфер обмена.</translation>
     </message>
     <message>
         <source>Email client opened.</source>
-        <translation type="unfinished"></translation>
+        <translation>Почтовый клиент открыт.</translation>
     </message>
     <message>
         <source>Failed to open email client.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось открыть почтовый клиент.</translation>
     </message>
     <message>
         <source>Failed to open your default email client.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось открыть ваш почтовый клиент по умолчанию.</translation>
     </message>
     <message>
         <source>State: Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Состояние: Ошибка</translation>
     </message>
     <message>
         <source>Order Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Варианты заказа</translation>
     </message>
     <message>
         <source>Failed to refresh state: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось обновить состояние: %1</translation>
     </message>
     <message>
         <source>Serial number copied to clipboard.</source>
-        <translation type="unfinished"></translation>
+        <translation>Серийный номер скопирован в буфер обмена.</translation>
     </message>
     <message>
         <source>Please enter an activation key.</source>
-        <translation type="unfinished"></translation>
+        <translation>Пожалуйста, введите ключ активации.</translation>
     </message>
     <message>
         <source>Reading factory firmware from: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Чтение заводской прошивки из: %1</translation>
     </message>
     <message>
         <source>Reading local firmware from: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Чтение локальной прошивки из: %1</translation>
     </message>
     <message>
         <source>Online</source>
-        <translation type="unfinished"></translation>
+        <translation>Онлайн</translation>
     </message>
     <message>
         <source>Flash</source>
-        <translation type="unfinished"></translation>
+        <translation>Прошить</translation>
     </message>
     <message>
         <source>Manual</source>
-        <translation type="unfinished"></translation>
+        <translation>Вручную</translation>
     </message>
     <message>
         <source>Copy Device Secret</source>
-        <translation type="unfinished"></translation>
+        <translation>Копировать секрет устройства</translation>
     </message>
 </context>
 <context>

@@ -147,88 +147,88 @@ p, li { white-space: pre-wrap; }
     <name>DeskflowHidExtension</name>
     <message>
         <source>ESP32 HID Tools</source>
-        <translation type="unfinished"></translation>
+        <translation>ESP32 HID 工具</translation>
     </message>
     <message>
         <source>Ready</source>
-        <translation type="unfinished"></translation>
+        <translation>就绪</translation>
     </message>
     <message>
         <source>Unknown Device</source>
-        <translation type="unfinished"></translation>
+        <translation>未知设备</translation>
     </message>
     <message>
         <source>Bridge client device plugged in: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>桥接客户端设备已插入：%1</translation>
     </message>
     <message>
         <source>Bridge client device unplugged: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>桥接客户端设备已拔出：%1</translation>
     </message>
     <message>
         <source>Error: No configuration found for device: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>错误：未找到设备配置：%1</translation>
     </message>
     <message>
         <source>Error: Cannot connect. Device path is empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>错误：无法连接。设备路径为空。</translation>
     </message>
     <message>
         <source>Already connected via another profile</source>
-        <translation type="unfinished"></translation>
+        <translation>已通过另一个配置文件连接</translation>
     </message>
     <message>
         <source>Activation Required</source>
-        <translation type="unfinished"></translation>
+        <translation>需要激活</translation>
     </message>
     <message>
         <source>Free trial is expired. Please consider purchasing a license via 
 File -&gt; Firmware -&gt; Order.</source>
-        <translation type="unfinished"></translation>
+        <translation>免费试用已过期。请通过 文件 -&gt; 固件 -&gt; 订购 购买许可。</translation>
     </message>
     <message>
         <source>Starting bridge client: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>正在启动桥接客户端：%1</translation>
     </message>
     <message>
         <source>Failed to start bridge client: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>启动桥接客户端失败：%1</translation>
     </message>
     <message>
         <source>Server is down. Auto-connect will resume once the server starts.</source>
-        <translation type="unfinished"></translation>
+        <translation>服务器已停机。服务器启动后将恢复自动连接。</translation>
     </message>
     <message>
         <source>Connection failed. Retrying auto-connect (%1/3)...</source>
-        <translation type="unfinished"></translation>
+        <translation>连接失败。正在重试自动连接 (%1/3)...</translation>
     </message>
     <message>
         <source>Auto-connect failed. Giving up after 3 attempts.</source>
-        <translation type="unfinished"></translation>
+        <translation>自动连接失败。尝试 3 次后放弃。</translation>
     </message>
     <message>
         <source>Invalid device name</source>
-        <translation type="unfinished"></translation>
+        <translation>设备名称无效</translation>
     </message>
     <message>
         <source>Invalid characters or length</source>
-        <translation type="unfinished"></translation>
+        <translation>字符或长度无效</translation>
     </message>
     <message>
         <source>Locked</source>
-        <translation type="unfinished"></translation>
+        <translation>已锁定</translation>
     </message>
     <message>
         <source>Locked by %1</source>
-        <translation type="unfinished"></translation>
+        <translation>被 %1 锁定</translation>
     </message>
     <message>
         <source>Feature Unavailable</source>
-        <translation type="unfinished"></translation>
+        <translation>功能不可用</translation>
     </message>
     <message>
         <source>The ESP32 HID Tools module is not available in this build.</source>
-        <translation type="unfinished"></translation>
+        <translation>此构建版本中 ESP32 HID 工具模块不可用。</translation>
     </message>
 </context>
 <context>
@@ -401,7 +401,7 @@ Do you want to connect to the server?
     </message>
     <message>
         <source>ESP32 HID Tools are not available in this build (submodule missing).</source>
-        <translation type="unfinished"></translation>
+        <translation>此构建版本中 ESP32 HID 工具不可用 (缺少子模块)。</translation>
     </message>
     <message>
         <source>invalid certificate, generating a new one</source>
@@ -638,23 +638,24 @@ Valid names:
     <message>
         <source>Use another computer&apos;s mouse and keyboard
 (make this computer the client)</source>
-        <translation type="unfinished"></translation>
+        <translation>使用另一台计算机的鼠标和键盘
+(将此计算机设为客户端)</translation>
     </message>
     <message>
         <source>Bridge Clients</source>
-        <translation type="unfinished"></translation>
+        <translation>桥接客户端</translation>
     </message>
     <message>
         <source>Server already running</source>
-        <translation type="unfinished"></translation>
+        <translation>服务器已在运行</translation>
     </message>
     <message>
         <source>Another Deskflow server instance is already running in the background. Please close the existing server before starting a new one.</source>
-        <translation type="unfinished"></translation>
+        <translation>另一个 Deskflow 服务器实例已在后台运行。请在启动新服务器之前关闭现有服务器。</translation>
     </message>
     <message>
         <source>Firmware</source>
-        <translation type="unfinished"></translation>
+        <translation>固件</translation>
     </message>
 </context>
 <context>
@@ -1449,981 +1450,989 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     <name>deskflow::gui::BridgeClientConfigDialog</name>
     <message>
         <source>Bridge Client Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>桥接客户端配置</translation>
     </message>
     <message>
         <source>Screen Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>屏幕名称：</translation>
     </message>
     <message>
         <source>A-Z, 0-9, spaces, .-_ (max 22 chars)</source>
-        <translation type="unfinished"></translation>
+        <translation>A-Z, 0-9, 空格, .-_ (最多 22 个字符)</translation>
     </message>
     <message>
         <source>Landscape</source>
-        <translation type="unfinished"></translation>
+        <translation>横屏</translation>
     </message>
     <message>
         <source>Portrait</source>
-        <translation type="unfinished"></translation>
+        <translation>竖屏</translation>
     </message>
     <message>
         <source>Keyboard + Mouse</source>
-        <translation type="unfinished"></translation>
+        <translation>键盘 + 鼠标</translation>
     </message>
     <message>
         <source>Switched to %1</source>
-        <translation type="unfinished"></translation>
+        <translation>已切换到 %1</translation>
     </message>
     <message>
         <source>Rename Failed</source>
-        <translation type="unfinished"></translation>
+        <translation>重命名失败</translation>
     </message>
     <message>
         <source>Failed to rename config file from &apos;%1&apos; to &apos;%2&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation>将配置文件从 &apos;%1&apos; 重命名为 &apos;%2&apos; 失败</translation>
     </message>
     <message>
         <source>Invalid Input</source>
-        <translation type="unfinished"></translation>
+        <translation>输入无效</translation>
     </message>
     <message>
         <source>Screen name cannot be empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>屏幕名称不能为空。</translation>
     </message>
     <message>
         <source>Device name cannot be empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>设备名称不能为空。</translation>
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished">错误</translation>
+        <translation>错误</translation>
     </message>
     <message>
         <source>Success</source>
-        <translation type="unfinished"></translation>
+        <translation>成功</translation>
     </message>
     <message>
         <source>Advanced</source>
-        <translation type="unfinished">高级</translation>
+        <translation>高级</translation>
     </message>
     <message>
         <source>Device name:</source>
-        <translation type="unfinished"></translation>
+        <translation>设备名称：</translation>
     </message>
     <message>
         <source>Automatically disconnect Bluetooth</source>
-        <translation type="unfinished"></translation>
+        <translation>自动断开蓝牙</translation>
     </message>
     <message>
         <source>Disconnects from the host device when you stop using Deskflow.</source>
-        <translation type="unfinished"></translation>
+        <translation>停止使用 Deskflow 时断开与主机设备的连接。</translation>
     </message>
     <message>
         <source>Auto-connect when USB device plugged in</source>
-        <translation type="unfinished"></translation>
+        <translation>USB 设备插入时自动连接</translation>
     </message>
     <message>
         <source>Automatically connect to the Deskflow server when the device is plugged in.</source>
-        <translation type="unfinished"></translation>
+        <translation>设备插入时自动连接到 Deskflow 服务器。</translation>
     </message>
     <message>
         <source>Profiles (Device)</source>
-        <translation type="unfinished"></translation>
+        <translation>配置文件 (设备)</translation>
     </message>
     <message>
         <source>A-Z, 0-9, spaces, .-_ (max 31 chars)</source>
-        <translation type="unfinished"></translation>
+        <translation>A-Z, 0-9, 空格, .-_ (最多 31 个字符)</translation>
     </message>
     <message>
         <source>Hostname:</source>
-        <translation type="unfinished"></translation>
+        <translation>主机名：</translation>
     </message>
     <message>
         <source>Resolution:</source>
-        <translation type="unfinished"></translation>
+        <translation>分辨率：</translation>
     </message>
     <message>
         <source>Orientation:</source>
-        <translation type="unfinished"></translation>
+        <translation>方向：</translation>
     </message>
     <message>
         <source>Mouse Only</source>
-        <translation type="unfinished"></translation>
+        <translation>仅鼠标</translation>
     </message>
     <message>
         <source>HID Mode:</source>
-        <translation type="unfinished"></translation>
+        <translation>HID 模式：</translation>
     </message>
     <message>
         <source>Invert direction</source>
-        <translation type="unfinished"></translation>
+        <translation>反转方向</translation>
     </message>
     <message>
         <source>Reset</source>
-        <translation type="unfinished"></translation>
+        <translation>重置</translation>
     </message>
     <message>
         <source>Activate</source>
-        <translation type="unfinished"></translation>
+        <translation>激活</translation>
     </message>
     <message>
         <source>Device must be activated to change its name.</source>
-        <translation type="unfinished"></translation>
+        <translation>必须激活设备才能更改其名称。</translation>
     </message>
     <message>
         <source>Profiles (Device Not Connected)</source>
-        <translation type="unfinished"></translation>
+        <translation>配置文件 (设备未连接)</translation>
     </message>
     <message>
         <source>Profiles (Failed to Open Device)</source>
-        <translation type="unfinished"></translation>
+        <translation>配置文件 (打开设备失败)</translation>
     </message>
     <message>
         <source>Failed to open device</source>
-        <translation type="unfinished"></translation>
+        <translation>打开设备失败</translation>
     </message>
     <message>
         <source>Profile saved to device.</source>
-        <translation type="unfinished"></translation>
+        <translation>配置文件已保存到设备。</translation>
     </message>
     <message>
         <source>Failed to save profile: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>保存配置文件失败：%1</translation>
     </message>
     <message>
         <source>Failed to switch profile: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>切换配置文件失败：%1</translation>
     </message>
     <message>
         <source>Confirm Reset</source>
-        <translation type="unfinished"></translation>
+        <translation>确认重置</translation>
     </message>
     <message>
         <source>Are you sure you want to reset and erase this profile?</source>
-        <translation type="unfinished"></translation>
+        <translation>您确定要重置并擦除此配置文件吗？</translation>
     </message>
     <message>
         <source>Profile erased.</source>
-        <translation type="unfinished"></translation>
+        <translation>配置文件已擦除。</translation>
     </message>
     <message>
         <source>Failed to erase profile: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>擦除配置文件失败：%1</translation>
     </message>
     <message>
         <source>Duplicate Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>重复配置</translation>
     </message>
     <message>
         <source>A configuration for this device serial number already exists.
 Duplicate: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>此设备序列号的配置已存在。
+重复项：%1</translation>
     </message>
     <message>
         <source>Save to Device</source>
-        <translation type="unfinished"></translation>
+        <translation>保存到设备</translation>
     </message>
     <message>
         <source>Scroll speed:</source>
-        <translation type="unfinished"></translation>
+        <translation>滚动速度：</translation>
     </message>
 </context>
 <context>
     <name>deskflow::gui::BridgeClientWidget</name>
     <message>
         <source>Connect</source>
-        <translation type="unfinished">连接</translation>
+        <translation>连接</translation>
     </message>
     <message>
         <source>Connect/disconnect bridge client</source>
-        <translation type="unfinished"></translation>
+        <translation>连接/断开桥接客户端</translation>
     </message>
     <message>
         <source>Configure</source>
-        <translation type="unfinished"></translation>
+        <translation>配置</translation>
     </message>
     <message>
         <source>Configure bridge client settings</source>
-        <translation type="unfinished"></translation>
+        <translation>配置桥接客户端设置</translation>
     </message>
     <message>
         <source>--</source>
-        <translation type="unfinished"></translation>
+        <translation>--</translation>
     </message>
     <message>
         <source>unknown</source>
-        <translation type="unfinished"></translation>
+        <translation>未知</translation>
     </message>
     <message>
         <source>Disconnect</source>
-        <translation type="unfinished">断开</translation>
+        <translation>断开</translation>
     </message>
     <message>
         <source>Device not connected</source>
-        <translation type="unfinished"></translation>
+        <translation>设备未连接</translation>
     </message>
     <message>
         <source>Waiting for server to start...</source>
-        <translation type="unfinished"></translation>
+        <translation>正在等待服务器启动...</translation>
     </message>
     <message>
         <source>Another profile for this device is already connected</source>
-        <translation type="unfinished"></translation>
+        <translation>此设备的另一个配置文件已连接</translation>
     </message>
     <message>
         <source>Disconnect before configuring</source>
-        <translation type="unfinished"></translation>
+        <translation>配置前请先断开连接</translation>
     </message>
     <message>
         <source>This profile is locked because another one is connected</source>
-        <translation type="unfinished"></translation>
+        <translation>此配置文件已锁定，因为另一个配置文件已连接</translation>
     </message>
     <message>
         <source>Landscape</source>
-        <translation type="unfinished"></translation>
+        <translation>横屏</translation>
     </message>
     <message>
         <source>Portrait</source>
-        <translation type="unfinished"></translation>
+        <translation>竖屏</translation>
     </message>
 </context>
 <context>
     <name>deskflow::gui::Esp32HidToolsWidget</name>
     <message>
         <source>Firmware Flash Tool</source>
-        <translation type="unfinished"></translation>
+        <translation>固件烧录工具</translation>
     </message>
     <message>
         <source>Firmware Flash Tool - %1</source>
-        <translation type="unfinished"></translation>
+        <translation>固件烧录工具 - %1</translation>
     </message>
     <message>
         <source>Refresh</source>
-        <translation type="unfinished"></translation>
+        <translation>刷新</translation>
     </message>
     <message>
         <source>Port:</source>
-        <translation type="unfinished"></translation>
+        <translation>端口：</translation>
     </message>
     <message>
         <source>Path to factory.fzip</source>
-        <translation type="unfinished"></translation>
+        <translation>factory.fzip 路径</translation>
     </message>
     <message>
         <source>Browse...</source>
-        <translation type="unfinished"></translation>
+        <translation>浏览...</translation>
     </message>
     <message>
         <source>Factory Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>工厂模式</translation>
     </message>
     <message>
         <source>Current Version: Unknown</source>
-        <translation type="unfinished"></translation>
+        <translation>当前版本：未知</translation>
     </message>
     <message>
         <source>Latest Version: Unknown</source>
-        <translation type="unfinished"></translation>
+        <translation>最新版本：未知</translation>
     </message>
     <message>
         <source>Check for Updates</source>
-        <translation type="unfinished"></translation>
+        <translation>检查更新</translation>
     </message>
     <message>
         <source>Path to upgrade.uzip</source>
-        <translation type="unfinished"></translation>
+        <translation>upgrade.uzip 路径</translation>
     </message>
     <message>
         <source>File:</source>
-        <translation type="unfinished"></translation>
+        <translation>文件：</translation>
     </message>
     <message>
         <source>Upgrade Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>升级模式</translation>
     </message>
     <message>
         <source>State: Unknown</source>
-        <translation type="unfinished"></translation>
+        <translation>状态：未知</translation>
     </message>
     <message>
         <source>Serial:</source>
-        <translation type="unfinished"></translation>
+        <translation>序列号：</translation>
     </message>
     <message>
         <source>-</source>
-        <translation type="unfinished"></translation>
+        <translation>-</translation>
     </message>
     <message>
         <source>Copy Serial</source>
-        <translation type="unfinished"></translation>
+        <translation>复制序列号</translation>
     </message>
     <message>
         <source>Paste Activation Key Here</source>
-        <translation type="unfinished"></translation>
+        <translation>在此粘贴激活密钥</translation>
     </message>
     <message>
         <source>Activate</source>
-        <translation type="unfinished"></translation>
+        <translation>激活</translation>
     </message>
     <message>
         <source>Activation Key:</source>
-        <translation type="unfinished"></translation>
+        <translation>激活密钥：</translation>
     </message>
     <message>
         <source>Activation</source>
-        <translation type="unfinished"></translation>
+        <translation>激活</translation>
     </message>
     <message>
         <source>User Information</source>
-        <translation type="unfinished"></translation>
+        <translation>用户信息</translation>
     </message>
     <message>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>姓名：</translation>
     </message>
     <message>
         <source>Email:</source>
-        <translation type="unfinished"></translation>
+        <translation>邮箱：</translation>
     </message>
     <message>
         <source>Free trial for 7 days</source>
-        <translation type="unfinished"></translation>
+        <translation>7 天免费试用</translation>
     </message>
     <message>
         <source>I am ok with free trial and want to buy full license</source>
-        <translation type="unfinished"></translation>
+        <translation>我接受免费试用，并想购买完整许可</translation>
     </message>
     <message>
         <source>Skip trial and buy Full licensed version</source>
-        <translation type="unfinished"></translation>
+        <translation>跳过试用并购买完整许可版本</translation>
     </message>
     <message>
         <source>Already licensed, but want bump profiles</source>
-        <translation type="unfinished"></translation>
+        <translation>已有许可，但想增加配置文件数量</translation>
     </message>
     <message>
         <source>Payments</source>
-        <translation type="unfinished"></translation>
+        <translation>支付</translation>
     </message>
     <message>
         <source>Request 7-Day Free Trial</source>
-        <translation type="unfinished"></translation>
+        <translation>申请 7 天免费试用</translation>
     </message>
     <message>
         <source>Purchase Full License</source>
-        <translation type="unfinished"></translation>
+        <translation>购买完整许可</translation>
     </message>
     <message>
         <source>Skip Trial &amp; Purchase Full License</source>
-        <translation type="unfinished"></translation>
+        <translation>跳过试用并购买完整许可</translation>
     </message>
     <message>
         <source>Upgrade Profile Capacity</source>
-        <translation type="unfinished"></translation>
+        <translation>升级配置文件容量</translation>
     </message>
     <message>
         <source>Payment Details: Free Trial ($0.00)</source>
-        <translation type="unfinished"></translation>
+        <translation>支付详情：免费试用 ($0.00)</translation>
     </message>
     <message>
         <source>Please put this Reference No. in your PayPal payment message/note.</source>
-        <translation type="unfinished"></translation>
+        <translation>请将此参考号填入您的 PayPal 付款消息/备注中。</translation>
     </message>
     <message>
         <source>Paste your PayPal Transaction ID here</source>
-        <translation type="unfinished"></translation>
+        <translation>在此粘贴您的 PayPal 交易 ID</translation>
     </message>
     <message>
         <source>Reference NO.:</source>
-        <translation type="unfinished"></translation>
+        <translation>参考号：</translation>
     </message>
     <message>
         <source>Pay Now (Secure PayPal Link)</source>
-        <translation type="unfinished"></translation>
+        <translation>立即支付 (安全 PayPal 链接)</translation>
     </message>
     <message>
         <source>Device Information</source>
-        <translation type="unfinished"></translation>
+        <translation>设备信息</translation>
     </message>
     <message>
         <source>Device Secret:</source>
-        <translation type="unfinished"></translation>
+        <translation>设备密钥：</translation>
     </message>
     <message>
         <source>Serial Number:</source>
-        <translation type="unfinished"></translation>
+        <translation>序列号：</translation>
     </message>
     <message>
         <source>Total Profiles:</source>
-        <translation type="unfinished"></translation>
+        <translation>总配置文件数：</translation>
     </message>
     <message>
         <source>Generate Request File</source>
-        <translation type="unfinished"></translation>
+        <translation>生成请求文件</translation>
     </message>
     <message>
         <source>Copy content</source>
-        <translation type="unfinished"></translation>
+        <translation>复制内容</translation>
     </message>
     <message>
         <source>Email</source>
-        <translation type="unfinished"></translation>
+        <translation>邮件</translation>
     </message>
     <message>
         <source>Order</source>
-        <translation type="unfinished"></translation>
+        <translation>订购</translation>
     </message>
     <message>
         <source>Log Output:</source>
-        <translation type="unfinished"></translation>
+        <translation>日志输出：</translation>
     </message>
     <message>
         <source>No devices found</source>
-        <translation type="unfinished"></translation>
+        <translation>未找到设备</translation>
     </message>
     <message>
         <source>Select Factory Package</source>
-        <translation type="unfinished"></translation>
+        <translation>选择工厂包</translation>
     </message>
     <message>
         <source>Factory Package (*.fzip)</source>
-        <translation type="unfinished"></translation>
+        <translation>工厂包 (*.fzip)</translation>
     </message>
     <message>
         <source>Select Upgrade Package</source>
-        <translation type="unfinished"></translation>
+        <translation>选择升级包</translation>
     </message>
     <message>
         <source>Upgrade Package (*.uzip)</source>
-        <translation type="unfinished"></translation>
+        <translation>升级包 (*.uzip)</translation>
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished">错误</translation>
+        <translation>错误</translation>
     </message>
     <message>
         <source>Please select a valid serial port.</source>
-        <translation type="unfinished"></translation>
+        <translation>请选择有效的串口。</translation>
     </message>
     <message>
         <source>Error: Failed to read file or file is empty: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>错误：读取文件失败或文件为空：%1</translation>
     </message>
     <message>
         <source>Checking device status...</source>
-        <translation type="unfinished"></translation>
+        <translation>正在检查设备状态...</translation>
     </message>
     <message>
         <source>Device is already running with factory firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>设备已在运行工厂固件。</translation>
     </message>
     <message>
         <source>Attempting to fetch PDEK...</source>
-        <translation type="unfinished"></translation>
+        <translation>尝试获取 PDEK...</translation>
     </message>
     <message>
         <source>PDEK fetched successfully.</source>
-        <translation type="unfinished"></translation>
+        <translation>成功获取 PDEK。</translation>
     </message>
     <message>
         <source>Device Info: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>设备信息：%1</translation>
     </message>
     <message>
         <source>Info</source>
-        <translation type="unfinished">信息</translation>
+        <translation>信息</translation>
     </message>
     <message>
         <source>Device is already running with factory firmware. Device Info has been fetched.</source>
-        <translation type="unfinished"></translation>
+        <translation>设备已在运行工厂固件。设备信息已获取。</translation>
     </message>
     <message>
         <source>Failed to fetch PDEK from factory mode device.</source>
-        <translation type="unfinished"></translation>
+        <translation>从工厂模式设备获取 PDEK 失败。</translation>
     </message>
     <message>
         <source>Device is already running with factory firmware, but failed to fetch PDEK.</source>
-        <translation type="unfinished"></translation>
+        <translation>设备已在运行工厂固件，但获取 PDEK 失败。</translation>
     </message>
     <message>
         <source>Device is running Application Firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>设备正在运行应用固件。</translation>
     </message>
     <message>
         <source>Wrong Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>模式错误</translation>
     </message>
     <message>
         <source>Device is running Application Firmware. Please enter Bootloader mode to flash Factory Firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>设备正在运行应用固件。请进入 Bootloader 模式以烧录工厂固件。</translation>
     </message>
     <message>
         <source>Error: No factory package selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>错误：未选择工厂包。</translation>
     </message>
     <message>
         <source>Please select a factory package file to flash.</source>
-        <translation type="unfinished"></translation>
+        <translation>请选择要烧录的工厂包文件。</translation>
     </message>
     <message>
         <source>Starting Factory Flash...</source>
-        <translation type="unfinished"></translation>
+        <translation>正在开始工厂烧录...</translation>
     </message>
     <message>
         <source>Factory Flash Success!</source>
-        <translation type="unfinished"></translation>
+        <translation>工厂固件烧录成功！</translation>
     </message>
     <message>
         <source>Factory Flash Failed! Error code: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>工厂固件烧录失败！错误代码：%1</translation>
     </message>
     <message>
         <source>Starting Download &amp; Flash process...</source>
-        <translation type="unfinished"></translation>
+        <translation>正在开始下载和烧录过程...</translation>
     </message>
     <message>
         <source>Downloading flash_payloads.fzip...</source>
-        <translation type="unfinished"></translation>
+        <translation>正在下载 flash_payloads.fzip...</translation>
     </message>
     <message>
         <source>Download failed.</source>
-        <translation type="unfinished"></translation>
+        <translation>下载失败。</translation>
     </message>
     <message>
         <source>Failed to download firmware. Check internet connection.</source>
-        <translation type="unfinished"></translation>
+        <translation>固件下载失败。请检查网络连接。</translation>
     </message>
     <message>
         <source>Download complete. Size: %1 bytes</source>
-        <translation type="unfinished"></translation>
+        <translation>下载完成。大小：%1 字节</translation>
     </message>
     <message>
         <source>Starting flashing process...</source>
-        <translation type="unfinished"></translation>
+        <translation>正在开始烧录过程...</translation>
     </message>
     <message>
         <source>Device is already in Factory Mode.</source>
-        <translation type="unfinished"></translation>
+        <translation>设备已处于工厂模式。</translation>
     </message>
     <message>
         <source>Device is already running factory firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>设备已在运行工厂固件。</translation>
     </message>
     <message>
         <source>Device is in App Mode. Please enter Bootloader Mode.</source>
-        <translation type="unfinished"></translation>
+        <translation>设备处于应用模式。请进入 Bootloader 模式。</translation>
     </message>
     <message>
         <source>Please enter Bootloader mode to flash Factory Firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>请进入 Bootloader 模式以烧录工厂固件。</translation>
     </message>
     <message>
         <source>Flash Success!</source>
-        <translation type="unfinished"></translation>
+        <translation>烧录成功！</translation>
     </message>
     <message>
         <source>Success</source>
-        <translation type="unfinished"></translation>
+        <translation>成功</translation>
     </message>
     <message>
         <source>Flash Failed! Error code: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>烧录失败！错误代码：%1</translation>
     </message>
     <message>
         <source>Paypal Seller: &lt;b&gt;&lt;font color=&apos;red&apos;&gt;%1&lt;/font&gt;&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Paypal 卖家：&lt;b&gt;&lt;font color=&apos;red&apos;&gt;%1&lt;/font&gt;&lt;/b&gt;</translation>
     </message>
     <message>
         <source>PayPal Transaction ID:</source>
-        <translation type="unfinished"></translation>
+        <translation>PayPal 交易 ID：</translation>
     </message>
     <message>
         <source>Flashing failed. Error code: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>烧录失败。错误代码：%1</translation>
     </message>
     <message>
         <source>This process permanently converts your ESP32 into a Deskflow-HID device. This is irreversible and blocks non-Deskflow firmware.
 
 Do you want to proceed?</source>
-        <translation type="unfinished"></translation>
+        <translation>此过程将把您的 ESP32 永久转换为 Deskflow-HID 设备。此操作不可逆，并将阻止非 Deskflow 固件。
+
+您要继续吗？</translation>
     </message>
     <message>
         <source>Confirm Factory Flash</source>
-        <translation type="unfinished"></translation>
+        <translation>确认工厂烧录</translation>
     </message>
     <message>
         <source>Factory firmware flashed successfully.
 
 Next step: You need to flash the per-device firmware to use the device. Please switch to the &apos;Order&apos; tab to request it.</source>
-        <translation type="unfinished"></translation>
+        <translation>工厂固件烧录成功。
+
+下一步：您需要烧录每设备特定的固件才能使用该设备。请切换到“订购”选项卡进行申请。</translation>
     </message>
     <message>
         <source>Device Info copied to clipboard.</source>
-        <translation type="unfinished"></translation>
+        <translation>设备信息已复制到剪贴板。</translation>
     </message>
     <message>
         <source>Checking device info on %1...</source>
-        <translation type="unfinished"></translation>
+        <translation>正在检查 %1 上的设备信息...</translation>
     </message>
     <message>
         <source>Device is in Factory Mode. Fetching PDEK...</source>
-        <translation type="unfinished"></translation>
+        <translation>设备处于工厂模式。正在获取 PDEK...</translation>
     </message>
     <message>
         <source>Device Info fetched and copied to clipboard.</source>
-        <translation type="unfinished"></translation>
+        <translation>设备信息已获取并复制到剪贴板。</translation>
     </message>
     <message>
         <source>Failed to fetch PDEK.</source>
-        <translation type="unfinished"></translation>
+        <translation>获取 PDEK 失败。</translation>
     </message>
     <message>
         <source>Failed to fetch Device Info.</source>
-        <translation type="unfinished"></translation>
+        <translation>获取设备信息失败。</translation>
     </message>
     <message>
         <source>Device is not in Factory Mode (Mode: %1).</source>
-        <translation type="unfinished"></translation>
+        <translation>设备未处于工厂模式（模式：%1）。</translation>
     </message>
     <message>
         <source>Device must be in Factory Mode to copy Device Info.</source>
-        <translation type="unfinished"></translation>
+        <translation>设备必须处于工厂模式才能复制设备信息。</translation>
     </message>
     <message>
         <source>Handshake complete but no config received.</source>
-        <translation type="unfinished"></translation>
+        <translation>握手完成但未收到配置。</translation>
     </message>
     <message>
         <source>Device handshake incomplete.</source>
-        <translation type="unfinished"></translation>
+        <translation>设备握手未完成。</translation>
     </message>
     <message>
         <source>Failed to open device or handshake failed.</source>
-        <translation type="unfinished"></translation>
+        <translation>打开设备失败或握手失败。</translation>
     </message>
     <message>
         <source>Connection Error</source>
-        <translation type="unfinished"></translation>
+        <translation>连接错误</translation>
     </message>
     <message>
         <source>Failed to connect to device.</source>
-        <translation type="unfinished"></translation>
+        <translation>连接设备失败。</translation>
     </message>
     <message>
         <source>Checking for upgrades...</source>
-        <translation type="unfinished"></translation>
+        <translation>正在检查升级...</translation>
     </message>
     <message>
         <source>Failed to fetch latest version tag from GitHub.</source>
-        <translation type="unfinished"></translation>
+        <translation>从 GitHub 获取最新版本标签失败。</translation>
     </message>
     <message>
         <source>Network Error</source>
-        <translation type="unfinished"></translation>
+        <translation>网络错误</translation>
     </message>
     <message>
         <source>Could not check for updates.</source>
-        <translation type="unfinished"></translation>
+        <translation>无法检查更新。</translation>
     </message>
     <message>
         <source>Device handshake failed or no config received. Assuming factory/unknown state.</source>
-        <translation type="unfinished"></translation>
+        <translation>设备握手失败或未收到配置。假定为工厂/未知状态。</translation>
     </message>
     <message>
         <source>Could not open device. Assuming factory/unknown state.</source>
-        <translation type="unfinished"></translation>
+        <translation>无法打开设备。假定为工厂/未知状态。</translation>
     </message>
     <message>
         <source>Version Check: Remote Tag=&apos;%1&apos;, Device Version=&apos;%2&apos; (Raw BCD=%3)</source>
-        <translation type="unfinished"></translation>
+        <translation>版本检查：远程标签=&apos;%1&apos;，设备版本=&apos;%2&apos; (原始 BCD=%3)</translation>
     </message>
     <message>
         <source>Current Version: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>当前版本：%1</translation>
     </message>
     <message>
         <source>Latest Version: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>最新版本：%1</translation>
     </message>
     <message>
         <source>Update available (%1 &gt; %2).</source>
-        <translation type="unfinished"></translation>
+        <translation>有可用更新 (%1 &gt; %2)。</translation>
     </message>
     <message>
         <source>Update Available</source>
-        <translation type="unfinished"></translation>
+        <translation>有可用更新</translation>
     </message>
     <message>
         <source>A new version (%1) is available.</source>
-        <translation type="unfinished"></translation>
+        <translation>新版本 (%1) 可用。</translation>
     </message>
     <message>
         <source>Update available (Device version unknown).</source>
-        <translation type="unfinished"></translation>
+        <translation>有可用更新（设备版本未知）。</translation>
     </message>
     <message>
         <source>A new version (%1) is available. Device version unknown.</source>
-        <translation type="unfinished"></translation>
+        <translation>新版本 (%1) 可用。设备版本未知。</translation>
     </message>
     <message>
         <source>Device is up to date.</source>
-        <translation type="unfinished"></translation>
+        <translation>设备已是最新版本。</translation>
     </message>
     <message>
         <source>Up to date</source>
-        <translation type="unfinished"></translation>
+        <translation>已是最新</translation>
     </message>
     <message>
         <source>Device is already running the latest version.</source>
-        <translation type="unfinished"></translation>
+        <translation>设备已运行最新版本。</translation>
     </message>
     <message>
         <source>Please select a firmware file.</source>
-        <translation type="unfinished"></translation>
+        <translation>请选择固件文件。</translation>
     </message>
     <message>
         <source>Failed to read firmware file.</source>
-        <translation type="unfinished"></translation>
+        <translation>读取固件文件失败。</translation>
     </message>
     <message>
         <source>Flashing local file: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>正在烧录本地文件：%1</translation>
     </message>
     <message>
         <source>Downloading upgrade firmware...</source>
-        <translation type="unfinished"></translation>
+        <translation>正在下载升级固件...</translation>
     </message>
     <message>
         <source>Download failed. No .uzip asset found.</source>
-        <translation type="unfinished"></translation>
+        <translation>下载失败。未找到 .uzip 资源。</translation>
     </message>
     <message>
         <source>Failed to download firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>下载固件失败。</translation>
     </message>
     <message>
         <source>Downloaded available firmware. Starting flash...</source>
-        <translation type="unfinished"></translation>
+        <translation>已下载可用固件。开始烧录...</translation>
     </message>
     <message>
         <source>Flashing... %1%</source>
-        <translation type="unfinished"></translation>
+        <translation>正在烧录... %1%</translation>
     </message>
     <message>
         <source>Firmware upgrade successful.</source>
-        <translation type="unfinished"></translation>
+        <translation>固件升级成功。</translation>
     </message>
     <message>
         <source>Flash failed. Error code: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>烧录失败。错误代码：%1</translation>
     </message>
     <message>
         <source>Flash failed: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>烧录失败：%1</translation>
     </message>
     <message>
         <source>Refreshing device state...</source>
-        <translation type="unfinished"></translation>
+        <translation>正在刷新设备状态...</translation>
     </message>
     <message>
         <source>State: Checking...</source>
-        <translation type="unfinished"></translation>
+        <translation>状态：正在检查...</translation>
     </message>
     <message>
         <source>State: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>状态：%1</translation>
     </message>
     <message>
         <source>State: Factory Mode (Cannot Activate)</source>
-        <translation type="unfinished"></translation>
+        <translation>状态：工厂模式 (无法激活)</translation>
     </message>
     <message>
         <source>Device State Refreshed. Serial: %1, Mode: Factory, Secret: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>设备状态已刷新。序列号：%1，模式：工厂，密钥：%2</translation>
     </message>
     <message>
         <source>Device State Refreshed. Serial: %1, State: %2, Profiles: %3</source>
-        <translation type="unfinished"></translation>
+        <translation>设备状态已刷新。序列号：%1，状态：%2，配置文件：%3</translation>
     </message>
     <message>
         <source>Erased Device Detected</source>
-        <translation type="unfinished"></translation>
+        <translation>检测到已擦除的设备</translation>
     </message>
     <message>
         <source>No valid firmware detected on the device. Please go to the &apos;Factory Mode&apos; tab and flash &apos;Online&apos; first.</source>
-        <translation type="unfinished"></translation>
+        <translation>设备上未检测到有效固件。请先进入“工厂模式”选项卡并进行“在线”烧录。</translation>
     </message>
     <message>
         <source>Activating device...</source>
-        <translation type="unfinished"></translation>
+        <translation>正在激活设备...</translation>
     </message>
     <message>
         <source>Activation successful!</source>
-        <translation type="unfinished"></translation>
+        <translation>激活成功！</translation>
     </message>
     <message>
         <source>Device activated successfully.</source>
-        <translation type="unfinished"></translation>
+        <translation>设备激活成功。</translation>
     </message>
     <message>
         <source>Activation failed.</source>
-        <translation type="unfinished"></translation>
+        <translation>激活失败。</translation>
     </message>
     <message>
         <source>Input Required</source>
-        <translation type="unfinished"></translation>
+        <translation>需要输入</translation>
     </message>
     <message>
         <source>Please enter your name and email address.</source>
-        <translation type="unfinished"></translation>
+        <translation>请输入您的姓名和电子邮件地址。</translation>
     </message>
     <message>
         <source>Device Error</source>
-        <translation type="unfinished"></translation>
+        <translation>设备错误</translation>
     </message>
     <message>
         <source>Serial number missing. Please check device connection.</source>
-        <translation type="unfinished"></translation>
+        <translation>序列号缺失。请检查设备连接。</translation>
     </message>
     <message>
         <source>Selection Required</source>
-        <translation type="unfinished"></translation>
+        <translation>需要选择</translation>
     </message>
     <message>
         <source>Please select one of the order options.</source>
-        <translation type="unfinished"></translation>
+        <translation>请选择一个订购选项。</translation>
     </message>
     <message>
         <source>Missing Transaction ID</source>
-        <translation type="unfinished"></translation>
+        <translation>缺少交易 ID</translation>
     </message>
     <message>
         <source>Please enter your PayPal Transaction ID for verification.</source>
-        <translation type="unfinished"></translation>
+        <translation>请输入您的 PayPal 交易 ID 以进行验证。</translation>
     </message>
     <message>
         <source>Missing Secret</source>
-        <translation type="unfinished"></translation>
+        <translation>缺少密钥</translation>
     </message>
     <message>
         <source>Device Secret (PDEK) is required for this option. Please ensure the device is in Factory Mode and the secret has been fetched correctly.</source>
-        <translation type="unfinished"></translation>
+        <translation>此选项需要设备密钥 (PDEK)。请确保设备处于工厂模式且已正确获取密钥。</translation>
     </message>
     <message>
         <source>Free</source>
-        <translation type="unfinished"></translation>
+        <translation>免费</translation>
     </message>
     <message>
         <source>No payment is required for this option.</source>
-        <translation type="unfinished"></translation>
+        <translation>此选项无需付款。</translation>
     </message>
     <message>
         <source>You are about to open PayPal to pay &lt;b&gt;$%1 USD&lt;/b&gt; to &lt;b&gt;%2&lt;/b&gt;.&lt;br&gt;&lt;br&gt;Product: %3&lt;br&gt;Reference: %4&lt;br&gt;&lt;br&gt;Please confirm to proceed to PayPal.</source>
-        <translation type="unfinished"></translation>
+        <translation>您即将打开 PayPal 向 &lt;b&gt;%2&lt;/b&gt; 支付 &lt;b&gt;$%1 USD&lt;/b&gt;。&lt;br&gt;&lt;br&gt;产品：%3&lt;br&gt;参考号：%4&lt;br&gt;&lt;br&gt;请确认以前往 PayPal。</translation>
     </message>
     <message>
         <source>Confirm Payment</source>
-        <translation type="unfinished"></translation>
+        <translation>确认付款</translation>
     </message>
     <message>
         <source>Failed to open web browser. Please visit PayPal manually.</source>
-        <translation type="unfinished"></translation>
+        <translation>无法打开 Web 浏览器。请手动访问 PayPal。</translation>
     </message>
     <message>
         <source>Save Request File</source>
-        <translation type="unfinished"></translation>
+        <translation>保存请求文件</translation>
     </message>
     <message>
         <source>Text Files (*.txt)</source>
-        <translation type="unfinished"></translation>
+        <translation>文本文件 (*.txt)</translation>
     </message>
     <message>
         <source>Request file generated: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>请求文件已生成：%1</translation>
     </message>
     <message>
         <source>Request file generated successfully!
 
 Please send this file or its content (with payment if applicable) to deskflow.hid@gmail.com.
 Your firmware will be back in 24 hours.</source>
-        <translation type="unfinished"></translation>
+        <translation>请求文件生成成功！
+
+请将此文件或其内容（如果适用，连同付款）发送至 deskflow.hid@gmail.com。
+您的固件将在 24 小时内返回。</translation>
     </message>
     <message>
         <source>Failed to save request file: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>保存请求文件失败：%1</translation>
     </message>
     <message>
         <source>Failed to save request file.</source>
-        <translation type="unfinished"></translation>
+        <translation>保存请求文件失败。</translation>
     </message>
     <message>
         <source>Order content copied to clipboard.</source>
-        <translation type="unfinished"></translation>
+        <translation>订购内容已复制到剪贴板。</translation>
     </message>
     <message>
         <source>Copied</source>
-        <translation type="unfinished"></translation>
+        <translation>已复制</translation>
     </message>
     <message>
         <source>Order content successfully copied to clipboard.</source>
-        <translation type="unfinished"></translation>
+        <translation>订购内容已成功复制到剪贴板。</translation>
     </message>
     <message>
         <source>Email client opened.</source>
-        <translation type="unfinished"></translation>
+        <translation>邮件客户端已打开。</translation>
     </message>
     <message>
         <source>Failed to open email client.</source>
-        <translation type="unfinished"></translation>
+        <translation>打开邮件客户端失败。</translation>
     </message>
     <message>
         <source>Failed to open your default email client.</source>
-        <translation type="unfinished"></translation>
+        <translation>打开默认邮件客户端失败。</translation>
     </message>
     <message>
         <source>State: Error</source>
-        <translation type="unfinished"></translation>
+        <translation>状态：错误</translation>
     </message>
     <message>
         <source>Order Options</source>
-        <translation type="unfinished"></translation>
+        <translation>订购选项</translation>
     </message>
     <message>
         <source>Failed to refresh state: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>刷新状态失败：%1</translation>
     </message>
     <message>
         <source>Serial number copied to clipboard.</source>
-        <translation type="unfinished"></translation>
+        <translation>序列号已复制到剪贴板。</translation>
     </message>
     <message>
         <source>Please enter an activation key.</source>
-        <translation type="unfinished"></translation>
+        <translation>请输入激活密钥。</translation>
     </message>
     <message>
         <source>Reading factory firmware from: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>正在从 %1 读取工厂固件</translation>
     </message>
     <message>
         <source>Reading local firmware from: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>正在从 %1 读取本地固件</translation>
     </message>
     <message>
         <source>Online</source>
-        <translation type="unfinished"></translation>
+        <translation>在线</translation>
     </message>
     <message>
         <source>Flash</source>
-        <translation type="unfinished"></translation>
+        <translation>烧录</translation>
     </message>
     <message>
         <source>Manual</source>
-        <translation type="unfinished"></translation>
+        <translation>手动</translation>
     </message>
     <message>
         <source>Copy Device Secret</source>
-        <translation type="unfinished"></translation>
+        <translation>复制设备密钥</translation>
     </message>
 </context>
 <context>
