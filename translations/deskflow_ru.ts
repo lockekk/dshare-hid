@@ -148,6 +148,10 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>DeskflowHidExtension</name>
     <message>
+        <source>Bridge Client Logs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>ESP32 HID Tools</source>
         <translation>Инструменты ESP32 HID</translation>
     </message>
@@ -248,6 +252,49 @@ File -&gt; Firmware -&gt; Order.</source>
     <message>
         <source>The ESP32 HID Tools module is not available in this build.</source>
         <translation>Модуль инструментов ESP32 HID недоступен в этой сборке.</translation>
+    </message>
+</context>
+<context>
+    <name>Esp32HidToolsWidget</name>
+    <message>
+        <source>Serial number copied to clipboard.</source>
+        <translation type="obsolete">Серийный номер скопирован в буфер обмена.</translation>
+    </message>
+    <message>
+        <source>No devices found</source>
+        <translation type="obsolete">Устройства не найдены</translation>
+    </message>
+    <message>
+        <source>Error</source>
+        <translation type="obsolete">Ошибка</translation>
+    </message>
+    <message>
+        <source>Please select a valid serial port.</source>
+        <translation type="obsolete">Пожалуйста, выберите допустимый последовательный порт.</translation>
+    </message>
+    <message>
+        <source>Please enter an activation key.</source>
+        <translation type="obsolete">Пожалуйста, введите ключ активации.</translation>
+    </message>
+    <message>
+        <source>Activating device...</source>
+        <translation type="obsolete">Активация устройства...</translation>
+    </message>
+    <message>
+        <source>Activation successful!</source>
+        <translation type="obsolete">Активация успешна!</translation>
+    </message>
+    <message>
+        <source>Success</source>
+        <translation type="obsolete">Успех</translation>
+    </message>
+    <message>
+        <source>Device activated successfully.</source>
+        <translation type="obsolete">Устройство успешно активировано.</translation>
+    </message>
+    <message>
+        <source>Activation failed.</source>
+        <translation type="obsolete">Активация не удалась.</translation>
     </message>
 </context>
 <context>
@@ -2167,7 +2214,7 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Version Check: Remote Tag=&apos;%1&apos;, Device Version=&apos;%2&apos; (Raw BCD=%3)</source>
-        <translation>Проверка версии: Удаленный тег=&apos;%1&apos;, Версия устройства=&apos;%2&apos; (Raw BCD=%3)</translation>
+        <translation type="vanished">Проверка версии: Удаленный тег=&apos;%1&apos;, Версия устройства=&apos;%2&apos; (Raw BCD=%3)</translation>
     </message>
     <message>
         <source>Current Version: %1</source>

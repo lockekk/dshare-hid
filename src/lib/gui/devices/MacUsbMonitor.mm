@@ -10,10 +10,14 @@
 #include <IOKit/serial/IOSerialKeys.h>
 #include <IOKit/usb/IOUSBLib.h>
 
-#include <QDebug>
 #include <QDir>
+#include <QObject>
+#include <QString>
 #include <QTextStream>
 #include <QTimer>
+#include <QtGlobal>
+
+#include "../../base/Log.h"
 
 namespace deskflow::gui {
 
@@ -80,14 +84,14 @@ bool MacUsbMonitor::startMonitoring()
       io_iterator_t iter = 0;
       kr = IOServiceAddMatchingNotification(m_notifyPort, kIOMatchedNotification, addDict, onDeviceAdded, this, &iter);
       if (kr == kIOReturnSuccess) {
-        qDebug() << "MacUsbMonitor: Registered add notification for class:" << className;
+        LOG_DEBUG("MacUsbMonitor: Registered add notification for class: %s", className);
         processAddedDevices(iter);
         if (!m_addedIter)
           m_addedIter = iter;
         else
           IOObjectRelease(iter);
       } else {
-        qWarning() << "MacUsbMonitor: Failed to register add notification for class:" << className;
+        LOG_WARN("MacUsbMonitor: Failed to register add notification for class: %s", className);
       }
     }
 
@@ -99,20 +103,20 @@ bool MacUsbMonitor::startMonitoring()
           m_notifyPort, kIOTerminatedNotification, remDict, onDeviceRemoved, this, &iter
       );
       if (kr == kIOReturnSuccess) {
-        qDebug() << "MacUsbMonitor: Registered removal notification for class:" << className;
+        LOG_DEBUG("MacUsbMonitor: Registered removal notification for class: %s", className);
         processRemovedDevices(iter);
         if (!m_removedIter)
           m_removedIter = iter;
         else
           IOObjectRelease(iter);
       } else {
-        qWarning() << "MacUsbMonitor: Failed to register removal notification for class:" << className;
+        LOG_WARN("MacUsbMonitor: Failed to register removal notification for class: %s", className);
       }
     }
   }
 
   m_monitoring = true;
-  qDebug() << "MacUsbMonitor: Monitoring fully started on Main RunLoop (CommonModes)";
+  LOG_DEBUG("MacUsbMonitor: Monitoring fully started on Main RunLoop (CommonModes)");
   return true;
 }
 
@@ -153,14 +157,14 @@ QList<UsbDeviceInfo> MacUsbMonitor::enumerateDevices()
 
 void MacUsbMonitor::onDeviceAdded(void *refCon, io_iterator_t iterator)
 {
-  qDebug() << "MacUsbMonitor: onDeviceAdded callback triggered";
+  LOG_DEBUG("MacUsbMonitor: onDeviceAdded callback triggered");
   auto *self = static_cast<MacUsbMonitor *>(refCon);
   self->processAddedDevices(iterator);
 }
 
 void MacUsbMonitor::onDeviceRemoved(void *refCon, io_iterator_t iterator)
 {
-  qDebug() << "MacUsbMonitor: onDeviceRemoved callback triggered";
+  LOG_DEBUG("MacUsbMonitor: onDeviceRemoved callback triggered");
   auto *self = static_cast<MacUsbMonitor *>(refCon);
   self->processRemovedDevices(iterator);
 }
@@ -234,7 +238,7 @@ void MacUsbMonitor::processAddedDevices(io_iterator_t iterator)
     // If we are already tracking this device, skip it.
     // This happens because some devices match both IOUSBDevice and IOUSBHostDevice.
     if (m_connectedDevices.contains(entryID)) {
-      qDebug() << "MacUsbMonitor: Already tracking ID:" << entryID << "- Skipping duplicate matching.";
+      LOG_DEBUG("MacUsbMonitor: Already tracking ID: %llu - Skipping duplicate matching.", (unsigned long long)entryID);
       IOObjectRelease(device);
       continue;
     }
@@ -254,7 +258,6 @@ void MacUsbMonitor::processAddedDevices(io_iterator_t iterator)
 
     if (!matchesFilter(tempInfo)) {
       // Only log if debug is enabled to avoid spam
-      // qDebug() << "MacUsbMonitor: Skipping unrelated device VID:" << vendorId;
       IOObjectRelease(device);
       continue;
     }
@@ -262,17 +265,19 @@ void MacUsbMonitor::processAddedDevices(io_iterator_t iterator)
     // Now it's a candidate, proceed with full extraction
     UsbDeviceInfo info = extractDeviceInfo(device);
 
-    qInfo() << "MacUsbMonitor: Processing added device:" << info.vendorId << ":" << info.productId
-            << "Path:" << info.devicePath << "ID:" << entryID;
+    LOG_INFO(
+        "MacUsbMonitor: Processing added device: %s : %s Path: %s ID: %llu", qPrintable(info.vendorId),
+        qPrintable(info.productId), qPrintable(info.devicePath), (unsigned long long)entryID
+    );
 
     // Do NOT release device yet, we might need it for retry
 
     if (info.devicePath.isEmpty()) {
-      qInfo() << "MacUsbMonitor: Device path empty, starting retry logic for ID:" << entryID;
+      LOG_INFO("MacUsbMonitor: Device path empty, starting retry logic for ID: %llu", (unsigned long long)entryID);
 
       // Start retry chain (Attempt 1)
       if (IOObjectRetain(device) != kIOReturnSuccess) {
-        qWarning() << "MacUsbMonitor: Failed to retain device for retry, skipping ID:" << entryID;
+        LOG_WARN("MacUsbMonitor: Failed to retain device for retry, skipping ID: %llu", (unsigned long long)entryID);
         IOObjectRelease(device); // Release iterator's reference
         continue;
       }
@@ -285,7 +290,7 @@ void MacUsbMonitor::processAddedDevices(io_iterator_t iterator)
         }
 
         // Attempt 2 (res == Retry)
-        qInfo() << "MacUsbMonitor: Retry 1 incomplete, scheduling Retry 2 for ID:" << entryID;
+        LOG_INFO("MacUsbMonitor: Retry 1 incomplete, scheduling Retry 2 for ID: %llu", (unsigned long long)entryID);
 
         // We need to retain for the second timer
         if (IOObjectRetain(device) != kIOReturnSuccess) {
@@ -305,7 +310,7 @@ void MacUsbMonitor::processAddedDevices(io_iterator_t iterator)
       continue;
     }
 
-    qDebug() << "MacUsbMonitor: Device matches filter. Connecting ID:" << entryID;
+    LOG_DEBUG("MacUsbMonitor: Device matches filter. Connecting ID: %llu", (unsigned long long)entryID);
     if (!m_connectedDevices.contains(entryID)) {
       m_connectedDevices.insert(entryID, info);
       Q_EMIT deviceConnected(info);
@@ -314,7 +319,7 @@ void MacUsbMonitor::processAddedDevices(io_iterator_t iterator)
     IOObjectRelease(device); // Release the iterator's reference
   }
   if (count == 0) {
-    qDebug() << "MacUsbMonitor: processAddedDevices called but no devices found in iterator";
+    LOG_DEBUG("MacUsbMonitor: processAddedDevices called but no devices found in iterator");
   }
 }
 
@@ -324,18 +329,20 @@ void MacUsbMonitor::processRemovedDevices(io_iterator_t iterator)
   while ((device = IOIteratorNext(iterator))) {
     uint64_t entryID = 0;
     IORegistryEntryGetRegistryEntryID(device, &entryID);
-    qInfo() << "MacUsbMonitor: Processing removal for entryID:" << entryID;
+    LOG_INFO("MacUsbMonitor: Processing removal for entryID: %llu", (unsigned long long)entryID);
     IOObjectRelease(device);
 
     if (m_connectedDevices.contains(entryID)) {
       UsbDeviceInfo info = m_connectedDevices.take(entryID);
-      qInfo() << "MacUsbMonitor: Found tracked device to remove:" << info.devicePath;
+      LOG_INFO("MacUsbMonitor: Found tracked device to remove: %s", qPrintable(info.devicePath));
       Q_EMIT deviceDisconnected(info);
     } else {
-      qInfo() << "MacUsbMonitor: entryID" << entryID << "not in tracked list (size:" << m_connectedDevices.size()
-              << ")";
+      LOG_INFO(
+          "MacUsbMonitor: entryID %llu not in tracked list (size: %lld)", (unsigned long long)entryID,
+          (long long)m_connectedDevices.size()
+      );
       for (auto it = m_connectedDevices.begin(); it != m_connectedDevices.end(); ++it) {
-        qInfo() << "  Tracking ID:" << it.key() << "Path:" << it.value().devicePath;
+        LOG_INFO("  Tracking ID: %llu Path: %s", (unsigned long long)it.key(), qPrintable(it.value().devicePath));
       }
     }
   }
@@ -349,7 +356,7 @@ MacUsbMonitor::ConnectResult MacUsbMonitor::tryConnectDevice(io_service_t device
 
   // Reuse validation block: Validate device is still alive in registry
   if (IORegistryEntryGetRegistryEntryID(device, &entryID) != kIOReturnSuccess) {
-    qDebug() << "MacUsbMonitor: Device became invalid during retry check";
+    LOG_DEBUG("MacUsbMonitor: Device became invalid during retry check");
     return ConnectResult::Stop;
   }
 
@@ -357,7 +364,10 @@ MacUsbMonitor::ConnectResult MacUsbMonitor::tryConnectDevice(io_service_t device
 
   if (!info.devicePath.isEmpty()) {
     if (matchesFilter(info)) {
-      qInfo() << "MacUsbMonitor: Device connection successful for ID:" << entryID << "Path:" << info.devicePath;
+      LOG_INFO(
+          "MacUsbMonitor: Device connection successful for ID: %llu Path: %s", (unsigned long long)entryID,
+          qPrintable(info.devicePath)
+      );
       if (!m_connectedDevices.contains(entryID)) {
         m_connectedDevices.insert(entryID, info);
         Q_EMIT deviceConnected(info);

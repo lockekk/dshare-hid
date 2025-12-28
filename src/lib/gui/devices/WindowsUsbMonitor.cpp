@@ -5,7 +5,7 @@
 #include "WindowsUsbMonitor.h"
 #include "UsbDeviceHelper.h"
 
-#include <QDebug>
+#include "base/Log.h"
 
 #define WIN32_LEAN_AND_MEAN
 // clang-format off
@@ -35,11 +35,11 @@ WindowsUsbMonitor::~WindowsUsbMonitor()
 bool WindowsUsbMonitor::startMonitoring()
 {
   if (m_monitoring) {
-    qWarning() << "Windows USB monitoring is already active";
+    LOG_WARN("Windows USB monitoring is already active");
     return true;
   }
 
-  qDebug() << "Starting Windows USB device monitoring...";
+  LOG_DEBUG("Starting Windows USB device monitoring...");
 
   // Create a hidden window to receive device change messages
   WNDCLASSW wc = {};
@@ -50,7 +50,7 @@ bool WindowsUsbMonitor::startMonitoring()
   if (!RegisterClassW(&wc)) {
     DWORD error = GetLastError();
     if (error != ERROR_CLASS_ALREADY_EXISTS) {
-      qWarning() << "Failed to register window class:" << error;
+      LOG_WARN("Failed to register window class: %lu", error);
       return false;
     }
   }
@@ -62,7 +62,7 @@ bool WindowsUsbMonitor::startMonitoring()
   );
 
   if (!m_hwnd) {
-    qWarning() << "Failed to create message window:" << GetLastError();
+    LOG_WARN("Failed to create message window: %lu", GetLastError());
     return false;
   }
 
@@ -72,7 +72,7 @@ bool WindowsUsbMonitor::startMonitoring()
   m_lastKnownDevices = enumerateDevices();
 
   m_monitoring = true;
-  qDebug() << "Windows USB device monitoring started successfully";
+  LOG_DEBUG("Windows USB device monitoring started successfully");
 
   return true;
 }
@@ -83,7 +83,7 @@ void WindowsUsbMonitor::stopMonitoring()
     return;
   }
 
-  qDebug() << "Stopping Windows USB device monitoring...";
+  LOG_DEBUG("Stopping Windows USB device monitoring...");
 
   unregisterDeviceNotification();
 
@@ -93,7 +93,7 @@ void WindowsUsbMonitor::stopMonitoring()
   }
 
   m_monitoring = false;
-  qDebug() << "Windows USB device monitoring stopped";
+  LOG_DEBUG("Windows USB device monitoring stopped");
 }
 
 bool WindowsUsbMonitor::isMonitoring() const
@@ -117,9 +117,9 @@ void WindowsUsbMonitor::registerDeviceNotification()
   );
 
   if (!m_hDevNotify) {
-    qWarning() << "Failed to register device notification:" << GetLastError();
+    LOG_WARN("Failed to register device notification: %lu", GetLastError());
   } else {
-    qDebug() << "Registered for Windows device notifications";
+    LOG_DEBUG("Registered for Windows device notifications");
   }
 }
 
@@ -168,8 +168,10 @@ void WindowsUsbMonitor::checkDeviceChanges()
     }
 
     if (!wasKnown) {
-      qInfo() << "WindowsUsbMonitor: Processing added device:" << device.vendorId << ":" << device.productId
-              << "Path:" << device.devicePath;
+      LOG_INFO(
+          "WindowsUsbMonitor: Processing added device: %s : %s Path: %s", qPrintable(device.vendorId),
+          qPrintable(device.productId), qPrintable(device.devicePath)
+      );
       Q_EMIT deviceConnected(device);
     }
   }
@@ -185,7 +187,7 @@ void WindowsUsbMonitor::checkDeviceChanges()
     }
 
     if (!stillPresent) {
-      qDebug() << "Detected device removal:" << known.devicePath;
+      LOG_DEBUG("Detected device removal: %s", qPrintable(known.devicePath));
       Q_EMIT deviceDisconnected(known);
     }
   }
@@ -198,7 +200,7 @@ LRESULT CALLBACK WindowsUsbMonitor::windowProc(HWND hwnd, UINT msg, WPARAM wPara
   if (msg == WM_DEVICECHANGE && s_instance) {
     if (wParam == DBT_DEVICEARRIVAL || wParam == DBT_DEVICEREMOVECOMPLETE) {
       // Device change detected, check for changes
-      qDebug() << "WM_DEVICECHANGE received, checking device changes...";
+      LOG_DEBUG("WM_DEVICECHANGE received, checking device changes...");
       QMetaObject::invokeMethod(s_instance, &WindowsUsbMonitor::checkDeviceChanges, Qt::QueuedConnection);
       return TRUE;
     }

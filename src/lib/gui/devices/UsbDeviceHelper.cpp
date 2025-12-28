@@ -6,7 +6,8 @@
 
 #include "platform/bridge/CdcTransport.h"
 
-#include <QDebug>
+#include "base/Log.h"
+
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
@@ -50,7 +51,7 @@ QString canonicalUsbDevicePath(const QString &devicePath)
   const QString ttyBasePath = QStringLiteral("/sys/class/tty/%1").arg(ttyName);
   QFileInfo ttyLink(ttyBasePath);
   if (!ttyLink.exists()) {
-    qWarning() << "TTY entry does not exist for" << devicePath << ":" << ttyBasePath;
+    LOG_WARN("TTY entry does not exist for %s : %s", qPrintable(devicePath), qPrintable(ttyLink.absoluteFilePath()));
     return QString();
   }
 
@@ -175,58 +176,58 @@ QString UsbDeviceHelper::readSerialNumber(const QString &devicePath)
   // Read serial number via CDC command from firmware
   // This ensures we only read when device is not opened by bridge client
 
-  qDebug() << "Reading serial number via CDC for device:" << devicePath;
+  LOG_DEBUG("Reading serial number via CDC for device: %s", qPrintable(devicePath));
 
   try {
     // Create CDC transport instance
-    qDebug() << "DebugTrace: Creating transport for" << devicePath;
+    LOG_DEBUG("Creating transport for %s", qPrintable(devicePath));
     deskflow::bridge::CdcTransport transport(devicePath);
 
     // Check if device is busy by attempting to open it
     // This will fail if the bridge client already has it open
-    qDebug() << "DebugTrace: Opening transport for" << devicePath;
-    qDebug() << "DebugTrace: Opening transport for" << devicePath;
+    LOG_DEBUG("Opening transport for %s", qPrintable(devicePath));
     if (!transport.open()) {
-      qDebug() << "Device is busy or not accessible (likely opened by bridge client):" << devicePath;
+      LOG_DEBUG("Device is busy or not accessible (likely opened by bridge client): %s", qPrintable(devicePath));
       return QString(); // Device is in use, don't block
     }
-    qDebug() << "DebugTrace: Transport opened successfully for" << devicePath;
+    LOG_DEBUG("Transport opened successfully for %s", qPrintable(devicePath));
 
     // Read serial number via CDC command
     std::string serial;
-    qDebug() << "DebugTrace: Fetching serial number for" << devicePath;
+    LOG_DEBUG("Fetching serial number for %s", qPrintable(devicePath));
     if (transport.fetchSerialNumber(serial)) {
-      qDebug() << "DebugTrace: Closing transport for" << devicePath;
+      LOG_DEBUG("Closing transport for %s", qPrintable(devicePath));
       transport.close();
-      qDebug() << "DebugTrace: Converting serial";
+      LOG_DEBUG("Converting serial");
       QString qSerial = QString::fromStdString(serial);
       if (!qSerial.isEmpty()) {
-        qDebug() << "Read serial number via CDC for" << devicePath << ":" << qSerial;
+        LOG_DEBUG("Read serial number via CDC for %s : %s", qPrintable(devicePath), qPrintable(qSerial));
         return qSerial;
       } else {
-        qDebug() << "Device returned empty serial number:" << devicePath;
+        LOG_DEBUG("Device returned empty serial number: %s", qPrintable(devicePath));
         return QString();
       }
     } else {
-      qWarning() << "Failed to read serial number via CDC for" << devicePath
-                 << "error:" << QString::fromStdString(transport.lastError());
+      LOG_WARN(
+          "Failed to read serial number via CDC for %s error: %s", qPrintable(devicePath), transport.lastError().c_str()
+      );
       transport.close();
       return QString();
     }
 
   } catch (const std::exception &e) {
-    qWarning() << "Exception reading serial number via CDC for" << devicePath << "error:" << e.what();
+    LOG_WARN("Exception reading serial number via CDC for %s error: %s", qPrintable(devicePath), e.what());
     return QString();
   }
 
 #elif defined(Q_OS_IOS)
   // TODO: Implement CDC serial number reading for iOS
   // iOS has limited access to CDC devices, may need different approach
-  qWarning() << "Serial number reading not implemented for iOS platform";
+  LOG_WARN("Serial number reading not implemented for iOS platform");
   return QString();
 
 #else
-  qWarning() << "Serial number reading not implemented for this platform";
+  LOG_WARN("Serial number reading not implemented for this platform");
   return QString();
 #endif
 }
@@ -246,7 +247,7 @@ QMap<QString, QString> UsbDeviceHelper::getConnectedDevices(bool queryDevice)
     QString devicePath = QStringLiteral("/dev/%1").arg(deviceFile);
 
     if (!isSupportedBridgeDevice(devicePath)) {
-      qDebug() << "Skipping non-bridge CDC device" << devicePath;
+      LOG_DEBUG("Skipping non-bridge CDC device %s", qPrintable(devicePath));
       continue;
     }
 
@@ -261,12 +262,12 @@ QMap<QString, QString> UsbDeviceHelper::getConnectedDevices(bool queryDevice)
     devices[devicePath] = serialNumber;
   }
 
-  qDebug() << "Found" << devices.size() << "connected USB CDC devices";
+  LOG_DEBUG("Found %d connected USB CDC devices", devices.size());
 #elif defined(Q_OS_WIN)
   GUID classGuid = GUID_DEVCLASS_PORTS;
   HDEVINFO deviceInfoSet = SetupDiGetClassDevsW(&classGuid, nullptr, nullptr, DIGCF_PRESENT);
   if (deviceInfoSet == INVALID_HANDLE_VALUE) {
-    qWarning() << "Failed to enumerate COM ports:" << GetLastError();
+    LOG_WARN("Failed to enumerate COM ports: %lu", GetLastError());
     return devices;
   }
 
@@ -299,7 +300,7 @@ QMap<QString, QString> UsbDeviceHelper::getConnectedDevices(bool queryDevice)
         QString possibleSerial = instanceIdStr.mid(lastSlash + 1);
         if (!possibleSerial.isEmpty() && !possibleSerial.contains('&')) {
           serialNumber = possibleSerial;
-          qDebug() << "Read serial number from registry for" << devicePath << ":" << serialNumber;
+          LOG_DEBUG("Read serial number from registry for %s : %s", qPrintable(devicePath), qPrintable(serialNumber));
         }
       }
     }
@@ -313,18 +314,18 @@ QMap<QString, QString> UsbDeviceHelper::getConnectedDevices(bool queryDevice)
     }
 
     devices[devicePath] = serialNumber;
-    qDebug() << "Found bridge device at" << devicePath;
+    LOG_DEBUG("Found bridge device at %s", qPrintable(devicePath));
   }
 
   SetupDiDestroyDeviceInfoList(deviceInfoSet);
-  qDebug() << "Enumerated" << devices.size() << "bridge-capable USB CDC device(s) on Windows";
+  LOG_DEBUG("Enumerated %d bridge-capable USB CDC device(s) on Windows", devices.size());
 #elif defined(Q_OS_MAC)
   // macOS implementation using IOKit
   io_iterator_t iter = 0;
   kern_return_t kr =
       IOServiceGetMatchingServices(kIOMasterPortDefault, IOServiceMatching(kIOUSBDeviceClassName), &iter);
   if (kr != kIOReturnSuccess) {
-    qWarning() << "Failed to iterate USB devices on macOS";
+    LOG_WARN("Failed to iterate USB devices on macOS");
     return devices;
   }
 
@@ -425,11 +426,13 @@ bool UsbDeviceHelper::isSupportedBridgeDevice(const QString &devicePath)
     if (productId.isEmpty() || productId == kEspressifProductId) {
       return true;
     }
-    qDebug() << "Device" << devicePath << "has Espressif vendor id but unexpected product id" << productId;
+    LOG_DEBUG(
+        "Device %s has Espressif vendor id but unexpected product id %s", qPrintable(devicePath), qPrintable(productId)
+    );
     return true;
   }
 
-  qDebug() << "Device" << devicePath << "has unsupported vendor id" << vendorId;
+  LOG_DEBUG("Device %s has unsupported vendor id %s", qPrintable(devicePath), qPrintable(vendorId));
   return false;
 #elif defined(Q_OS_WIN)
   // On Windows, try to open and handshake with the device
@@ -473,7 +476,7 @@ bool UsbDeviceHelper::verifyBridgeHandshake(
 
   deskflow::bridge::CdcTransport transport(devicePath);
   if (!transport.open()) {
-    qWarning() << "Bridge handshake failed for" << devicePath << ":" << QString::fromStdString(transport.lastError());
+    LOG_WARN("Bridge handshake failed for %s : %s", qPrintable(devicePath), transport.lastError().c_str());
     return false;
   }
 
@@ -489,17 +492,19 @@ bool UsbDeviceHelper::verifyBridgeHandshake(
         configOut->deviceName = deviceName;
       }
     } else {
-      qWarning() << "Unable to fetch device name:" << QString::fromStdString(transport.lastError());
+      LOG_WARN("Unable to fetch device name: %s", transport.lastError().c_str());
     }
 
     const QString nameForLog = QString::fromStdString(cfg.deviceName);
 
-    qInfo() << "Bridge handshake successful with" << devicePath << "proto:" << cfg.protocolVersion
-            << "activation_state:" << cfg.activationStateString() << "(" << static_cast<unsigned>(cfg.activationState)
-            << ")"
-            << "fw_bcd:" << cfg.firmwareVersionBcd << "hw_bcd:" << cfg.hardwareVersionBcd << "name:" << nameForLog;
+    LOG_INFO(
+        "Bridge handshake successful with %s proto: %d activation_state: %s (%d) fw_bcd: %d hw_bcd: %d name: %s",
+        qPrintable(devicePath), cfg.protocolVersion, cfg.activationStateString(),
+        static_cast<unsigned>(cfg.activationState), cfg.firmwareVersionBcd, cfg.hardwareVersionBcd,
+        qPrintable(nameForLog)
+    );
   } else {
-    qInfo() << "Bridge handshake successful with" << devicePath << "(no config payload)";
+    LOG_INFO("Bridge handshake successful with %s (no config payload)", qPrintable(devicePath));
   }
 
   transport.close();

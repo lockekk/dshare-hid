@@ -146,6 +146,10 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>DeskflowHidExtension</name>
     <message>
+        <source>Bridge Client Logs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>ESP32 HID Tools</source>
         <translation>ESP32 HID ツール</translation>
     </message>
@@ -246,6 +250,49 @@ File -&gt; Firmware -&gt; Order.</source>
     <message>
         <source>The ESP32 HID Tools module is not available in this build.</source>
         <translation>このビルドでは ESP32 HID ツールモジュールは利用できません。</translation>
+    </message>
+</context>
+<context>
+    <name>Esp32HidToolsWidget</name>
+    <message>
+        <source>Serial number copied to clipboard.</source>
+        <translation type="obsolete">シリアル番号をコピーしました。</translation>
+    </message>
+    <message>
+        <source>No devices found</source>
+        <translation type="obsolete">デバイスが見つかりません</translation>
+    </message>
+    <message>
+        <source>Error</source>
+        <translation type="obsolete">エラー</translation>
+    </message>
+    <message>
+        <source>Please select a valid serial port.</source>
+        <translation type="obsolete">有効なシリアルポートを選択してください。</translation>
+    </message>
+    <message>
+        <source>Please enter an activation key.</source>
+        <translation type="obsolete">アクティベーションキーを入力してください。</translation>
+    </message>
+    <message>
+        <source>Activating device...</source>
+        <translation type="obsolete">デバイスを有効化中...</translation>
+    </message>
+    <message>
+        <source>Activation successful!</source>
+        <translation type="obsolete">有効化成功！</translation>
+    </message>
+    <message>
+        <source>Success</source>
+        <translation type="obsolete">成功</translation>
+    </message>
+    <message>
+        <source>Device activated successfully.</source>
+        <translation type="obsolete">デバイスが正常に有効化されました。</translation>
+    </message>
+    <message>
+        <source>Activation failed.</source>
+        <translation type="obsolete">有効化失敗。</translation>
     </message>
 </context>
 <context>
@@ -2163,7 +2210,7 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Version Check: Remote Tag=&apos;%1&apos;, Device Version=&apos;%2&apos; (Raw BCD=%3)</source>
-        <translation>バージョン確認: リモートタグ=&apos;%1&apos;, デバイス ver=&apos;%2&apos; (Raw BCD=%3)</translation>
+        <translation type="vanished">バージョン確認: リモートタグ=&apos;%1&apos;, デバイス ver=&apos;%2&apos; (Raw BCD=%3)</translation>
     </message>
     <message>
         <source>Current Version: %1</source>

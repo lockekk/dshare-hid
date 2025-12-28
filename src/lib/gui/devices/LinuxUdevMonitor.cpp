@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "LinuxUdevMonitor.h"
+#include "base/Log.h"
 
 #include <libudev.h>
 
@@ -14,7 +15,6 @@
 #undef size
 #endif
 
-#include <QDebug>
 #include <QSocketNotifier>
 
 namespace deskflow::gui {
@@ -24,7 +24,7 @@ LinuxUdevMonitor::LinuxUdevMonitor(QObject *parent) : UsbDeviceMonitor(parent)
   // Initialize udev context
   m_udev = udev_new();
   if (!m_udev) {
-    qWarning() << "Failed to create udev context";
+    LOG_WARN("Failed to create udev context");
   }
 }
 
@@ -36,7 +36,7 @@ LinuxUdevMonitor::~LinuxUdevMonitor()
 bool LinuxUdevMonitor::startMonitoring()
 {
   if (m_monitoring) {
-    qDebug() << "USB device monitoring already started";
+    LOG_DEBUG("USB device monitoring already started");
     return true;
   }
 
@@ -54,7 +54,7 @@ bool LinuxUdevMonitor::startMonitoring()
 
   // Filter for tty subsystem (USB CDC devices appear here)
   if (udev_monitor_filter_add_match_subsystem_devtype(m_monitor, "tty", nullptr) < 0) {
-    qWarning() << "Failed to add tty subsystem filter";
+    LOG_WARN("Failed to add tty subsystem filter");
     cleanup();
     return false;
   }
@@ -79,7 +79,7 @@ bool LinuxUdevMonitor::startMonitoring()
   connect(m_notifier.get(), &QSocketNotifier::activated, this, &LinuxUdevMonitor::handleUdevEvent);
 
   m_monitoring = true;
-  qDebug() << "USB device monitoring started";
+  LOG_DEBUG("USB device monitoring started");
   return true;
 }
 
@@ -91,7 +91,7 @@ void LinuxUdevMonitor::stopMonitoring()
 
   cleanup();
   m_monitoring = false;
-  qDebug() << "USB device monitoring stopped";
+  LOG_DEBUG("USB device monitoring stopped");
 }
 
 bool LinuxUdevMonitor::isMonitoring() const
@@ -101,53 +101,57 @@ bool LinuxUdevMonitor::isMonitoring() const
 
 void LinuxUdevMonitor::handleUdevEvent()
 {
-  qDebug() << "[UdevMonitor] handleUdevEvent() called";
+  LOG_DEBUG("[UdevMonitor] handleUdevEvent() called");
 
   if (!m_monitor) {
-    qWarning() << "[UdevMonitor] No monitor available";
+    LOG_WARN("[UdevMonitor] No monitor available");
     return;
   }
 
-  // Receive device event (non-blocking)
+  // Receive the device
   struct udev_device *device = udev_monitor_receive_device(m_monitor);
   if (!device) {
-    qDebug() << "[UdevMonitor] No device received from monitor";
+    LOG_DEBUG("[UdevMonitor] No device received from monitor");
     return;
   }
 
-  // Get the action (add, remove, change, etc.)
+  // Get action (add, remove, change, etc.)
   const char *action = udev_device_get_action(device);
   if (!action) {
-    qDebug() << "[UdevMonitor] No action in event";
+    LOG_DEBUG("[UdevMonitor] No action in event");
     udev_device_unref(device);
     return;
   }
 
-  qDebug() << "[UdevMonitor] Event action:" << action;
+  LOG_DEBUG("[UdevMonitor] Event action: %s", action);
 
   // Extract device information
   UsbDeviceInfo info = extractDeviceInfo(device);
 
   QString actionStr = QString::fromUtf8(action);
 
-  qDebug() << "[UdevMonitor] Extracted info - path:" << info.devicePath << "vendor:" << info.vendorId
-           << "product:" << info.productId;
+  LOG_DEBUG(
+      "[UdevMonitor] Extracted info - path: %s vendor: %s product: %s", qPrintable(info.devicePath),
+      qPrintable(info.vendorId), qPrintable(info.productId)
+  );
 
   // Handle add event
   if (actionStr == "add") {
-    qDebug() << "[UdevMonitor] Filter match:" << matchesFilter(info) << "(filter vendor:" << vendorIdFilter() << ")";
+    LOG_DEBUG("[UdevMonitor] Filter match: %d (filter vendor: %s)", matchesFilter(info), qPrintable(vendorIdFilter()));
 
     // Only process if device has valid info and matches filters
     if (!info.devicePath.isEmpty() && matchesFilter(info)) {
-      qInfo() << "LinuxUdevMonitor: Processing added device:" << info.vendorId << ":" << info.productId
-              << "Path:" << info.devicePath;
+      LOG_INFO(
+          "LinuxUdevMonitor: Processing added device: %s:%s Path: %s", qPrintable(info.vendorId),
+          qPrintable(info.productId), qPrintable(info.devicePath)
+      );
 
       // Track this device for removal events
       m_connectedDevices[info.devicePath] = info;
 
       Q_EMIT deviceConnected(info);
     } else {
-      qDebug() << "[UdevMonitor] Device filtered out or invalid";
+      LOG_DEBUG("[UdevMonitor] Device filtered out or invalid");
     }
   }
   // Handle remove event
@@ -157,14 +161,15 @@ void LinuxUdevMonitor::handleUdevEvent()
     if (m_connectedDevices.contains(info.devicePath)) {
       UsbDeviceInfo trackedInfo = m_connectedDevices[info.devicePath];
 
-      qDebug() << "USB device event: remove"
-               << "device:" << trackedInfo.devicePath << "vendor:" << trackedInfo.vendorId
-               << "product:" << trackedInfo.productId;
+      LOG_DEBUG(
+          "USB device event: remove device: %s vendor: %s product: %s", qPrintable(trackedInfo.devicePath),
+          qPrintable(trackedInfo.vendorId), qPrintable(trackedInfo.productId)
+      );
 
       m_connectedDevices.remove(info.devicePath);
       Q_EMIT deviceDisconnected(trackedInfo);
     } else {
-      qDebug() << "[UdevMonitor] Remove event for untracked device:" << info.devicePath;
+      LOG_DEBUG("[UdevMonitor] Remove event for untracked device: %s", qPrintable(info.devicePath));
     }
   }
 
@@ -231,7 +236,7 @@ QList<UsbDeviceInfo> LinuxUdevMonitor::enumerateDevices()
   // Create enumeration object
   struct udev_enumerate *enumerate = udev_enumerate_new(m_udev);
   if (!enumerate) {
-    qWarning() << "Failed to create udev enumeration";
+    LOG_WARN("Failed to create udev enumeration");
     return devices;
   }
 
@@ -258,8 +263,10 @@ QList<UsbDeviceInfo> LinuxUdevMonitor::enumerateDevices()
         devices.append(info);
         // Track this device for removal events
         m_connectedDevices[info.devicePath] = info;
-        qDebug() << "Found USB device:" << info.devicePath << "vendor:" << info.vendorId
-                 << "product:" << info.productId;
+        LOG_DEBUG(
+            "Found USB device: %s vendor: %s product: %s", qPrintable(info.devicePath), qPrintable(info.vendorId),
+            qPrintable(info.productId)
+        );
       }
 
       udev_device_unref(device);

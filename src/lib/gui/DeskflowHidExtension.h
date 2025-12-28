@@ -23,6 +23,8 @@ class BridgeClientWidget;
 } // namespace deskflow::gui
 
 class MainWindow; // The main window class
+class QAction;
+class QSettings;
 
 class DeskflowHidExtension : public QObject
 {
@@ -53,6 +55,7 @@ private Q_SLOTS:
   void bridgeClientProcessFinished(const QString &devicePath, int exitCode, QProcess::ExitStatus exitStatus);
   void bridgeClientConnectionTimeout(const QString &devicePath);
   void onServerConnectionStateChanged(deskflow::gui::CoreProcess::ConnectionState state);
+  void toggleShowBridgeLogs(bool show);
 
 private:
   void loadBridgeClientConfigs();
@@ -105,4 +108,9 @@ private:
 
   // Bridge client connection timeout timers: device path -> QTimer*
   QMap<QString, QTimer *> m_bridgeClientConnectionTimers;
+
+  // Log toggle feature
+  QAction *m_actionShowBridgeLogs = nullptr;
+  bool m_showBridgeLogs = false;
+  QSettings *m_settings = nullptr;
 };

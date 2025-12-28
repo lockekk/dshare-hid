@@ -146,6 +146,10 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>DeskflowHidExtension</name>
     <message>
+        <source>Bridge Client Logs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>ESP32 HID Tools</source>
         <translation>ESP32 HID 工具</translation>
     </message>
@@ -245,6 +249,49 @@ File -&gt; Firmware -&gt; Order.</source>
     <message>
         <source>The ESP32 HID Tools module is not available in this build.</source>
         <translation>此构建版本中 ESP32 HID 工具模块不可用。</translation>
+    </message>
+</context>
+<context>
+    <name>Esp32HidToolsWidget</name>
+    <message>
+        <source>Serial number copied to clipboard.</source>
+        <translation type="obsolete">序列号已复制到剪贴板。</translation>
+    </message>
+    <message>
+        <source>No devices found</source>
+        <translation type="obsolete">未找到设备</translation>
+    </message>
+    <message>
+        <source>Error</source>
+        <translation type="obsolete">错误</translation>
+    </message>
+    <message>
+        <source>Please select a valid serial port.</source>
+        <translation type="obsolete">请选择有效的串口。</translation>
+    </message>
+    <message>
+        <source>Please enter an activation key.</source>
+        <translation type="obsolete">请输入激活密钥。</translation>
+    </message>
+    <message>
+        <source>Activating device...</source>
+        <translation type="obsolete">正在激活设备...</translation>
+    </message>
+    <message>
+        <source>Activation successful!</source>
+        <translation type="obsolete">激活成功！</translation>
+    </message>
+    <message>
+        <source>Success</source>
+        <translation type="obsolete">成功</translation>
+    </message>
+    <message>
+        <source>Device activated successfully.</source>
+        <translation type="obsolete">设备激活成功。</translation>
+    </message>
+    <message>
+        <source>Activation failed.</source>
+        <translation type="obsolete">激活失败。</translation>
     </message>
 </context>
 <context>
@@ -2162,7 +2209,7 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Version Check: Remote Tag=&apos;%1&apos;, Device Version=&apos;%2&apos; (Raw BCD=%3)</source>
-        <translation>版本检查：远程标签=&apos;%1&apos;，设备版本=&apos;%2&apos; (原始 BCD=%3)</translation>
+        <translation type="vanished">版本检查：远程标签=&apos;%1&apos;，设备版本=&apos;%2&apos; (原始 BCD=%3)</translation>
     </message>
     <message>
         <source>Current Version: %1</source>

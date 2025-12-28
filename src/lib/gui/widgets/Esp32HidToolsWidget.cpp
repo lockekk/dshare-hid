@@ -3,6 +3,7 @@
  */
 
 #include "Esp32HidToolsWidget.h"
+#include "base/Log.h"
 #include <QApplication>
 #include <QClipboard>
 #include <QDateTime>
@@ -34,7 +35,8 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
       m_devicePath(devicePath),
       m_isTaskRunning(false)
 {
-  qInfo() << "GUI of tool widget is created for device:" << devicePath;
+  // We can't log "this" easily unless we cast or format it, but usually devicePath suffices
+  LOG_INFO("GUI of tool widget is created for device: %s", qPrintable(devicePath));
   if (devicePath.isEmpty()) {
     setWindowTitle(tr("Firmware Flash Tool"));
   } else {
@@ -220,7 +222,6 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
   optionsLayout->addWidget(m_orderOption1);
   optionsLayout->addWidget(m_orderOption2);
   optionsLayout->addWidget(m_orderOption3);
-  optionsLayout->addWidget(m_orderOption3);
   optionsLayout->addWidget(m_orderOption4);
 
   // Payments Group
@@ -350,14 +351,14 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
 void Esp32HidToolsWidget::refreshPorts()
 {
   m_portCombo->clear();
-  qInfo() << "Refreshing ports...";
+  LOG_INFO("Refreshing ports...");
   // Only filter by VID/PID, don't try to read serial (avoids timeouts on stuck devices)
   auto devices = UsbDeviceHelper::getConnectedDevices(false);
-  qInfo() << "Found" << devices.size() << "candidate devices.";
+  LOG_INFO("Found %d candidate devices.", devices.size());
 
   if (devices.isEmpty()) {
     m_portCombo->addItem(tr("No devices found"));
-    qWarning() << "No supported USB bridge devices found.";
+    LOG_WARN("No supported USB bridge devices found.");
     // logic to disable flash buttons?
   } else {
     for (auto it = devices.begin(); it != devices.end(); ++it) {
@@ -369,13 +370,13 @@ void Esp32HidToolsWidget::refreshPorts()
       }
 
       if (serial == "Unknown") {
-        qInfo() << "Adding device:" << path;
+        LOG_INFO("Adding device: %s", qPrintable(path));
         m_portCombo->addItem(displayPath, path);
       } else if (serial == displayPath) {
-        qInfo() << "Adding device:" << path << "(fallback serial)";
+        LOG_INFO("Adding device: %s (fallback serial)", qPrintable(path));
         m_portCombo->addItem(displayPath, path);
       } else {
-        qInfo() << "Adding device:" << path << "Serial:" << serial;
+        LOG_INFO("Adding device: %s Serial: %s", qPrintable(path), qPrintable(serial));
         m_portCombo->addItem(QString("%1 (%2)").arg(displayPath, serial), path);
       }
     }
@@ -388,7 +389,7 @@ void Esp32HidToolsWidget::refreshPorts()
       m_portCombo->setCurrentIndex(index);
     } else {
       // Add it if not found (maybe it's not a "bridge" yet but user knows what they are doing)
-      qInfo() << "Device path from bridge client not in detected list, adding manually:" << m_devicePath;
+      LOG_INFO("Device path from bridge client not in detected list, adding manually: %s", qPrintable(m_devicePath));
       m_portCombo->addItem(m_devicePath, m_devicePath);
       m_portCombo->setCurrentIndex(m_portCombo->count() - 1);
     }
@@ -839,10 +840,10 @@ void Esp32HidToolsWidget::onCheckUpgrade()
 
     // Log info for debugging
     QMetaObject::invokeMethod(this, [this, latestTag, deviceVer, rawBcd]() {
-      log(tr("Version Check: Remote Tag='%1', Device Version='%2' (Raw BCD=%3)")
-              .arg(QString::fromStdString(latestTag))
-              .arg(deviceVer)
-              .arg(rawBcd));
+      LOG_INFO(
+          "Version Check: Remote Tag='%s', Device Version='%s' (Raw BCD=%d)", latestTag.c_str(), qPrintable(deviceVer),
+          rawBcd
+      );
     });
 
     // Parse versions
@@ -1354,8 +1355,9 @@ void deskflow::gui::Esp32HidToolsWidget::onActivateClicked()
     } else {
       // User requested minimal error message
       QString detailedError = QString::fromStdString(cdc.lastError());
-      qWarning() << "Activation detailed error:" << detailedError;
-
+      if (!detailedError.isEmpty()) {
+        LOG_WARN("Activation detailed error: %s", qPrintable(detailedError));
+      }
       QMetaObject::invokeMethod(this, [this]() {
         log(tr("Activation failed."));
         QMessageBox::critical(this, tr("Error"), tr("Activation failed."));
@@ -1690,7 +1692,7 @@ void deskflow::gui::Esp32HidToolsWidget::onPortChanged(int index)
     portName = m_portCombo->currentText();
   }
 
-  qInfo() << "Port selection changed to:" << portName;
+  LOG_INFO("Port selection changed to: %s", qPrintable(portName));
 
   // Reset UI metadata
   m_copyInfoBtn->setProperty("deviceInfo", QVariant());

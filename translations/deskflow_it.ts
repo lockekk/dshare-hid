@@ -146,6 +146,10 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>DeskflowHidExtension</name>
     <message>
+        <source>Bridge Client Logs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>ESP32 HID Tools</source>
         <translation>Strumenti HID ESP32</translation>
     </message>
@@ -246,6 +250,49 @@ File -&gt; Firmware -&gt; Ordina.</translation>
     <message>
         <source>The ESP32 HID Tools module is not available in this build.</source>
         <translation>Il modulo Strumenti HID ESP32 non è disponibile in questa build.</translation>
+    </message>
+</context>
+<context>
+    <name>Esp32HidToolsWidget</name>
+    <message>
+        <source>Serial number copied to clipboard.</source>
+        <translation type="obsolete">Numero di serie copiato.</translation>
+    </message>
+    <message>
+        <source>No devices found</source>
+        <translation type="obsolete">Nessun dispositivo trovato</translation>
+    </message>
+    <message>
+        <source>Error</source>
+        <translation type="obsolete">Errore</translation>
+    </message>
+    <message>
+        <source>Please select a valid serial port.</source>
+        <translation type="obsolete">Seleziona una porta seriale valida.</translation>
+    </message>
+    <message>
+        <source>Please enter an activation key.</source>
+        <translation type="obsolete">Inserisci una chiave di attivazione.</translation>
+    </message>
+    <message>
+        <source>Activating device...</source>
+        <translation type="obsolete">Attivazione dispositivo...</translation>
+    </message>
+    <message>
+        <source>Activation successful!</source>
+        <translation type="obsolete">Attivazione riuscita!</translation>
+    </message>
+    <message>
+        <source>Success</source>
+        <translation type="obsolete">Successo</translation>
+    </message>
+    <message>
+        <source>Device activated successfully.</source>
+        <translation type="obsolete">Dispositivo attivato con successo.</translation>
+    </message>
+    <message>
+        <source>Activation failed.</source>
+        <translation type="obsolete">Attivazione fallita.</translation>
     </message>
 </context>
 <context>
@@ -2160,7 +2207,7 @@ Prossimo passo: Flashare firmware per dispositivo. Vai alla scheda &apos;Ordina&
     </message>
     <message>
         <source>Version Check: Remote Tag=&apos;%1&apos;, Device Version=&apos;%2&apos; (Raw BCD=%3)</source>
-        <translation>Controllo Versione: Tag Remoto=&apos;%1&apos;, Ver Dispositivo=&apos;%2&apos; (Raw BCD=%3)</translation>
+        <translation type="vanished">Controllo Versione: Tag Remoto=&apos;%1&apos;, Ver Dispositivo=&apos;%2&apos; (Raw BCD=%3)</translation>
     </message>
     <message>
         <source>Current Version: %1</source>

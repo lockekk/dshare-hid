@@ -146,6 +146,10 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>DeskflowHidExtension</name>
     <message>
+        <source>Bridge Client Logs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>ESP32 HID Tools</source>
         <translation type="unfinished"></translation>
     </message>
@@ -245,6 +249,13 @@ File -&gt; Firmware -&gt; Order.</source>
     <message>
         <source>The ESP32 HID Tools module is not available in this build.</source>
         <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Esp32HidToolsWidget</name>
+    <message>
+        <source>Error</source>
+        <translation type="obsolete">Error</translation>
     </message>
 </context>
 <context>
@@ -2142,10 +2153,6 @@ Next step: You need to flash the per-device firmware to use the device. Please s
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Version Check: Remote Tag=&apos;%1&apos;, Device Version=&apos;%2&apos; (Raw BCD=%3)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Current Version: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2255,6 +2262,14 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>No valid firmware detected on the device. Please go to the &apos;Factory Mode&apos; tab and flash &apos;Online&apos; first.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Serial number copied to clipboard.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Please enter an activation key.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2394,14 +2409,6 @@ Your firmware will be back in 24 hours.</source>
     </message>
     <message>
         <source>Failed to refresh state: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Serial number copied to clipboard.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Please enter an activation key.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

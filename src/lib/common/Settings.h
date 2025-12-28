@@ -106,6 +106,7 @@ public:
     inline static const auto ActiveProfileOrientation = QStringLiteral("bridge/activeProfileOrientation");
     inline static const auto BluetoothKeepAlive = QStringLiteral("bridge/bluetoothKeepAlive");
     inline static const auto AutoConnect = QStringLiteral("bridge/autoConnect");
+    inline static const auto ShowLogs = QStringLiteral("bridge/showLogs");
   };
 
   // Enums types used in settings
