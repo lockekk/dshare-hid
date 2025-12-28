@@ -1929,11 +1929,19 @@ Duplicato: %1</translation>
     </message>
     <message>
         <source>Generate Request File</source>
-        <translation>Genera File Richiesta</translation>
+        <translation type="vanished">Genera File Richiesta</translation>
     </message>
     <message>
         <source>Copy content</source>
         <translation>Copia contenuto</translation>
+    </message>
+    <message>
+        <source>I will arrange payment via email</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not required for manual payment</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Email</source>
@@ -2403,33 +2411,33 @@ Prossimo passo: Flashare firmware per dispositivo. Vai alla scheda &apos;Ordina&
     </message>
     <message>
         <source>Save Request File</source>
-        <translation>Salva File Richiesta</translation>
+        <translation type="vanished">Salva File Richiesta</translation>
     </message>
     <message>
         <source>Text Files (*.txt)</source>
-        <translation>File di Testo (*.txt)</translation>
+        <translation type="vanished">File di Testo (*.txt)</translation>
     </message>
     <message>
         <source>Request file generated: %1</source>
-        <translation>File richiesta generato: %1</translation>
+        <translation type="vanished">File richiesta generato: %1</translation>
     </message>
     <message>
         <source>Request file generated successfully!
 
 Please send this file or its content (with payment if applicable) to deskflow.hid@gmail.com.
 Your firmware will be back in 24 hours.</source>
-        <translation>File richiesta generato!
+        <translation type="vanished">File richiesta generato!
 
 Invialo a deskflow.hid@gmail.com.
 Il firmware tornerà in 24 ore.</translation>
     </message>
     <message>
         <source>Failed to save request file: %1</source>
-        <translation>Impossibile salvare file richiesta: %1</translation>
+        <translation type="vanished">Impossibile salvare file richiesta: %1</translation>
     </message>
     <message>
         <source>Failed to save request file.</source>
-        <translation>Impossibile salvare file richiesta.</translation>
+        <translation type="vanished">Impossibile salvare file richiesta.</translation>
     </message>
     <message>
         <source>Order content copied to clipboard.</source>
@@ -2462,6 +2470,10 @@ Il firmware tornerà in 24 ore.</translation>
     <message>
         <source>Order Options</source>
         <translation>Opzioni Ordine</translation>
+    </message>
+    <message>
+        <source>State: %1, %2 Profiles</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Failed to refresh state: %1</source>

@@ -1929,11 +1929,19 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Generate Request File</source>
-        <translation>生成请求文件</translation>
+        <translation type="vanished">生成请求文件</translation>
     </message>
     <message>
         <source>Copy content</source>
         <translation>复制内容</translation>
+    </message>
+    <message>
+        <source>I will arrange payment via email</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not required for manual payment</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Email</source>
@@ -2405,33 +2413,33 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Save Request File</source>
-        <translation>保存请求文件</translation>
+        <translation type="vanished">保存请求文件</translation>
     </message>
     <message>
         <source>Text Files (*.txt)</source>
-        <translation>文本文件 (*.txt)</translation>
+        <translation type="vanished">文本文件 (*.txt)</translation>
     </message>
     <message>
         <source>Request file generated: %1</source>
-        <translation>请求文件已生成：%1</translation>
+        <translation type="vanished">请求文件已生成：%1</translation>
     </message>
     <message>
         <source>Request file generated successfully!
 
 Please send this file or its content (with payment if applicable) to deskflow.hid@gmail.com.
 Your firmware will be back in 24 hours.</source>
-        <translation>请求文件生成成功！
+        <translation type="vanished">请求文件生成成功！
 
 请将此文件或其内容（如果适用，连同付款）发送至 deskflow.hid@gmail.com。
 您的固件将在 24 小时内返回。</translation>
     </message>
     <message>
         <source>Failed to save request file: %1</source>
-        <translation>保存请求文件失败：%1</translation>
+        <translation type="vanished">保存请求文件失败：%1</translation>
     </message>
     <message>
         <source>Failed to save request file.</source>
-        <translation>保存请求文件失败。</translation>
+        <translation type="vanished">保存请求文件失败。</translation>
     </message>
     <message>
         <source>Order content copied to clipboard.</source>
@@ -2464,6 +2472,10 @@ Your firmware will be back in 24 hours.</source>
     <message>
         <source>Order Options</source>
         <translation>订购选项</translation>
+    </message>
+    <message>
+        <source>State: %1, %2 Profiles</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Failed to refresh state: %1</source>

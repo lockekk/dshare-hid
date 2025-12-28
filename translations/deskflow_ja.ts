@@ -1930,11 +1930,19 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Generate Request File</source>
-        <translation>リクエストファイルを生成</translation>
+        <translation type="vanished">リクエストファイルを生成</translation>
     </message>
     <message>
         <source>Copy content</source>
         <translation>内容をコピー</translation>
+    </message>
+    <message>
+        <source>I will arrange payment via email</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not required for manual payment</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Email</source>
@@ -2406,33 +2414,33 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Save Request File</source>
-        <translation>リクエストファイルを保存</translation>
+        <translation type="vanished">リクエストファイルを保存</translation>
     </message>
     <message>
         <source>Text Files (*.txt)</source>
-        <translation>テキストファイル (*.txt)</translation>
+        <translation type="vanished">テキストファイル (*.txt)</translation>
     </message>
     <message>
         <source>Request file generated: %1</source>
-        <translation>リクエストファイル生成: %1</translation>
+        <translation type="vanished">リクエストファイル生成: %1</translation>
     </message>
     <message>
         <source>Request file generated successfully!
 
 Please send this file or its content (with payment if applicable) to deskflow.hid@gmail.com.
 Your firmware will be back in 24 hours.</source>
-        <translation>リクエストファイル生成成功！
+        <translation type="vanished">リクエストファイル生成成功！
 
 このファイルまたは内容を deskflow.hid@gmail.com に送信してください。
 24時間以内にファームウェアが返送されます。</translation>
     </message>
     <message>
         <source>Failed to save request file: %1</source>
-        <translation>リクエストファイルの保存に失敗: %1</translation>
+        <translation type="vanished">リクエストファイルの保存に失敗: %1</translation>
     </message>
     <message>
         <source>Failed to save request file.</source>
-        <translation>リクエストファイルの保存に失敗しました。</translation>
+        <translation type="vanished">リクエストファイルの保存に失敗しました。</translation>
     </message>
     <message>
         <source>Order content copied to clipboard.</source>
@@ -2465,6 +2473,10 @@ Your firmware will be back in 24 hours.</source>
     <message>
         <source>Order Options</source>
         <translation>注文オプション</translation>
+    </message>
+    <message>
+        <source>State: %1, %2 Profiles</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Failed to refresh state: %1</source>

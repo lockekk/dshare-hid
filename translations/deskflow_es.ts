@@ -1885,10 +1885,6 @@ Duplicate: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Generate Request File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Copy content</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2054,6 +2050,14 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Paypal Seller: &lt;b&gt;&lt;font color=&apos;red&apos;&gt;%1&lt;/font&gt;&lt;/b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>I will arrange payment via email</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not required for manual payment</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2349,33 +2353,6 @@ Next step: You need to flash the per-device firmware to use the device. Please s
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Save Request File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Text Files (*.txt)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Request file generated: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Request file generated successfully!
-
-Please send this file or its content (with payment if applicable) to deskflow.hid@gmail.com.
-Your firmware will be back in 24 hours.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to save request file: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to save request file.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Order content copied to clipboard.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2405,6 +2382,10 @@ Your firmware will be back in 24 hours.</source>
     </message>
     <message>
         <source>Order Options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>State: %1, %2 Profiles</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

@@ -4,10 +4,12 @@
 
 #pragma once
 
+#include <QCheckBox>
 #include <QComboBox>
 #include <QDialog>
 #include <QLabel>
 #include <QLineEdit>
+#include <QNetworkReply>
 #include <QPushButton>
 #include <QRadioButton>
 #include <QTabWidget>
@@ -15,12 +17,22 @@
 #include <cstdint>
 #include <vector>
 
+class QNetworkAccessManager;
+
 namespace deskflow::gui {
 
 struct OrderPrice
 {
   double price;
   QString desc;
+};
+
+struct PriceConfig
+{
+  double license;
+  double profile_4;
+  double profile_6;
+  double combo_discount;
 };
 
 class Esp32HidToolsWidget : public QDialog
@@ -45,7 +57,7 @@ private Q_SLOTS:
   void onActivateClicked();
   void onPortChanged(int index);
   void onTabChanged(int index);
-  void onGenerateOrder();
+
   void onCopyOrderContent();
   void onEmailOrder();
   void updatePaymentDetails();
@@ -56,6 +68,9 @@ private:
   void refreshDeviceState();
   bool confirmFactoryFlash();
   void showFactoryFlashSuccess();
+  void fetchPrices();
+  void onPriceResponse(QNetworkReply *reply);
+
   // Port Selection
   QComboBox *m_portCombo;
   QPushButton *m_refreshPortsBtn;
@@ -103,8 +118,9 @@ private:
   QLabel *m_lblPaymentOwner;
   QLineEdit *m_paymentRefNo;
   QLineEdit *m_paymentTransId;
+  QCheckBox *m_chkManualPayment;
   QPushButton *m_btnPayNow;
-  QPushButton *m_btnGenerateOrder;
+
   QPushButton *m_btnCopyOrder;
   QPushButton *m_btnEmailOrder;
 
@@ -115,6 +131,8 @@ private:
   // State
   QString m_devicePath;
   bool m_isTaskRunning = false;
+  PriceConfig m_prices;
+  QNetworkAccessManager *m_network;
 
   void setupUI();
   void log(const QString &message);

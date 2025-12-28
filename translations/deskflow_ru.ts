@@ -1934,11 +1934,19 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Generate Request File</source>
-        <translation>Создать файл запроса</translation>
+        <translation type="vanished">Создать файл запроса</translation>
     </message>
     <message>
         <source>Copy content</source>
         <translation>Копировать содержимое</translation>
+    </message>
+    <message>
+        <source>I will arrange payment via email</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not required for manual payment</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Email</source>
@@ -2410,33 +2418,33 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Save Request File</source>
-        <translation>Сохранить файл запроса</translation>
+        <translation type="vanished">Сохранить файл запроса</translation>
     </message>
     <message>
         <source>Text Files (*.txt)</source>
-        <translation>Текстовые файлы (*.txt)</translation>
+        <translation type="vanished">Текстовые файлы (*.txt)</translation>
     </message>
     <message>
         <source>Request file generated: %1</source>
-        <translation>Файл запроса создан: %1</translation>
+        <translation type="vanished">Файл запроса создан: %1</translation>
     </message>
     <message>
         <source>Request file generated successfully!
 
 Please send this file or its content (with payment if applicable) to deskflow.hid@gmail.com.
 Your firmware will be back in 24 hours.</source>
-        <translation>Файл запроса успешно создан!
+        <translation type="vanished">Файл запроса успешно создан!
 
 Пожалуйста, отправьте этот файл или его содержимое (с оплатой, если применимо) на deskflow.hid@gmail.com.
 Ваша прошивка вернется через 24 часа.</translation>
     </message>
     <message>
         <source>Failed to save request file: %1</source>
-        <translation>Не удалось сохранить файл запроса: %1</translation>
+        <translation type="vanished">Не удалось сохранить файл запроса: %1</translation>
     </message>
     <message>
         <source>Failed to save request file.</source>
-        <translation>Не удалось сохранить файл запроса.</translation>
+        <translation type="vanished">Не удалось сохранить файл запроса.</translation>
     </message>
     <message>
         <source>Order content copied to clipboard.</source>
@@ -2469,6 +2477,10 @@ Your firmware will be back in 24 hours.</source>
     <message>
         <source>Order Options</source>
         <translation>Варианты заказа</translation>
+    </message>
+    <message>
+        <source>State: %1, %2 Profiles</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Failed to refresh state: %1</source>

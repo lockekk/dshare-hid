@@ -8,14 +8,21 @@
 #include <QClipboard>
 #include <QDateTime>
 #include <QDesktopServices>
+#include <QDir>
 #include <QEvent>
 #include <QFile>
 #include <QFileDialog>
 #include <QFutureWatcher>
 #include <QGroupBox>
 #include <QHBoxLayout>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QMessageBox>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
 #include <QScrollBar>
+#include <QStandardPaths>
 #include <QUrl>
 #include <QUrlQuery>
 #include <QVBoxLayout>
@@ -33,7 +40,10 @@ namespace deskflow::gui {
 Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *parent)
     : QDialog(parent),
       m_devicePath(devicePath),
-      m_isTaskRunning(false)
+      m_isTaskRunning(false),
+      // Default Fallback Prices (Hardcoded)
+      m_prices{9.99, 3.99, 4.99, 1.99},
+      m_network(new QNetworkAccessManager(this))
 {
   // We can't log "this" easily unless we cast or format it, but usually devicePath suffices
   LOG_INFO("GUI of tool widget is created for device: %s", qPrintable(devicePath));
@@ -167,9 +177,10 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
   m_labelActivationState = new QLabel(tr("State: Unknown"));
   QFont stateFont = m_labelActivationState->font();
   stateFont.setBold(true);
-  m_labelActivationState->setFont(stateFont);
 
+  m_labelActivationState->setFont(stateFont);
   statusLayout->addWidget(m_labelActivationState);
+
   statusLayout->addStretch();
   statusLayout->addWidget(new QLabel(tr("Serial:")));
   m_lineSerial = new QLabel(tr("-"));
@@ -239,11 +250,20 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
   m_paymentRefNo->setReadOnly(true);
   m_paymentRefNo->setToolTip(tr("Please put this Reference No. in your PayPal payment message/note."));
 
-  // Transaction ID
   m_paymentTransId = new QLineEdit();
   m_paymentTransId->setPlaceholderText(tr("Paste your PayPal Transaction ID here"));
 
-  // Configured via build system (CMake)
+  m_chkManualPayment = new QCheckBox(tr("I will arrange payment via email"));
+  connect(m_chkManualPayment, &QCheckBox::toggled, this, [this](bool checked) {
+    m_paymentTransId->setEnabled(!checked);
+    m_btnPayNow->setEnabled(!checked);
+    if (checked) {
+      m_paymentTransId->setPlaceholderText(tr("Not required for manual payment"));
+    } else {
+      m_paymentTransId->setPlaceholderText(tr("Paste your PayPal Transaction ID here"));
+    }
+  });
+
 #ifndef DESKFLOW_PAYPAL_ACCOUNT
 #define DESKFLOW_PAYPAL_ACCOUNT "sb-uqhcf48362835@business.example.com"
 #endif
@@ -259,11 +279,11 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
 
   paymentsLayout->addWidget(new QLabel(tr("PayPal Transaction ID:")), 3, 0);
   paymentsLayout->addWidget(m_paymentTransId, 3, 1);
+  paymentsLayout->addWidget(m_chkManualPayment, 4, 0, 1, 2); // Span 2 cols
 
   m_btnPayNow = new QPushButton(tr("Pay Now (Secure PayPal Link)"));
-  paymentsLayout->addWidget(m_btnPayNow, 4, 0, 1, 2);
+  paymentsLayout->addWidget(m_btnPayNow, 5, 0, 1, 2);
 
-  // Device Info
   auto *deviceInfoGroup = new QGroupBox(tr("Device Information"));
   auto *deviceInfoLayout = new QGridLayout(deviceInfoGroup);
   m_orderDeviceSecret = new QLineEdit();
@@ -282,12 +302,10 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
   deviceInfoLayout->addWidget(new QLabel(tr("Total Profiles:")), 2, 0);
   deviceInfoLayout->addWidget(m_orderTotalProfiles, 2, 1);
 
-  m_btnGenerateOrder = new QPushButton(tr("Generate Request File"));
   m_btnCopyOrder = new QPushButton(tr("Copy content"));
   m_btnEmailOrder = new QPushButton(tr("Email"));
 
   auto *orderButtonLayout = new QHBoxLayout();
-  orderButtonLayout->addWidget(m_btnGenerateOrder);
   orderButtonLayout->addWidget(m_btnCopyOrder);
   orderButtonLayout->addWidget(m_btnEmailOrder);
 
@@ -323,7 +341,6 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
 
   connect(m_btnCopySerial, &QPushButton::clicked, this, &Esp32HidToolsWidget::onCopySerialClicked);
   connect(m_btnActivate, &QPushButton::clicked, this, &Esp32HidToolsWidget::onActivateClicked);
-  connect(m_btnGenerateOrder, &QPushButton::clicked, this, &Esp32HidToolsWidget::onGenerateOrder);
   connect(m_btnCopyOrder, &QPushButton::clicked, this, &Esp32HidToolsWidget::onCopyOrderContent);
   connect(m_btnEmailOrder, &QPushButton::clicked, this, &Esp32HidToolsWidget::onEmailOrder);
 
@@ -346,6 +363,78 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
 
   updatePaymentDetails();
   refreshPorts();
+
+  // Fetch prices
+  fetchPrices();
+}
+
+void Esp32HidToolsWidget::fetchPrices()
+{
+  // 1. Check local override
+  QString localPath =
+      QStandardPaths::locate(QStandardPaths::AppConfigLocation, "prices.json", QStandardPaths::LocateFile);
+  if (!localPath.isEmpty()) {
+    QFile f(localPath);
+    if (f.open(QIODevice::ReadOnly)) {
+      QJsonDocument doc = QJsonDocument::fromJson(f.readAll());
+      if (!doc.isNull() && doc.isObject()) {
+        QJsonObject obj = doc.object();
+        if (obj.contains("license"))
+          m_prices.license = obj["license"].toDouble();
+        if (obj.contains("profile_4"))
+          m_prices.profile_4 = obj["profile_4"].toDouble();
+        if (obj.contains("profile_6"))
+          m_prices.profile_6 = obj["profile_6"].toDouble();
+        if (obj.contains("combo_discount"))
+          m_prices.combo_discount = obj["combo_discount"].toDouble();
+        LOG_INFO("Loaded local prices override: %s", qPrintable(localPath));
+        updatePaymentDetails();
+        return; // Local override takes precedence
+      }
+    }
+  }
+
+  // 2. Fetch online
+#ifdef DESKFLOW_PRICES_URL
+  QString urlStr = DESKFLOW_PRICES_URL;
+#else
+  QString urlStr = "https://raw.githubusercontent.com/deskflow-hid/deskflow-hid-release/main/prices.json";
+#endif
+
+  LOG_INFO("Fetching prices from: %s", qPrintable(urlStr));
+  QNetworkRequest req(urlStr);
+  QNetworkReply *reply = m_network->get(req);
+  connect(reply, &QNetworkReply::finished, this, [this, reply]() { onPriceResponse(reply); });
+}
+
+void Esp32HidToolsWidget::onPriceResponse(QNetworkReply *reply)
+{
+  reply->deleteLater();
+  if (reply->error() != QNetworkReply::NoError) {
+    LOG_WARN("Failed to fetch prices: %s", qPrintable(reply->errorString()));
+    return;
+  }
+
+  QByteArray data = reply->readAll();
+  QJsonDocument doc = QJsonDocument::fromJson(data);
+  if (doc.isNull() || !doc.isObject()) {
+    LOG_WARN("Invalid JSON prices response");
+    return;
+  }
+
+  QJsonObject obj = doc.object();
+  // Only update if value is present and valid
+  if (obj.contains("license"))
+    m_prices.license = obj["license"].toDouble();
+  if (obj.contains("profile_4"))
+    m_prices.profile_4 = obj["profile_4"].toDouble();
+  if (obj.contains("profile_6"))
+    m_prices.profile_6 = obj["profile_6"].toDouble();
+  if (obj.contains("combo_discount"))
+    m_prices.combo_discount = obj["combo_discount"].toDouble();
+
+  LOG_INFO("Updated prices online: License=$%f, ComboDiscount=$%f", m_prices.license, m_prices.combo_discount);
+  updatePaymentDetails(); // Refresh UI
 }
 
 void Esp32HidToolsWidget::refreshPorts()
@@ -1133,7 +1222,7 @@ void Esp32HidToolsWidget::updateText()
   m_orderOption3->setText(tr("Skip trial and buy Full licensed version"));
   m_orderOption4->setText(tr("Already licensed, but want bump profiles"));
 
-  m_btnGenerateOrder->setText(tr("Generate Request File"));
+  m_chkManualPayment->setText(tr("I will arrange payment via email"));
   m_btnCopyOrder->setText(tr("Copy content"));
   m_btnEmailOrder->setText(tr("Email"));
 
@@ -1229,7 +1318,9 @@ void deskflow::gui::Esp32HidToolsWidget::refreshDeviceState()
       if (result.success) {
         m_lineSerial->setText(result.serial);
         m_orderSerialLabel->setText(result.serial);
-        m_labelActivationState->setText(tr("State: %1").arg(result.activationState));
+        m_labelActivationState->setText(
+            tr("State: %1, %2 Profiles").arg(result.activationState).arg(result.totalProfiles)
+        );
         m_orderDeviceSecret->setText(result.pdek);
 
         // Update Order Options
@@ -1417,25 +1508,26 @@ QString deskflow::gui::Esp32HidToolsWidget::composeOrderContent(QString &outPref
     return QString();
   }
 
-  // Calculate Price using helper
   OrderPrice priceInfo = calculateOrderPrice(outOption, totalProfiles);
   double price = priceInfo.price;
   QString priceDesc = priceInfo.desc;
 
-  // Append Payment Info
   content.append(QString("Payment Details: %1 = Total $%2 USD\n").arg(priceDesc, QString::number(price, 'f', 2)));
   content.append(QString("Paypal Seller: %1\n").arg(DESKFLOW_PAYPAL_ACCOUNT));
 
-  // Validation: If price > 0, Transaction ID is required
   if (price > 0.01) {
-    QString transId = m_paymentTransId->text().trimmed();
-    if (transId.isEmpty()) {
-      QMessageBox::warning(
-          this, tr("Missing Transaction ID"), tr("Please enter your PayPal Transaction ID for verification.")
-      );
-      return QString();
+    if (!m_chkManualPayment->isChecked()) {
+      QString transId = m_paymentTransId->text().trimmed();
+      if (transId.isEmpty()) {
+        QMessageBox::warning(
+            this, tr("Missing Transaction ID"), tr("Please enter your PayPal Transaction ID for verification.")
+        );
+        return QString();
+      }
+      content.append(QString("PayPal Transaction ID: %1\n").arg(transId));
+    } else {
+      content.append(QString("Payment Method: Manual / Email Arrangement\n"));
     }
-    content.append(QString("PayPal Transaction ID: %1\n").arg(transId));
   }
 
   content.append(QString("Reference No: %1\n").arg(m_paymentRefNo->text()));
@@ -1462,39 +1554,50 @@ deskflow::gui::OrderPrice deskflow::gui::Esp32HidToolsWidget::calculateOrderPric
     price = 0.0;
     priceDesc = "Free Trial";
   } else if (option == 2 || option == 3) { // Full License
-    price += DESKFLOW_PRICE_LICENSE;
-    // Add-ons for profiles
-    if (totalProfiles == 4)
-      price += DESKFLOW_PRICE_PROFILE_4;
-    else if (totalProfiles == 6)
-      price += DESKFLOW_PRICE_PROFILE_6;
+    price += m_prices.license;
 
-    priceDesc =
-        QString("License($%1) + %2 Profiles(%3)")
-            .arg(QString::number(DESKFLOW_PRICE_LICENSE, 'f', 2))
-            .arg(totalProfiles)
-            .arg(
-                totalProfiles == 2
-                    ? "$0.00"
-                    : (totalProfiles == 4 ? QString("$%1").arg(QString::number(DESKFLOW_PRICE_PROFILE_4, 'f', 2))
-                                          : QString("$%1").arg(QString::number(DESKFLOW_PRICE_PROFILE_6, 'f', 2)))
-            );
+    if (totalProfiles == 4) {
+      price += m_prices.profile_4;
+    } else if (totalProfiles == 6) {
+      price += m_prices.profile_6;
+    }
+
+    double discount = 0.0;
+    if (totalProfiles > 2 && m_prices.combo_discount > 0.0) {
+      discount = m_prices.combo_discount;
+      price -= discount;
+      if (price < 0)
+        price = 0; // Safety
+    }
+
+    priceDesc = QString("License($%1) + %2 Profiles(%3)")
+                    .arg(QString::number(m_prices.license, 'f', 2))
+                    .arg(totalProfiles)
+                    .arg(
+                        totalProfiles == 2
+                            ? "$0.00"
+                            : (totalProfiles == 4 ? QString("$%1").arg(QString::number(m_prices.profile_4, 'f', 2))
+                                                  : QString("$%1").arg(QString::number(m_prices.profile_6, 'f', 2)))
+                    );
+
+    if (discount > 0.0) {
+      priceDesc += QString(" - Combo Discount($%1)").arg(QString::number(discount, 'f', 2));
+    }
+
   } else if (option == 4) { // Only Bump Profiles
-    // Base price 0, only profile cost
     if (totalProfiles == 4)
-      price += DESKFLOW_PRICE_PROFILE_4;
+      price += m_prices.profile_4;
     else if (totalProfiles == 6)
-      price += DESKFLOW_PRICE_PROFILE_6;
+      price += m_prices.profile_6;
 
-    priceDesc =
-        QString("Bump Profiles to %1 (%2)")
-            .arg(totalProfiles)
-            .arg(
-                totalProfiles == 2
-                    ? "$0.00"
-                    : (totalProfiles == 4 ? QString("$%1").arg(QString::number(DESKFLOW_PRICE_PROFILE_4, 'f', 2))
-                                          : QString("$%1").arg(QString::number(DESKFLOW_PRICE_PROFILE_6, 'f', 2)))
-            );
+    priceDesc = QString("Bump Profiles to %1 (%2)")
+                    .arg(totalProfiles)
+                    .arg(
+                        totalProfiles == 2
+                            ? "$0.00"
+                            : (totalProfiles == 4 ? QString("$%1").arg(QString::number(m_prices.profile_4, 'f', 2))
+                                                  : QString("$%1").arg(QString::number(m_prices.profile_6, 'f', 2)))
+                    );
   }
 
   return {price, priceDesc};
@@ -1523,6 +1626,11 @@ void deskflow::gui::Esp32HidToolsWidget::updatePaymentDetails()
   m_lblPaymentDetails->setText(
       QString("Payment Details: %1 = Total $%2 USD").arg(priceInfo.desc, QString::number(priceInfo.price, 'f', 2))
   );
+
+  m_lblPaymentOwner->setText(
+      QString(tr("Paypal Seller: <b><font color='red'>%1</font></b>")).arg(DESKFLOW_PAYPAL_ACCOUNT)
+  );
+  m_lblPaymentOwner->setVisible(true);
 }
 
 void deskflow::gui::Esp32HidToolsWidget::updatePaymentReference()
@@ -1602,44 +1710,6 @@ void deskflow::gui::Esp32HidToolsWidget::onPayNowClicked()
 
   if (!QDesktopServices::openUrl(url)) {
     QMessageBox::warning(this, tr("Error"), tr("Failed to open web browser. Please visit PayPal manually."));
-  }
-}
-
-void deskflow::gui::Esp32HidToolsWidget::onGenerateOrder()
-{
-  QString prefix;
-  int option;
-  QString content = composeOrderContent(prefix, option);
-  if (content.isEmpty()) {
-    return;
-  }
-
-  QString serial = m_orderSerialLabel->text();
-  // Filename: hex serial only
-  QString cleanSerial = serial;
-  cleanSerial.remove(':');
-  QString fileName = QString("%1%2.txt").arg(prefix, cleanSerial);
-
-  QString path = QFileDialog::getSaveFileName(this, tr("Save Request File"), fileName, tr("Text Files (*.txt)"));
-  if (path.isEmpty()) {
-    return;
-  }
-
-  QFile file(path);
-  if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-    QTextStream out(&file);
-    out << content;
-    file.close();
-
-    log(tr("Request file generated: %1").arg(path));
-    QMessageBox::information(
-        this, tr("Success"),
-        tr("Request file generated successfully!\n\nPlease send this file or its content (with payment if "
-           "applicable) to deskflow.hid@gmail.com.\nYour firmware will be back in 24 hours.")
-    );
-  } else {
-    log(tr("Failed to save request file: %1").arg(path));
-    QMessageBox::critical(this, tr("Error"), tr("Failed to save request file."));
   }
 }
 
