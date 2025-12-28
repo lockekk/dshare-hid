@@ -1252,8 +1252,22 @@ void deskflow::gui::Esp32HidToolsWidget::refreshDeviceState()
           m_orderOption4->setChecked(true);
         }
 
-        // Total Profiles selection logic
-        m_orderTotalProfiles->setEnabled(result.totalProfiles == 2);
+        m_orderTotalProfiles->clear();
+        if (result.isActivated) {
+          if (result.totalProfiles == 2) {
+            m_orderTotalProfiles->addItem("4", 4);
+            m_orderTotalProfiles->addItem("6", 6);
+            m_orderTotalProfiles->setEnabled(true);
+          } else {
+            m_orderTotalProfiles->addItem(QString::number(result.totalProfiles), result.totalProfiles);
+            m_orderTotalProfiles->setEnabled(false);
+          }
+        } else {
+          m_orderTotalProfiles->addItem("2", 2);
+          m_orderTotalProfiles->addItem("4", 4);
+          m_orderTotalProfiles->addItem("6", 6);
+          m_orderTotalProfiles->setEnabled(result.totalProfiles == 4);
+        }
 
         if (result.isFactoryMode) {
           m_labelActivationState->setText(tr("State: Factory Mode (Cannot Activate)"));
