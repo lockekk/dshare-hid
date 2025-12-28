@@ -519,6 +519,11 @@ void CoreProcess::checkLogLine(const QString &line)
     if (m_connections < 1) {
       setConnectionState(Listening);
     }
+  } else if (line.contains("INFO: suspend")) {
+    // Deskflow-HID: Force disconnect on suspend to stop bridge clients.
+    // Needed to release stale USB handles so they can be re-opened on resume.
+    m_connections = 0;
+    setConnectionState(Disconnected);
   }
 
   checkSecureSocket(line);
