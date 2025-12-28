@@ -196,6 +196,22 @@ File -&gt; Firmware -&gt; Ordina.</translation>
         <translation>Impossibile avviare il client bridge: %1</translation>
     </message>
     <message>
+        <source>Factory firmware detected. Please update firmware.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Factory firmware detected on %1. Auto-connect disabled.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device handshake failed. Possibly not a Deskflow-HID firmware.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Handshake failed on %1. Auto-connect disabled.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Server is down. Auto-connect will resume once the server starts.</source>
         <translation>Il server non è attivo. La connessione automatica riprenderà all&apos;avvio del server.</translation>
     </message>

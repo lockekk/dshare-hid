@@ -526,10 +526,16 @@ void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
 
     QString handshakeDeviceName;
     bool isBleConnected = false;
+    bool validHandshake = false;
+
     // fetchFirmwareDeviceName combined with handshake
     if (!m_bridgeClientProcesses.contains(device.devicePath)) {
       deskflow::bridge::CdcTransport transport(device.devicePath);
+
+      // Strict check: we MUST be able to open (handshake) to consider it a valid Deskflow device
+      // This filters out factory firmware ("tag mismatch") and other generic CDC devices ("timeout")
       if (transport.open()) {
+        validHandshake = true;
         if (transport.hasDeviceConfig()) {
           handshakeDeviceName = QString::fromStdString(transport.deviceConfig().deviceName);
           isBleConnected = transport.deviceConfig().isBleConnected;
@@ -540,9 +546,17 @@ void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
           }
         }
         transport.close();
+      } else {
+        qWarning() << "Handshake failed for new device:" << device.devicePath
+                   << "Ignoring (likely non-Deskflow firmware).";
       }
     } else {
       qDebug() << "Skipping handshake for new device connection as process is already active:" << device.devicePath;
+      validHandshake = true; // Assume valid if we already have a process
+    }
+
+    if (!validHandshake) {
+      return;
     }
 
     // Create new config
@@ -1267,6 +1281,26 @@ void DeskflowHidExtension::bridgeClientProcessReadyRead(const QString &devicePat
           }
         }
       }
+
+      // Check for handshake failure (Factory Firmware)
+      static const QRegularExpression handshakeFailRegex(R"(ERROR: CDC: Handshake authentication failed.)");
+      if (handshakeFailRegex.match(line).hasMatch()) {
+        handleHandshakeFailure(
+            devicePath, "", // Suppress duplicate log
+            tr("Factory firmware detected. Please update firmware."),
+            tr("Factory firmware detected on %1. Auto-connect disabled.")
+        );
+      }
+
+      // Check for handshake timeout (Non-Deskflow Firmware or bad connection)
+      static const QRegularExpression handshakeTimeoutRegex(R"(ERROR: CDC: Timed out waiting for handshake ACK)");
+      if (handshakeTimeoutRegex.match(line).hasMatch()) {
+        handleHandshakeFailure(
+            devicePath, "Detected handshake timeout (possible non-Deskflow firmware)",
+            tr("Device handshake failed. Possibly not a Deskflow-HID firmware."),
+            tr("Handshake failed on %1. Auto-connect disabled.")
+        );
+      }
     }
   }
 }
@@ -1590,6 +1624,37 @@ void DeskflowHidExtension::onServerConnectionStateChanged(CoreProcess::Connectio
         m_resumeConnectionAfterServerRestart.insert(devicePath, configPath);
       }
       stopBridgeClient(devicePath);
+    }
+  }
+}
+
+void DeskflowHidExtension::handleHandshakeFailure(
+    const QString &devicePath, const QString &logReason, const QString &tooltip, const QString &statusTemplate
+)
+{
+  if (!logReason.isEmpty()) {
+    qWarning() << logReason << "for" << devicePath;
+  }
+  if (m_bridgeClientDeviceToConfig.contains(devicePath)) {
+    QString configPath = m_bridgeClientDeviceToConfig[devicePath];
+
+    // 1. Disable Auto-Connect to prevent valid retry loop
+    QSettings config(configPath, QSettings::IniFormat);
+    config.setValue(Settings::Bridge::AutoConnect, false);
+    config.sync();
+
+    // 2. Add to manually disconnected list to prevent immediate retry in bridgeClientProcessFinished
+    QString serial = BridgeClientConfigManager::readSerialNumber(configPath);
+    m_manuallyDisconnectedSerials.insert(serial);
+
+    // 3. Disable the widget components visually
+    if (auto *widget = m_bridgeClientWidgets.value(configPath)) {
+      widget->setConnected(false);
+      widget->setEnabled(false);
+      widget->setToolTip(tooltip);
+      if (m_mainWindow) {
+        m_mainWindow->setStatus(statusTemplate.arg(widget->screenName())); // Use arg() on the template
+      }
     }
   }
 }

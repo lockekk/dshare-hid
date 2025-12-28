@@ -66,6 +66,10 @@ private:
   bool
   syncDeviceConfigFromDevice(const QString &devicePath, const QString &configPath, bool *outIsBleConnected = nullptr);
 
+  void handleHandshakeFailure(
+      const QString &devicePath, const QString &logReason, const QString &tooltip, const QString &statusTemplate
+  );
+
   bool acquireBridgeSerialLock(const QString &serialNumber, const QString &configPath);
   void releaseBridgeSerialLock(const QString &serialNumber, const QString &configPath);
   void applySerialGroupLockState(const QString &serialNumber);

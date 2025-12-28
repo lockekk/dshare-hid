@@ -379,7 +379,7 @@ bool CdcTransport::performHandshake(bool allowInsecure)
         const QByteArray computedTag = makeAckHmac(m_hostNonce, deviceNonce, ackCore, m_authKey);
         if (computedTag.size() != static_cast<int>(kAuthTagBytes) ||
             std::memcmp(computedTag.constData(), ackTag, kAuthTagBytes) != 0) {
-          m_lastError = "Handshake authentication tag mismatch";
+          m_lastError = "Handshake authentication failed.";
           LOG_ERR("CDC: %s", m_lastError.c_str());
           return false;
         }

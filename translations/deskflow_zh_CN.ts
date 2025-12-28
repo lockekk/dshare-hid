@@ -195,6 +195,22 @@ File -&gt; Firmware -&gt; Order.</source>
         <translation>启动桥接客户端失败：%1</translation>
     </message>
     <message>
+        <source>Factory firmware detected. Please update firmware.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Factory firmware detected on %1. Auto-connect disabled.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device handshake failed. Possibly not a Deskflow-HID firmware.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Handshake failed on %1. Auto-connect disabled.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Server is down. Auto-connect will resume once the server starts.</source>
         <translation>服务器已停机。服务器启动后将恢复自动连接。</translation>
     </message>

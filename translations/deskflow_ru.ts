@@ -198,6 +198,22 @@ File -&gt; Firmware -&gt; Order.</source>
         <translation>Не удалось запустить клиент моста: %1</translation>
     </message>
     <message>
+        <source>Factory firmware detected. Please update firmware.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Factory firmware detected on %1. Auto-connect disabled.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device handshake failed. Possibly not a Deskflow-HID firmware.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Handshake failed on %1. Auto-connect disabled.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Server is down. Auto-connect will resume once the server starts.</source>
         <translation>Сервер недоступен. Автоматическое подключение возобновится после запуска сервера.</translation>
     </message>
