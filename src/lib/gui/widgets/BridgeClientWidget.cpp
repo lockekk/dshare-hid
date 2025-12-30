@@ -166,7 +166,7 @@ void BridgeClientWidget::setActiveHostname(const QString &hostname)
   m_activeHostnameLabel->setText(m_activeHostname);
 
   if (m_isBleConnected && m_isConnected) {
-    // Issue 14: Only red if BOTH bridge is connected AND BLE is connected
+    // Only red if BOTH bridge is connected AND BLE is connected
     m_activeHostnameLabel->setStyleSheet(QStringLiteral("color: red; font-weight: normal;"));
   } else if (m_isConnected) {
     m_activeHostnameLabel->setStyleSheet(QStringLiteral("")); // Default color

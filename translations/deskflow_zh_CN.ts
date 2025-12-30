@@ -250,6 +250,10 @@ File -&gt; Firmware -&gt; Order.</source>
         <source>The ESP32 HID Tools module is not available in this build.</source>
         <translation>此构建版本中 ESP32 HID 工具模块不可用。</translation>
     </message>
+    <message>
+        <source>Device disconnected.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Esp32HidToolsWidget</name>

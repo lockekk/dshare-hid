@@ -99,8 +99,13 @@ public:
 
   void hide();
 
+Q_SIGNALS:
+  void sessionStateChanged(bool locked);
+
 protected:
+  void closeEvent(QCloseEvent *event) override;
   void changeEvent(QEvent *e) override;
+  bool nativeEvent(const QByteArray &eventType, void *message, qintptr *result) override;
 
 private:
   /**
@@ -151,7 +156,6 @@ private:
   void updateFromLogLine(const QString &line);
   void checkConnected(const QString &line);
   void checkFingerprint(const QString &line);
-  void closeEvent(QCloseEvent *event) override;
   void secureSocket(bool secureSocket);
   void connectSlots();
   void handleLogLine(const QString &line);

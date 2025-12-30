@@ -135,6 +135,7 @@ if(WIN32)
     arch
     net
     setupapi
+    wtsapi32
   )
 endif()
 

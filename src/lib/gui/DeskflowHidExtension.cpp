@@ -33,6 +33,7 @@
 #endif
 
 #include <QCoreApplication>
+#include <QDebug>
 #include <QEventLoop>
 #include <QGridLayout>
 #include <QMenu>
@@ -47,6 +48,7 @@
 
 #include <chrono>
 #include <thread>
+#include <vector>
 
 using namespace deskflow::gui;
 
@@ -62,12 +64,10 @@ QString logLevelNameFromIndex(int index)
   return kLogLevels.at(index);
 }
 
-DeskflowHidExtension::DeskflowHidExtension(MainWindow *parent)
-    : QObject(parent),
-      m_mainWindow(parent),
-      m_settings(new QSettings(this))
+DeskflowHidExtension::DeskflowHidExtension(MainWindow *parent) : QObject(parent), m_mainWindow(parent)
 {
-  m_showBridgeLogs = m_settings->value(Settings::Bridge::ShowLogs, false).toBool();
+  m_showBridgeLogs = Settings::value(Settings::Bridge::ShowLogs).toBool();
+  setup();
 }
 
 DeskflowHidExtension::~DeskflowHidExtension()
@@ -77,15 +77,17 @@ DeskflowHidExtension::~DeskflowHidExtension()
 
 void DeskflowHidExtension::shutdown()
 {
-  stopAllBridgeClients();
   if (m_usbDeviceMonitor) {
-    m_usbDeviceMonitor->deleteLater();
+    m_usbDeviceMonitor->stopMonitoring();
+    delete m_usbDeviceMonitor;
     m_usbDeviceMonitor = nullptr;
   }
+  stopAllBridgeClients();
 }
 
 void DeskflowHidExtension::setup()
 {
+
 #if defined(Q_OS_LINUX)
   m_usbDeviceMonitor = new LinuxUdevMonitor(this);
 #elif defined(Q_OS_WIN)
@@ -99,6 +101,7 @@ void DeskflowHidExtension::setup()
     // Filter for Espressif vendor ID (0x303a)
     m_usbDeviceMonitor->setVendorIdFilter(UsbDeviceHelper::kEspressifVendorId);
     // Connect signals
+    connect(m_mainWindow, &MainWindow::sessionStateChanged, this, &DeskflowHidExtension::handleSessionStateChanged);
     connect(m_usbDeviceMonitor, &UsbDeviceMonitor::deviceConnected, this, &DeskflowHidExtension::usbDeviceConnected);
     connect(
         m_usbDeviceMonitor, &UsbDeviceMonitor::deviceDisconnected, this, &DeskflowHidExtension::usbDeviceDisconnected
@@ -127,7 +130,7 @@ void DeskflowHidExtension::setup()
         &m_mainWindow->m_coreProcess, &CoreProcess::connectionStateChanged, this,
         &DeskflowHidExtension::onServerConnectionStateChanged
     );
-    // Query initial state (Issue 3)
+    // Query initial state
     onServerConnectionStateChanged(m_mainWindow->m_coreProcess.connectionState());
   }
 
@@ -135,12 +138,17 @@ void DeskflowHidExtension::setup()
   if (m_usbDeviceMonitor) {
     updateBridgeClientDeviceStates();
   }
+
+  // Initialize retry scan timer
+  m_retryScanTimer = new QTimer(this);
+  m_retryScanTimer->setSingleShot(true);
+  connect(m_retryScanTimer, &QTimer::timeout, this, &DeskflowHidExtension::updateBridgeClientDeviceStates);
 }
 
 void DeskflowHidExtension::pauseUsbMonitoring()
 {
   if (m_usbDeviceMonitor && m_usbDeviceMonitor->isMonitoring()) {
-    LOG_DEBUG("Pausing USB device monitoring");
+    qDebug("Pausing USB device monitoring");
     m_usbDeviceMonitor->stopMonitoring();
   }
 }
@@ -148,7 +156,7 @@ void DeskflowHidExtension::pauseUsbMonitoring()
 void DeskflowHidExtension::resumeUsbMonitoring()
 {
   if (m_usbDeviceMonitor && !m_usbDeviceMonitor->isMonitoring()) {
-    LOG_DEBUG("Resuming USB monitoring...");
+    qDebug("Resuming USB monitoring...");
     m_usbDeviceMonitor->startMonitoring();
 
     // After resuming, update states in case something changed while we were paused
@@ -178,11 +186,11 @@ void DeskflowHidExtension::openEsp32HidTools()
 
 void DeskflowHidExtension::loadBridgeClientConfigs()
 {
-  LOG_DEBUG("Loading bridge client configurations...");
+  qDebug() << "Loading bridge client configurations...";
 
   // Get all config files
   QStringList configFiles = BridgeClientConfigManager::getAllConfigFiles();
-  LOG_DEBUG("Found %d bridge client config file(s)", configFiles.size());
+  qDebug() << "Found" << configFiles.size() << "bridge client config file(s)";
 
   // Get grid layout from MainWindow
   // Note: Assuming "widgetBridgeClients" is accessible via friend access to Ui::MainWindow or findChild
@@ -198,7 +206,7 @@ void DeskflowHidExtension::loadBridgeClientConfigs()
   }
 
   if (!gridLayout) {
-    LOG_WARN("Bridge clients grid layout not found");
+    qWarning("Bridge clients grid layout not found");
     return;
   }
 
@@ -209,7 +217,7 @@ void DeskflowHidExtension::loadBridgeClientConfigs()
     QString serialNumber = BridgeClientConfigManager::readSerialNumber(configPath);
 
     if (serialNumber.isEmpty()) {
-      LOG_INFO("Removing invalid bridge client config (missing serial number): %s", qPrintable(configPath));
+      qInfo() << "Removing invalid bridge client config (missing serial number):" << configPath;
       BridgeClientConfigManager::deleteConfig(configPath);
       continue;
     }
@@ -243,7 +251,7 @@ void DeskflowHidExtension::loadBridgeClientConfigs()
     // Track widget by config path
     m_bridgeClientWidgets[configPath] = widget;
 
-    LOG_DEBUG("Created widget for config: %s screenName: %s", qPrintable(configPath), qPrintable(screenName));
+    qDebug() << "Created widget for config:" << configPath << "screenName:" << screenName;
   }
 }
 
@@ -252,7 +260,7 @@ bool DeskflowHidExtension::syncDeviceConfigFromDevice(
 )
 {
   if (m_bridgeClientProcesses.contains(devicePath)) {
-    LOG_DEBUG("Skipping syncDeviceConfigFromDevice for busy device: %s", qPrintable(devicePath));
+    qDebug() << "Skipping syncDeviceConfigFromDevice for busy device:" << devicePath;
     return false;
   }
 
@@ -265,7 +273,7 @@ bool DeskflowHidExtension::syncDeviceConfigFromDevice(
       opened = true;
       break;
     }
-    LOG_WARN("Failed to open device %s (attempt %d/3)", qPrintable(devicePath), retry + 1);
+    qWarning() << "Failed to open device" << devicePath << "(attempt" << (retry + 1) << "/3)";
 
     // Instead of sleep_for, we should use a small event loop wait or just fail faster
     // if we are on the GUI thread. But for now, let's at least process events if we must wait.
@@ -275,19 +283,19 @@ bool DeskflowHidExtension::syncDeviceConfigFromDevice(
 
     // Re-check busy status after wait
     if (m_bridgeClientProcesses.contains(devicePath)) {
-      LOG_DEBUG("Aborting sync: Device became busy during retry: %s", qPrintable(devicePath));
+      qDebug() << "Aborting sync: Device became busy during retry:" << devicePath;
       return false;
     }
   }
 
   if (!opened) {
-    LOG_WARN("Aborting sync: Failed to open device %s after retries.", qPrintable(devicePath));
+    qWarning() << "Aborting sync: Failed to open device" << devicePath << "after retries.";
     return false;
   }
 
   // Ensure we actually got a configuration during the handshake
   if (!transport.hasDeviceConfig()) {
-    LOG_WARN("Aborting sync: Handshake completed but no device config received for %s", qPrintable(devicePath));
+    qWarning() << "Aborting sync: Handshake completed but no device config received for" << devicePath;
     transport.close();
     return false;
   }
@@ -300,7 +308,7 @@ bool DeskflowHidExtension::syncDeviceConfigFromDevice(
 
   deskflow::bridge::DeviceProfile profile;
   if (!transport.getProfile(activeProfile, profile)) {
-    LOG_WARN("Failed to get profile %d from device %s", activeProfile, qPrintable(devicePath));
+    qWarning() << "Failed to get profile" << activeProfile << "from device" << devicePath;
     transport.close();
     return false;
   }
@@ -338,19 +346,17 @@ bool DeskflowHidExtension::syncDeviceConfigFromDevice(
   config.setValue(Settings::Bridge::ActivationState, activationState);
 
   config.sync();
-  LOG_DEBUG(
-      "Successfully synced config for %s Activation State: %s", qPrintable(devicePath), qPrintable(activationState)
-  );
+  qDebug() << "Successfully synced config for" << devicePath << "Activation State:" << activationState;
   return true;
 }
 
 void DeskflowHidExtension::updateBridgeClientDeviceStates()
 {
-  LOG_DEBUG("Updating bridge client device states...");
+  qDebug() << "Updating bridge client device states...";
 
   // Get all currently connected USB CDC devices with their serial numbers
   QMap<QString, QString> connectedDevices = UsbDeviceHelper::getConnectedDevices();
-  LOG_DEBUG("Found %d connected USB CDC device(s)", connectedDevices.size());
+  qDebug() << "Found" << connectedDevices.size() << "connected USB CDC device(s)";
 
   QSet<QString> configuredSerialNumbers;
 
@@ -367,7 +373,7 @@ void DeskflowHidExtension::updateBridgeClientDeviceStates()
     }
 
     if (configSerialNumber.isEmpty()) {
-      LOG_WARN("Widget has no serial number and config has no serial number: %s", qPrintable(configPath));
+      qWarning() << "Widget has no serial number and config has no serial number:" << configPath;
       widget->setDeviceAvailable(QString(), false);
       continue;
     }
@@ -405,7 +411,7 @@ void DeskflowHidExtension::updateBridgeClientDeviceStates()
       // Store device path -> serial number mapping for later use
       m_devicePathToSerialNumber[devicePath] = configSerialNumber;
 
-      LOG_DEBUG("Device available for config: %s device: %s", qPrintable(configPath), qPrintable(devicePath));
+      qDebug() << "Device available for config:" << configPath << "device:" << devicePath;
 
       // STARTUP AUTO-CONNECT FIX: Check if we should auto-connect this device found at startup
       bool isBleConnected = false;
@@ -417,15 +423,11 @@ void DeskflowHidExtension::updateBridgeClientDeviceStates()
         if (configSettings.value(Settings::Bridge::AutoConnect, false).toBool()) {
           if (!m_manuallyDisconnectedSerials.contains(configSerialNumber)) {
             if (isServerReady()) {
-              LOG_INFO(
-                  "Auto-connecting device at startup: %s (%s)", qPrintable(widget->screenName()), qPrintable(devicePath)
-              );
+              qInfo() << "Auto-connecting device at startup:" << widget->screenName() << "(" << devicePath << ")";
               bridgeClientConnectToggled(devicePath, configPath, true);
             } else {
-              LOG_INFO(
-                  "Server not ready, wait for server to start for auto-connect at startup for: %s",
-                  qPrintable(widget->screenName())
-              );
+              qInfo() << "Server not ready, wait for server to start for auto-connect at startup for:"
+                      << widget->screenName();
             }
           }
         }
@@ -434,24 +436,23 @@ void DeskflowHidExtension::updateBridgeClientDeviceStates()
       // Refresh widget
       widget->updateConfig(widget->screenName(), configPath);
     } else {
-      LOG_DEBUG("Device NOT available for config: %s", qPrintable(configPath));
+      qDebug() << "Device NOT available for config:" << configPath;
     }
   }
 
+  bool hasPendingDevice = false;
   // Check for connected devices that don't have a configuration
   for (auto it = connectedDevices.begin(); it != connectedDevices.end(); ++it) {
     const QString &devicePath = it.key();
     const QString &serialNumber = it.value();
 
-    if (serialNumber.isEmpty() || serialNumber == "Unknown") {
+    if (serialNumber.isEmpty()) {
+      hasPendingDevice = true;
       continue;
     }
 
     if (!configuredSerialNumbers.contains(serialNumber)) {
-      LOG_INFO(
-          "Found unconfigured device during initial scan: %s serial: %s", qPrintable(devicePath),
-          qPrintable(serialNumber)
-      );
+      qInfo() << "Found unconfigured device during initial scan:" << devicePath << "serial:" << serialNumber;
 
       UsbDeviceInfo info;
       info.devicePath = devicePath;
@@ -462,14 +463,75 @@ void DeskflowHidExtension::updateBridgeClientDeviceStates()
       usbDeviceConnected(info);
     }
   }
+
+  // Identity Polling: If we have devices without serials, retry scan after a delay
+  if (hasPendingDevice && m_retryScanTimer && !m_retryScanTimer->isActive()) {
+    m_retryScanTimer->start(1500);
+  }
+}
+
+void DeskflowHidExtension::handleSessionStateChanged(bool locked)
+{
+#if defined(Q_OS_WIN)
+  m_isSessionLocked = locked;
+  if (!locked) {
+    qInfo() << "Session unlocked. Resuming connection requests...";
+    processConnectionRequests();
+  } else {
+    qInfo() << "Session locked. Connection requests will be deferred.";
+  }
+#else
+  Q_UNUSED(locked);
+#endif
+}
+
+void DeskflowHidExtension::processConnectionRequests()
+{
+#if defined(Q_OS_WIN)
+  if (m_isSessionLocked) {
+    qInfo() << "processConnectionRequests called but session is locked. Aborting.";
+    return;
+  }
+#endif
+  // Resume connections that were interrupted by server restart
+  if (!m_resumeConnectionAfterServerRestart.isEmpty()) {
+    qInfo().noquote() << QStringLiteral("Resuming connections for %1 devices after server restart")
+                             .arg(m_resumeConnectionAfterServerRestart.size());
+    auto it = m_resumeConnectionAfterServerRestart.begin();
+    while (it != m_resumeConnectionAfterServerRestart.end()) {
+      const QString &devicePath = it.key();
+      const QString &configPath = it.value();
+      if (!configPath.isEmpty()) {
+        bridgeClientConnectToggled(devicePath, configPath, true);
+      }
+      ++it;
+    }
+    m_resumeConnectionAfterServerRestart.clear();
+  }
+
+  // Check all widgets for auto-connect
+  for (auto it = m_bridgeClientWidgets.begin(); it != m_bridgeClientWidgets.end(); ++it) {
+    const QString &configPath = it.key();
+    BridgeClientWidget *widget = it.value();
+    if (widget->isDeviceAvailable()) {
+      QSettings configSettings(configPath, QSettings::IniFormat);
+      if (configSettings.value(Settings::Bridge::AutoConnect, false).toBool()) {
+        QString serial = widget->serialNumber();
+        QString devicePath = widget->devicePath();
+        // Check if manually disconnected OR if process is already running (e.g. resumed above)
+        if (!m_manuallyDisconnectedSerials.contains(serial) && !m_bridgeClientProcesses.contains(devicePath)) {
+          qInfo() << "Server ready. Triggering auto-connect for:" << widget->screenName();
+          bridgeClientConnectToggled(devicePath, configPath, true);
+        }
+      }
+    }
+  }
 }
 
 void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
 {
-  LOG_DEBUG(
-      "USB device connected: path: %s vendor: %s product: %s serial: %s", qPrintable(device.devicePath),
-      qPrintable(device.vendorId), qPrintable(device.productId), qPrintable(device.serialNumber)
-  );
+  qDebug() << "USB device connected: path:" << device.devicePath << "vendor:" << device.vendorId
+           << "product:" << device.productId << "serial:" << device.serialNumber;
 
   // Read serial number from usb stack(mostly for speed up mac)
   QString serialNumber = device.serialNumber;
@@ -479,7 +541,10 @@ void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
   }
 
   if (serialNumber.isEmpty()) {
-    LOG_WARN("Failed to read serial number for device: %s", qPrintable(device.devicePath));
+    qInfo() << "Device serial not ready for:" << device.devicePath << "Retrying scan in 1.5s...";
+    if (m_retryScanTimer) {
+      m_retryScanTimer->start(1500);
+    }
     return;
   }
 
@@ -491,9 +556,7 @@ void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
 
   // If we found duplicates/multiple configs for the same serial, keep the LATEST/NEWEST one and delete others
   if (matchingConfigs.size() > 1) {
-    LOG_WARN(
-        "Found multiple configs for serial %s. Cleaning up duplicates (keeping latest).", qPrintable(serialNumber)
-    );
+    qWarning() << "Found multiple configs for serial" << serialNumber << ". Cleaning up duplicates (keeping latest).";
 
     // Sort by modification time, newest first
     std::sort(matchingConfigs.begin(), matchingConfigs.end(), [](const QString &a, const QString &b) {
@@ -506,7 +569,7 @@ void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
         bridgeClientsWidget ? bridgeClientsWidget->findChild<QGridLayout *>("gridLayoutBridgeClients") : nullptr;
 
     for (int i = 1; i < matchingConfigs.size(); ++i) {
-      LOG_INFO("Deleting old duplicate config: %s", qPrintable(matchingConfigs[i]));
+      qInfo() << "Deleting old duplicate config:" << matchingConfigs[i];
 
       // If there's an active process for this duplicate config, find and stop it
       for (auto it = m_bridgeClientDeviceToConfig.begin(); it != m_bridgeClientDeviceToConfig.end(); ++it) {
@@ -540,10 +603,7 @@ void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
     for (const QString &existingConfigPath : allConfigs) {
       QString existingSerial = BridgeClientConfigManager::readSerialNumber(existingConfigPath);
       if (existingSerial.compare(serialNumber, Qt::CaseInsensitive) == 0) {
-        LOG_INFO(
-            "Found case-insensitive match for serial: %s -> %s", qPrintable(serialNumber),
-            qPrintable(existingConfigPath)
-        );
+        qInfo() << "Found case-insensitive match for serial:" << serialNumber << "->" << existingConfigPath;
         matchingConfigs.append(existingConfigPath);
         break;
       }
@@ -551,7 +611,7 @@ void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
   }
 
   if (matchingConfigs.isEmpty()) {
-    LOG_INFO("New device detected, creating default config for serial: %s", qPrintable(serialNumber));
+    qInfo() << "New device detected, creating default config for serial:" << serialNumber;
 
     QString handshakeDeviceName;
     bool isBleConnected = false;
@@ -569,11 +629,11 @@ void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
           handshakeDeviceName = QString::fromStdString(transport.deviceConfig().deviceName);
           isBleConnected = transport.deviceConfig().isBleConnected;
           uint8_t currentProfile = transport.deviceConfig().activeProfile;
-          LOG_DEBUG("Device %s active profile: %d", qPrintable(device.devicePath), currentProfile);
+          qDebug() << "Device" << device.devicePath << "active profile:" << currentProfile;
           deskflow::bridge::DeviceProfile profile;
           if (transport.getProfile(currentProfile, profile)) {
             // Check if profile is bound to a screen (assuming we have a way to check, otherwise skip)
-            // LOG_DEBUG("Profile %d loaded", currentProfile);
+            // qDebug("Profile %d loaded", currentProfile);
           }
         } else {
           std::string name;
@@ -583,15 +643,11 @@ void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
         }
         transport.close();
       } else {
-        LOG_WARN(
-            "Failed to open transport for device: %s. Ignoring (likely non-Deskflow firmware).",
-            qPrintable(device.devicePath)
-        );
+        qWarning() << "Failed to open transport for device:" << device.devicePath
+                   << ". Ignoring (likely non-Deskflow firmware).";
       }
     } else {
-      LOG_DEBUG(
-          "Skipping handshake for new device connection as process is already active: %s", qPrintable(device.devicePath)
-      );
+      qDebug() << "Skipping handshake for new device connection as process is already active:" << device.devicePath;
       validHandshake = true; // Assume valid if we already have a process
     }
 
@@ -602,7 +658,7 @@ void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
     // Create new config
     QString configPath = BridgeClientConfigManager::createDefaultConfig(serialNumber, device.devicePath);
     if (configPath.isEmpty()) {
-      LOG_CRIT("Failed to create config for device: %s", qPrintable(serialNumber));
+      qCritical() << "Failed to create config for device:" << serialNumber;
       return;
     }
 
@@ -650,10 +706,8 @@ void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
       // If not found by path, try to find by serial number (robust against renames)
       for (auto wIt = m_bridgeClientWidgets.begin(); wIt != m_bridgeClientWidgets.end(); ++wIt) {
         if (wIt.value() && wIt.value()->serialNumber() == serialNumber) {
-          LOG_INFO(
-              "Found existing widget for serial %s at old path %s. Updating to new path %s", qPrintable(serialNumber),
-              qPrintable(wIt.key()), qPrintable(config)
-          );
+          qInfo() << "Found existing widget for serial" << serialNumber << "at old path" << wIt.key()
+                  << ". Updating to new path" << config;
           BridgeClientWidget *widget = wIt.value();
           const QString oldConfigPath = wIt.key();
           m_bridgeClientWidgets.erase(wIt);
@@ -690,7 +744,7 @@ void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
       widget->setBleConnected(isBleConnected);
 
       QString screenName = widget->screenName();
-      LOG_DEBUG("Enabled widget for config: %s screenName: %s", qPrintable(config), qPrintable(screenName));
+      qDebug() << "Enabled widget for config:" << config << "screenName:" << screenName;
 
       if (m_mainWindow) {
         m_mainWindow->setStatus(tr("Bridge client device plugged in: %1").arg(screenName));
@@ -702,14 +756,14 @@ void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
       QSettings configSettings(config, QSettings::IniFormat);
       if (configSettings.value(Settings::Bridge::AutoConnect, false).toBool()) {
         if (!m_manuallyDisconnectedSerials.contains(serialNumber)) {
-          if (isServerReady()) {
-            LOG_INFO("Auto-connecting device: %s (%s)", qPrintable(screenName), qPrintable(device.devicePath));
+          if (isServerReady() && !m_bridgeClientProcesses.contains(device.devicePath)) {
+            qInfo() << "Auto-connecting device:" << screenName << "(" << device.devicePath << ")";
             bridgeClientConnectToggled(device.devicePath, config, true);
           } else {
-            LOG_INFO("Server not ready, wait for server to start for auto-connect of: %s", qPrintable(screenName));
+            qInfo() << "Server not ready, wait for server to start for auto-connect of:" << screenName;
           }
         } else {
-          LOG_INFO("Auto-connect skipped for %s due to manual disconnect.", qPrintable(screenName));
+          qInfo() << "Auto-connect skipped for" << screenName << "due to manual disconnect.";
         }
       }
     }
@@ -718,23 +772,17 @@ void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
 
 void DeskflowHidExtension::usbDeviceDisconnected(const UsbDeviceInfo &device)
 {
-  LOG_DEBUG("USB device disconnected: %s", qPrintable(device.devicePath));
+  qDebug() << "USB device disconnected: path:" << device.devicePath;
 
-  QString serialNumber;
-  if (m_devicePathToSerialNumber.contains(device.devicePath)) {
-    serialNumber = m_devicePathToSerialNumber.take(device.devicePath);
-    // Don't remove from configuredSerialNumbers here, as the config still exists
-    // just the device is unplugged.
+  QString serialNumber = m_devicePathToSerialNumber.take(device.devicePath);
 
-    // Remove from resume set to prevent stale restarts
+  // Always stop process if running for this path
+  if (m_bridgeClientProcesses.contains(device.devicePath)) {
+    stopBridgeClient(device.devicePath);
+  }
+
+  if (!serialNumber.isEmpty()) {
     m_resumeConnectionAfterServerRestart.remove(device.devicePath);
-
-    // Stop process if running
-    if (m_bridgeClientProcesses.contains(device.devicePath)) {
-      stopBridgeClient(device.devicePath);
-    }
-  } else {
-    LOG_WARN("No stored serial number found for disconnected device: %s", qPrintable(device.devicePath));
   }
 
   bool found = false;
@@ -798,7 +846,7 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
   BridgeClientWidget *targetWidget = m_bridgeClientWidgets.value(configPath, nullptr);
 
   if (!targetWidget) {
-    LOG_WARN("No widget found for config: %s", qPrintable(configPath));
+    qWarning() << "No widget found for config:" << configPath;
     if (m_mainWindow) {
       m_mainWindow->setStatus(tr("Error: No configuration found for device: %1").arg(devicePath));
     }
@@ -806,7 +854,7 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
   }
 
   if (shouldConnect && devicePath.isEmpty()) {
-    LOG_WARN("Cannot connect: empty device path for config: %s", qPrintable(configPath));
+    qWarning() << "Cannot connect: empty device path for config:" << configPath;
     if (m_mainWindow) {
       m_mainWindow->setStatus(tr("Error: Cannot connect. Device path is empty."));
     }
@@ -819,12 +867,12 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
 
   if (shouldConnect) {
     if (m_bridgeClientProcesses.contains(devicePath)) {
-      LOG_WARN("Bridge client process already running for device: %s", qPrintable(devicePath));
+      qWarning() << "Bridge client process already running for device:" << devicePath;
       return;
     }
 
     if (!acquireBridgeSerialLock(serialNumber, configPath)) {
-      LOG_WARN("Failed to acquire lock for serial: %s", qPrintable(serialNumber));
+      qWarning() << "Failed to acquire lock for serial:" << serialNumber;
       if (m_mainWindow) {
         m_mainWindow->setStatus(tr("Already connected via another profile"));
       }
@@ -1263,15 +1311,17 @@ void DeskflowHidExtension::bridgeClientProcessReadyRead(const QString &devicePat
   for (const QString &line : lines) {
     // Log filtering
     if (m_showBridgeLogs) {
-      QString cleanLine = line;
-      // Strip timestamps: [2023-10-27T10:00:00]
-      static const QRegularExpression timestampRegex(R"(^\[\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\]\s*)");
-      cleanLine.remove(timestampRegex);
-      // Strip [Bridge] prefix if present
-      static const QRegularExpression bridgePrefixRegex(R"(\[Bridge\]\s*)");
+      QString cleanLine = line.trimmed();
+      // Strip inner log prefix: [2023-10-27T10:00:00.000] INFO:
+      static const QRegularExpression logPrefixRegex(
+          R"(^\[\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?\]\s*[A-Z0-9]+:\s*)"
+      );
+      cleanLine.remove(logPrefixRegex);
+      // Strip [Bridge] prefix if present from subprocess
+      static const QRegularExpression bridgePrefixRegex(R"(^\[Bridge\]\s*)");
       cleanLine.remove(bridgePrefixRegex);
 
-      LOG_INFO("[Bridge %s] %s", qPrintable(devicePath), qPrintable(cleanLine));
+      qInfo().noquote() << cleanLine;
     }
 
     // Check connection success
@@ -1291,7 +1341,7 @@ void DeskflowHidExtension::bridgeClientProcessReadyRead(const QString &devicePat
     QRegularExpressionMatch deviceNameMatch = deviceNameRegex.match(line);
     if (deviceNameMatch.hasMatch()) {
       QString deviceName = deviceNameMatch.captured(1);
-      LOG_INFO("Bridge client detected device name: %s", qPrintable(deviceName));
+      qInfo() << "Bridge client detected device name:" << deviceName;
       for (auto it = m_bridgeClientWidgets.begin(); it != m_bridgeClientWidgets.end(); ++it) {
         if (it.value()->devicePath() == devicePath) {
           it.value()->setDeviceName(deviceName);
@@ -1316,7 +1366,7 @@ void DeskflowHidExtension::bridgeClientProcessReadyRead(const QString &devicePat
       activationState.remove(parenRegex);
       activationState = activationState.trimmed();
 
-      LOG_INFO("Bridge client detected activation state: %s", qPrintable(activationState));
+      qInfo() << "Bridge client detected activation state:" << activationState;
       for (auto it = m_bridgeClientWidgets.begin(); it != m_bridgeClientWidgets.end(); ++it) {
         if (it.value()->devicePath() == devicePath) {
           it.value()->setActivationState(activationState);
@@ -1395,14 +1445,26 @@ void DeskflowHidExtension::bridgeClientProcessFinished(
     // Handle retries if this was an abnormal exit
     bool isError = (exitCode != 0 || exitStatus != QProcess::NormalExit);
     if (isError) {
+      qWarning() << "Bridge client process exited abnormally with code:" << exitCode << "status:" << exitStatus;
       QSettings configSettings(configPath, QSettings::IniFormat);
       if (configSettings.value(Settings::Bridge::AutoConnect, false).toBool() &&
           !m_manuallyDisconnectedSerials.contains(serial)) {
 
+        QMap<QString, QString> connectedDevices = UsbDeviceHelper::getConnectedDevices(false);
+        if (!connectedDevices.contains(devicePath)) {
+          qWarning() << "Device port" << devicePath << "not found.";
+          if (auto *w = m_bridgeClientWidgets.value(configPath)) {
+            w->setDeviceAvailable(devicePath, false);
+          }
+          if (m_mainWindow) {
+            m_mainWindow->setStatus(tr("Device disconnected."));
+          }
+          return;
+        }
+
         // Abort retries immediately if server is down
         if (!isServerReady()) {
-          qInfo() << "Server is down, aborting auto-connect retries for" << configPath
-                  << ". Waiting for server to start.";
+          qInfo() << "Server is down, aborting retries for" << configPath << ". Waiting for server to start.";
           if (m_mainWindow) {
             m_mainWindow->setStatus(tr("Server is down. Auto-connect will resume once the server starts."));
           }
@@ -1418,7 +1480,7 @@ void DeskflowHidExtension::bridgeClientProcessFinished(
             m_mainWindow->setStatus(tr("Connection failed. Retrying auto-connect (%1/3)...").arg(attempts));
           }
           QTimer::singleShot(2000, this, [this, configPath]() {
-            // Fetch current state from widget (Issue 4, 7)
+            // Fetch current state from widget
             auto *widget = m_bridgeClientWidgets.value(configPath);
             if (widget && m_connectionAttempts.contains(configPath)) {
               QString currentDevicePath = widget->devicePath();
@@ -1505,7 +1567,7 @@ void DeskflowHidExtension::stopAllBridgeClients()
   m_bridgeClientConnectionTimers.clear();
   m_devicePathToSerialNumber.clear();
 
-  // Clear tracking maps (Issue 2)
+  // Clear tracking maps
   m_manuallyDisconnectedSerials.clear();
   m_connectionAttempts.clear();
 }
@@ -1626,7 +1688,7 @@ void DeskflowHidExtension::onServerConnectionStateChanged(CoreProcess::Connectio
 {
   const bool isReady =
       (state == CoreProcess::ConnectionState::Listening || state == CoreProcess::ConnectionState::Connected);
-  // Issue 10: Connecting state handling (logging only)
+  // Connecting state handling (logging only)
   if (state == CoreProcess::ConnectionState::Connecting) {
     qInfo() << "Server is connecting...";
   }
@@ -1637,39 +1699,10 @@ void DeskflowHidExtension::onServerConnectionStateChanged(CoreProcess::Connectio
   }
 
   if (isReady) {
-    // Check all widgets for auto-connect
-    for (auto it = m_bridgeClientWidgets.begin(); it != m_bridgeClientWidgets.end(); ++it) {
-      const QString &configPath = it.key();
-      BridgeClientWidget *widget = it.value();
-      if (widget->isDeviceAvailable()) {
-        QSettings configSettings(configPath, QSettings::IniFormat);
-        if (configSettings.value(Settings::Bridge::AutoConnect, false).toBool()) {
-          QString serial = widget->serialNumber();
-          if (!m_manuallyDisconnectedSerials.contains(serial)) {
-            qInfo() << "Server ready. Triggering auto-connect for:" << widget->screenName();
-            bridgeClientConnectToggled(widget->devicePath(), configPath, true);
-          }
-        }
-      }
-    }
-
-    // Resume connections that were interrupted by server restart
-    if (!m_resumeConnectionAfterServerRestart.isEmpty()) {
-      LOG_INFO("Resuming connections for %d devices after server restart", m_resumeConnectionAfterServerRestart.size());
-      auto it = m_resumeConnectionAfterServerRestart.begin();
-      while (it != m_resumeConnectionAfterServerRestart.end()) {
-        const QString &devicePath = it.key();
-        const QString &configPath = it.value();
-        if (!configPath.isEmpty()) {
-          bridgeClientConnectToggled(devicePath, configPath, true);
-        }
-        ++it;
-      }
-      m_resumeConnectionAfterServerRestart.clear();
-    }
+    processConnectionRequests();
   } else if (state == CoreProcess::ConnectionState::Disconnected) {
     // Server explicitly stopped: stop all active bridge clients
-    LOG_INFO("Server disconnected. Stopping all active bridge clients.");
+    qInfo() << "Server disconnected. Stopping all active bridge clients.";
 
     // Capture active clients to resume later if this is a restart
     m_resumeConnectionAfterServerRestart.clear();
@@ -1679,8 +1712,8 @@ void DeskflowHidExtension::onServerConnectionStateChanged(CoreProcess::Connectio
       if (!configPath.isEmpty()) {
         m_resumeConnectionAfterServerRestart.insert(devicePath, configPath);
       }
-      stopBridgeClient(devicePath);
     }
+    stopAllBridgeClients();
   }
 }
 
@@ -1689,7 +1722,7 @@ void DeskflowHidExtension::handleHandshakeFailure(
 )
 {
   if (!logReason.isEmpty()) {
-    LOG_WARN("%s for %s", qPrintable(logReason), qPrintable(devicePath));
+    qWarning() << logReason << "for" << devicePath;
   }
   if (m_bridgeClientDeviceToConfig.contains(devicePath)) {
     QString configPath = m_bridgeClientDeviceToConfig[devicePath];
@@ -1726,7 +1759,6 @@ bool DeskflowHidExtension::isServerReady() const
 void DeskflowHidExtension::toggleShowBridgeLogs(bool show)
 {
   m_showBridgeLogs = show;
-  if (m_settings) {
-    m_settings->setValue("ShowBridgeLogs", show);
-  }
+  Settings::setValue(Settings::Bridge::ShowLogs, show);
+  qDebug() << "Bridge client logging toggled:" << show;
 }

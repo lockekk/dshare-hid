@@ -257,7 +257,7 @@ QMap<QString, QString> UsbDeviceHelper::getConnectedDevices(bool queryDevice)
     }
 
     if (serialNumber.isEmpty()) {
-      serialNumber = "Unknown";
+      LOG_DEBUG("Device %s has no serial (yet), including for monitoring", qPrintable(devicePath));
     }
     devices[devicePath] = serialNumber;
   }
@@ -309,8 +309,7 @@ QMap<QString, QString> UsbDeviceHelper::getConnectedDevices(bool queryDevice)
       serialNumber = readSerialNumber(devicePath);
     }
     if (serialNumber.isEmpty()) {
-      // Fallback to port name if serial read failed or skipped
-      serialNumber = portName;
+      LOG_DEBUG("Device %s has no serial (yet), including for monitoring", qPrintable(devicePath));
     }
 
     devices[devicePath] = serialNumber;
@@ -362,8 +361,9 @@ QMap<QString, QString> UsbDeviceHelper::getConnectedDevices(bool queryDevice)
           io_service_t child;
           while ((child = IOIteratorNext(childIter))) {
             if (IOObjectConformsTo(child, "IOSerialBSDClient")) {
-              CFStringRef pathRef = (CFStringRef
-              )IORegistryEntryCreateCFProperty(child, CFSTR(kIOCalloutDeviceKey), kCFAllocatorDefault, 0);
+              CFStringRef pathRef = (CFStringRef)IORegistryEntryCreateCFProperty(
+                  child, CFSTR(kIOCalloutDeviceKey), kCFAllocatorDefault, 0
+              );
               if (pathRef) {
                 const CFIndex kMaxPath = 1024;
                 char pathBuf[kMaxPath];
@@ -388,8 +388,9 @@ QMap<QString, QString> UsbDeviceHelper::getConnectedDevices(bool queryDevice)
           if (serialNumber.isEmpty()) {
             // Fallback to reading from IOKit if possible (though readSerialNumber tries CDC first)
             // IOKit serial is kUSBSerialNumberString
-            CFStringRef serialRef = (CFStringRef
-            )IORegistryEntryCreateCFProperty(device, CFSTR(kUSBSerialNumberString), kCFAllocatorDefault, 0);
+            CFStringRef serialRef = (CFStringRef)IORegistryEntryCreateCFProperty(
+                device, CFSTR(kUSBSerialNumberString), kCFAllocatorDefault, 0
+            );
             if (serialRef) {
               const CFIndex kMaxSerial = 256;
               char serialBuf[kMaxSerial];
@@ -399,8 +400,9 @@ QMap<QString, QString> UsbDeviceHelper::getConnectedDevices(bool queryDevice)
               CFRelease(serialRef);
             }
           }
-          if (serialNumber.isEmpty())
-            serialNumber = "Unknown";
+          if (serialNumber.isEmpty()) {
+            LOG_DEBUG("Device %s has no serial (yet), including for monitoring", qPrintable(devicePath));
+          }
           devices[devicePath] = serialNumber;
         }
       }

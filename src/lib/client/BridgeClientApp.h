@@ -68,7 +68,11 @@ protected:
    * - Reads TLS setting from server's main config (not bridge client config)
    * - Uses SecurityLevel::Encrypted (not PeerAuth) when TLS is enabled
    */
+  void initApp() override;
   ISocketFactory *getSocketFactory() const override;
+  void handleScreenError() const override;
+  void handleClientFailed(const Event &e) override;
+  void handleClientDisconnected() override;
 
 private:
   std::shared_ptr<deskflow::bridge::CdcTransport> m_transport;

@@ -103,7 +103,7 @@ public:
     return m_pname;
   }
 
-  void handleScreenError() const;
+  virtual void handleScreenError() const;
 
 protected:
   void runEventsLoop(const void *);

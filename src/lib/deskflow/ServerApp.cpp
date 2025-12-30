@@ -348,7 +348,7 @@ deskflow::Screen *ServerApp::openServerScreen()
 {
   deskflow::Screen *screen = createScreen();
   getEvents()->addHandler(EventTypes::ScreenError, screen->getEventTarget(), [this](const auto &) {
-    handleScreenError();
+    getEvents()->addEvent(Event(EventTypes::Quit));
   });
   getEvents()->addHandler(EventTypes::ScreenSuspend, screen->getEventTarget(), [this](const auto &) {
     handleSuspend();
@@ -450,8 +450,8 @@ void ServerApp::handleResume()
 {
   if (m_suspended) {
     LOG_INFO("resume");
-    startServer();
-    m_suspended = false;
+    // bridge client change: Force a clean process restart to ensure all state is fully reset.
+    exit(s_exitSuccess);
   }
 }
 
@@ -586,9 +586,9 @@ int ServerApp::mainLoop()
 void ServerApp::resetServer()
 {
   LOG_DEBUG1("resetting server");
-  stopServer();
-  cleanupServer();
-  startServer();
+
+  // bridge client change: Force a clean process restart to ensure all state is fully reset.
+  exit(s_exitSuccess);
 }
 
 int ServerApp::runInner(StartupFunc startup)

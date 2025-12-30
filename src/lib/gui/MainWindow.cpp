@@ -10,9 +10,14 @@
 #include "DeskflowHidExtension.h"
 #include "ui_MainWindow.h"
 
+// clang-format off
 #if defined(Q_OS_WIN)
 #include <windows.h>
+#include <wtsapi32.h>
 #endif
+// clang-format on
+
+
 
 #include "Diagnostic.h"
 #include "StyleUtils.h"
@@ -189,7 +194,6 @@ MainWindow::MainWindow()
 
   // Load bridge client configs and create widgets
   m_deskflowHidExtension = std::make_unique<DeskflowHidExtension>(this);
-  m_deskflowHidExtension->setup();
 
   updateScreenName();
   applyConfig();
@@ -216,6 +220,11 @@ MainWindow::MainWindow()
 MainWindow::~MainWindow()
 {
   m_guiDupeChecker->close();
+#if defined(Q_OS_WIN)
+  if (auto hwnd = reinterpret_cast<HWND>(winId())) {
+    WTSUnRegisterSessionNotification(hwnd);
+  }
+#endif
   if (m_deskflowHidExtension) {
     m_deskflowHidExtension->shutdown();
   }
@@ -248,6 +257,12 @@ void MainWindow::setupControls()
   setWindowTitle(kAppName);
 
   secureSocket(false);
+
+#if defined(Q_OS_WIN)
+  if (auto hwnd = reinterpret_cast<HWND>(winId())) {
+    WTSRegisterSessionNotification(hwnd, NOTIFY_FOR_THIS_SESSION);
+  }
+#endif
 
   ui->btnConfigureServer->setIcon(QIcon::fromTheme(QStringLiteral("configure")));
 
@@ -847,6 +862,25 @@ void MainWindow::setupTrayIcon()
 
   setTrayIcon();
   m_trayIcon->show();
+}
+
+bool MainWindow::nativeEvent(const QByteArray &eventType, void *message, qintptr *result)
+{
+#if defined(Q_OS_WIN)
+  if (eventType == "windows_generic_MSG" && message) {
+    MSG *msg = static_cast<MSG *>(message);
+    if (msg->message == WM_WTSSESSION_CHANGE) {
+      if (msg->wParam == WTS_SESSION_LOCK) {
+        qInfo() << "Windows Session Locked";
+        Q_EMIT sessionStateChanged(true);
+      } else if (msg->wParam == WTS_SESSION_UNLOCK) {
+        qInfo() << "Windows Session Unlocked";
+        Q_EMIT sessionStateChanged(false);
+      }
+    }
+  }
+#endif
+  return QMainWindow::nativeEvent(eventType, message, result);
 }
 
 void MainWindow::applyConfig()

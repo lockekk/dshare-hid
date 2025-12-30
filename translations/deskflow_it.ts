@@ -251,6 +251,10 @@ File -&gt; Firmware -&gt; Ordina.</translation>
         <source>The ESP32 HID Tools module is not available in this build.</source>
         <translation>Il modulo Strumenti HID ESP32 non è disponibile in questa build.</translation>
     </message>
+    <message>
+        <source>Device disconnected.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Esp32HidToolsWidget</name>

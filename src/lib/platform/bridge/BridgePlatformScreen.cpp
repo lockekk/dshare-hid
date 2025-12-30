@@ -297,8 +297,9 @@ void BridgePlatformScreen::fakeKeyDown(KeyID id, KeyModifierMask mask, KeyButton
   }
 }
 
-bool BridgePlatformScreen::
-    fakeKeyRepeat(KeyID id, KeyModifierMask mask, int32_t count, KeyButton button, const std::string &)
+bool BridgePlatformScreen::fakeKeyRepeat(
+    KeyID id, KeyModifierMask mask, int32_t count, KeyButton button, const std::string &
+)
 {
   LOG_DEBUG("BridgeScreen: key repeat id=0x%04x button=%d count=%d", id, button, count);
 
@@ -577,6 +578,7 @@ bool BridgePlatformScreen::sendEvent(HidEventType type, const std::vector<uint8_
   packet.payload = payload;
   if (!m_transport->sendHidEvent(packet)) {
     LOG_ERR("BridgeScreen: failed to send HID event type=%u", static_cast<unsigned>(type));
+    m_events->addEvent(Event(EventTypes::ScreenError, getEventTarget()));
     return false;
   }
 
@@ -1347,6 +1349,7 @@ void BridgePlatformScreen::sendKeepAliveIfIdle() const
     recordCdcCommand(now);
   } else {
     LOG_WARN("BridgeScreen: keep-alive failed (%s)", m_transport->lastError().c_str());
+    m_events->addEvent(Event(EventTypes::ScreenError, getEventTarget()));
   }
 }
 

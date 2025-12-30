@@ -792,9 +792,10 @@ void Esp32HidToolsWidget::onDownloadAndFlashFactory()
 
 bool Esp32HidToolsWidget::confirmFactoryFlash()
 {
-  const QString message = tr("This process permanently converts your ESP32 into a Deskflow-HID device. "
-                             "This is irreversible and blocks non-Deskflow firmware.\n\n"
-                             "Do you want to proceed?");
+  const QString message =
+      tr("This process permanently converts your ESP32 into a Deskflow-HID device. "
+         "This is irreversible and blocks non-Deskflow firmware.\n\n"
+         "Do you want to proceed?");
 
   QMessageBox::StandardButton reply =
       QMessageBox::question(this, tr("Confirm Factory Flash"), message, QMessageBox::Yes | QMessageBox::No);
@@ -1154,7 +1155,8 @@ void Esp32HidToolsWidget::flashFirmware(const std::vector<uint8_t> &firmwareData
         });
       } else {
         QString errorMsg = QString::fromStdString(flashResultToString(res));
-        log_cb_func(tr("Flash failed, %1").arg(errorMsg).toStdString()
+        log_cb_func(
+            tr("Flash failed, %1").arg(errorMsg).toStdString()
         ); // log_cb takes std::string, but log takes QString. log_cb calls log.
         QMetaObject::invokeMethod(this, [this, errorMsg]() {
           QMessageBox::critical(this, tr("Error"), tr("Flash failed, %1").arg(errorMsg));
@@ -1494,8 +1496,10 @@ QString deskflow::gui::Esp32HidToolsWidget::composeOrderContent(QString &outPref
   } else if (m_orderOption3->isChecked()) {
     outOption = 3;
     outPrefix = "full_license_";
-    content = QString("Name: %1\nEmail: %2\nSerial: %3\nDevice Secret: %4\nTotal Profiles: %5\nRequest: Skip trial "
-                      "and buy full license\n")
+    content = QString(
+                  "Name: %1\nEmail: %2\nSerial: %3\nDevice Secret: %4\nTotal Profiles: %5\nRequest: Skip trial "
+                  "and buy full license\n"
+    )
                   .arg(name, email, serial, secret, QString::number(totalProfiles));
   } else if (m_orderOption4->isChecked()) {
     outOption = 4;
@@ -1590,7 +1594,7 @@ deskflow::gui::OrderPrice deskflow::gui::Esp32HidToolsWidget::calculateOrderPric
     else if (totalProfiles == 6)
       price += m_prices.profile_6;
 
-    priceDesc = QString("Bump Profiles to %1 (%2)")
+    priceDesc = QString("Upgrade profiles to %1 (%2)")
                     .arg(totalProfiles)
                     .arg(
                         totalProfiles == 2

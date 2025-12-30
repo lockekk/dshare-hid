@@ -80,6 +80,9 @@ bool LinuxUdevMonitor::startMonitoring()
 
   m_monitoring = true;
   LOG_DEBUG("USB device monitoring started");
+
+  enumerateDevices();
+
   return true;
 }
 

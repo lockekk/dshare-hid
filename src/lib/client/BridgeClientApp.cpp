@@ -5,8 +5,12 @@
 #include "BridgeClientApp.h"
 
 #include "BridgeSocketFactory.h"
+#include "base/Event.h"
+#include "base/EventQueue.h"
 #include "base/Log.h"
+#include "common/ExitCodes.h"
 #include "common/Settings.h"
+#include "deskflow/DeskflowException.h"
 #include "deskflow/Screen.h"
 #include "net/SocketMultiplexer.h"
 #include "platform/bridge/BridgePlatformScreen.h"
@@ -22,6 +26,11 @@ BridgeClientApp::BridgeClientApp(
       m_screenHeight(screenHeight)
 {
   LOG_INFO("BridgeClientApp: initialized for screen=%dx%d", m_screenWidth, m_screenHeight);
+}
+
+void BridgeClientApp::initApp()
+{
+  ClientApp::initApp();
 }
 
 deskflow::Screen *BridgeClientApp::createScreen()
@@ -44,4 +53,22 @@ ISocketFactory *BridgeClientApp::getSocketFactory() const
   // - Reads TLS preference provided by CLI (--secure) from Settings
   // - Uses SecurityLevel::PeerAuth (with fingerprint verification) when TLS is enabled
   return new BridgeSocketFactory(getEvents(), getSocketMultiplexer());
+}
+
+void BridgeClientApp::handleScreenError() const
+{
+  LOG_CRIT("Bridge screen fatal error detected. Exiting for restart.");
+  throw ExitAppException(s_exitFailed);
+}
+
+void BridgeClientApp::handleClientFailed(const Event &e)
+{
+  LOG_WARN("Server connection failed. Exiting for restart.");
+  handleScreenError();
+}
+
+void BridgeClientApp::handleClientDisconnected()
+{
+  LOG_IPC("Server disconnected. Exiting for restart.");
+  handleScreenError();
 }

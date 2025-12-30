@@ -55,10 +55,10 @@ public:
   void closeClientScreen(deskflow::Screen *screen);
   void handleClientRestart(const Event &, EventQueueTimer *vtimer);
   void scheduleClientRestart(double retryTime);
-  void handleClientConnected() const;
-  void handleClientFailed(const Event &e);
-  void handleClientRefused(const Event &e);
-  void handleClientDisconnected();
+  virtual void handleClientConnected() const;
+  virtual void handleClientFailed(const Event &e);
+  virtual void handleClientRefused(const Event &e);
+  virtual void handleClientDisconnected();
   Client *openClient(const std::string &name, const NetworkAddress &address, deskflow::Screen *screen);
   void closeClient(Client *client);
   bool startClient();

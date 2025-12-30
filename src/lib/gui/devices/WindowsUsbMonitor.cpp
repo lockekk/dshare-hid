@@ -135,13 +135,44 @@ QList<UsbDeviceInfo> WindowsUsbMonitor::enumerateDevices()
 {
   QList<UsbDeviceInfo> devices;
 
-  // Use UsbDeviceHelper to get connected devices
-  QMap<QString, QString> connectedDevices = UsbDeviceHelper::getConnectedDevices();
+  // Use UsbDeviceHelper to get connected devices (queryDevice=false to avoid opening ports unnecessarily)
+  QMap<QString, QString> connectedDevices = UsbDeviceHelper::getConnectedDevices(false);
 
   for (auto it = connectedDevices.begin(); it != connectedDevices.end(); ++it) {
     UsbDeviceInfo info;
     info.devicePath = it.key();
-    info.serialNumber = it.value();
+    QString initialSerial = it.value();
+
+    // Check if we already know this device and have a better serial number
+    bool foundCached = false;
+    for (const auto &known : m_lastKnownDevices) {
+      if (known.devicePath == info.devicePath) {
+        // If we have a cached serial and the current scan didn't return a strong one (or returned the same),
+        // reuse the cached one to avoid probing.
+        if (!known.serialNumber.isEmpty() && known.serialNumber != info.devicePath) {
+           info.serialNumber = known.serialNumber;
+           foundCached = true;
+        }
+        break;
+      }
+    }
+
+    if (!foundCached) {
+      // If not cached, or cache was weak, check if the initial scan gave a good serial
+      // (On Windows, getConnectedDevices(false) might return port name as serial if registry lookup fails)
+      if (initialSerial.isEmpty() || initialSerial == info.devicePath || initialSerial.startsWith("COM")) {
+          // Probe the device physically
+          QString probedSerial = UsbDeviceHelper::readSerialNumber(info.devicePath);
+          if (!probedSerial.isEmpty()) {
+              info.serialNumber = probedSerial;
+          } else {
+              info.serialNumber = initialSerial;
+          }
+      } else {
+          info.serialNumber = initialSerial;
+      }
+    }
+
     info.vendorId = UsbDeviceHelper::kEspressifVendorId; // Assume Espressif for now
     info.productId = UsbDeviceHelper::kEspressifProductId;
 

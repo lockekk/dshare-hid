@@ -821,23 +821,13 @@ void EiScreen::handleSystemEvent(const Event &)
       }
       break;
     case EI_EVENT_DISCONNECT:
-      // We're using libei which emulates the various seat/device remove events
-      // so by the time we get here our EiScreen should be in a neutral state.
-      //
-      // We must release the xdg-portal InputCapture in case it is still active
-      // so that the cursor is usable and not stuck on the deskflow server.
-      LOG_WARN("disconnected from eis, will afterwards commence attempt to reconnect");
+      LOG_WARN("disconnected from eis, shutting down gracefully");
       if (m_isPrimary) {
-        LOG_DEBUG("re-allocating portal input capture connection and releasing active captures");
-        if (m_portalInputCapture) {
-          if (m_portalInputCapture->isActive()) {
-            m_portalInputCapture->release();
-          }
-          delete m_portalInputCapture;
-          m_portalInputCapture = new PortalInputCapture(this, this->m_events);
+        if (m_portalInputCapture && m_portalInputCapture->isActive()) {
+          m_portalInputCapture->release();
         }
       }
-      this->handlePortalSessionClosed();
+      this->sendEvent(EventTypes::ScreenError, nullptr);
       break;
     case EI_EVENT_DEVICE_PAUSED:
       LOG_DEBUG("device %s is paused", ei_device_get_name(device));

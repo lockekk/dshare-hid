@@ -56,8 +56,10 @@ private Q_SLOTS:
   void bridgeClientConnectionTimeout(const QString &devicePath);
   void onServerConnectionStateChanged(deskflow::gui::CoreProcess::ConnectionState state);
   void toggleShowBridgeLogs(bool show);
+  void handleSessionStateChanged(bool locked);
 
 private:
+  void processConnectionRequests();
   void loadBridgeClientConfigs();
   void updateBridgeClientDeviceStates();
   void stopBridgeClient(const QString &devicePath);
@@ -109,8 +111,12 @@ private:
   // Bridge client connection timeout timers: device path -> QTimer*
   QMap<QString, QTimer *> m_bridgeClientConnectionTimers;
 
+  // Timer to debounce/delay device scanning when serials are missing
+  QTimer *m_retryScanTimer = nullptr;
+
+  bool m_isSessionLocked = false;
+
   // Log toggle feature
   QAction *m_actionShowBridgeLogs = nullptr;
   bool m_showBridgeLogs = false;
-  QSettings *m_settings = nullptr;
 };
