@@ -63,9 +63,11 @@ QString BridgeClientConfigManager::createDefaultConfig(const QString &serialNumb
   if (!existing.isEmpty()) {
     return existing.first();
   }
-  // Default screen name uses device basename with Bridge- prefix
-  const QString deviceBaseName = QFileInfo(devicePath).fileName();
-  const QString defaultScreenName = QStringLiteral("Bridge-%1").arg(deviceBaseName);
+
+  // Default screen name uses sanitized serial number with Bridge- prefix
+  QString sanitizedSerial = serialNumber;
+  sanitizedSerial.remove(':');
+  const QString defaultScreenName = QStringLiteral("Bridge-%1").arg(sanitizedSerial);
 
   // Sanitize screen name for filesystem usage
   QString sanitizedBaseName = defaultScreenName;
