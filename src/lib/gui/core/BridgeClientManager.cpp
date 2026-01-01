@@ -52,6 +52,14 @@ void BridgeClientManager::setClientDevice(
   }
 }
 
+void BridgeClientManager::setActiveProfile(const QString &configPath, int activeProfile)
+{
+  if (m_clients.contains(configPath)) {
+    m_clients[configPath].activeProfileIndex = activeProfile;
+    Q_EMIT clientUpdated(configPath);
+  }
+}
+
 void BridgeClientManager::removeClientConfig(const QString &configPath)
 {
   if (m_clients.contains(configPath)) {

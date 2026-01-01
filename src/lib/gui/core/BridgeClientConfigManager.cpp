@@ -107,7 +107,7 @@ QString BridgeClientConfigManager::createDefaultConfig(const QString &serialNumb
   config.sync();
 
   LOG_DEBUG("Created default bridge client config: %s", qPrintable(configPath));
-  return configPath;
+  return QFileInfo(configPath).absoluteFilePath();
 }
 
 void BridgeClientConfigManager::removeLegacySecuritySettings(const QString &configPath)
@@ -146,7 +146,7 @@ QStringList BridgeClientConfigManager::getAllConfigFiles()
   // Convert to absolute paths
   QStringList absolutePaths;
   for (const QString &filename : confFiles) {
-    absolutePaths.append(configDir.absoluteFilePath(filename));
+    absolutePaths.append(QFileInfo(configDir.absoluteFilePath(filename)).absoluteFilePath());
   }
 
   return absolutePaths;

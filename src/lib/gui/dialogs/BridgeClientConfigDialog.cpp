@@ -92,9 +92,9 @@ BridgeClientConfigDialog::BridgeClientConfigDialog(
   advancedLayout->addWidget(m_checkAutoConnect);
 
   // Global Bonding Location (Moved from Profile Group)
-  m_checkBondLocation = new QCheckBox(tr("Automatically bond current screen location to active profile"), this);
+  m_checkBondLocation = new QCheckBox(tr("Automatically restore screen location for the active profile"), this);
   m_checkBondLocation->setToolTip(
-      tr("When enabled, the screen location will be saved and restored for the active profile.")
+      tr("When enabled, the saved screen location for the active profile will be restored automatically.")
   );
   advancedLayout->addWidget(m_checkBondLocation);
 
@@ -701,6 +701,7 @@ void BridgeClientConfigDialog::onAccepted()
 
   if (!currentSn.isEmpty()) {
     QStringList allConfigs = BridgeClientConfigManager::getAllConfigFiles();
+    // Check for duplicates
     for (const auto &path : allConfigs) {
       if (QFileInfo(path).absoluteFilePath() == currentFileInfo.absoluteFilePath())
         continue; // Skip self
@@ -712,57 +713,6 @@ void BridgeClientConfigDialog::onAccepted()
         );
         return; // Abort save
       }
-    }
-  }
-
-  // Snapshot Bonding Locations
-  if (auto *mw = qobject_cast<MainWindow *>(parent())) {
-    const auto &config = mw->serverConfig();
-    const auto &screens = config.screens();
-    const int cols = config.numColumns();
-    const QString serverName = config.getServerName();
-
-    int serverIndex = -1;
-    int clientIndex = -1;
-
-    for (int i = 0; i < screens.size(); ++i) {
-      if (serverIndex < 0 && screens[i].name() == serverName)
-        serverIndex = i;
-      if (clientIndex < 0 && screens[i].name() == m_originalScreenName) // Note: uses m_originalScreenName
-        clientIndex = i;
-
-      if (serverIndex >= 0 && clientIndex >= 0)
-        break;
-    }
-
-    bool canBond = (serverIndex >= 0 && clientIndex >= 0 && cols > 0);
-    QPoint relPos(0, 0);
-    if (canBond) {
-      int sx = serverIndex % cols;
-      int sy = serverIndex / cols;
-      int cx = clientIndex % cols;
-      int cy = clientIndex / cols;
-      relPos = QPoint(cx - sx, cy - sy);
-      qInfo() << "[BondingDebug] Snapshot Calculation: Server(" << sx << "," << sy << ") Client(" << cx << "," << cy
-              << ") Rel(" << relPos.x() << "," << relPos.y() << ") Name:" << m_originalScreenName;
-    } else {
-      qWarning() << "[BondingDebug] Cannot bond. ServerIdx:" << serverIndex << "ClientIdx:" << clientIndex
-                 << "Cols:" << cols << "Name:" << m_originalScreenName;
-    }
-
-    // Read active profile index from config (saved by DeskflowHidExtension)
-    int activeProfileIndex = -1;
-    {
-      QSettings wrapperCfg(m_configPath, QSettings::IniFormat);
-      if (wrapperCfg.contains("activeProfileIndex")) {
-        activeProfileIndex = wrapperCfg.value("activeProfileIndex").toInt();
-      }
-    }
-
-    // Save snapshot if bonding is enabled globally
-    if (m_checkBondLocation->isChecked() && canBond && activeProfileIndex >= 0) {
-
-      BridgeClientConfigManager::writeProfileScreenLocation(m_configPath, activeProfileIndex, relPos);
     }
   }
 

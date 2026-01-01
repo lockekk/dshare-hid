@@ -12,6 +12,7 @@
 #include <QTimer>
 #include <memory>
 
+#include "gui/config/ServerConfig.h"
 #include "gui/core/CoreProcess.h"
 #include "gui/devices/UsbDeviceMonitor.h"
 
@@ -44,6 +45,18 @@ public:
 
   void pauseUsbMonitoring();
   void resumeUsbMonitoring();
+
+  /**
+   * @brief Get a map of ScreenName -> ActiveProfileIndex for all available bridge clients
+   * @return QMap<QString, int>
+   */
+  QMap<QString, int> getConnectedClientProfiles() const;
+
+  /**
+   * @brief Update bonded screen locations based on the current server configuration
+   * @param config The current server configuration
+   */
+  void updateBondedScreenLocations(const ServerConfig &config);
 
 public Q_SLOTS:
   void deleteBridgeClientConfig(const QString &configPath);
@@ -101,6 +114,9 @@ private:
 
   // Timer to debounce/delay device scanning when serials are missing
   QTimer *m_retryScanTimer = nullptr;
+
+  // Track pending device creations to prevent duplicates
+  QSet<QString> m_pendingDeviceCreates;
 
   bool m_isSessionLocked = false;
 

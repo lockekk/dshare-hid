@@ -1242,8 +1242,14 @@ void MainWindow::showConfigureServer(const QString &message)
 {
   ServerConfigDialog dialog(this, serverConfig());
   dialog.message(message);
-  if ((dialog.exec() == QDialog::Accepted) && m_coreProcess.isStarted()) {
-    m_coreProcess.restart();
+  if ((dialog.exec() == QDialog::Accepted)) {
+    if (m_deskflowHidExtension) {
+      m_deskflowHidExtension->updateBondedScreenLocations(serverConfig());
+    }
+
+    if (m_coreProcess.isStarted()) {
+      m_coreProcess.restart();
+    }
   }
 }
 
@@ -1311,12 +1317,11 @@ void MainWindow::setHostName()
     if (existingScreen) {
       body = tr("Screen name already exists");
     } else {
-      body =
-          tr("The name you have chosen is invalid.\n\n"
-             "Valid names:\n"
-             "• Use letters and numbers\n"
-             "• May also use _ or -\n"
-             "• Are between 1 and 255 characters");
+      body = tr("The name you have chosen is invalid.\n\n"
+                "Valid names:\n"
+                "• Use letters and numbers\n"
+                "• May also use _ or -\n"
+                "• Are between 1 and 255 characters");
     }
     QMessageBox::information(this, title, body);
     return;

@@ -234,6 +234,15 @@ void DeskflowHidExtension::loadBridgeClientConfigs()
       screenName = tr("Unknown Device");
     }
 
+    // Check for existing widget to avoid duplicates (e.g. if setup run twice)
+    if (m_bridgeClientWidgets.contains(configPath)) {
+      if (auto *existing = m_bridgeClientWidgets.value(configPath)) {
+        // Update properties just in case
+        existing->updateConfig(screenName, configPath);
+        continue;
+      }
+    }
+
     // Create widget (device path is empty initially, will be set when device is detected)
     auto *widget = new BridgeClientWidget(screenName, serialNumber, QString(), configPath, m_mainWindow);
 
@@ -262,6 +271,13 @@ void DeskflowHidExtension::loadBridgeClientConfigs()
     // Register config in manager
     m_bridgeClientManager->addClientConfig(configPath);
     m_bridgeClientManager->setClientDevice(configPath, QString(), serialNumber);
+    {
+      QSettings cfg(configPath, QSettings::IniFormat);
+      int activeProfile = cfg.value("activeProfileIndex", -1).toInt();
+      if (activeProfile >= 0) {
+        m_bridgeClientManager->setActiveProfile(configPath, activeProfile);
+      }
+    }
 
     qDebug() << "Created widget for config:" << configPath << "screenName:" << screenName;
   }
@@ -269,6 +285,7 @@ void DeskflowHidExtension::loadBridgeClientConfigs()
 
 void DeskflowHidExtension::onBridgeDeviceConfigSynced(const QString &configPath, int activeProfile)
 {
+  m_bridgeClientManager->setActiveProfile(configPath, activeProfile);
   applyProfileScreenBonding(configPath, activeProfile);
 }
 
@@ -285,7 +302,6 @@ void DeskflowHidExtension::applyProfileScreenBonding(const QString &configPath, 
   }
 
   if (!bondEnabled) {
-
     return;
   }
 
@@ -306,11 +322,75 @@ void DeskflowHidExtension::applyProfileScreenBonding(const QString &configPath, 
         // No-op, already at correct position
         // The moveScreenRelativeToServer already logs "[Bonding] Screen ... is already at the correct relative
         // position..."
-      } else {
-        qWarning() << "[Bonding] Failed to move screen" << screenName;
       }
-    } else {
-      qWarning() << "[Bonding] MainWindow or ScreenName invalid. Cannot move screen.";
+    }
+  }
+}
+
+void DeskflowHidExtension::updateBondedScreenLocations(const ServerConfig &config)
+{
+  const auto &screens = config.screens();
+  const int cols = config.numColumns();
+  const QString serverName = config.getServerName();
+
+  int serverIndex = -1;
+  int serverX = 0;
+  int serverY = 0;
+
+  // Find server index and coordinates first
+  for (int i = 0; i < screens.size(); ++i) {
+    if (screens[i].name() == serverName) {
+      serverIndex = i;
+      serverX = i % cols;
+      serverY = i / cols;
+      break;
+    }
+  }
+
+  if (serverIndex >= 0 && cols > 0) {
+    for (int i = 0; i < screens.size(); ++i) {
+      const Screen &screen = screens[i];
+      if (screen.name() == serverName || screen.name().isEmpty())
+        continue;
+
+      // Find config path for this screen
+      // PRIORITY: Check connected clients first to ensure we get the path that is actually loaded in memory
+      // (This avoids issues where disk has multiple files e.g. "Bridge-foo.conf" vs "Bridge-foo_.conf")
+      QString configPath;
+      const auto &activePaths = m_bridgeClientManager->configPaths();
+      for (const QString &path : activePaths) {
+        if (BridgeClientConfigManager::readScreenName(path) == screen.name()) {
+          configPath = path;
+          break;
+        }
+      }
+
+      // Fallback: If not found in active clients, look on disk
+      if (configPath.isEmpty()) {
+        configPath = BridgeClientConfigManager::findConfigByScreenName(screen.name());
+      }
+
+      if (configPath.isEmpty()) {
+        // Not a bridge client
+        continue;
+      }
+
+      // Check if this screen is a connected bridge client with a known active profile
+      const auto *clientState = m_bridgeClientManager->clientState(configPath);
+
+      if (!clientState) {
+        qWarning() << "[Bonding] Client state not found for config:" << configPath;
+        continue;
+      }
+
+      // If client is available (connected) and we know its active profile
+      if (clientState->isAvailable && clientState->activeProfileIndex >= 0) {
+        int clientX = i % cols;
+        int clientY = i / cols;
+        QPoint relPos(clientX - serverX, clientY - serverY);
+
+        BridgeClientConfigManager::writeProfileScreenLocation(configPath, clientState->activeProfileIndex, relPos);
+      }
     }
   }
 }
@@ -320,7 +400,6 @@ void DeskflowHidExtension::updateBridgeClientDeviceStates()
 
   // Get all currently connected USB CDC devices with their serial numbers
   QMap<QString, QString> connectedDevices = UsbDeviceHelper::getConnectedDevices();
-  qDebug() << "Found" << connectedDevices.size() << "connected USB CDC device(s)";
 
   QSet<QString> configuredSerialNumbers;
 
@@ -376,7 +455,7 @@ void DeskflowHidExtension::updateBridgeClientDeviceStates()
       // Update manager state since usbDeviceConnected is not called for configured devices
       m_bridgeClientManager->setDeviceAvailable(devicePath, configSerialNumber, true);
 
-      qDebug() << "Device available for config:" << configPath << "device:" << devicePath;
+      m_bridgeClientManager->setDeviceAvailable(devicePath, configSerialNumber, true);
 
       // STARTUP AUTO-CONNECT FIX: Check if we should auto-connect this device found at startup
       bool isBleConnected = false;
@@ -402,8 +481,6 @@ void DeskflowHidExtension::updateBridgeClientDeviceStates()
 
       // Refresh widget
       widget->updateConfig(widget->screenName(), configPath);
-    } else {
-      qDebug() << "Device NOT available for config:" << configPath;
     }
   }
 
@@ -520,7 +597,25 @@ void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
   m_bridgeClientManager->setDeviceAvailable(device.devicePath, serialNumber, true);
 
   // Check if we have any configs for this serial number
-  QStringList matchingConfigs = BridgeClientConfigManager::findConfigsBySerialNumber(serialNumber);
+  QStringList matchingConfigs;
+
+  // FIRST: Check in-memory widgets to avoid disk race condition or duplicates logic
+  for (auto it = m_bridgeClientWidgets.begin(); it != m_bridgeClientWidgets.end(); ++it) {
+    if (it.value() && it.value()->serialNumber() == serialNumber) {
+      matchingConfigs.append(it.key());
+      break;
+    }
+  }
+
+  // Check if we are already creating a config for this serial
+  if (matchingConfigs.isEmpty() && m_pendingDeviceCreates.contains(serialNumber)) {
+    qInfo() << "Device creation already pending for serial:" << serialNumber << ". Ignoring duplicate event.";
+    return;
+  }
+
+  if (matchingConfigs.isEmpty()) {
+    matchingConfigs = BridgeClientConfigManager::findConfigsBySerialNumber(serialNumber);
+  }
 
   // If we found duplicates/multiple configs for the same serial, keep the LATEST/NEWEST one and delete others
   if (matchingConfigs.size() > 1) {
@@ -579,6 +674,7 @@ void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
 
   if (matchingConfigs.isEmpty()) {
     qInfo() << "New device detected, creating default config for serial:" << serialNumber;
+    m_pendingDeviceCreates.insert(serialNumber);
 
     QString handshakeDeviceName;
     bool isBleConnected = false;
@@ -597,7 +693,6 @@ void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
           handshakeDeviceName = QString::fromStdString(transport.deviceConfig().deviceName);
           isBleConnected = transport.deviceConfig().isBleConnected;
           uint8_t currentProfile = transport.deviceConfig().activeProfile;
-          qDebug() << "Device" << device.devicePath << "active profile:" << currentProfile;
           deskflow::bridge::DeviceProfile profile;
           if (transport.getProfile(currentProfile, profile)) {
             // Check if profile is bound to a screen (assuming we have a way to check, otherwise skip)
@@ -619,6 +714,7 @@ void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
     }
 
     if (!validHandshake) {
+      m_pendingDeviceCreates.remove(serialNumber);
       return;
     }
 
@@ -626,6 +722,7 @@ void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
     QString configPath = BridgeClientConfigManager::createDefaultConfig(serialNumber, device.devicePath);
     if (configPath.isEmpty()) {
       qCritical() << "Failed to create config for device:" << serialNumber;
+      m_pendingDeviceCreates.remove(serialNumber);
       return;
     }
 
@@ -665,8 +762,16 @@ void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
     }
     m_bridgeClientWidgets[configPath] = widget;
     m_bridgeClientManager->addClientConfig(configPath);
+    m_pendingDeviceCreates.remove(serialNumber);
     m_bridgeClientManager->setClientDevice(configPath, device.devicePath, serialNumber);
     m_bridgeClientManager->setDeviceAvailable(device.devicePath, serialNumber, true);
+    {
+      QSettings cfg(configPath, QSettings::IniFormat);
+      int activeProfile = cfg.value("activeProfileIndex", -1).toInt();
+      if (activeProfile >= 0) {
+        m_bridgeClientManager->setActiveProfile(configPath, activeProfile);
+      }
+    }
   }
 
   // Found existing config(s) - enable the widget(s)
@@ -687,6 +792,13 @@ void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
           m_bridgeClientManager->addClientConfig(config);
           // Explicitly initialize state with device info
           m_bridgeClientManager->setClientDevice(config, device.devicePath, serialNumber);
+          {
+            QSettings cfg(config, QSettings::IniFormat);
+            int activeProfile = cfg.value("activeProfileIndex", -1).toInt();
+            if (activeProfile >= 0) {
+              m_bridgeClientManager->setActiveProfile(config, activeProfile);
+            }
+          }
 
           // If a process is already running for this config serial, update its mapping to the new config path
           for (const QString &cPath : m_bridgeClientManager->configPaths()) {
@@ -1219,9 +1331,7 @@ void DeskflowHidExtension::deleteBridgeClientConfig(const QString &configPath)
   if (bridgeClientsWidget) {
     gridLayout = bridgeClientsWidget->findChild<QGridLayout *>("gridLayoutBridgeClients");
     if (widget) {
-      if (widget->parentWidget() == bridgeClientsWidget) {
-        gridLayout->removeWidget(widget);
-      }
+      gridLayout->removeWidget(widget);
     }
   }
 
@@ -1295,6 +1405,9 @@ void DeskflowHidExtension::onBridgeProcessActivationStatusDetected(
         cfg.setValue("activeProfileIndex", activeProfile);
         cfg.sync();
       }
+
+      // Sync state to manager
+      m_bridgeClientManager->setActiveProfile(it.key(), activeProfile);
 
       // Apply bonded screen location if available
       applyProfileScreenBonding(it.key(), activeProfile);

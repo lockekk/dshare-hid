@@ -24,6 +24,7 @@ struct BridgeClientState
   bool isAvailable = false;
   bool isManuallyDisconnected = false;
   int connectionAttempts = 0;
+  int activeProfileIndex = -1;
   BridgeClientProcess *process = nullptr;
   QTimer *connectionTimer = nullptr;
 };
@@ -39,6 +40,7 @@ public:
   void addClientConfig(const QString &configPath);
   void removeClientConfig(const QString &configPath);
   void setClientDevice(const QString &configPath, const QString &devicePath, const QString &serialNumber);
+  void setActiveProfile(const QString &configPath, int activeProfile);
 
   void setDeviceAvailable(const QString &devicePath, const QString &serialNumber, bool available);
   void setManuallyDisconnected(const QString &serialNumber, bool disconnected);

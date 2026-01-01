@@ -1621,7 +1621,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation>デバイスが接続されると自動的に Deskflow サーバーに接続します。</translation>
     </message>
     <message>
-        <source>When enabled, the screen location will be saved and restored for the active profile.</source>
+        <source>Automatically restore screen location for the active profile</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1665,7 +1665,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation>有効化</translation>
     </message>
     <message>
-        <source>Automatically bond current screen location to active profile</source>
+        <source>When enabled, the saved screen location for the active profile will be restored automatically.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
