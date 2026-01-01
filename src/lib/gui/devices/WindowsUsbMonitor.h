@@ -17,7 +17,8 @@ namespace deskflow::gui {
  * This implementation monitors USB device plug/unplug events on Windows
  * by creating a hidden window to receive WM_DEVICECHANGE messages.
  */
-class WindowsUsbMonitor : public UsbDeviceMonitor {
+class WindowsUsbMonitor : public UsbDeviceMonitor
+{
   Q_OBJECT
 
 public:
@@ -36,12 +37,12 @@ private:
 
   static LRESULT CALLBACK windowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-  QList<UsbDeviceInfo> m_lastKnownDevices;
+
   HWND m_hwnd = nullptr;
   HDEVNOTIFY m_hDevNotify = nullptr;
   bool m_monitoring = false;
 
-  static WindowsUsbMonitor* s_instance;
+  static WindowsUsbMonitor *s_instance;
 };
 
 } // namespace deskflow::gui

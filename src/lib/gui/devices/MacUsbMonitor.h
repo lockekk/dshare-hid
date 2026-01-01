@@ -58,6 +58,16 @@ private:
 
   // Track connected devices by registry entry ID (or unique ID) to handle removals
   QMap<uint64_t, UsbDeviceInfo> m_connectedDevices;
+
+  struct PendingRetry
+  {
+    io_service_t device = 0;
+    int attempt = 0;
+  };
+  QMap<uint64_t, PendingRetry> m_pendingRetries;
+
+  void scheduleRetry(io_service_t device, uint64_t entryID, int attempt);
+  void executeRetry(uint64_t entryID);
 };
 
 } // namespace deskflow::gui

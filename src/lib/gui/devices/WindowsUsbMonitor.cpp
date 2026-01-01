@@ -68,8 +68,13 @@ bool WindowsUsbMonitor::startMonitoring()
 
   registerDeviceNotification();
 
-  // Store initial device list
-  m_lastKnownDevices = enumerateDevices();
+  registerDeviceNotification();
+
+  // Store initial device list without emitting signals, to match previous behavior
+  QList<UsbDeviceInfo> currentDevices = enumerateDevices();
+  for (const auto &device : currentDevices) {
+    m_devices.insert(device.devicePath, device);
+  }
 
   m_monitoring = true;
   LOG_DEBUG("Windows USB device monitoring started successfully");
@@ -93,6 +98,7 @@ void WindowsUsbMonitor::stopMonitoring()
   }
 
   m_monitoring = false;
+  m_devices.clear();
   LOG_DEBUG("Windows USB device monitoring stopped");
 }
 
@@ -144,16 +150,13 @@ QList<UsbDeviceInfo> WindowsUsbMonitor::enumerateDevices()
     QString initialSerial = it.value();
 
     // Check if we already know this device and have a better serial number
+    // Use base class m_devices for caching
     bool foundCached = false;
-    for (const auto &known : m_lastKnownDevices) {
-      if (known.devicePath == info.devicePath) {
-        // If we have a cached serial and the current scan didn't return a strong one (or returned the same),
-        // reuse the cached one to avoid probing.
-        if (!known.serialNumber.isEmpty() && known.serialNumber != info.devicePath) {
-           info.serialNumber = known.serialNumber;
-           foundCached = true;
-        }
-        break;
+    if (m_devices.contains(info.devicePath)) {
+      const auto &known = m_devices[info.devicePath];
+      if (!known.serialNumber.isEmpty() && known.serialNumber != info.devicePath) {
+        info.serialNumber = known.serialNumber;
+        foundCached = true;
       }
     }
 
@@ -161,15 +164,15 @@ QList<UsbDeviceInfo> WindowsUsbMonitor::enumerateDevices()
       // If not cached, or cache was weak, check if the initial scan gave a good serial
       // (On Windows, getConnectedDevices(false) might return port name as serial if registry lookup fails)
       if (initialSerial.isEmpty() || initialSerial == info.devicePath || initialSerial.startsWith("COM")) {
-          // Probe the device physically
-          QString probedSerial = UsbDeviceHelper::readSerialNumber(info.devicePath);
-          if (!probedSerial.isEmpty()) {
-              info.serialNumber = probedSerial;
-          } else {
-              info.serialNumber = initialSerial;
-          }
-      } else {
+        // Probe the device physically
+        QString probedSerial = UsbDeviceHelper::readSerialNumber(info.devicePath);
+        if (!probedSerial.isEmpty()) {
+          info.serialNumber = probedSerial;
+        } else {
           info.serialNumber = initialSerial;
+        }
+      } else {
+        info.serialNumber = initialSerial;
       }
     }
 
@@ -186,44 +189,7 @@ QList<UsbDeviceInfo> WindowsUsbMonitor::enumerateDevices()
 
 void WindowsUsbMonitor::checkDeviceChanges()
 {
-  QList<UsbDeviceInfo> currentDevices = enumerateDevices();
-
-  // Check for newly connected devices
-  for (const auto &device : currentDevices) {
-    bool wasKnown = false;
-    for (const auto &known : m_lastKnownDevices) {
-      if (device.devicePath == known.devicePath) {
-        wasKnown = true;
-        break;
-      }
-    }
-
-    if (!wasKnown) {
-      LOG_INFO(
-          "WindowsUsbMonitor: Processing added device: %s : %s Path: %s", qPrintable(device.vendorId),
-          qPrintable(device.productId), qPrintable(device.devicePath)
-      );
-      Q_EMIT deviceConnected(device);
-    }
-  }
-
-  // Check for disconnected devices
-  for (const auto &known : m_lastKnownDevices) {
-    bool stillPresent = false;
-    for (const auto &device : currentDevices) {
-      if (device.devicePath == known.devicePath) {
-        stillPresent = true;
-        break;
-      }
-    }
-
-    if (!stillPresent) {
-      LOG_DEBUG("Detected device removal: %s", qPrintable(known.devicePath));
-      Q_EMIT deviceDisconnected(known);
-    }
-  }
-
-  m_lastKnownDevices = currentDevices;
+  processNewDeviceSnapshot(enumerateDevices());
 }
 
 LRESULT CALLBACK WindowsUsbMonitor::windowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)

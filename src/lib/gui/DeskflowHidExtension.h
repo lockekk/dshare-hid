@@ -22,6 +22,9 @@ class UsbDeviceMonitor;
 class BridgeClientWidget;
 } // namespace deskflow::gui
 
+#include "gui/core/BridgeClientManager.h"
+#include "gui/core/BridgeDeviceService.h"
+
 class MainWindow; // The main window class
 class QAction;
 class QSettings;
@@ -51,8 +54,17 @@ private Q_SLOTS:
   void bridgeClientConnectToggled(const QString &devicePath, const QString &configPath, bool shouldConnect);
   void bridgeClientConfigureClicked(const QString &devicePath, const QString &configPath);
 
-  void bridgeClientProcessReadyRead(const QString &devicePath);
-  void bridgeClientProcessFinished(const QString &devicePath, int exitCode, QProcess::ExitStatus exitStatus);
+  // Slots for BridgeClientProcess signals
+  void onBridgeProcessLogAvailable(const QString &devicePath, const QString &line);
+  void onBridgeProcessFinished(const QString &devicePath, int exitCode, QProcess::ExitStatus exitStatus);
+  void onBridgeProcessConnectionEstablished(const QString &devicePath);
+  void onBridgeProcessDeviceNameDetected(const QString &devicePath, const QString &name);
+  void onBridgeProcessActivationStatusDetected(const QString &devicePath, const QString &state, int profileIndex);
+  void onBridgeProcessBleStatusDetected(const QString &devicePath, bool connected);
+  void onBridgeProcessHandshakeFailed(const QString &devicePath, const QString &reason);
+
+  void onBridgeDeviceConfigSynced(const QString &configPath, int activeProfile);
+
   void bridgeClientConnectionTimeout(const QString &devicePath);
   void onServerConnectionStateChanged(deskflow::gui::CoreProcess::ConnectionState state);
   void toggleShowBridgeLogs(bool show);
@@ -65,52 +77,27 @@ private:
   void applyProfileScreenBonding(const QString &configPath, int activeProfile);
   void stopBridgeClient(const QString &devicePath);
   void stopAllBridgeClients();
-  bool applyFirmwareDeviceName(const QString &devicePath, const QString &deviceName);
-  bool isValidDeviceName(const QString &deviceName) const;
-  bool fetchFirmwareDeviceName(const QString &devicePath, QString &outName);
+  void bridgeClientProcessFinished(const QString &devicePath, int exitCode, QProcess::ExitStatus exitStatus);
   bool isServerReady() const;
-  bool
-  syncDeviceConfigFromDevice(const QString &devicePath, const QString &configPath, bool *outIsBleConnected = nullptr);
 
   void handleHandshakeFailure(
       const QString &devicePath, const QString &logReason, const QString &tooltip, const QString &statusTemplate
   );
 
-  bool acquireBridgeSerialLock(const QString &serialNumber, const QString &configPath);
-  void releaseBridgeSerialLock(const QString &serialNumber, const QString &configPath);
   void applySerialGroupLockState(const QString &serialNumber);
 
   MainWindow *m_mainWindow;
 
   deskflow::gui::UsbDeviceMonitor *m_usbDeviceMonitor = nullptr;
+  deskflow::gui::BridgeClientManager *m_bridgeClientManager = nullptr;
+  deskflow::gui::BridgeDeviceService *m_bridgeDeviceService = nullptr;
 
   // Bridge client widgets: config path -> widget
   QMap<QString, deskflow::gui::BridgeClientWidget *> m_bridgeClientWidgets;
 
-  // Track device path -> serial number mapping when devices connect
-  // (needed because sysfs disappears when device disconnects)
-  QMap<QString, QString> m_devicePathToSerialNumber;
-
-  // Track manual disconnect: serial number -> bool
-  QSet<QString> m_manuallyDisconnectedSerials;
-
-  // Track retry count: config path -> count
-  QMap<QString, int> m_connectionAttempts;
-
-  // Serial number -> config path holding the active connection
-  QHash<QString, QString> m_bridgeSerialLocks;
-
   // Track config paths that should be reconnected after server restart
+  // Maps devicePath -> configPath
   QMap<QString, QString> m_resumeConnectionAfterServerRestart;
-
-  // Device path -> config path for currently running bridge client process
-  QHash<QString, QString> m_bridgeClientDeviceToConfig;
-
-  // Bridge client process management: device path -> QProcess*
-  QMap<QString, QProcess *> m_bridgeClientProcesses;
-
-  // Bridge client connection timeout timers: device path -> QTimer*
-  QMap<QString, QTimer *> m_bridgeClientConnectionTimers;
 
   // Timer to debounce/delay device scanning when serials are missing
   QTimer *m_retryScanTimer = nullptr;

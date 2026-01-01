@@ -69,7 +69,7 @@ constexpr size_t kAckHidModeIndex = 7; // Now Profile Info
 constexpr size_t kAckBleConnectionIndex = 8;
 constexpr size_t kAckMinimumPayloadSize = 1 + kAckCoreLen;
 
-constexpr int kHandshakeTimeoutMs = 2000;
+constexpr int kHandshakeTimeoutMs = 200;
 constexpr int kReadPollIntervalMs = 10;
 constexpr int kConfigCommandTimeoutMs = 1000;
 constexpr int kKeepAliveTimeoutMs = 1000;

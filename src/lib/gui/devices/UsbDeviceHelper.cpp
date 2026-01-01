@@ -43,6 +43,7 @@ namespace deskflow::gui {
 namespace {
 
 #ifdef Q_OS_LINUX
+#include <libudev.h>
 QString canonicalUsbDevicePath(const QString &devicePath)
 {
   QFileInfo deviceInfo(devicePath);
@@ -237,32 +238,60 @@ QMap<QString, QString> UsbDeviceHelper::getConnectedDevices(bool queryDevice)
   QMap<QString, QString> devices;
 
 #ifdef Q_OS_LINUX
-  // Scan /dev for ttyACM* devices
-  QDir devDir("/dev");
-  QStringList filters;
-  filters << "ttyACM*";
-  QStringList deviceFiles = devDir.entryList(filters, QDir::System);
-
-  for (const QString &deviceFile : deviceFiles) {
-    QString devicePath = QStringLiteral("/dev/%1").arg(deviceFile);
-
-    if (!isSupportedBridgeDevice(devicePath)) {
-      LOG_DEBUG("Skipping non-bridge CDC device %s", qPrintable(devicePath));
-      continue;
-    }
-
-    QString serialNumber;
-    if (queryDevice) {
-      serialNumber = readSerialNumber(devicePath);
-    }
-
-    if (serialNumber.isEmpty()) {
-      LOG_DEBUG("Device %s has no serial (yet), including for monitoring", qPrintable(devicePath));
-    }
-    devices[devicePath] = serialNumber;
+  // Use libudev to enumerate devices, matching LinuxUdevMonitor's logic
+  struct udev *udevCtx = udev_new();
+  if (!udevCtx) {
+    LOG_WARN("Failed to create udev context for enumeration");
+    // Fallback? Or just return empty.
+    return devices;
   }
 
-  LOG_DEBUG("Found %d connected USB CDC devices", devices.size());
+  struct udev_enumerate *enumerate = udev_enumerate_new(udevCtx);
+  if (enumerate) {
+    udev_enumerate_add_match_subsystem(enumerate, "tty");
+    udev_enumerate_scan_devices(enumerate);
+
+    struct udev_list_entry *deviceList = udev_enumerate_get_list_entry(enumerate);
+    struct udev_list_entry *entry;
+
+    udev_list_entry_foreach(entry, deviceList)
+    {
+      const char *path = udev_list_entry_get_name(entry);
+      struct udev_device *device = udev_device_new_from_syspath(udevCtx, path);
+      if (device) {
+        const char *devNode = udev_device_get_devnode(device);
+        if (devNode) {
+          QString devicePath = QString::fromUtf8(devNode);
+          if (isSupportedBridgeDevice(devicePath)) {
+            QString serialNumber;
+            // On Linux, we can try to read serial from udev attributes directly first
+            // to avoid opening the port (which might be busy)
+            struct udev_device *parent = udev_device_get_parent_with_subsystem_devtype(device, "usb", "usb_device");
+            if (parent) {
+              const char *serial = udev_device_get_sysattr_value(parent, "serial");
+              if (serial) {
+                serialNumber = QString::fromUtf8(serial);
+              }
+            }
+
+            if (queryDevice && serialNumber.isEmpty()) {
+              serialNumber = readSerialNumber(devicePath);
+            }
+
+            if (serialNumber.isEmpty()) {
+              LOG_DEBUG("Device %s has no serial (yet), including for monitoring", qPrintable(devicePath));
+            }
+            devices[devicePath] = serialNumber;
+          }
+        }
+        udev_device_unref(device);
+      }
+    }
+    udev_enumerate_unref(enumerate);
+  }
+  udev_unref(udevCtx);
+
+  LOG_DEBUG("Found %d connected USB CDC devices via libudev", devices.size());
 #elif defined(Q_OS_WIN)
   GUID classGuid = GUID_DEVCLASS_PORTS;
   HDEVINFO deviceInfoSet = SetupDiGetClassDevsW(&classGuid, nullptr, nullptr, DIGCF_PRESENT);

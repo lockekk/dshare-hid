@@ -1,6 +1,12 @@
 set(bridge_sources
     core/BridgeClientConfigManager.cpp
     core/BridgeClientConfigManager.h
+    core/BridgeClientManager.cpp
+    core/BridgeClientManager.h
+    core/BridgeClientProcess.cpp
+    core/BridgeClientProcess.h
+    core/BridgeDeviceService.cpp
+    core/BridgeDeviceService.h
     devices/UsbDeviceMonitor.cpp
     devices/UsbDeviceMonitor.h
     dialogs/BridgeClientConfigDialog.cpp

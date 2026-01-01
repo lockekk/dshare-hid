@@ -219,22 +219,6 @@ File -&gt; Firmware -&gt; Order.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Connection failed. Retrying auto-connect (%1/3)...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Auto-connect failed. Giving up after 3 attempts.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Invalid device name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Invalid characters or length</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Locked</source>
         <translation type="unfinished"></translation>
     </message>
@@ -252,6 +236,14 @@ File -&gt; Firmware -&gt; Order.</source>
     </message>
     <message>
         <source>Device disconnected.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connection failed. Retrying auto-connect (%1/3)...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auto-connect failed. Giving up after 3 attempts.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1747,6 +1739,13 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Portrait</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>deskflow::gui::BridgeDeviceService</name>
+    <message>
+        <source>Failed to open device after retries.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

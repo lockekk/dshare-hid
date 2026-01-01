@@ -164,7 +164,7 @@ void LinuxUdevMonitor::handleUdevEvent()
     if (m_connectedDevices.contains(info.devicePath)) {
       UsbDeviceInfo trackedInfo = m_connectedDevices[info.devicePath];
 
-      LOG_DEBUG(
+      LOG_INFO(
           "USB device event: remove device: %s vendor: %s product: %s", qPrintable(trackedInfo.devicePath),
           qPrintable(trackedInfo.vendorId), qPrintable(trackedInfo.productId)
       );
@@ -172,7 +172,7 @@ void LinuxUdevMonitor::handleUdevEvent()
       m_connectedDevices.remove(info.devicePath);
       Q_EMIT deviceDisconnected(trackedInfo);
     } else {
-      LOG_DEBUG("[UdevMonitor] Remove event for untracked device: %s", qPrintable(info.devicePath));
+      LOG_INFO("[UdevMonitor] Remove event for untracked device: %s", qPrintable(info.devicePath));
     }
   }
 

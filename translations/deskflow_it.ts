@@ -229,11 +229,11 @@ File -&gt; Firmware -&gt; Ordina.</translation>
     </message>
     <message>
         <source>Invalid device name</source>
-        <translation>Nome dispositivo non valido</translation>
+        <translation type="vanished">Nome dispositivo non valido</translation>
     </message>
     <message>
         <source>Invalid characters or length</source>
-        <translation>Caratteri o lunghezza non validi</translation>
+        <translation type="vanished">Caratteri o lunghezza non validi</translation>
     </message>
     <message>
         <source>Locked</source>
@@ -1787,6 +1787,13 @@ Duplicato: %1</translation>
     <message>
         <source>Portrait</source>
         <translation>Verticale</translation>
+    </message>
+</context>
+<context>
+    <name>deskflow::gui::BridgeDeviceService</name>
+    <message>
+        <source>Failed to open device after retries.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

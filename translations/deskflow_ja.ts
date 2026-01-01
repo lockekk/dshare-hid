@@ -229,11 +229,11 @@ File -&gt; Firmware -&gt; Order.</source>
     </message>
     <message>
         <source>Invalid device name</source>
-        <translation>無効なデバイス名</translation>
+        <translation type="vanished">無効なデバイス名</translation>
     </message>
     <message>
         <source>Invalid characters or length</source>
-        <translation>無効な文字または長さ</translation>
+        <translation type="vanished">無効な文字または長さ</translation>
     </message>
     <message>
         <source>Locked</source>
@@ -1788,6 +1788,13 @@ Duplicate: %1</source>
     <message>
         <source>Portrait</source>
         <translation>縦向き</translation>
+    </message>
+</context>
+<context>
+    <name>deskflow::gui::BridgeDeviceService</name>
+    <message>
+        <source>Failed to open device after retries.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
