@@ -64,11 +64,11 @@ void BridgeClientApp::handleScreenError() const
 void BridgeClientApp::handleClientFailed(const Event &e)
 {
   LOG_WARN("Server connection failed. Exiting for restart.");
-  handleScreenError();
+  throw ExitAppException(s_exitFailed);
 }
 
 void BridgeClientApp::handleClientDisconnected()
 {
   LOG_IPC("Server disconnected. Exiting for restart.");
-  handleScreenError();
+  throw ExitAppException(s_exitSuccess);
 }

@@ -14,7 +14,9 @@
 #include <X11/XKBlib.h>
 #elif WINAPI_CARBON
 #include <Carbon/Carbon.h>
+#include <dispatch/dispatch.h>
 #include <platform/OSXAutoTypes.h>
+#include <pthread.h>
 #endif
 
 #include <filesystem>
@@ -39,18 +41,11 @@ void AppUtilUnix::startNode()
   app().startNode();
 }
 
-std::vector<std::string> AppUtilUnix::getKeyboardLayoutList()
+#if WINAPI_CARBON
+static void getMacKeyboardLayouts(void *ctx)
 {
-  std::vector<std::string> layoutLangCodes;
+  auto *layoutLangCodes = static_cast<std::vector<std::string> *>(ctx);
 
-#if WINAPI_XWINDOWS
-  // Check /usr/local first used on bsd and some systems
-  m_evdev = "/usr/local/share/X11/xkb/rules/evdev.xml";
-  if (!std::filesystem::exists(m_evdev))
-    m_evdev = "/usr/share/X11/xkb/rules/evdev.xml";
-  layoutLangCodes = X11LayoutsParser::getX11LanguageList(m_evdev);
-
-#elif WINAPI_CARBON
   CFStringRef keys[] = {kTISPropertyInputSourceCategory};
   CFStringRef values[] = {kTISCategoryKeyboardInputSource};
   AutoCFDictionary dict(
@@ -70,13 +65,33 @@ std::vector<std::string> AppUtilUnix::getKeyboardLayoutList()
 
       std::string langCode(temporaryCString);
       if (langCode.size() == 2 &&
-          std::find(layoutLangCodes.begin(), layoutLangCodes.end(), langCode) == layoutLangCodes.end()) {
-        layoutLangCodes.push_back(langCode);
+          std::find(layoutLangCodes->begin(), layoutLangCodes->end(), langCode) == layoutLangCodes->end()) {
+        layoutLangCodes->push_back(langCode);
       }
 
       // Save only first language code
       break;
     }
+  }
+}
+#endif
+
+std::vector<std::string> AppUtilUnix::getKeyboardLayoutList()
+{
+  std::vector<std::string> layoutLangCodes;
+
+#if WINAPI_XWINDOWS
+  // Check /usr/local first used on bsd and some systems
+  m_evdev = "/usr/local/share/X11/xkb/rules/evdev.xml";
+  if (!std::filesystem::exists(m_evdev))
+    m_evdev = "/usr/share/X11/xkb/rules/evdev.xml";
+  layoutLangCodes = X11LayoutsParser::getX11LanguageList(m_evdev);
+
+#elif WINAPI_CARBON
+  if (pthread_main_np()) {
+    getMacKeyboardLayouts(&layoutLangCodes);
+  } else {
+    dispatch_sync_f(dispatch_get_main_queue(), &layoutLangCodes, getMacKeyboardLayouts);
   }
 #endif
 

@@ -21,6 +21,7 @@
 
 #ifndef _WIN32
 #include <signal.h>
+#include <unistd.h>
 #endif
 
 #if SYSAPI_WIN32
@@ -39,6 +40,10 @@ void showHelp(const CoreArgParser &parser)
 
 int main(int argc, char **argv)
 {
+#if defined(Q_OS_UNIX)
+  signal(SIGPIPE, SIG_IGN);
+#endif
+
 #if SYSAPI_WIN32
   // HACK to make sure settings gets the correct qApp path
   QCoreApplication m(argc, argv);
@@ -49,11 +54,6 @@ int main(int argc, char **argv)
 
   Arch arch;
   arch.init();
-
-#ifndef _WIN32
-  // Prevent process termination on broken pipe (e.g. client disconnects)
-  signal(SIGPIPE, SIG_IGN);
-#endif
 
   Log log;
 
@@ -196,14 +196,23 @@ int main(int argc, char **argv)
 
       LOG_INFO("Screen config from CLI: %dx%d", screenWidth, screenHeight);
 
-      // Create and run bridge client
       int exitCode = s_exitFailed;
-      {
+      try {
         BridgeClientApp app(&events, processName, transport, config, screenWidth, screenHeight);
         exitCode = app.run();
+      } catch (const DeskflowException &e) {
+        LOG_ERR("Bridge client error: %s", e.what());
+        exitCode = s_exitFailed;
+      } catch (const std::exception &e) {
+        LOG_ERR("Bridge client fatal error: %s", e.what());
+        exitCode = s_exitFailed;
+      } catch (...) {
+        LOG_ERR("Bridge client unknown fatal error");
+        exitCode = s_exitFailed;
       }
 
       transport->close();
+      LOG_INFO("BridgeClientApp finished. Exiting main with code: %d", exitCode);
       return exitCode;
     } else {
       // Standard client
