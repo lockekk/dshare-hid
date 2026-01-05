@@ -497,14 +497,16 @@ bool CdcTransport::sendUsbFrame(uint8_t type, uint8_t flags, const uint8_t *payl
     frame.insert(frame.end(), payload, payload + length);
   }
 
-  std::string frameHex = hexDump(frame.data(), frame.size(), 128);
-  if (!frameHex.empty()) {
-    LOG_DEBUG(
-        "CDC: TX frame type=0x%02x flags=0x%02x len=%u bytes=%s%s", type, flags, length, frameHex.c_str(),
-        frame.size() > 128 ? " ..." : ""
-    );
-  } else {
-    LOG_DEBUG("CDC: TX frame type=0x%02x flags=0x%02x len=%u", type, flags, length);
+  if (CLOG->getFilter() >= LogLevel::Debug) {
+    std::string frameHex = hexDump(frame.data(), frame.size(), 128);
+    if (!frameHex.empty()) {
+      LOG_DEBUG(
+          "CDC: TX frame type=0x%02x flags=0x%02x len=%u bytes=%s%s", type, flags, length, frameHex.c_str(),
+          frame.size() > 128 ? " ..." : ""
+      );
+    } else {
+      LOG_DEBUG("CDC: TX frame type=0x%02x flags=0x%02x len=%u", type, flags, length);
+    }
   }
 
   if (!writeAll(frame.data(), frame.size())) {

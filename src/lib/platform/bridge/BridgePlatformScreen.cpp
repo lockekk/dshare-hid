@@ -63,7 +63,6 @@ BridgePlatformScreen::BridgePlatformScreen(
 
   m_lastCdcCommand = std::chrono::steady_clock::now();
 
-  // Read configuration and start keep-alive timer if enabled
   m_bluetoothKeepAliveEnabled = Settings::value(Settings::Bridge::BluetoothKeepAlive).toBool();
   if (m_bluetoothKeepAliveEnabled && m_events != nullptr) {
     LOG_INFO("BridgeScreen: Bluetooth keep-alive enabled, starting timer");
@@ -89,7 +88,6 @@ void *BridgePlatformScreen::getEventTarget() const
 
 bool BridgePlatformScreen::getClipboard(ClipboardID id, IClipboard *clipboard) const
 {
-  // Bridge doesn't support clipboard retrieval
   return false;
 }
 
@@ -114,48 +112,44 @@ void BridgePlatformScreen::reconfigure(uint32_t activeSides)
 
 uint32_t BridgePlatformScreen::activeSides()
 {
-  // Bridge screen is always active on all sides
-  return 0x0F; // All sides
+  return 0x0F;
 }
 
 void BridgePlatformScreen::warpCursor(int32_t x, int32_t y)
 {
   m_cursorX = x;
   m_cursorY = y;
-  // Note: Absolute cursor positioning not sent to firmware bridge
-  // Mobile devices typically use relative movement
+
 }
 
 uint32_t BridgePlatformScreen::registerHotKey(KeyID key, KeyModifierMask mask)
 {
-  // Bridge doesn't support hotkeys
   return 0;
 }
 
 void BridgePlatformScreen::unregisterHotKey(uint32_t id)
 {
-  // Bridge doesn't support hotkeys
+
 }
 
 void BridgePlatformScreen::fakeInputBegin()
 {
-  // No special handling needed
+
 }
 
 void BridgePlatformScreen::fakeInputEnd()
 {
-  // No special handling needed
+
 }
 
 int32_t BridgePlatformScreen::getJumpZoneSize() const
 {
-  return 0; // No jump zones for bridge
+  return 0;
 }
 
 bool BridgePlatformScreen::isAnyMouseButtonDown(uint32_t &buttonID) const
 {
   if (m_mouseButtons != 0) {
-    // Find first pressed button
     for (uint32_t i = 0; i < 8; i++) {
       if (m_mouseButtons & (1 << i)) {
         buttonID = i + 1;
@@ -198,7 +192,6 @@ void BridgePlatformScreen::fakeMouseMove(int32_t x, int32_t y)
 {
   LOG_DEBUG2("BridgeScreen: mouse move to %d,%d", x, y);
 
-  // Calculate delta from current position
   int32_t dx = x - m_cursorX;
   int32_t dy = y - m_cursorY;
 
@@ -216,21 +209,15 @@ void BridgePlatformScreen::fakeMouseRelativeMove(int32_t dx, int32_t dy) const
     return;
   }
 
-  int64_t remainingDx = dx;
-  int64_t remainingDy = dy;
-  while (remainingDx != 0 || remainingDy != 0) {
-    const int64_t stepDx =
-        std::clamp(remainingDx, static_cast<int64_t>(kMinMouseDelta), static_cast<int64_t>(kMaxMouseDelta));
-    const int64_t stepDy =
-        std::clamp(remainingDy, static_cast<int64_t>(kMinMouseDelta), static_cast<int64_t>(kMaxMouseDelta));
+  int16_t stepDx = std::clamp(
+      static_cast<int64_t>(dx), static_cast<int64_t>(kMinMouseDelta), static_cast<int64_t>(kMaxMouseDelta)
+  );
+  int16_t stepDy = std::clamp(
+      static_cast<int64_t>(dy), static_cast<int64_t>(kMinMouseDelta), static_cast<int64_t>(kMaxMouseDelta)
+  );
 
-    if (!sendMouseMoveEvent(static_cast<int16_t>(stepDx), static_cast<int16_t>(stepDy))) {
-      LOG_ERR("BridgeScreen: failed to send mouse move");
-      break;
-    }
-
-    remainingDx -= stepDx;
-    remainingDy -= stepDy;
+  if (!sendMouseMoveEvent(stepDx, stepDy)) {
+    LOG_ERR("BridgeScreen: failed to send mouse move");
   }
 }
 
@@ -251,26 +238,24 @@ void BridgePlatformScreen::fakeMouseWheel(int32_t, int32_t yDelta) const
 
 void BridgePlatformScreen::resetMouseAccumulator() const
 {
-  // Mouse movement is delivered immediately now.
+
 }
 
 void BridgePlatformScreen::fakeKeyDown(KeyID id, KeyModifierMask mask, KeyButton button, const std::string &)
 {
   LOG_DEBUG("BridgeScreen: key down id=0x%04x button=%d", id, button);
 
-  // Check if this is a media key (consumer control)
   const uint16_t consumerCode = convertMediaKeyToConsumerControl(id);
   if (consumerCode != 0) {
     LOG_DEBUG("BridgeScreen: media key press, consumer code=0x%04x", consumerCode);
     m_pressedButtons.insert(button);
-    m_pressedConsumerControls[button] = consumerCode; // Track for release
+    m_pressedConsumerControls[button] = consumerCode;
     if (!sendConsumerControlEvent(HidEventType::ConsumerControlPress, consumerCode)) {
       LOG_ERR("BridgeScreen: failed to send consumer control press");
     }
     return;
   }
 
-  // Regular keyboard key
   const uint8_t hidKey = convertKey(id, button);
   uint8_t hidModifiers = convertModifiers(mask);
   uint8_t modifierBit = 0;
@@ -347,7 +332,6 @@ bool BridgePlatformScreen::fakeKeyUp(KeyButton button)
 {
   LOG_DEBUG("BridgeScreen: key up button=%d", button);
 
-  // Check if this is a consumer control key
   auto it = m_pressedConsumerControls.find(button);
   if (it != m_pressedConsumerControls.end()) {
     const uint16_t consumerCode = it->second;
@@ -360,7 +344,6 @@ bool BridgePlatformScreen::fakeKeyUp(KeyButton button)
     return true;
   }
 
-  // Regular keyboard key
   uint8_t hidKey = 0;
   uint8_t modifierBit = 0;
   if (auto infoIt = m_buttonToActiveKey.find(button); infoIt != m_buttonToActiveKey.end()) {
@@ -388,14 +371,12 @@ void BridgePlatformScreen::fakeAllKeysUp()
 {
   LOG_DEBUG("BridgeScreen: all keys up");
 
-  // Release all consumer control keys
   for (const auto &[button, consumerCode] : m_pressedConsumerControls) {
     if (!sendConsumerControlEvent(HidEventType::ConsumerControlRelease, consumerCode)) {
       LOG_ERR("BridgeScreen: failed to send consumer control release for 0x%04x", consumerCode);
     }
   }
 
-  // Release all keyboard keys
   for (const auto &[button, state] : m_buttonToActiveKey) {
     if (state.modifierBit != 0) {
       m_currentHidModifiers &= ~state.modifierBit;
@@ -414,22 +395,21 @@ void BridgePlatformScreen::fakeAllKeysUp()
 
 void BridgePlatformScreen::updateKeyMap()
 {
-  // No native key map available for bridge mode
+
 }
 
 void BridgePlatformScreen::updateKeyState()
 {
-  // Bridge relies on internal state tracking only
+
 }
 
 void BridgePlatformScreen::setHalfDuplexMask(KeyModifierMask)
 {
-  // Half-duplex toggles not applicable
+
 }
 
 bool BridgePlatformScreen::fakeCtrlAltDel()
 {
-  // Allow normal processing; bridge does not synthesize CAD
   return false;
 }
 
@@ -489,44 +469,43 @@ bool BridgePlatformScreen::canLeave()
 void BridgePlatformScreen::leave()
 {
   LOG_DEBUG("BridgeScreen: leave");
-  fakeAllKeysUp(); // Release all keys when leaving
+  fakeAllKeysUp();
 }
 
 bool BridgePlatformScreen::setClipboard(ClipboardID id, const IClipboard *clipboard)
 {
-  // Clipboard is discarded per plan
   LOG_DEBUG("BridgeScreen: clipboard discarded");
   return false;
 }
 
 void BridgePlatformScreen::checkClipboards()
 {
-  // No clipboard support
+
 }
 
 void BridgePlatformScreen::openScreensaver(bool notify)
 {
-  // No screensaver support
+
 }
 
 void BridgePlatformScreen::closeScreensaver()
 {
-  // No screensaver support
+
 }
 
 void BridgePlatformScreen::screensaver(bool activate)
 {
-  // No screensaver support
+
 }
 
 void BridgePlatformScreen::resetOptions()
 {
-  // No options to reset
+
 }
 
 void BridgePlatformScreen::setOptions(const OptionsList &options)
 {
-  // No options supported
+
 }
 
 void BridgePlatformScreen::setSequenceNumber(uint32_t seqNum)
@@ -541,36 +520,36 @@ bool BridgePlatformScreen::isPrimary() const
 
 std::string BridgePlatformScreen::getSecureInputApp() const
 {
-  // Bridge doesn't support secure input notification
   return "";
 }
 
 void BridgePlatformScreen::updateButtons()
 {
-  // No button mapping needed for bridge
+
 }
 
 IKeyState *BridgePlatformScreen::getKeyState() const
 {
-  // Bridge doesn't maintain key state in the traditional sense
   return nullptr;
 }
 
 void BridgePlatformScreen::handleSystemEvent(const Event &event)
 {
-  // Bridge doesn't handle system events
+
 }
 
 bool BridgePlatformScreen::sendEvent(HidEventType type, const std::vector<uint8_t> &payload) const
 {
-  std::string payloadHex = hexDump(payload.data(), payload.size(), 48);
-  if (!payloadHex.empty()) {
-    LOG_DEBUG(
-        "BridgeScreen: TX HID type=0x%02x len=%zu payload=%s", static_cast<unsigned>(type), payload.size(),
-        payloadHex.c_str()
-    );
-  } else {
-    LOG_DEBUG("BridgeScreen: TX HID type=0x%02x len=%zu", static_cast<unsigned>(type), payload.size());
+  if (CLOG->getFilter() >= LogLevel::Debug) {
+    std::string payloadHex = hexDump(payload.data(), payload.size(), 48);
+    if (!payloadHex.empty()) {
+      LOG_DEBUG(
+          "BridgeScreen: TX HID type=0x%02x len=%zu payload=%s", static_cast<unsigned>(type), payload.size(),
+          payloadHex.c_str()
+      );
+    } else {
+      LOG_DEBUG("BridgeScreen: TX HID type=0x%02x len=%zu", static_cast<unsigned>(type), payload.size());
+    }
   }
 
   HidEventPacket packet;
@@ -596,7 +575,6 @@ bool BridgePlatformScreen::sendKeyboardEvent(HidEventType type, uint8_t modifier
 
 bool BridgePlatformScreen::sendMouseMoveEvent(int16_t dx, int16_t dy) const
 {
-  // Little-endian serialization of 16-bit values
   uint8_t dxLo = static_cast<uint8_t>(dx & 0xFF);
   uint8_t dxHi = static_cast<uint8_t>((dx >> 8) & 0xFF);
   uint8_t dyLo = static_cast<uint8_t>(dy & 0xFF);
@@ -629,7 +607,6 @@ bool BridgePlatformScreen::sendMouseScrollEvent(int8_t delta) const
 
 bool BridgePlatformScreen::sendConsumerControlEvent(HidEventType type, uint16_t usageCode) const
 {
-  // Consumer control usage codes are 16-bit, sent as little-endian
   const uint8_t lowByte = static_cast<uint8_t>(usageCode & 0xFF);
   const uint8_t highByte = static_cast<uint8_t>((usageCode >> 8) & 0xFF);
 
@@ -740,9 +717,7 @@ uint8_t BridgePlatformScreen::modifierBitForButton(KeyButton button) const
 
 uint16_t BridgePlatformScreen::convertMediaKeyToConsumerControl(KeyID id) const
 {
-  // Media keys use HID Consumer Control usage IDs (16-bit values)
   switch (id) {
-  // Audio controls
   case 0xE0AD: // kKeyAudioMute
     return 0x00E2;
   case 0xE0AE: // kKeyAudioDown
@@ -757,12 +732,10 @@ uint16_t BridgePlatformScreen::convertMediaKeyToConsumerControl(KeyID id) const
     return 0x00B7;
   case 0xE0B3: // kKeyAudioPlay
     return 0x00CD;
-  // Display brightness
   case 0xE0B8: // kKeyBrightnessDown
     return 0x0070;
   case 0xE0B9: // kKeyBrightnessUp
     return 0x006F;
-  // Browser controls
   case 0xE0A6: // kKeyWWWBack
     return 0x0224;
   case 0xE0A7: // kKeyWWWForward
@@ -777,7 +750,6 @@ uint16_t BridgePlatformScreen::convertMediaKeyToConsumerControl(KeyID id) const
     return 0x022A;
   case 0xE0AC: // kKeyWWWHome
     return 0x0223;
-  // Application launchers
   case 0xE0B4: // kKeyAppMail
     return 0x018A;
   case 0xE0B5: // kKeyAppMedia
@@ -798,8 +770,6 @@ uint8_t BridgePlatformScreen::convertKeyID(KeyID id) const
   if (id == '0')
     return 0x27;
 
-  // Map ASCII symbols for shifted/unshifted punctuation.
-  // Map them explicitly to the underlying HID key so Shift works transparently.
   switch (id) {
   case '-':
   case '_':
@@ -1298,7 +1268,6 @@ uint8_t BridgePlatformScreen::activeModifierBitmap() const
 
 uint8_t BridgePlatformScreen::convertButtonID(ButtonID id) const
 {
-  // Return the button ID directly for the firmware
   return static_cast<uint8_t>(id);
 }
 
