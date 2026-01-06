@@ -43,9 +43,6 @@ CMakeFiles/*
 # vscode folder
 /.vscode
 
-# scripts folder
-/scripts
-
 # flatpak
 .flatpak-builder
 repo/*
