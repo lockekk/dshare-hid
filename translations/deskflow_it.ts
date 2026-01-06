@@ -2280,11 +2280,11 @@ Prossimo passo: Flashare firmware per dispositivo. Vai alla scheda &apos;Ordina&
     </message>
     <message>
         <source>Update Available</source>
-        <translation>Aggiornamento Disponibile</translation>
+        <translation type="vanished">Aggiornamento Disponibile</translation>
     </message>
     <message>
         <source>A new version (%1) is available.</source>
-        <translation>Una nuova versione (%1) è disponibile.</translation>
+        <translation type="vanished">Una nuova versione (%1) è disponibile.</translation>
     </message>
     <message>
         <source>Update available (Device version unknown).</source>
@@ -2292,7 +2292,7 @@ Prossimo passo: Flashare firmware per dispositivo. Vai alla scheda &apos;Ordina&
     </message>
     <message>
         <source>A new version (%1) is available. Device version unknown.</source>
-        <translation>Nuova versione (%1) disponibile. Versione dispositivo sconosciuta.</translation>
+        <translation type="vanished">Nuova versione (%1) disponibile. Versione dispositivo sconosciuta.</translation>
     </message>
     <message>
         <source>Device is up to date.</source>
@@ -2300,11 +2300,11 @@ Prossimo passo: Flashare firmware per dispositivo. Vai alla scheda &apos;Ordina&
     </message>
     <message>
         <source>Up to date</source>
-        <translation>Aggiornato</translation>
+        <translation type="vanished">Aggiornato</translation>
     </message>
     <message>
         <source>Device is already running the latest version.</source>
-        <translation>Il dispositivo sta già eseguendo l&apos;ultima versione.</translation>
+        <translation type="vanished">Il dispositivo sta già eseguendo l&apos;ultima versione.</translation>
     </message>
     <message>
         <source>Please select a firmware file.</source>

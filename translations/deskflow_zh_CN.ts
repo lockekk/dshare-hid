@@ -2282,11 +2282,11 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Update Available</source>
-        <translation>有可用更新</translation>
+        <translation type="vanished">有可用更新</translation>
     </message>
     <message>
         <source>A new version (%1) is available.</source>
-        <translation>新版本 (%1) 可用。</translation>
+        <translation type="vanished">新版本 (%1) 可用。</translation>
     </message>
     <message>
         <source>Update available (Device version unknown).</source>
@@ -2294,7 +2294,7 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>A new version (%1) is available. Device version unknown.</source>
-        <translation>新版本 (%1) 可用。设备版本未知。</translation>
+        <translation type="vanished">新版本 (%1) 可用。设备版本未知。</translation>
     </message>
     <message>
         <source>Device is up to date.</source>
@@ -2302,11 +2302,11 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Up to date</source>
-        <translation>已是最新</translation>
+        <translation type="vanished">已是最新</translation>
     </message>
     <message>
         <source>Device is already running the latest version.</source>
-        <translation>设备已运行最新版本。</translation>
+        <translation type="vanished">设备已运行最新版本。</translation>
     </message>
     <message>
         <source>Please select a firmware file.</source>

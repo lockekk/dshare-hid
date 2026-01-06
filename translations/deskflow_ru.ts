@@ -2287,11 +2287,11 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Update Available</source>
-        <translation>Доступно обновление</translation>
+        <translation type="vanished">Доступно обновление</translation>
     </message>
     <message>
         <source>A new version (%1) is available.</source>
-        <translation>Доступна новая версия (%1).</translation>
+        <translation type="vanished">Доступна новая версия (%1).</translation>
     </message>
     <message>
         <source>Update available (Device version unknown).</source>
@@ -2299,7 +2299,7 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>A new version (%1) is available. Device version unknown.</source>
-        <translation>Доступна новая версия (%1). Версия устройства неизвестна.</translation>
+        <translation type="vanished">Доступна новая версия (%1). Версия устройства неизвестна.</translation>
     </message>
     <message>
         <source>Device is up to date.</source>
@@ -2307,11 +2307,11 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Up to date</source>
-        <translation>Обновлено</translation>
+        <translation type="vanished">Обновлено</translation>
     </message>
     <message>
         <source>Device is already running the latest version.</source>
-        <translation>На устройстве уже установлена последняя версия.</translation>
+        <translation type="vanished">На устройстве уже установлена последняя версия.</translation>
     </message>
     <message>
         <source>Please select a firmware file.</source>

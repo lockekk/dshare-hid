@@ -127,8 +127,7 @@ target_link_libraries(
   Qt6::Core
   Qt6::Widgets
   Qt6::Network
-  Qt6::Concurrent
-  Qt6::Svg)
+  Qt6::Concurrent)
 
 if(WIN32)
   target_link_libraries(

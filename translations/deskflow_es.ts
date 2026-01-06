@@ -2212,31 +2212,11 @@ Next step: You need to flash the per-device firmware to use the device. Please s
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Update Available</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>A new version (%1) is available.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Update available (Device version unknown).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>A new version (%1) is available. Device version unknown.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Device is up to date.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Up to date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Device is already running the latest version.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

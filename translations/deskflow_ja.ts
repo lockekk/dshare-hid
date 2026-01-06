@@ -2283,11 +2283,11 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Update Available</source>
-        <translation>更新利用可能</translation>
+        <translation type="vanished">更新利用可能</translation>
     </message>
     <message>
         <source>A new version (%1) is available.</source>
-        <translation>新しいバージョン (%1) が利用可能です。</translation>
+        <translation type="vanished">新しいバージョン (%1) が利用可能です。</translation>
     </message>
     <message>
         <source>Update available (Device version unknown).</source>
@@ -2295,7 +2295,7 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>A new version (%1) is available. Device version unknown.</source>
-        <translation>新しいバージョン (%1) が利用可能です。デバイスバージョンは不明です。</translation>
+        <translation type="vanished">新しいバージョン (%1) が利用可能です。デバイスバージョンは不明です。</translation>
     </message>
     <message>
         <source>Device is up to date.</source>
@@ -2303,11 +2303,11 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Up to date</source>
-        <translation>最新</translation>
+        <translation type="vanished">最新</translation>
     </message>
     <message>
         <source>Device is already running the latest version.</source>
-        <translation>デバイスは既に最新バージョンを実行しています。</translation>
+        <translation type="vanished">デバイスは既に最新バージョンを実行しています。</translation>
     </message>
     <message>
         <source>Please select a firmware file.</source>
