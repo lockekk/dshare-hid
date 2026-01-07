@@ -461,7 +461,7 @@ void Server::switchScreen(BaseClientProxy *dst, int32_t x, int32_t y, bool forSc
     // enter new screen
     m_active->enter(x, y, m_seqNum, m_primaryClient->getToggleMask(), forScreensaver);
 
-    if (m_enableClipboard) {
+    if (m_enableClipboard && !m_active->isBridge()) {
       // send the clipboard data to new active screen
       for (ClipboardID id = 0; id < kClipboardEnd; ++id) {
         // Hackity hackity hack
@@ -1471,11 +1471,16 @@ void Server::onClipboardChanged(const BaseClientProxy *sender, ClipboardID id, u
   // tell all clients except the sender that the clipboard is dirty
   for (ClientList::const_iterator index = m_clients.begin(); index != m_clients.end(); ++index) {
     BaseClientProxy *client = index->second;
+    if (client->isBridge()) {
+      continue;
+    }
     client->setClipboardDirty(id, client != sender);
   }
 
   // send the new clipboard to the active screen
-  m_active->setClipboard(id, &clipboard.m_clipboard);
+  if (!m_active->isBridge()) {
+    m_active->setClipboard(id, &clipboard.m_clipboard);
+  }
 }
 
 void Server::onScreensaver(bool activated)

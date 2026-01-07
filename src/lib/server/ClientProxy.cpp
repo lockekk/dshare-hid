@@ -43,3 +43,13 @@ void *ClientProxy::getEventTarget() const
 {
   return static_cast<IScreen *>(const_cast<ClientProxy *>(this));
 }
+
+bool ClientProxy::isBridge() const
+{
+  return m_isBridge;
+}
+
+void ClientProxy::setBridge(bool isBridge)
+{
+  m_isBridge = isBridge;
+}

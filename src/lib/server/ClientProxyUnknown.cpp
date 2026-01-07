@@ -218,8 +218,18 @@ void ClientProxyUnknown::handleData()
     // remove those later.
     removeHandlers();
 
+    bool isBridge = false;
+    if (name.length() > 8 && name.ends_with("[BRIDGE]")) {
+      isBridge = true;
+      name.resize(name.length() - 8);
+    }
+
     // create client proxy for highest version supported by the client
     initProxy(name, major, minor);
+
+    if (isBridge && m_proxy) {
+      m_proxy->setBridge(true);
+    }
 
     // the proxy is created and now proxy now owns the stream
     LOG_DEBUG1("created proxy for client \"%s\" version %d.%d", name.c_str(), major, minor);

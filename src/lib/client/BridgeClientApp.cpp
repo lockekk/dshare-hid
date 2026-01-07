@@ -19,7 +19,7 @@ BridgeClientApp::BridgeClientApp(
     IEventQueue *events, const QString &processName, std::shared_ptr<deskflow::bridge::CdcTransport> transport,
     const deskflow::bridge::FirmwareConfig &config, int32_t screenWidth, int32_t screenHeight
 )
-    : ClientApp(events, processName),
+    : ClientApp(events, processName + "[BRIDGE]"),
       m_transport(transport),
       m_config(config),
       m_screenWidth(screenWidth),

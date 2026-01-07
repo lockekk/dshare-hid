@@ -76,6 +76,11 @@ public:
   void fileChunkSending(uint8_t mark, char *data, size_t dataSize) override = 0;
   void secureInputNotification(const std::string &app) const override = 0;
 
+  bool isBridge() const override;
+
+  void setBridge(bool isBridge);
+
 private:
   deskflow::IStream *m_stream;
+  bool m_isBridge = false;
 };

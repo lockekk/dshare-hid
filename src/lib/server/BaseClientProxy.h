@@ -51,6 +51,11 @@ public:
     return false;
   }
 
+  virtual bool isBridge() const
+  {
+    return false;
+  }
+
   //@}
 
   // IScreen
