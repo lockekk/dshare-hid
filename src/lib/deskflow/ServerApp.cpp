@@ -1,6 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
+ * SPDX-FileCopyrightText: (C) 2025 - 2026 Deskflow Developers
  * SPDX-FileCopyrightText: (C) 2012 Symless Ltd.
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
@@ -29,10 +29,6 @@
 
 // must be before screen header includes
 #include <QFileInfo>
-
-#if SYSAPI_WIN32
-#include "arch/win32/ArchMiscWindows.h"
-#endif
 
 #if WINAPI_MSWINDOWS
 #include "platform/MSWindowsScreen.h"
@@ -556,7 +552,6 @@ int ServerApp::mainLoop()
   // run event loop.  if startServer() failed we're supposed to retry
   // later.  the timer installed by startServer() will take care of
   // that.
-  DAEMON_RUNNING(true);
 
 #if WINAPI_CARBON
 
@@ -570,8 +565,6 @@ int ServerApp::mainLoop()
 #else
   getEvents()->loop();
 #endif
-
-  DAEMON_RUNNING(false);
 
   // close down
   LOG_DEBUG1("stopping server");
@@ -604,11 +597,6 @@ int ServerApp::runInner(StartupFunc startup)
   return result;
 }
 
-int daemonMainLoopStatic()
-{
-  return ServerApp::instance().daemonMainLoop(0, nullptr);
-}
-
 int ServerApp::start()
 {
   initApp();
@@ -620,13 +608,6 @@ const char *ServerApp::daemonName() const
   if (deskflow::platform::isWindows())
     return "Deskflow Server";
   return "deskflow-server";
-}
-
-const char *ServerApp::daemonInfo() const
-{
-  if (deskflow::platform::isWindows())
-    return "Shares this computers mouse and keyboard with other computers.";
-  return "";
 }
 
 void ServerApp::startNode()

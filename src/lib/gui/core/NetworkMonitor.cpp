@@ -1,6 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
+ * SPDX-FileCopyrightText: (C) 2025 - 2026 Deskflow Developers
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
 
@@ -36,7 +36,7 @@ bool NetworkMonitor::isVirtualInterface(const QString &interfaceName) const
   return virtualPatterns.contains(interfaceName, Qt::CaseInsensitive);
 }
 
-NetworkMonitor::NetworkMonitor(QObject *parent) : QObject(parent), m_checkTimer(new QTimer(this)), m_isMonitoring(false)
+NetworkMonitor::NetworkMonitor(QObject *parent) : QObject(parent), m_checkTimer(new QTimer(this))
 {
   connect(m_checkTimer, &QTimer::timeout, this, &NetworkMonitor::updateNetworkState);
 }
@@ -63,7 +63,7 @@ void NetworkMonitor::stopMonitoring()
   m_isMonitoring = false;
 }
 
-QList<QHostAddress> NetworkMonitor::getAvailableIPv4Addresses() const
+QStringList NetworkMonitor::getAvailableIPv4Addresses() const
 {
   QList<QHostAddress> physicalIPs;
   QList<QHostAddress> virtualIPs;
@@ -82,8 +82,7 @@ QList<QHostAddress> NetworkMonitor::getAvailableIPv4Addresses() const
     for (const auto &entry : addressEntries) {
       const QHostAddress address = entry.ip();
 
-      if (address.protocol() != QAbstractSocket::IPv4Protocol ||
-          address.isInSubnet(QHostAddress::parseSubnet(QStringLiteral("169.254/16"))) || address.isLoopback() ||
+      if (address.protocol() != QAbstractSocket::IPv4Protocol || address.isLinkLocal() || address.isLoopback() ||
           uniqueAddresses.contains(address)) {
         continue;
       }
@@ -98,36 +97,27 @@ QList<QHostAddress> NetworkMonitor::getAvailableIPv4Addresses() const
     }
   }
 
-  auto physicalComparator = [](const QHostAddress &a, const QHostAddress &b) {
-    static const auto localIpFilter = QStringLiteral("192.168/16");
-    if (a.isInSubnet(QHostAddress::parseSubnet(localIpFilter)) !=
-        b.isInSubnet(QHostAddress::parseSubnet(localIpFilter))) {
+  std::ranges::sort(physicalIPs, [](const QHostAddress &a, const QHostAddress &b) {
+    if (a.isPrivateUse() != b.isPrivateUse())
       return true;
-    }
     return a.toIPv4Address() < b.toIPv4Address();
-  };
+  });
 
-  std::sort(physicalIPs.begin(), physicalIPs.end(), physicalComparator);
-
-  std::sort(virtualIPs.begin(), virtualIPs.end(), [](const QHostAddress &a, const QHostAddress &b) {
+  std::ranges::sort(virtualIPs, [](const QHostAddress &a, const QHostAddress &b) {
     return a.toIPv4Address() < b.toIPv4Address();
   });
 
   auto result = physicalIPs;
   result.append(virtualIPs);
 
-  return result;
+  QStringList ipList;
+  for (const auto &host : result) {
+    ipList.append(host.toString());
+  }
+  return ipList;
 }
 
-QHostAddress NetworkMonitor::getSuggestedIPv4Address() const
-{
-  const auto addresses = getAvailableIPv4Addresses();
-  if (addresses.isEmpty())
-    return QHostAddress();
-  return addresses.first();
-}
-
-void NetworkMonitor::setIpAddresses(const QList<QHostAddress> &newAddresses)
+void NetworkMonitor::setIpAddresses(const QStringList &newAddresses)
 {
   if (newAddresses == m_lastAddresses)
     return;

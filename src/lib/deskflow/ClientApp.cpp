@@ -1,6 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
+ * SPDX-FileCopyrightText: (C) 2025 - 2026 Deskflow Developers
  * SPDX-FileCopyrightText: (C) 2012 Symless Ltd.
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
@@ -21,10 +21,6 @@
 #include "net/SocketException.h"
 #include "net/SocketMultiplexer.h"
 #include "net/TCPSocketFactory.h"
-
-#if SYSAPI_WIN32
-#include "arch/win32/ArchMiscWindows.h"
-#endif
 
 #if WINAPI_MSWINDOWS
 #include "platform/MSWindowsScreen.h"
@@ -81,13 +77,6 @@ const char *ClientApp::daemonName() const
   if (deskflow::platform::isWindows())
     return "Deskflow Client";
   return "deskflow-client";
-}
-
-const char *ClientApp::daemonInfo() const
-{
-  if (deskflow::platform::isWindows())
-    return "Allows another computer to share it's keyboard and mouse with this computer.";
-  return "";
 }
 
 deskflow::Screen *ClientApp::createScreen()
@@ -315,7 +304,6 @@ int ClientApp::mainLoop()
   // run event loop.  if startClient() failed we're supposed to retry
   // later.  the timer installed by startClient() will take care of
   // that.
-  DAEMON_RUNNING(true);
 
 #if WINAPI_CARBON
 
@@ -334,19 +322,12 @@ int ClientApp::mainLoop()
   getEvents()->loop();
 #endif
 
-  DAEMON_RUNNING(false);
-
   // close down
   LOG_DEBUG1("stopping client");
   stopClient();
   LOG_NOTE("stopped client");
 
   return s_exitSuccess;
-}
-
-static int daemonMainLoopStatic()
-{
-  return ClientApp::instance().daemonMainLoop(0, nullptr);
 }
 
 int ClientApp::start()

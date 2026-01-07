@@ -30,8 +30,12 @@
 	<true/>
 	<key>NSHumanReadableCopyright</key>
 	<string>@BUNDLE_COPYRIGHT@</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.utilities</string>
 
-	<!-- Don't Allow Os to kill for memory -->
+	<!-- Prevent macOS from terminating during memory pressure -->
+	<key>NSSupportsAutomaticTermination</key>
+	<false/>
 	<key>NSSupportsSuddenTermination</key>
 	<false/>
 
