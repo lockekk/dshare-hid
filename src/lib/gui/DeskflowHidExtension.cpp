@@ -925,8 +925,12 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
     // Check if process is running for THIS specific device path
     if (m_bridgeClientManager->clientStateByDevice(devicePath) &&
         m_bridgeClientManager->clientStateByDevice(devicePath)->process) {
-      qInfo() << "Bridge client process already running for device (skipping connect request):" << devicePath;
-      return;
+      qInfo() << "Bridge client process already running for device (restarting):" << devicePath;
+      stopBridgeClient(devicePath);
+      // Re-apply connected state to widget since stopBridgeClient(false) resets it
+      if (targetWidget) {
+        targetWidget->setConnected(true);
+      }
     }
 
     // CRITICAL: Also check if process is running for this CONFIGURATION (Serial), even if device path differs.
@@ -934,8 +938,12 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
     const auto *configState = m_bridgeClientManager->clientState(configPath);
     if (configState && configState->process) {
       qInfo() << "Bridge client process already running for config" << configPath << "on device"
-              << configState->devicePath << "(skipping connect request for new path" << devicePath << ")";
-      return;
+              << configState->devicePath << "(restarting for new path" << devicePath << ")";
+      stopBridgeClient(configState->devicePath);
+      // Re-apply connected state to widget since stopBridgeClient(false) resets it
+      if (targetWidget) {
+        targetWidget->setConnected(true);
+      }
     }
 
     if (!m_bridgeClientManager->acquireSerialLock(serialNumber, configPath)) {
