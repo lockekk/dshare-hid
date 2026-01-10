@@ -9,9 +9,11 @@
 #include <QDialog>
 #include <QLabel>
 #include <QLineEdit>
+#include <QMessageBox>
 #include <QNetworkReply>
 #include <QPushButton>
 #include <QRadioButton>
+#include <QSplitter>
 #include <QTabWidget>
 #include <QTextEdit>
 #include <cstdint>
@@ -66,7 +68,7 @@ private Q_SLOTS:
 
 private:
   void refreshDeviceState();
-  bool confirmFactoryFlash();
+  bool confirmFactoryFlash(const QString &filename);
   void showFactoryFlashSuccess();
   void fetchPrices();
   void onPriceResponse(QNetworkReply *reply);
@@ -126,6 +128,7 @@ private:
 
   // Common
   QTabWidget *m_tabWidget;
+  QSplitter *m_splitter;
   QTextEdit *m_logOutput;
 
   // State
@@ -134,7 +137,11 @@ private:
   PriceConfig m_prices;
   QNetworkAccessManager *m_network;
 
-  void setupUI();
+  int showWideMessageBox(
+      QMessageBox::Icon icon, const QString &title, const QString &text,
+      QMessageBox::StandardButtons buttons = QMessageBox::Ok
+  );
+
   void log(const QString &message);
   void setControlsEnabled(bool enabled);
   template <typename Function> void runBackgroundTask(Function func);

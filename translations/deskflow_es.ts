@@ -1866,10 +1866,6 @@ Duplicate: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Skip Trial &amp; Purchase Full License</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Upgrade Profile Capacity</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2030,7 +2026,11 @@ Duplicate: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Downloading flash_payloads.fzip...</source>
+        <source>Failed to find factory firmware in the latest release.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Downloading %1...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2047,10 +2047,6 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Starting flashing process...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Device is already in Factory Mode.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2090,9 +2086,15 @@ Duplicate: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>This process permanently converts your ESP32 into a Deskflow-HID device. This is irreversible and blocks non-Deskflow firmware.
-
-Do you want to proceed?</source>
+        <source>Checking for latest factory firmware...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to find factory firmware.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Factory flash cancelled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2114,11 +2116,27 @@ Next step: You need to flash the per-device firmware to use the device. Please s
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Device is in Factory Mode. Fetching PDEK...</source>
+        <source>Skip Trial and Purchase Full License</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Device Info fetched and copied to clipboard.</source>
+        <source>Selected factory firmware: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Selected upgrade firmware: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Found factory firmware: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>About to flash: &lt;b&gt;%1&lt;/b&gt;&lt;br&gt;&lt;br&gt;This action will permanently convert your device to Deskflow-HID. This process is irreversible and precludes non-Deskflow firmware.&lt;br&gt;&lt;br&gt;Proceed?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device is in Factory Mode. Fetching PDEK...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2242,11 +2260,15 @@ Next step: You need to flash the per-device firmware to use the device. Please s
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Failed to download firmware.</source>
+        <source>Failed to find upgrade firmware in the latest release.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Downloaded available firmware. Starting flash...</source>
+        <source>Found upgrade firmware: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to download firmware.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2271,6 +2293,18 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>State: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device Info copied to clipboard:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device Info fetched and copied to clipboard:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Download complete. Starting flash...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

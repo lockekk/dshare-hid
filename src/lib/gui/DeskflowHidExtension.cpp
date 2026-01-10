@@ -179,7 +179,7 @@ void DeskflowHidExtension::openEsp32HidTools()
   stopAllBridgeClients();
   Esp32HidToolsWidget widget(QString(), m_mainWindow);
   widget.setWindowTitle(tr("ESP32 HID Tools"));
-  widget.resize(800, 600);
+  widget.resize(800, 1000);
   widget.exec();
   resumeUsbMonitoring();
   if (m_mainWindow) {
@@ -496,6 +496,9 @@ void DeskflowHidExtension::updateBridgeClientDeviceStates()
     }
 
     if (!configuredSerialNumbers.contains(serialNumber)) {
+      if (m_handshakeFailures.value(serialNumber, 0) >= MAX_HANDSHAKE_FAILURES) {
+        continue;
+      }
       qInfo() << "Found unconfigured device during initial scan:" << devicePath << "serial:" << serialNumber;
 
       UsbDeviceInfo info;
@@ -607,6 +610,11 @@ void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
     }
   }
 
+  // Check if we already tried this serial and it failed handshake
+  if (matchingConfigs.isEmpty() && m_handshakeFailures.value(serialNumber, 0) >= MAX_HANDSHAKE_FAILURES) {
+    return;
+  }
+
   // Check if we are already creating a config for this serial
   if (matchingConfigs.isEmpty() && m_pendingDeviceCreates.contains(serialNumber)) {
     qInfo() << "Device creation already pending for serial:" << serialNumber << ". Ignoring duplicate event.";
@@ -715,8 +723,12 @@ void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
 
     if (!validHandshake) {
       m_pendingDeviceCreates.remove(serialNumber);
+      m_handshakeFailures[serialNumber] = m_handshakeFailures.value(serialNumber, 0) + 1;
       return;
     }
+
+    // Clear handshake failures on successful handshake
+    m_handshakeFailures.remove(serialNumber);
 
     // Create new config
     QString configPath = BridgeClientConfigManager::createDefaultConfig(serialNumber, device.devicePath);

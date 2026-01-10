@@ -22,6 +22,7 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QScrollBar>
+#include <QSplitter>
 #include <QStandardPaths>
 #include <QUrl>
 #include <QUrlQuery>
@@ -52,7 +53,7 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
   } else {
     setWindowTitle(tr("Firmware Flash Tool - %1").arg(devicePath));
   }
-  resize(600, 400);
+  resize(750, 1000);
 
   auto *mainLayout = new QVBoxLayout(this);
 
@@ -68,12 +69,13 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
 
   mainLayout->addLayout(portLayout);
 
-  m_tabWidget = new QTabWidget(this);
+  m_tabWidget = new QTabWidget();
+  m_tabWidget->setMinimumHeight(100); // Allow shrinking below content hint
+  m_tabWidget->setParent(this);
 
   // --- Factory Tab ---
   auto *factoryTab = new QWidget();
   auto *factoryLayout = new QVBoxLayout(factoryTab);
-
   // --- Online Factory Group ---
   auto *onlineFactoryGroup = new QGroupBox(tr("Online"));
   auto *onlineFactoryLayout = new QVBoxLayout(onlineFactoryGroup);
@@ -107,11 +109,11 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
 
   factoryLayout->addWidget(onlineFactoryGroup);
   factoryLayout->addWidget(manualFactoryGroup);
-  factoryLayout->addStretch();
 
-  // Common bottom controls
   m_copyInfoBtn = new QPushButton(tr("Copy Device Secret"));
   factoryLayout->addWidget(m_copyInfoBtn);
+
+  factoryLayout->addStretch();
 
   m_tabWidget->addTab(factoryTab, tr("Factory Mode"));
 
@@ -140,6 +142,7 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
   onlineBtnLayout->addStretch();
 
   onlineLayout->addLayout(verLayout);
+
   onlineLayout->addLayout(onlineBtnLayout);
 
   // --- Manual Upgrade Group ---
@@ -211,6 +214,7 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
 
   // --- Order Tab ---
   auto *orderTab = new QWidget();
+  orderTab->setMinimumHeight(100); // Allow shrinking below content hint
   auto *orderLayout = new QVBoxLayout(orderTab);
 
   // User Info
@@ -228,7 +232,7 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
   auto *optionsLayout = new QVBoxLayout(optionsGroup);
   m_orderOption1 = new QRadioButton(tr("Request 7-Day Free Trial"));
   m_orderOption2 = new QRadioButton(tr("Purchase Full License"));
-  m_orderOption3 = new QRadioButton(tr("Skip Trial & Purchase Full License"));
+  m_orderOption3 = new QRadioButton(tr("Skip Trial and Purchase Full License"));
   m_orderOption4 = new QRadioButton(tr("Upgrade Profile Capacity"));
   optionsLayout->addWidget(m_orderOption1);
   optionsLayout->addWidget(m_orderOption2);
@@ -322,9 +326,25 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
   m_logOutput = new QTextEdit();
   m_logOutput->setReadOnly(true);
 
-  mainLayout->addWidget(m_tabWidget);
-  mainLayout->addWidget(new QLabel(tr("Log Output:")));
-  mainLayout->addWidget(m_logOutput);
+  m_splitter = new QSplitter(Qt::Vertical, this);
+  m_splitter->addWidget(m_tabWidget);
+
+  auto *logContainer = new QWidget();
+  auto *logLayout = new QVBoxLayout(logContainer);
+  logLayout->setContentsMargins(0, 0, 0, 0);
+  logLayout->addWidget(new QLabel(tr("Log Output:")));
+  logLayout->addWidget(m_logOutput);
+  m_splitter->addWidget(logContainer);
+
+  mainLayout->addWidget(m_splitter, 1);
+
+  // Set initial sizes (top tabs small, bottom logs large)
+  m_splitter->setSizes({300, 700});
+  m_splitter->setStretchFactor(0, 0);
+  m_splitter->setStretchFactor(1, 1);
+
+  // Trigger initial layout adjustment
+  onTabChanged(0);
 
   // Connect Signals
   connect(m_tabWidget, &QTabWidget::currentChanged, this, &Esp32HidToolsWidget::onTabChanged);
@@ -491,6 +511,7 @@ void Esp32HidToolsWidget::onBrowseFactory()
       QFileDialog::getOpenFileName(this, tr("Select Factory Package"), QString(), tr("Factory Package (*.fzip)"));
   if (!path.isEmpty()) {
     m_factoryPathEdit->setText(path);
+    log(tr("Selected factory firmware: %1").arg(QFileInfo(path).fileName()));
   }
 }
 
@@ -500,6 +521,7 @@ void Esp32HidToolsWidget::onBrowseUpgrade()
       QFileDialog::getOpenFileName(this, tr("Select Upgrade Package"), QString(), tr("Upgrade Package (*.uzip)"));
   if (!path.isEmpty()) {
     m_upgradePathEdit->setText(path);
+    log(tr("Selected upgrade firmware: %1").arg(QFileInfo(path).fileName()));
   }
 }
 
@@ -532,6 +554,8 @@ void Esp32HidToolsWidget::setControlsEnabled(bool enabled)
   m_refreshPortsBtn->setEnabled(enabled);
   m_portCombo->setEnabled(enabled);
   m_copyInfoBtn->setEnabled(enabled);
+  m_factoryPathEdit->setEnabled(enabled);
+  m_upgradePathEdit->setEnabled(enabled);
 }
 
 // Helper to run tasks in background
@@ -560,7 +584,7 @@ void Esp32HidToolsWidget::onFlashFactory()
   if (portName.isEmpty()) {
     portName = m_portCombo->currentText();
     if (portName.isEmpty() || portName == tr("No devices found")) {
-      QMessageBox::warning(this, tr("Error"), tr("Please select a valid serial port."));
+      showWideMessageBox(QMessageBox::Warning, tr("Error"), tr("Please select a valid serial port."));
       return;
     }
   }
@@ -574,7 +598,7 @@ void Esp32HidToolsWidget::onFlashFactory()
     }
   }
 
-  if (!confirmFactoryFlash()) {
+  if (!confirmFactoryFlash(path.isEmpty() ? "Unknown" : QFileInfo(path).fileName())) {
     return;
   }
 
@@ -636,13 +660,15 @@ void Esp32HidToolsWidget::onFlashFactory()
               log(tr("Device Info: %1").arg(QString::fromStdString(pdekInfo)));
               m_copyInfoBtn->setEnabled(true);
               m_copyInfoBtn->setProperty("deviceInfo", QString::fromStdString(pdekInfo));
-              QMessageBox::information(
-                  this, tr("Info"), tr("Device is already running with factory firmware. Device Info has been fetched.")
+              showWideMessageBox(
+                  QMessageBox::Information, tr("Info"),
+                  tr("Device is already running with factory firmware. Device Info has been fetched.")
               );
             } else {
               log(tr("Failed to fetch PDEK from factory mode device."));
-              QMessageBox::warning(
-                  this, tr("Info"), tr("Device is already running with factory firmware, but failed to fetch PDEK.")
+              showWideMessageBox(
+                  QMessageBox::Warning, tr("Info"),
+                  tr("Device is already running with factory firmware, but failed to fetch PDEK.")
               );
             }
           });
@@ -651,8 +677,8 @@ void Esp32HidToolsWidget::onFlashFactory()
           // App Mode
           QMetaObject::invokeMethod(this, [this]() {
             log(tr("Device is running Application Firmware."));
-            QMessageBox::warning(
-                this, tr("Wrong Mode"),
+            showWideMessageBox(
+                QMessageBox::Warning, tr("Wrong Mode"),
                 tr("Device is running Application Firmware. Please enter Bootloader mode to flash Factory Firmware.")
             );
           });
@@ -667,7 +693,7 @@ void Esp32HidToolsWidget::onFlashFactory()
     if (data.empty()) {
       QMetaObject::invokeMethod(this, [this]() {
         log(tr("Error: No factory package selected."));
-        QMessageBox::warning(this, tr("Error"), tr("Please select a factory package file to flash."));
+        showWideMessageBox(QMessageBox::Warning, tr("Error"), tr("Please select a factory package file to flash."));
       });
       return;
     }
@@ -699,118 +725,164 @@ void Esp32HidToolsWidget::onDownloadAndFlashFactory()
   if (portName.isEmpty()) {
     portName = m_portCombo->currentText();
     if (portName.isEmpty() || portName == tr("No devices found")) {
-      QMessageBox::warning(this, tr("Error"), tr("Please select a valid serial port."));
+      showWideMessageBox(QMessageBox::Warning, tr("Error"), tr("Please select a valid serial port."));
       return;
     }
   }
 
-  if (!confirmFactoryFlash()) {
-    return;
-  }
-
-  log(tr("Starting Download & Flash process..."));
+  log(tr("Checking for latest factory firmware..."));
   std::string port = portName.toStdString();
 
-  auto task = [this, port]() {
-    // 1. Download
+  auto fetchTask = [this, port]() {
     GithubDownloader downloader("deskflow-hid", "deskflow-hid-release");
-    QMetaObject::invokeMethod(this, [this]() { log(tr("Downloading flash_payloads.fzip...")); });
-
-    // Attempt download (in-memory)
-    auto dataOpt = downloader.download_asset_to_memory("flash_payloads.fzip");
-
-    if (!dataOpt.has_value()) {
-      QMetaObject::invokeMethod(this, [this]() {
-        log(tr("Download failed."));
-        QMessageBox::critical(this, tr("Error"), tr("Failed to download firmware. Check internet connection."));
-      });
-      return;
+    auto assets = downloader.get_latest_assets();
+    std::string assetName;
+    for (const auto &asset : assets) {
+      if (asset.name.length() >= 5 && asset.name.compare(asset.name.length() - 5, 5, ".fzip") == 0) {
+        assetName = asset.name;
+        break;
+      }
     }
 
-    std::vector<uint8_t> data = dataOpt.value();
-    QMetaObject::invokeMethod(this, [this, size = data.size()]() {
-      log(tr("Download complete. Size: %1 bytes").arg(size));
-      log(tr("Starting flashing process..."));
-    });
-
-    // 2. Flash
-    std::string info;
-    auto log_cb = [this](const std::string &msg) {
-      QMetaObject::invokeMethod(this, [this, msg]() { log(QString::fromStdString(msg)); });
-    };
-
-    auto progress_cb = [this](size_t written, size_t total, size_t address) {
-      static int last_percent = -1;
-      int percent = (int)(((float)written / total) * 100);
-      if (percent % 10 == 0 && percent != last_percent) {
-        last_percent = percent;
-        QString msg = QString("Flashing... %1%").arg(percent);
-        QMetaObject::invokeMethod(this, [this, msg]() { log(msg); });
+    QMetaObject::invokeMethod(this, [this, assetName, port]() {
+      if (assetName.empty()) {
+        log(tr("Failed to find factory firmware in the latest release."));
+        showWideMessageBox(QMessageBox::Critical, tr("Error"), tr("Failed to find factory firmware."));
+        return;
       }
-    };
 
-    // Pre-check handshake
-    {
-      deskflow::bridge::CdcTransport cdc(QString::fromStdString(port));
-      if (cdc.open(true)) {
-        const auto &config = cdc.deviceConfig();
-        if (config.firmwareMode == deskflow::bridge::FirmwareMode::Factory) {
+      log(tr("Found factory firmware: %1").arg(QString::fromStdString(assetName)));
+
+      if (!confirmFactoryFlash(QString::fromStdString(assetName))) {
+        log(tr("Factory flash cancelled."));
+        return;
+      }
+
+      log(tr("Starting Download & Flash process..."));
+
+      auto flashTask = [this, port, assetName]() {
+        QMetaObject::invokeMethod(this, [this, assetName]() {
+          log(tr("Downloading %1...").arg(QString::fromStdString(assetName)));
+        });
+
+        GithubDownloader downloader("deskflow-hid", "deskflow-hid-release");
+        auto dataOpt = downloader.download_asset_to_memory(assetName);
+        if (!dataOpt.has_value()) {
           QMetaObject::invokeMethod(this, [this]() {
-            log(tr("Device is already in Factory Mode."));
-            QMessageBox::warning(this, tr("Info"), tr("Device is already running factory firmware."));
-          });
-          return;
-        } else {
-          QMetaObject::invokeMethod(this, [this]() {
-            log(tr("Device is in App Mode. Please enter Bootloader Mode."));
-            QMessageBox::warning(this, tr("Wrong Mode"), tr("Please enter Bootloader mode to flash Factory Firmware."));
+            log(tr("Download failed."));
+            showWideMessageBox(
+                QMessageBox::Critical, tr("Error"), tr("Failed to download firmware. Check internet connection.")
+            );
           });
           return;
         }
-      }
-    }
 
-    FlashResult res = flash_factory(port, data, info, progress_cb, log_cb);
+        std::vector<uint8_t> data = dataOpt.value();
+        QMetaObject::invokeMethod(this, [this, dataSize = data.size()]() {
+          log(tr("Download complete. Size: %1 bytes").arg(dataSize));
+          log(tr("Starting flashing process..."));
+        });
 
-    QMetaObject::invokeMethod(this, [this, res, info]() {
-      if (res == FlashResult::OK) {
-        log(tr("Flash Success!"));
-        log(tr("Device Info: %1").arg(QString::fromStdString(info)));
-        m_copyInfoBtn->setEnabled(true);
-        m_copyInfoBtn->setProperty("deviceInfo", QString::fromStdString(info));
-        showFactoryFlashSuccess();
-      } else {
-        QString errorMsg = QString::fromStdString(flashResultToString(res));
-        log(tr("Flash failed, %1").arg(errorMsg));
-        QMessageBox::critical(this, tr("Error"), tr("Flash failed, %1").arg(errorMsg));
-      }
+        // 2. Flash
+        std::string info;
+        auto log_cb = [this](const std::string &msg) {
+          QMetaObject::invokeMethod(this, [this, msg]() { log(QString::fromStdString(msg)); });
+        };
+
+        auto progress_cb = [this](size_t written, size_t total, size_t address) {
+          static int last_percent = -1;
+          int percent = (int)(((float)written / total) * 100);
+          if (percent % 10 == 0 && percent != last_percent) {
+            last_percent = percent;
+            QString msg = QString("Flashing... %1%").arg(percent);
+            QMetaObject::invokeMethod(this, [this, msg]() { log(msg); });
+          }
+        };
+
+        // Pre-check handshake
+        {
+          deskflow::bridge::CdcTransport cdc(QString::fromStdString(port));
+          if (cdc.open(true)) {
+            const auto &config = cdc.deviceConfig();
+            if (config.firmwareMode == deskflow::bridge::FirmwareMode::Factory) {
+              QMetaObject::invokeMethod(this, [this]() {
+                showWideMessageBox(
+                    QMessageBox::Information, tr("Info"), tr("Device is already running factory firmware.")
+                );
+              });
+              return;
+            } else {
+              QMetaObject::invokeMethod(this, [this]() {
+                log(tr("Device is in App Mode. Please enter Bootloader Mode."));
+                showWideMessageBox(
+                    QMessageBox::Warning, tr("Wrong Mode"),
+                    tr("Please enter Bootloader mode to flash Factory Firmware.")
+                );
+              });
+              return;
+            }
+          }
+        }
+
+        FlashResult res = flash_factory(port, data, info, progress_cb, log_cb);
+
+        QMetaObject::invokeMethod(this, [this, res, info]() {
+          if (res == FlashResult::OK) {
+            log(tr("Flash Success!"));
+            log(tr("Device Info: %1").arg(QString::fromStdString(info)));
+            m_copyInfoBtn->setEnabled(true);
+            m_copyInfoBtn->setProperty("deviceInfo", QString::fromStdString(info));
+            showFactoryFlashSuccess();
+          } else {
+            QString errorMsg = QString::fromStdString(flashResultToString(res));
+            log(tr("Flash failed, %1").arg(errorMsg));
+            showWideMessageBox(QMessageBox::Critical, tr("Error"), tr("Flash failed, %1").arg(errorMsg));
+          }
+        });
+      };
+      runBackgroundTask(flashTask);
     });
   };
-
-  runBackgroundTask(task);
+  runBackgroundTask(fetchTask);
 }
 
-bool Esp32HidToolsWidget::confirmFactoryFlash()
+int Esp32HidToolsWidget::showWideMessageBox(
+    QMessageBox::Icon icon, const QString &title, const QString &text, QMessageBox::StandardButtons buttons
+)
 {
-  const QString message =
-      tr("This process permanently converts your ESP32 into a Deskflow-HID device. "
-         "This is irreversible and blocks non-Deskflow firmware.\n\n"
-         "Do you want to proceed?");
+  QMessageBox msgBox(icon, title, text, buttons, this);
+  // Force the dialog to be 500px wide for readability.
+  // We use a stylesheet to prevent macOS native override of the layout.
+  msgBox.setStyleSheet("QMessageBox { min-width: 500px; }");
+  if (auto *layout = qobject_cast<QGridLayout *>(msgBox.layout())) {
+    auto *spacer = new QSpacerItem(500, 0, QSizePolicy::Fixed, QSizePolicy::Fixed);
+    layout->addItem(spacer, layout->rowCount(), 0, 1, layout->columnCount());
+  }
+  return msgBox.exec();
+}
 
-  QMessageBox::StandardButton reply =
-      QMessageBox::question(this, tr("Confirm Factory Flash"), message, QMessageBox::Yes | QMessageBox::No);
+bool Esp32HidToolsWidget::confirmFactoryFlash(const QString &filename)
+{
+  QString message = tr("About to flash: <b>%1</b><br><br>"
+                       "This action will permanently convert your device to Deskflow-HID. "
+                       "This process is irreversible and precludes non-Deskflow firmware.<br><br>Proceed?")
+                        .arg(filename);
 
-  return (reply == QMessageBox::Yes);
+  return (
+      showWideMessageBox(
+          QMessageBox::Question, tr("Confirm Factory Flash"), message, QMessageBox::Yes | QMessageBox::No
+      ) == QMessageBox::Yes
+  );
 }
 
 void Esp32HidToolsWidget::showFactoryFlashSuccess()
 {
-  QMessageBox::information(
-      this, tr("Success"),
-      tr("Factory firmware flashed successfully.\n\n"
-         "Next step: You need to flash the per-device firmware to use the device. "
-         "Please switch to the 'Order' tab to request it.")
-  );
+  QString msg = tr("Factory firmware flashed successfully.\n\n"
+                   "Next step: You need to flash the per-device firmware to use the device. "
+                   "Please switch to the 'Order' tab to request it.");
+
+  showWideMessageBox(QMessageBox::Information, tr("Success"), msg);
+  m_copyInfoBtn->setFocus();
 }
 
 void Esp32HidToolsWidget::onCopyInfo()
@@ -818,7 +890,8 @@ void Esp32HidToolsWidget::onCopyInfo()
   QString info = m_copyInfoBtn->property("deviceInfo").toString();
   if (!info.isEmpty()) {
     QApplication::clipboard()->setText(info);
-    log(tr("Device Info copied to clipboard."));
+    log(tr("Device Info copied to clipboard:"));
+    log(info);
     return;
   }
 
@@ -827,7 +900,7 @@ void Esp32HidToolsWidget::onCopyInfo()
   if (portName.isEmpty()) {
     portName = m_portCombo->currentText();
     if (portName.isEmpty() || portName == tr("No devices found")) {
-      QMessageBox::warning(this, tr("Error"), tr("Please select a valid serial port."));
+      showWideMessageBox(QMessageBox::Warning, tr("Error"), tr("Please select a valid serial port."));
       return;
     }
   }
@@ -851,23 +924,26 @@ void Esp32HidToolsWidget::onCopyInfo()
         if (res == FlashResult::OK) {
           m_copyInfoBtn->setProperty("deviceInfo", QString::fromStdString(pdekInfo));
           QApplication::clipboard()->setText(QString::fromStdString(pdekInfo));
-          log(tr("Device Info fetched and copied to clipboard."));
-          QMessageBox::information(this, tr("Success"), tr("Device Info copied to clipboard."));
+          log(tr("Device Info fetched and copied to clipboard:"));
+          log(QString::fromStdString(pdekInfo));
+          showWideMessageBox(QMessageBox::Information, tr("Success"), tr("Device Info copied to clipboard."));
         } else {
           log(tr("Failed to fetch PDEK."));
-          QMessageBox::critical(this, tr("Error"), tr("Failed to fetch Device Info."));
+          showWideMessageBox(QMessageBox::Critical, tr("Error"), tr("Failed to fetch Device Info."));
         }
       } else {
         log(tr("Device is not in Factory Mode (Mode: %1).").arg((int)config.firmwareMode));
-        QMessageBox::warning(this, tr("Wrong Mode"), tr("Device must be in Factory Mode to copy Device Info."));
+        showWideMessageBox(
+            QMessageBox::Warning, tr("Wrong Mode"), tr("Device must be in Factory Mode to copy Device Info.")
+        );
       }
     } else {
       log(tr("Handshake complete but no config received."));
-      QMessageBox::warning(this, tr("Error"), tr("Device handshake incomplete."));
+      showWideMessageBox(QMessageBox::Warning, tr("Error"), tr("Device handshake incomplete."));
     }
   } else {
     log(tr("Failed to open device or handshake failed."));
-    QMessageBox::warning(this, tr("Connection Error"), tr("Failed to connect to device."));
+    showWideMessageBox(QMessageBox::Warning, tr("Connection Error"), tr("Failed to connect to device."));
   }
 }
 
@@ -878,7 +954,7 @@ void Esp32HidToolsWidget::onCheckUpgrade()
   if (portName.isEmpty()) {
     portName = m_portCombo->currentText();
     if (portName.isEmpty() || portName == tr("No devices found")) {
-      QMessageBox::warning(this, tr("Error"), tr("Please select a valid serial port."));
+      showWideMessageBox(QMessageBox::Warning, tr("Error"), tr("Please select a valid serial port."));
       return;
     }
   }
@@ -893,7 +969,7 @@ void Esp32HidToolsWidget::onCheckUpgrade()
     if (latestTag.empty()) {
       QMetaObject::invokeMethod(this, [this]() {
         log(tr("Failed to fetch latest version tag from GitHub."));
-        QMessageBox::warning(this, tr("Network Error"), tr("Could not check for updates."));
+        showWideMessageBox(QMessageBox::Warning, tr("Network Error"), tr("Could not check for updates."));
       });
       return;
     }
@@ -999,21 +1075,23 @@ void Esp32HidToolsWidget::onCheckUpgrade()
       if (updateAvailable) {
         if (deviceVer != "Unknown") {
           log(tr("Update available (%1 > %2).").arg(QString::fromStdString(latestTag)).arg(deviceVer));
-          QMessageBox::information(
-              this, tr("Update Available"),
+          showWideMessageBox(
+              QMessageBox::Information, tr("Update Available"),
               tr("A new version (%1) is available.").arg(QString::fromStdString(latestTag))
           );
         } else {
           log(tr("Update available (Device version unknown)."));
-          QMessageBox::information(
-              this, tr("Update Available"),
+          showWideMessageBox(
+              QMessageBox::Information, tr("Update Available"),
               tr("A new version (%1) is available. Device version unknown.").arg(QString::fromStdString(latestTag))
           );
         }
         m_flashOnlineBtn->setEnabled(true);
       } else {
         log(tr("Device is up to date."));
-        QMessageBox::information(this, tr("Up to date"), tr("Device is already running the latest version."));
+        showWideMessageBox(
+            QMessageBox::Information, tr("Up to date"), tr("Device is already running the latest version.")
+        );
         m_flashOnlineBtn->setEnabled(true); // DEBUG: Allow upgrade even if up-to-date
       }
     });
@@ -1026,13 +1104,13 @@ void Esp32HidToolsWidget::onFlashLocal()
 {
   QString path = m_upgradePathEdit->text();
   if (path.isEmpty()) {
-    QMessageBox::warning(this, tr("Error"), tr("Please select a firmware file."));
+    showWideMessageBox(QMessageBox::Warning, tr("Error"), tr("Please select a firmware file."));
     return;
   }
 
   std::vector<uint8_t> data = readFile(path);
   if (data.empty()) {
-    QMessageBox::critical(this, tr("Error"), tr("Failed to read firmware file."));
+    showWideMessageBox(QMessageBox::Critical, tr("Error"), tr("Failed to read firmware file."));
     return;
   }
 
@@ -1050,20 +1128,37 @@ void Esp32HidToolsWidget::onFlashOnline()
 
   auto task = [this]() {
     GithubDownloader downloader("deskflow-hid", "deskflow-hid-release");
-    auto dl = downloader.download_first_asset_by_suffix_to_memory(".uzip");
+    auto assets = downloader.get_latest_assets();
+    std::string assetName;
+    for (const auto &asset : assets) {
+      if (asset.name.length() >= 5 && asset.name.compare(asset.name.length() - 5, 5, ".uzip") == 0) {
+        assetName = asset.name;
+        break;
+      }
+    }
+
+    if (assetName.empty()) {
+      QMetaObject::invokeMethod(this, [this]() {
+        log(tr("Download failed. No .uzip asset found."));
+        showWideMessageBox(QMessageBox::Critical, tr("Error"), tr("Failed to find upgrade firmware in the latest release."));
+      });
+      return;
+    }
+
+    QMetaObject::invokeMethod(this, [this, assetName]() {
+      log(tr("Found upgrade firmware: %1").arg(QString::fromStdString(assetName)));
+      log(tr("Downloading %1...").arg(QString::fromStdString(assetName)));
+    });
+
+    auto dl = downloader.download_asset_to_memory(assetName);
 
     QMetaObject::invokeMethod(this, [this, dl]() {
       if (!dl.has_value()) {
-        log(tr("Download failed. No .uzip asset found."));
-        QMessageBox::critical(this, tr("Error"), tr("Failed to download firmware."));
+        log(tr("Download failed."));
+        showWideMessageBox(QMessageBox::Critical, tr("Error"), tr("Failed to download firmware."));
         return;
       }
-      log(tr("Downloaded available firmware. Starting flash..."));
-      // Since flashFirmware expects data, we need to pass it.
-      // But flashFirmware starts another BG task. We are already in one?
-      // Actually runBackgroundTask just starts a future.
-      // Ideally we shouldn't nest runBackgroundTask calls from within existing task context *if* it blocks UI.
-      // But here we are invoking back to main thread.
+      log(tr("Download complete. Starting flash..."));
       flashFirmware(dl.value());
     });
   };
@@ -1151,21 +1246,20 @@ void Esp32HidToolsWidget::flashFirmware(const std::vector<uint8_t> &firmwareData
       if (res == FlashResult::OK) {
         log_cb_func("Upgrade flash complete.");
         QMetaObject::invokeMethod(this, [this]() {
-          QMessageBox::information(this, tr("Success"), tr("Firmware upgrade successful."));
+          showWideMessageBox(QMessageBox::Information, tr("Success"), tr("Firmware upgrade successful."));
         });
       } else {
         QString errorMsg = QString::fromStdString(flashResultToString(res));
-        log_cb_func(
-            tr("Flash failed, %1").arg(errorMsg).toStdString()
+        log_cb_func(tr("Flash failed, %1").arg(errorMsg).toStdString()
         ); // log_cb takes std::string, but log takes QString. log_cb calls log.
         QMetaObject::invokeMethod(this, [this, errorMsg]() {
-          QMessageBox::critical(this, tr("Error"), tr("Flash failed, %1").arg(errorMsg));
+          showWideMessageBox(QMessageBox::Critical, tr("Error"), tr("Flash failed, %1").arg(errorMsg));
         });
       }
     } catch (const std::exception &e) {
       log_cb_func(std::string("Flash failed: ") + e.what());
       QMetaObject::invokeMethod(this, [this, e]() {
-        QMessageBox::critical(this, tr("Error"), tr("Flash failed: %1").arg(e.what()));
+        showWideMessageBox(QMessageBox::Critical, tr("Error"), tr("Flash failed: %1").arg(e.what()));
       });
     }
   };
@@ -1236,15 +1330,22 @@ void Esp32HidToolsWidget::updateText()
 
 } // namespace deskflow::gui
 
-void deskflow::gui::Esp32HidToolsWidget::setupUI()
-{
-}
-
 void deskflow::gui::Esp32HidToolsWidget::onTabChanged(int index)
 {
-  QTabWidget *tabs = qobject_cast<QTabWidget *>(sender());
-  if (tabs && (tabs->tabText(index) == tr("Activation") || tabs->tabText(index) == tr("Order"))) {
+  if (index < 0)
+    return;
+
+  QString title = m_tabWidget->tabText(index);
+  if (title == tr("Activation") || title == tr("Order")) {
     refreshDeviceState();
+  }
+
+  // Dynamically adjust splitter sizes to avoid scrollbars while maximizing log space
+  // Order tab needs more space (~650px) for full content
+  if (title == tr("Order")) {
+    m_splitter->setSizes({650, 350});
+  } else {
+    m_splitter->setSizes({300, 700});
   }
 }
 
@@ -1370,7 +1471,13 @@ void deskflow::gui::Esp32HidToolsWidget::refreshDeviceState()
                   .arg(result.serial, result.pdek.isEmpty() ? "Unknown" : "Fetched"));
         } else {
           // Conditional UI: Hide activation input if already activated
-          m_groupActivationInput->setVisible(!result.isActivated);
+          // Conditional UI: Hide activation input if already activated AND has more than 2 profiles
+          // (i.e. allow upgrade if profiles == 2)
+          if (!result.isActivated || result.totalProfiles == 2) {
+            m_groupActivationInput->setVisible(true);
+          } else {
+            m_groupActivationInput->setVisible(false);
+          }
           log(tr("Device State Refreshed. Serial: %1, State: %2, Profiles: %3")
                   .arg(result.serial, result.activationState, QString::number(result.totalProfiles)));
         }
@@ -1423,14 +1530,14 @@ void deskflow::gui::Esp32HidToolsWidget::onActivateClicked()
   if (portName.isEmpty()) {
     portName = m_portCombo->currentText();
     if (portName.isEmpty() || portName == tr("No devices found")) {
-      QMessageBox::warning(this, tr("Error"), tr("Please select a valid serial port."));
+      showWideMessageBox(QMessageBox::Warning, tr("Error"), tr("Please select a valid serial port."));
       return;
     }
   }
 
   QString key = m_lineActivationKey->text().trimmed();
   if (key.isEmpty()) {
-    QMessageBox::warning(this, tr("Error"), tr("Please enter an activation key."));
+    showWideMessageBox(QMessageBox::Warning, tr("Error"), tr("Please enter an activation key."));
     return;
   }
 
@@ -1442,7 +1549,7 @@ void deskflow::gui::Esp32HidToolsWidget::onActivateClicked()
     if (cdc.open(false) && cdc.activateDevice(key.toStdString())) {
       QMetaObject::invokeMethod(this, [this]() {
         log(tr("Activation successful!"));
-        QMessageBox::information(this, tr("Success"), tr("Device activated successfully."));
+        showWideMessageBox(QMessageBox::Information, tr("Success"), tr("Device activated successfully."));
         refreshDeviceState(); // Refresh to update UI
       });
     } else {
@@ -1453,7 +1560,7 @@ void deskflow::gui::Esp32HidToolsWidget::onActivateClicked()
       }
       QMetaObject::invokeMethod(this, [this]() {
         log(tr("Activation failed."));
-        QMessageBox::critical(this, tr("Error"), tr("Activation failed."));
+        showWideMessageBox(QMessageBox::Critical, tr("Error"), tr("Activation failed."));
       });
     }
   };
@@ -1466,7 +1573,7 @@ QString deskflow::gui::Esp32HidToolsWidget::composeOrderContent(QString &outPref
   QString email = m_orderEmail->text().trimmed();
 
   if (name.isEmpty() || email.isEmpty()) {
-    QMessageBox::warning(this, tr("Input Required"), tr("Please enter your name and email address."));
+    showWideMessageBox(QMessageBox::Warning, tr("Input Required"), tr("Please enter your name and email address."));
     return QString();
   }
 
@@ -1475,7 +1582,9 @@ QString deskflow::gui::Esp32HidToolsWidget::composeOrderContent(QString &outPref
   int totalProfiles = m_orderTotalProfiles->currentData().toInt();
 
   if (serial == tr("-") || serial.isEmpty()) {
-    QMessageBox::warning(this, tr("Device Error"), tr("Serial number missing. Please check device connection."));
+    showWideMessageBox(
+        QMessageBox::Warning, tr("Device Error"), tr("Serial number missing. Please check device connection.")
+    );
     return QString();
   }
 
@@ -1496,10 +1605,8 @@ QString deskflow::gui::Esp32HidToolsWidget::composeOrderContent(QString &outPref
   } else if (m_orderOption3->isChecked()) {
     outOption = 3;
     outPrefix = "full_license_";
-    content = QString(
-                  "Name: %1\nEmail: %2\nSerial: %3\nDevice Secret: %4\nTotal Profiles: %5\nRequest: Skip trial "
-                  "and buy full license\n"
-    )
+    content = QString("Name: %1\nEmail: %2\nSerial: %3\nDevice Secret: %4\nTotal Profiles: %5\nRequest: Skip trial "
+                      "and buy full license\n")
                   .arg(name, email, serial, secret, QString::number(totalProfiles));
   } else if (m_orderOption4->isChecked()) {
     outOption = 4;
@@ -1508,7 +1615,7 @@ QString deskflow::gui::Esp32HidToolsWidget::composeOrderContent(QString &outPref
         QString("Name: %1\nEmail: %2\nSerial: %3\nTotal Profiles: %4\nRequest: Bump profiles (Already licensed)\n")
             .arg(name, email, serial, QString::number(totalProfiles));
   } else {
-    QMessageBox::warning(this, tr("Selection Required"), tr("Please select one of the order options."));
+    showWideMessageBox(QMessageBox::Warning, tr("Selection Required"), tr("Please select one of the order options."));
     return QString();
   }
 
@@ -1523,8 +1630,9 @@ QString deskflow::gui::Esp32HidToolsWidget::composeOrderContent(QString &outPref
     if (!m_chkManualPayment->isChecked()) {
       QString transId = m_paymentTransId->text().trimmed();
       if (transId.isEmpty()) {
-        QMessageBox::warning(
-            this, tr("Missing Transaction ID"), tr("Please enter your PayPal Transaction ID for verification.")
+        showWideMessageBox(
+            QMessageBox::Warning, tr("Missing Transaction ID"),
+            tr("Please enter your PayPal Transaction ID for verification.")
         );
         return QString();
       }
@@ -1708,12 +1816,15 @@ void deskflow::gui::Esp32HidToolsWidget::onPayNowClicked()
                     .arg(itemName)
                     .arg(refNo);
 
-  if (QMessageBox::question(this, tr("Confirm Payment"), msg) != QMessageBox::Yes) {
+  if (showWideMessageBox(QMessageBox::Question, tr("Confirm Payment"), msg, QMessageBox::Yes | QMessageBox::No) !=
+      QMessageBox::Yes) {
     return;
   }
 
   if (!QDesktopServices::openUrl(url)) {
-    QMessageBox::warning(this, tr("Error"), tr("Failed to open web browser. Please visit PayPal manually."));
+    showWideMessageBox(
+        QMessageBox::Warning, tr("Error"), tr("Failed to open web browser. Please visit PayPal manually.")
+    );
   }
 }
 
@@ -1728,7 +1839,7 @@ void deskflow::gui::Esp32HidToolsWidget::onCopyOrderContent()
 
   QApplication::clipboard()->setText(content);
   log(tr("Order content copied to clipboard."));
-  QMessageBox::information(this, tr("Copied"), tr("Order content successfully copied to clipboard."));
+  showWideMessageBox(QMessageBox::Information, tr("Copied"), tr("Order content successfully copied to clipboard."));
 }
 
 void deskflow::gui::Esp32HidToolsWidget::onEmailOrder()
@@ -1754,7 +1865,7 @@ void deskflow::gui::Esp32HidToolsWidget::onEmailOrder()
     log(tr("Email client opened."));
   } else {
     log(tr("Failed to open email client."));
-    QMessageBox::critical(this, tr("Error"), tr("Failed to open your default email client."));
+    showWideMessageBox(QMessageBox::Critical, tr("Error"), tr("Failed to open your default email client."));
   }
 }
 

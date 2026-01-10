@@ -115,6 +115,12 @@ private:
   // Timer to debounce/delay device scanning when serials are missing
   QTimer *m_retryScanTimer = nullptr;
 
+  // Maximum consecutive handshake failures before giving up on a device
+  static constexpr int MAX_HANDSHAKE_FAILURES = 2;
+
+  // Track handshake failures to limit retries
+  QMap<QString, int> m_handshakeFailures;
+
   // Track pending device creations to prevent duplicates
   QSet<QString> m_pendingDeviceCreates;
 

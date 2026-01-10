@@ -113,7 +113,9 @@ build/bin/Deskflow-HID.app/Contents/MacOS/Deskflow-HID
   ```
 - **Leftover Processes**: If the server won't start, check for hung `deskflow-core` processes:
   ```bash
+  ps -ef | grep deskflow-hid-core | grep -v grep
   pkill -9 -if deskflow-hid
+  pkill -9 -if deskflow-hid-core
   ```
 - **Runtime Errors (dyld / missing core)**:
   - If you see `core server binary does not exist`, ensure you built with `--target Deskflow-HID deskflow-hid-core`.

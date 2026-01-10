@@ -1889,6 +1889,22 @@ Duplicate: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Failed to find factory firmware in the latest release.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Downloading %1...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to find upgrade firmware in the latest release.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Download complete. Starting flash...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Free trial for 7 days</source>
         <translation>7 天免费试用</translation>
     </message>
@@ -1918,7 +1934,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Skip Trial &amp; Purchase Full License</source>
-        <translation>跳过试用并购买完整许可</translation>
+        <translation type="vanished">跳过试用并购买完整许可</translation>
     </message>
     <message>
         <source>Upgrade Profile Capacity</source>
@@ -2094,7 +2110,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Downloading flash_payloads.fzip...</source>
-        <translation>正在下载 flash_payloads.fzip...</translation>
+        <translation type="vanished">正在下载 flash_payloads.fzip...</translation>
     </message>
     <message>
         <source>Download failed.</source>
@@ -2114,7 +2130,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Device is already in Factory Mode.</source>
-        <translation>设备已处于工厂模式。</translation>
+        <translation type="vanished">设备已处于工厂模式。</translation>
     </message>
     <message>
         <source>Device is already running factory firmware.</source>
@@ -2156,7 +2172,7 @@ Duplicate: %1</source>
         <source>This process permanently converts your ESP32 into a Deskflow-HID device. This is irreversible and blocks non-Deskflow firmware.
 
 Do you want to proceed?</source>
-        <translation>此过程将把您的 ESP32 永久转换为 Deskflow-HID 设备。此操作不可逆，并将阻止非 Deskflow 固件。
+        <translation type="vanished">此过程将把您的 ESP32 永久转换为 Deskflow-HID 设备。此操作不可逆，并将阻止非 Deskflow 固件。
 
 您要继续吗？</translation>
     </message>
@@ -2186,7 +2202,7 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Device Info fetched and copied to clipboard.</source>
-        <translation>设备信息已获取并复制到剪贴板。</translation>
+        <translation type="vanished">设备信息已获取并复制到剪贴板。</translation>
     </message>
     <message>
         <source>Failed to fetch PDEK.</source>
@@ -2318,7 +2334,7 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Downloaded available firmware. Starting flash...</source>
-        <translation>已下载可用固件。开始烧录...</translation>
+        <translation type="vanished">已下载可用固件。开始烧录...</translation>
     </message>
     <message>
         <source>Flashing... %1%</source>
@@ -2347,6 +2363,50 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     <message>
         <source>State: %1</source>
         <translation>状态：%1</translation>
+    </message>
+    <message>
+        <source>Skip Trial and Purchase Full License</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Selected factory firmware: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Selected upgrade firmware: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Checking for latest factory firmware...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to find factory firmware.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Found factory firmware: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Factory flash cancelled.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>About to flash: &lt;b&gt;%1&lt;/b&gt;&lt;br&gt;&lt;br&gt;This action will permanently convert your device to Deskflow-HID. This process is irreversible and precludes non-Deskflow firmware.&lt;br&gt;&lt;br&gt;Proceed?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device Info copied to clipboard:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device Info fetched and copied to clipboard:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Found upgrade firmware: %1</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>State: Factory Mode (Cannot Activate)</source>
