@@ -48,10 +48,15 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
 {
   // We can't log "this" easily unless we cast or format it, but usually devicePath suffices
   LOG_INFO("GUI of tool widget is created for device: %s", qPrintable(devicePath));
+  QString title = tr("Firmware Flash Tool");
+#ifdef DESKFLOW_USE_GENERATED_PUBLIC_KEY
+  title += " (Dev build)";
+#endif
+
   if (devicePath.isEmpty()) {
-    setWindowTitle(tr("Firmware Flash Tool"));
+    setWindowTitle(title);
   } else {
-    setWindowTitle(tr("Firmware Flash Tool - %1").arg(devicePath));
+    setWindowTitle(QString("%1 - %2").arg(title, devicePath));
   }
   resize(750, 1000);
 
@@ -1140,7 +1145,9 @@ void Esp32HidToolsWidget::onFlashOnline()
     if (assetName.empty()) {
       QMetaObject::invokeMethod(this, [this]() {
         log(tr("Download failed. No .uzip asset found."));
-        showWideMessageBox(QMessageBox::Critical, tr("Error"), tr("Failed to find upgrade firmware in the latest release."));
+        showWideMessageBox(
+            QMessageBox::Critical, tr("Error"), tr("Failed to find upgrade firmware in the latest release.")
+        );
       });
       return;
     }

@@ -157,6 +157,9 @@ bool Settings::isBridgeClientMode()
 
 QVariant Settings::defaultValue(const QString &key)
 {
+  if (key == Gui::SymbolicTrayIcon)
+    return false;
+
   if (m_defaultFalseValues.contains(key))
     return false;
 
