@@ -64,38 +64,50 @@ echo "Running linuxdeploy..."
 # We need to export plugin location
 export LINUXDEPLOY_PLUGIN_QT_PATH="$LINUXDEPLOY_PLUGIN_QT"
 
-# Auto-detect custom Qt from CMakeCache OR use system qmake
-CACHE_FILE="$BUILD_DIR/CMakeCache.txt"
-QT_PLUGINS_DIR=""
+# Allow user to override QMAKE
+if [ -z "$QMAKE" ]; then
+    # Auto-detect custom Qt from CMakeCache OR use system qmake
+    CACHE_FILE="$BUILD_DIR/CMakeCache.txt"
+    QT_PLUGINS_DIR=""
 
-if [ -f "$CACHE_FILE" ]; then
-    QT_DIR_LINE=$(grep "Qt6_DIR:PATH=" "$CACHE_FILE" | head -n 1)
-    if [ ! -z "$QT_DIR_LINE" ]; then
-        QT_CMAKE_PATH="${QT_DIR_LINE#*=}"
-        # Try to find qmake relative to CMake path first (custom install)
-        QT_ROOT=$(dirname "$(dirname "$(dirname "$QT_CMAKE_PATH")")")
-        QT_BIN="$QT_ROOT/bin"
+    if [ -f "$CACHE_FILE" ]; then
+        QT_DIR_LINE=$(grep "Qt6_DIR:PATH=" "$CACHE_FILE" | head -n 1)
+        if [ ! -z "$QT_DIR_LINE" ]; then
+            QT_CMAKE_PATH="${QT_DIR_LINE#*=}"
+            echo "CMake used Qt from: $QT_CMAKE_PATH"
 
-        if [ -x "$QT_BIN/qmake" ]; then
-             export QMAKE="$QT_BIN/qmake"
-        elif [ -x "$QT_BIN/qmake6" ]; then
-             export QMAKE="$QT_BIN/qmake6"
-        else
-             # Fallback to system qmake if not found in derived path
-             if command -v qmake6 &> /dev/null; then
-                 export QMAKE="qmake6"
-             elif command -v qmake &> /dev/null; then
-                 export QMAKE="qmake"
-             fi
+            # Try to find qmake relative to CMake path first (custom install)
+            # Layout 1 (Custom): .../gcc_64/lib/cmake/Qt6 -> .../gcc_64 is root -> bin/qmake
+            # Layout 2 (System): .../usr/lib/x86_64-linux-gnu/cmake/Qt6 -> .../usr/lib is root -> ../bin/qmake (usr/bin)
+
+            QT_ROOT=$(dirname "$(dirname "$(dirname "$QT_CMAKE_PATH")")")
+
+            if [ -x "$QT_ROOT/bin/qmake" ]; then
+                 export QMAKE="$QT_ROOT/bin/qmake"
+            elif [ -x "$QT_ROOT/bin/qmake6" ]; then
+                 export QMAKE="$QT_ROOT/bin/qmake6"
+            elif [ -x "$QT_ROOT/../bin/qmake" ]; then
+                 export QMAKE=$(realpath "$QT_ROOT/../bin/qmake")
+            elif [ -x "$QT_ROOT/../bin/qmake6" ]; then
+                 export QMAKE=$(realpath "$QT_ROOT/../bin/qmake6")
+            else
+                 # Fallback to system qmake if not found in derived path
+                 echo "Warning: Could not derive qmake from CMake path. Falling back to system discovery."
+                 if command -v qmake6 &> /dev/null; then
+                     export QMAKE="qmake6"
+                 elif command -v qmake &> /dev/null; then
+                     export QMAKE="qmake"
+                 fi
+            fi
         fi
+    else
+        # Fallback if no CMakeCache
+         if command -v qmake6 &> /dev/null; then
+             export QMAKE="qmake6"
+         elif command -v qmake &> /dev/null; then
+             export QMAKE="qmake"
+         fi
     fi
-else
-    # Fallback if no CMakeCache
-     if command -v qmake6 &> /dev/null; then
-         export QMAKE="qmake6"
-     elif command -v qmake &> /dev/null; then
-         export QMAKE="qmake"
-     fi
 fi
 
 if [ ! -z "$QMAKE" ]; then
