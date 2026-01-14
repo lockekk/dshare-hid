@@ -423,7 +423,7 @@ void Esp32HidToolsWidget::fetchPrices()
 #ifdef DESKFLOW_PRICES_URL
   QString urlStr = DESKFLOW_PRICES_URL;
 #else
-  QString urlStr = "https://raw.githubusercontent.com/deskflow-hid/deskflow-hid-release/main/prices.json";
+  QString urlStr = "https://raw.githubusercontent.com/lockekk/deskflow-hid-release/main/prices.json";
 #endif
 
   LOG_INFO("Fetching prices from: %s", qPrintable(urlStr));
@@ -882,9 +882,10 @@ bool Esp32HidToolsWidget::confirmFactoryFlash(const QString &filename)
 
 void Esp32HidToolsWidget::showFactoryFlashSuccess()
 {
-  QString msg = tr("Factory firmware flashed successfully.\n\n"
-                   "Next step: You need to flash the per-device firmware to use the device. "
-                   "Please switch to the 'Order' tab to request it.");
+  QString msg =
+      tr("Factory firmware flashed successfully.\n\n"
+         "Next step: You need to flash the per-device firmware to use the device. "
+         "Please switch to the 'Order' tab to request it.");
 
   showWideMessageBox(QMessageBox::Information, tr("Success"), msg);
   m_copyInfoBtn->setFocus();
@@ -1080,24 +1081,12 @@ void Esp32HidToolsWidget::onCheckUpgrade()
       if (updateAvailable) {
         if (deviceVer != "Unknown") {
           log(tr("Update available (%1 > %2).").arg(QString::fromStdString(latestTag)).arg(deviceVer));
-          showWideMessageBox(
-              QMessageBox::Information, tr("Update Available"),
-              tr("A new version (%1) is available.").arg(QString::fromStdString(latestTag))
-          );
         } else {
           log(tr("Update available (Device version unknown)."));
-          showWideMessageBox(
-              QMessageBox::Information, tr("Update Available"),
-              tr("A new version (%1) is available. Device version unknown.").arg(QString::fromStdString(latestTag))
-          );
         }
         m_flashOnlineBtn->setEnabled(true);
       } else {
         log(tr("Device is up to date."));
-        showWideMessageBox(
-            QMessageBox::Information, tr("Up to date"), tr("Device is already running the latest version.")
-        );
-        m_flashOnlineBtn->setEnabled(true); // DEBUG: Allow upgrade even if up-to-date
       }
     });
   };
@@ -1257,7 +1246,8 @@ void Esp32HidToolsWidget::flashFirmware(const std::vector<uint8_t> &firmwareData
         });
       } else {
         QString errorMsg = QString::fromStdString(flashResultToString(res));
-        log_cb_func(tr("Flash failed, %1").arg(errorMsg).toStdString()
+        log_cb_func(
+            tr("Flash failed, %1").arg(errorMsg).toStdString()
         ); // log_cb takes std::string, but log takes QString. log_cb calls log.
         QMetaObject::invokeMethod(this, [this, errorMsg]() {
           showWideMessageBox(QMessageBox::Critical, tr("Error"), tr("Flash failed, %1").arg(errorMsg));
@@ -1612,8 +1602,10 @@ QString deskflow::gui::Esp32HidToolsWidget::composeOrderContent(QString &outPref
   } else if (m_orderOption3->isChecked()) {
     outOption = 3;
     outPrefix = "full_license_";
-    content = QString("Name: %1\nEmail: %2\nSerial: %3\nDevice Secret: %4\nTotal Profiles: %5\nRequest: Skip trial "
-                      "and buy full license\n")
+    content = QString(
+                  "Name: %1\nEmail: %2\nSerial: %3\nDevice Secret: %4\nTotal Profiles: %5\nRequest: Skip trial "
+                  "and buy full license\n"
+    )
                   .arg(name, email, serial, secret, QString::number(totalProfiles));
   } else if (m_orderOption4->isChecked()) {
     outOption = 4;

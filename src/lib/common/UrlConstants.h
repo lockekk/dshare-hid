@@ -15,7 +15,7 @@ const auto kOrgDomain = QStringLiteral("deskflow.org");
 
 const auto kUrlSourceQuery = QStringLiteral("source=gui");
 const auto kUrlApp = QStringLiteral("https://%1").arg(kOrgDomain);
-const auto kUrlHelp = QStringLiteral("https://github.com/deskflow-hid/deskflow-hid/issues");
+const auto kUrlHelp = QStringLiteral("https://github.com/lockekk/deskflow-hid/issues");
 const auto kUrlDownload = QStringLiteral("%1/download?%2").arg(kUrlApp, kUrlSourceQuery);
 
 const auto kUrlUpdateCheck = QStringLiteral("https://api.%1/version").arg(kOrgDomain);

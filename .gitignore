@@ -47,4 +47,8 @@ CMakeFiles/*
 .flatpak-builder
 repo/*
 *.flatpak
+build_deploy
+build_openssl_universal
+rel_openssl_universal
+tools
 

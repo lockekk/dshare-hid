@@ -39,7 +39,7 @@ on run argv
         set toolbar visible to false
         set pathbar visible to false
         set the bounds to { 200, 120, 800, 520 }
-        set position of item "Deskflow.app" to { 144, 190 }
+        set position of item "Deskflow-HID.app" to { 144, 190 }
         set position of item "Applications" to { 455, 190 }
       end tell
     close

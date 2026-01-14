@@ -9,6 +9,7 @@
 
 #include <QDialogButtonBox>
 #include <QDir>
+#include <QEvent>
 #include <QFileInfo>
 #include <QFormLayout>
 #include <QGridLayout>
@@ -115,8 +116,11 @@ BridgeClientConfigDialog::BridgeClientConfigDialog(
 
 void BridgeClientConfigDialog::setupProfileUI(QVBoxLayout *mainLayout)
 {
-  m_profileGroup = new QGroupBox(tr("Profiles (Device)"), this);
+  m_profileGroup = new QGroupBox(this);
   auto *groupLayout = new QVBoxLayout(m_profileGroup);
+
+  m_lblProfileGroupTitle = new QLabel(tr("Profiles (Device)"), this);
+  groupLayout->addWidget(m_lblProfileGroupTitle);
 
   // Tab Bar for Profile Selection
   m_profileTabBar = new QTabBar(this);
@@ -133,9 +137,6 @@ void BridgeClientConfigDialog::setupProfileUI(QVBoxLayout *mainLayout)
   detailsLayout->setLabelAlignment(Qt::AlignLeft | Qt::AlignVCenter);
   // QFormLayout manages columns automatically
 
-  int row = 0; // Not strictly needed for QFormLayout addRow, but keeping if logic relied on it (it didn't really)
-
-  // Helper for consistent zero-margin HBoxes
   auto createHBox = []() {
     auto *l = new QHBoxLayout();
     l->setContentsMargins(0, 0, 0, 0);
@@ -143,10 +144,12 @@ void BridgeClientConfigDialog::setupProfileUI(QVBoxLayout *mainLayout)
     return l;
   };
 
-  // Helper to add complex rows as a container widget
-  auto addComplexRow = [&](const QString &label, QLayout *layout) {
+  auto addComplexRow = [&](const QString &label, QLayout *layout, int minHeight = 0) {
     auto *container = new QWidget(this);
     container->setLayout(layout);
+    if (minHeight > 0) {
+      container->setMinimumHeight(minHeight);
+    }
     detailsLayout->addRow(label, container);
   };
 
@@ -164,7 +167,7 @@ void BridgeClientConfigDialog::setupProfileUI(QVBoxLayout *mainLayout)
     l->addWidget(m_editProfileName);
     l->addStretch();
 
-    addComplexRow(tr("Hostname:"), l);
+    addComplexRow(tr("Hostname:"), l, 36);
 
     connect(m_editProfileName, &QLineEdit::textChanged, this, [this](const QString &text) {
       if (m_selectedProfileIndex >= 0 && m_profileCache.contains(m_selectedProfileIndex)) {
@@ -207,33 +210,60 @@ void BridgeClientConfigDialog::setupProfileUI(QVBoxLayout *mainLayout)
   resLayout->addWidget(m_spinProfileHeight);
   resLayout->addStretch();
 
-  addComplexRow(tr("Resolution:"), resLayout);
+  addComplexRow(tr("Resolution:"), resLayout, 36);
 
   // Orientation
   m_profileOrientationGroup = new QButtonGroup(this);
-  m_radioProfileLandscape = new QRadioButton(this);
-  m_radioProfileLandscape->setIcon(QIcon(kLandscapeIconPath));
-  m_radioProfileLandscape->setIconSize(QSize(32, 32));
-  m_radioProfileLandscape->setToolTip(tr("Landscape"));
-  m_radioProfileLandscape->setMinimumHeight(32);
 
+  // Portrait (Left)
   m_radioProfilePortrait = new QRadioButton(this);
-  m_radioProfilePortrait->setIcon(QIcon(kPortraitIconPath));
-  m_radioProfilePortrait->setIconSize(QSize(32, 32));
   m_radioProfilePortrait->setToolTip(tr("Portrait"));
-  m_radioProfilePortrait->setMinimumHeight(32);
-  m_radioProfilePortrait->setMinimumWidth(180); // Fix alignment for 2nd column
+
+  m_lblIconPortrait = new QLabel(this);
+  m_lblIconPortrait->setPixmap(QIcon(kPortraitIconPath).pixmap(24, 24));
+  m_lblIconPortrait->setFixedSize(24, 24);
+  m_lblIconPortrait->setCursor(Qt::PointingHandCursor);
+  m_lblIconPortrait->installEventFilter(this);
+
+  // Landscape (Right)
+  m_radioProfileLandscape = new QRadioButton(this);
+  m_radioProfileLandscape->setToolTip(tr("Landscape"));
+
+  m_lblIconLandscape = new QLabel(this);
+  m_lblIconLandscape->setPixmap(QIcon(kLandscapeIconPath).pixmap(24, 24));
+  m_lblIconLandscape->setFixedSize(24, 24);
+  m_lblIconLandscape->setCursor(Qt::PointingHandCursor);
+  m_lblIconLandscape->installEventFilter(this);
 
   m_profileOrientationGroup->addButton(m_radioProfilePortrait, 0);
   m_profileOrientationGroup->addButton(m_radioProfileLandscape, 1);
 
   {
     auto *l = createHBox();
-    l->addWidget(m_radioProfilePortrait);
+
+    auto *pContainer = new QWidget(this);
+    pContainer->setFixedWidth(180);
+    auto *pl = createHBox();
+    pl->addWidget(m_radioProfilePortrait);
+    pl->addWidget(m_lblIconPortrait);
+    pl->addStretch();
+    pContainer->setLayout(pl);
+
+    l->addWidget(pContainer);
+
     l->addSpacing(10);
+
+    // Landscape Group (Right)
     l->addWidget(m_radioProfileLandscape);
+    l->addWidget(m_lblIconLandscape);
+
     l->addStretch();
-    addComplexRow(tr("Orientation:"), l);
+
+    auto *container = new QWidget(this);
+    container->setLayout(l);
+    container->setMinimumHeight(36); // Verify enough vertical space for the whole row
+
+    detailsLayout->addRow(tr("Orientation:"), container);
   }
 
   // HID Mode
@@ -252,7 +282,7 @@ void BridgeClientConfigDialog::setupProfileUI(QVBoxLayout *mainLayout)
     l->addSpacing(10);
     l->addWidget(m_radioProfileMouseOnly);
     l->addStretch();
-    addComplexRow(tr("HID Mode:"), l);
+    addComplexRow(tr("HID Mode:"), l, 36);
   }
 
   // Scroll Settings
@@ -352,14 +382,14 @@ void BridgeClientConfigDialog::loadConfig()
 void BridgeClientConfigDialog::loadProfilesFromDevice()
 {
   if (m_devicePath.isEmpty()) {
-    m_profileGroup->setTitle(tr("Profiles (Device Not Connected)"));
+    m_lblProfileGroupTitle->setText(tr("Profiles (Device Not Connected)"));
     m_profileGroup->setEnabled(false);
     return;
   }
 
   deskflow::bridge::CdcTransport transport(m_devicePath);
   if (!transport.open()) {
-    m_profileGroup->setTitle(tr("Profiles (Failed to Open Device)"));
+    m_lblProfileGroupTitle->setText(tr("Profiles (Failed to Open Device)"));
     m_profileGroup->setEnabled(false);
     return;
   }
@@ -781,4 +811,19 @@ QString BridgeClientConfigDialog::screenName() const
 bool BridgeClientConfigDialog::invertScroll() const
 {
   return m_checkInvertScroll->isChecked();
+}
+
+bool BridgeClientConfigDialog::eventFilter(QObject *watched, QEvent *event)
+{
+  if (event->type() == QEvent::MouseButtonRelease) {
+    if (watched == m_lblIconLandscape) {
+      m_radioProfileLandscape->setChecked(true);
+      return true;
+    }
+    if (watched == m_lblIconPortrait) {
+      m_radioProfilePortrait->setChecked(true);
+      return true;
+    }
+  }
+  return QDialog::eventFilter(watched, event);
 }

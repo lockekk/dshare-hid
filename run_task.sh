@@ -3,8 +3,28 @@
 # Deskflow Task Runner
 
 # Ensure required environment variables are set
-if [ -z "$CMAKE_PREFIX_PATH" ] && [ "$(uname)" = "Darwin" ]; then
-    echo "Warning: CMAKE_PREFIX_PATH is not set. Build may fail."
+if [ "$(uname)" = "Darwin" ]; then
+    if [ -z "$CMAKE_PREFIX_PATH" ]; then
+        # Try to auto-detect Qt (common versions)
+        if [ -d "$HOME/Qt/6.10.1/macos" ]; then
+            export CMAKE_PREFIX_PATH="$HOME/Qt/6.10.1/macos"
+            echo "Auto-detected Qt at: $CMAKE_PREFIX_PATH"
+        elif [ -d "$HOME/Qt/6.8.0/macos" ]; then
+            export CMAKE_PREFIX_PATH="$HOME/Qt/6.8.0/macos"
+            echo "Auto-detected Qt at: $CMAKE_PREFIX_PATH"
+        else
+            echo "Warning: CMAKE_PREFIX_PATH is not set. Build may fail."
+        fi
+    fi
+
+    if [ -z "$CMAKE_OSX_SYSROOT" ]; then
+         if command -v xcrun &> /dev/null; then
+            export CMAKE_OSX_SYSROOT="$(xcrun --show-sdk-path)"
+            echo "Auto-detected macOS SDK at: $CMAKE_OSX_SYSROOT"
+        else
+             echo "Warning: CMAKE_OSX_SYSROOT is not set."
+        fi
+    fi
 fi
 
 process_input() {
@@ -101,6 +121,150 @@ process_input() {
                 fi
             fi
             ;;
+        5|"build deploy")
+            if [ "$os_name" = "Darwin" ]; then
+                echo "--- PREPARING MACOS DEPLOY (UNIVERSAL) ---"
+
+                # Check for signing identity
+                TARGET_IDENTITY="-"
+                if [ -n "$APPLE_CODESIGN_DEV" ]; then
+                    TARGET_IDENTITY="$APPLE_CODESIGN_DEV"
+                    echo "Signing with Identity: $TARGET_IDENTITY"
+                else
+                    echo "No signing identity found (APPLE_CODESIGN_DEV not set). Using ad-hoc signing."
+                fi
+
+                # Check for Universal OpenSSL
+                UNIVERSAL_SSL_DIR="$(pwd)/rel_openssl_universal/universal"
+                CMAKE_OPENSSL_ARG=""
+                if [ -d "$UNIVERSAL_SSL_DIR" ]; then
+                    echo "Using Universal OpenSSL at: $UNIVERSAL_SSL_DIR"
+                    CMAKE_OPENSSL_ARG="-DOPENSSL_ROOT_DIR=$UNIVERSAL_SSL_DIR -DOPENSSL_USE_STATIC_LIBS=TRUE"
+                else
+                    echo "Warning: Universal OpenSSL not found at $UNIVERSAL_SSL_DIR."
+                    echo "Universal build might fail if system OpenSSL is single-arch."
+                fi
+
+                # Use a separate build directory for deployment to avoid polluting dev build
+                BUILD_DIR="build_deploy"
+                rm -rf "$BUILD_DIR"
+
+                echo "--- CONFIGURING ---"
+                cmake -B "$BUILD_DIR" -G "Unix Makefiles" \
+                  -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" \
+                  -DCMAKE_OSX_SYSROOT="$CMAKE_OSX_SYSROOT" \
+                  -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
+                  -DCMAKE_BUILD_TYPE=Release \
+                  -DSKIP_BUILD_TESTS=ON \
+                  -DBUILD_TESTS=OFF \
+                  -DDESKFLOW_PAYPAL_ACCOUNT="$PAYPAL_ACCOUNT" \
+                  -DDESKFLOW_PAYPAL_URL="$PAYPAL_URL" \
+                  -DDESKFLOW_CDC_PUBLIC_KEY="$DESKFLOW_CDC_PUBLIC_KEY" \
+                  -DDESKFLOW_ESP32_ENCRYPTION_KEY="$DESKFLOW_ESP32_ENCRYPTION_KEY" \
+                  -DOSX_CODESIGN_IDENTITY="$TARGET_IDENTITY" \
+                  $CMAKE_OPENSSL_ARG
+
+                if [ $? -ne 0 ]; then
+                    echo "Configuration failed."
+                    return 1
+                fi
+
+                echo "--- BUILDING ---"
+                cmake --build "$BUILD_DIR" -j$(sysctl -n hw.ncpu 2>/dev/null || nproc)
+
+                if [ $? -ne 0 ]; then
+                    echo "Build failed."
+                    return 1
+                fi
+
+                echo "--- PACKAGING (DMG) ---"
+                # CPack needs to run from within the build directory
+                (cd "$BUILD_DIR" && cpack)
+
+                if [ $? -eq 0 ]; then
+                    echo "Deployment package created successfully in $BUILD_DIR"
+                else
+                    echo "Packaging failed."
+                    return 1
+                fi
+                return 0
+            fi
+
+            if ! command -v flatpak-builder &> /dev/null; then
+                echo "Error: flatpak-builder is not installed."
+                return 1
+            fi
+
+            echo "--- PREPARING FLATPAK BUILD (RELEASE) ---"
+
+            # Extract directories for keys to mount them into the sandbox
+            ENC_KEY_DIR=$(dirname "${DESKFLOW_ESP32_ENCRYPTION_KEY}")
+            CDC_KEY_DIR=$(dirname "${DESKFLOW_CDC_PUBLIC_KEY}")
+
+            sed "/-DCMAKE_BUILD_TYPE=Release/a \\
+      - \"-DDESKFLOW_PAYPAL_ACCOUNT=${PAYPAL_ACCOUNT}\"\\
+      - \"-DDESKFLOW_PAYPAL_URL=${PAYPAL_URL}\"\\
+      - \"-DDESKFLOW_CDC_PUBLIC_KEY=${DESKFLOW_CDC_PUBLIC_KEY}\"\\
+      - \"-DDESKFLOW_ESP32_ENCRYPTION_KEY=${DESKFLOW_ESP32_ENCRYPTION_KEY}\"\\
+      - \"-DSKIP_BUILD_TESTS=ON\"\\
+      - \"-DBUILD_TESTS=OFF\"" \
+            deploy/linux/flatpak/org.deskflow.deskflow.yml > org.deskflow.deskflow.generated.yml
+
+            # 1. Fix patch file path
+            sed -i "s|path: libportal-qt69.patch|path: deploy/linux/flatpak/libportal-qt69.patch|g" org.deskflow.deskflow.generated.yml
+
+            # 2. Fix source dir path (../../../ becomes .)
+            sed -i "s|path: ../../../|path: .|g" org.deskflow.deskflow.generated.yml
+
+            # 3. Inject build-time filesystem permissions for keys
+            # We insert 'build-options' -> 'build-args' after the module name 'deskflow'
+            sed -i "/- name: deskflow/a \\    build-options:\\n      build-args:\\n        - \"--filesystem=${ENC_KEY_DIR}\"\\n        - \"--filesystem=${CDC_KEY_DIR}\"" org.deskflow.deskflow.generated.yml
+
+            echo "Generated manifest: org.deskflow.deskflow.generated.yml"
+
+            echo "--- BUILDING FLATPAK ---"
+
+            # Build using the generated manifest
+            flatpak-builder --user --force-clean --repo=repo build-dir org.deskflow.deskflow.generated.yml
+
+            if [ $? -eq 0 ]; then
+                echo "--- CREATING BUNDLE ---"
+                MAJOR=$(grep "set(DESKFLOW_VERSION_MAJOR" CMakeLists.txt | head -n1 | awk '{print $2}' | tr -d ')')
+                MINOR=$(grep "set(DESKFLOW_VERSION_MINOR" CMakeLists.txt | head -n1 | awk '{print $2}' | tr -d ')')
+                PATCH=$(grep "set(DESKFLOW_VERSION_PATCH" CMakeLists.txt | head -n1 | awk '{print $2}' | tr -d ')')
+                VERSION="${MAJOR}.${MINOR}.${PATCH}"
+
+                ARCH=$(uname -m)
+                BUNDLE_NAME="deskflow-${VERSION}-linux-${ARCH}.flatpak"
+
+                flatpak build-bundle repo "${BUNDLE_NAME}" org.lockekk.deskflow-hid
+
+                if [ $? -eq 0 ]; then
+                    echo "Flatpak bundle created: ${BUNDLE_NAME}"
+                else
+                    echo "Failed to create flatpak bundle."
+                fi
+            else
+                echo "Flatpak build failed."
+                rm org.deskflow.deskflow.generated.yml
+                return 1
+            fi
+
+            rm org.deskflow.deskflow.generated.yml
+            ;;
+        6|"appimage")
+            if [ "$os_name" = "Darwin" ]; then
+                echo "Error: AppImage generation is only supported on Linux."
+                return 1
+            fi
+            echo "--- GENERATING APPIMAGE ---"
+            if [ ! -d "build" ]; then
+                echo "Error: 'build' directory not found. Please run a configuration step (2 or 4) first."
+                return 1
+            fi
+            # Using 'build' as output directory as requested ("cat the build folder")
+            ./deploy/linux/create_appimage.sh build build
+            ;;
         q|"quit"|"exit")
             echo "Exiting..."
             return 1
@@ -128,6 +292,8 @@ while true; do
     echo "  2) Configure Pristine (Clean & Reconfigure)"
     echo "  3) Launch"
     echo "  4) Configure Release (Clean & Config with Production Keys)"
+    echo "  5) Build Deploy (Flatpak/DMG Release)"
+    echo "  6) Build AppImage (Linux)"
     echo "  q) Quit"
     echo ""
     read -p "Select a task (1-4 or q): " input

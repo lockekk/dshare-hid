@@ -6,6 +6,7 @@
 #include <QCheckBox>
 #include <QDialog>
 #include <QGroupBox> // Added
+#include <QLabel>    // Added
 #include <QLineEdit>
 #include <QMap> // Added
 #include <QPushButton>
@@ -70,15 +71,20 @@ private:
   QCheckBox *m_checkBluetoothKeepAlive;
   QCheckBox *m_checkAutoConnect;
 
+  bool eventFilter(QObject *watched, QEvent *event) override; // Added
+
   // Profile UI
   QGroupBox *m_profileGroup = nullptr;
-  QTabBar *m_profileTabBar = nullptr; // Replaced QButtonGroup
+  QLabel *m_lblProfileGroupTitle = nullptr; // Added for explicit title rendering
+  QTabBar *m_profileTabBar = nullptr;       // Replaced QButtonGroup
   QLineEdit *m_editProfileName = nullptr;
   QSpinBox *m_spinProfileWidth = nullptr;
   QSpinBox *m_spinProfileHeight = nullptr;
   QButtonGroup *m_profileOrientationGroup = nullptr;
   QRadioButton *m_radioProfileLandscape = nullptr;
+  QLabel *m_lblIconLandscape = nullptr; // Added
   QRadioButton *m_radioProfilePortrait = nullptr;
+  QLabel *m_lblIconPortrait = nullptr; // Added
   QButtonGroup *m_profileHidModeGroup = nullptr;
   QRadioButton *m_radioProfileCombo = nullptr;
   QRadioButton *m_radioProfileMouseOnly = nullptr;

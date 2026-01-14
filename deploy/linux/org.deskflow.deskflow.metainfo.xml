@@ -3,7 +3,7 @@
 	<id>org.deskflow.deskflow</id>
 	<metadata_license>CC0-1.0</metadata_license>
 	<project_license>GPL-2.0-only</project_license>
-	<name>Deskflow</name>
+	<name>Deskflow-HID</name>
 	<developer id="org.deskflow">
 		<name>Deskflow Developers</name>
 	</developer>

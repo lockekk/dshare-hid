@@ -6,13 +6,21 @@
 set(MY_DIR ${CMAKE_CURRENT_LIST_DIR})
 set(OSX_BUNDLE ${BUILD_OSX_BUNDLE})
 
-set(OS_STRING "macos-${BUILD_ARCHITECTURE}")
+if(CMAKE_OSX_ARCHITECTURES MATCHES ";")
+  set(OS_STRING "macos-universal")
+else()
+  set(OS_STRING "macos-${BUILD_ARCHITECTURE}")
+endif()
+
+if(NOT DEFINED OSX_CODESIGN_IDENTITY)
+  set(OSX_CODESIGN_IDENTITY "-")
+endif()
 
 if (OSX_BUNDLE)
   install(CODE "execute_process(COMMAND
     ${DEPLOYQT}
     \"\${CMAKE_INSTALL_PREFIX}/${CMAKE_PROJECT_PROPER_NAME}.app\"
-    -timestamp -codesign=-
+    -timestamp -codesign=${OSX_CODESIGN_IDENTITY}
   )")
   set(CPACK_PACKAGE_ICON "${MY_DIR}/dmg-volume.icns")
   set(CPACK_DMG_BACKGROUND_IMAGE "${MY_DIR}/dmg-background.tiff")

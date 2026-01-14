@@ -99,7 +99,7 @@ endif()
 
 # Prices URL
 if(NOT DEFINED DESKFLOW_PRICES_URL)
-  set(DESKFLOW_PRICES_URL "https://raw.githubusercontent.com/deskflow-hid/deskflow-hid-release/main/prices.json")
+  set(DESKFLOW_PRICES_URL "https://raw.githubusercontent.com/lockekk/deskflow-hid-release/main/prices.json")
 endif()
 
 target_compile_definitions(gui PRIVATE

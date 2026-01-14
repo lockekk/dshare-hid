@@ -107,3 +107,14 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "|.*BSD")
   message(STATUS "BSD packaging not yet supported")
   set(OS_STRING ${CMAKE_SYSTEM_NAME}-${BUILD_ARCHITECTURE})
 endif()
+
+# AppImage Generation Target
+find_program(BASH_EXECUTABLE bash)
+if(BASH_EXECUTABLE)
+    add_custom_target(appimage
+        COMMAND ${BASH_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/create_appimage.sh ${CMAKE_BINARY_DIR} ${CMAKE_BINARY_DIR}/release
+        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+        COMMENT "Generating AppImage..."
+        VERBATIM
+    )
+endif()

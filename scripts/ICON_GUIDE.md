@@ -26,7 +26,9 @@ Run the `update_icons.py` script from the project root:
 1.  **macOS**: Updates `src/apps/res/Deskflow.icns`.
 2.  **Windows**: Updates `src/apps/res/deskflow.ico` (multi-size ICO).
 3.  **Linux**: Updates `deploy/linux/org.deskflow.deskflow.png` (512x512).
-4.  **Internal Resources**: Updates embedded SVG icons used within the application GUI:
+4.  **Windows**: Generates `deploy/windows/wix-dialog.png` & `wix-banner.png`.
+5.  **macOS**: Synchs `deploy/mac/dmg-volume.icns`.
+6.  **Internal Resources**: Updates embedded SVG icons used within the application GUI:
     *   `src/apps/res/icons/deskflow-dark/apps/64/org.deskflow.deskflow.svg` (Colorful)
     *   `src/apps/res/icons/deskflow-light/apps/64/org.deskflow.deskflow.svg` (Colorful)
     *   `src/apps/res/icons/.../org.deskflow.deskflow-symbolic.svg` (Monochrome/Grayscale for Tray)
