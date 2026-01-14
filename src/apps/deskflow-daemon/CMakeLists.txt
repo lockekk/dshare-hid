@@ -14,7 +14,7 @@ if(WIN32)
 
   add_executable(
     ${target} WIN32
-    ${target}.cpp
+    deskflow-daemon.cpp
     DaemonApp.cpp
     DaemonApp.h
     ${CMAKE_CURRENT_BINARY_DIR}/${target}.rc)
