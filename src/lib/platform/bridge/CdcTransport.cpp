@@ -80,6 +80,7 @@ constexpr size_t kAckActivationStateIndex = 2;
 constexpr size_t kAckFirmwareVersionIndex = 3;
 constexpr size_t kAckHardwareVersionIndex = 4;
 constexpr size_t kAckFirmwareModeIndex = 5;
+constexpr size_t kAckOtaPartitionIndex = 9;
 constexpr size_t kAckHidModeIndex = 7; // Now Profile Info
 constexpr size_t kAckBleConnectionIndex = 8;
 constexpr size_t kAckMinimumPayloadSize = 1 + kAckCoreLen;
@@ -528,15 +529,24 @@ bool CdcTransport::performHandshake(bool allowInsecure)
 
         m_deviceConfig.isBleConnected = (framePayload[kAckBleConnectionIndex] != 0);
 
+        if (framePayload.size() > kAckOtaPartitionIndex) {
+          m_deviceConfig.hasOtaPartition = (framePayload[kAckOtaPartitionIndex] != 0);
+        } else {
+          // If payload is too short (older firmware), we assume NO OTA partition support
+          // This blocks online flashing for old firmware which is safer.
+          m_deviceConfig.hasOtaPartition = false;
+        }
+
         m_hasDeviceConfig = true;
 
         LOG_INFO(
             "CDC: handshake completed version=%u activation_state=%s(%u) fw_bcd=%u hw_bcd=%u fw_mode=%u "
-            "active_profile=%u total_profiles=%u ble=%s",
+            "active_profile=%u total_profiles=%u ble=%s ota_0=%s",
             protocolVersion, activationStateToString(activationState),
             static_cast<unsigned>(framePayload[kAckActivationStateIndex]), static_cast<unsigned>(firmwareBcd),
             static_cast<unsigned>(hardwareBcd), static_cast<unsigned>(firmwareMode), m_deviceConfig.activeProfile,
-            m_deviceConfig.totalProfiles, m_deviceConfig.isBleConnected ? "YES" : "NO"
+            m_deviceConfig.totalProfiles, m_deviceConfig.isBleConnected ? "YES" : "NO",
+            m_deviceConfig.hasOtaPartition ? "YES" : "NO"
         );
 
         std::string fetchedName;

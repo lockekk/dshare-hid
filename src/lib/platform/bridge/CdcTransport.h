@@ -77,6 +77,7 @@ struct FirmwareConfig
   uint8_t totalProfiles = 0;
   bool isBleConnected = false;
   std::string deviceName;
+  bool hasOtaPartition = false;
 
   const char *activationStateString() const
   {
