@@ -2405,6 +2405,14 @@ Next step: You need to flash the per-device firmware to use the device. Please s
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Please flash per-device firmware firstly.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Online flashing disabled: Device missing OTA partition.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Found upgrade firmware: %1</source>
         <translation type="unfinished"></translation>
     </message>

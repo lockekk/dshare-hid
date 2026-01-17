@@ -2403,6 +2403,14 @@ Prossimo passo: Flashare firmware per dispositivo. Vai alla scheda &apos;Ordina&
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Please flash per-device firmware firstly.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Online flashing disabled: Device missing OTA partition.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Found upgrade firmware: %1</source>
         <translation type="unfinished"></translation>
     </message>
