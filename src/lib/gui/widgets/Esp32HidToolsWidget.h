@@ -10,6 +10,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QMessageBox>
+#include <functional>
 #include <QNetworkReply>
 #include <QPushButton>
 #include <QRadioButton>
@@ -146,6 +147,7 @@ private:
   void setControlsEnabled(bool enabled);
   template <typename Function> void runBackgroundTask(Function func);
   std::vector<uint8_t> readFile(const QString &path);
+  std::function<void()> createReplugCallback();
   void flashFirmware(const std::vector<uint8_t> &data);
   OrderPrice calculateOrderPrice(int option, int totalProfiles);
   QString composeOrderContent(QString &outPrefix, int &outOption);

@@ -121,6 +121,9 @@ private:
   // Track handshake failures to limit retries
   QMap<QString, int> m_handshakeFailures;
 
+  // Track scan failures for devices with empty serials
+  QMap<QString, int> m_deviceScanFailures;
+
   // Track pending device creations to prevent duplicates
   QSet<QString> m_pendingDeviceCreates;
 

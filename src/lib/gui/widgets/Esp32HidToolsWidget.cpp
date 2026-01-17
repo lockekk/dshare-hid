@@ -81,6 +81,14 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
   // --- Factory Tab ---
   auto *factoryTab = new QWidget();
   auto *factoryLayout = new QVBoxLayout(factoryTab);
+
+#ifdef _WIN32
+  auto *bootReminderLbl = new QLabel(tr("Reminder: Press 'Boot' button then plugin your ESP32-C3. Click Refresh button to ensure the device is detected."));
+  bootReminderLbl->setStyleSheet("color: blue; font-weight: bold;");
+  bootReminderLbl->setWordWrap(true);
+  factoryLayout->addWidget(bootReminderLbl);
+#endif
+
   // --- Online Factory Group ---
   auto *onlineFactoryGroup = new QGroupBox(tr("Online"));
   auto *onlineFactoryLayout = new QVBoxLayout(onlineFactoryGroup);
@@ -704,7 +712,8 @@ void Esp32HidToolsWidget::onFlashFactory()
     }
 
     log(tr("Starting Factory Flash..."));
-    FlashResult res = flash_factory(port, data, info, progress_cb, log_cb);
+    auto replug_cb = createReplugCallback();
+    FlashResult res = flash_factory(port, data, info, progress_cb, log_cb, replug_cb);
 
     // Update UI on main thread
     QMetaObject::invokeMethod(this, [this, res, info]() {
@@ -829,7 +838,8 @@ void Esp32HidToolsWidget::onDownloadAndFlashFactory()
           }
         }
 
-        FlashResult res = flash_factory(port, data, info, progress_cb, log_cb);
+        auto replug_cb = createReplugCallback();
+        FlashResult res = flash_factory(port, data, info, progress_cb, log_cb, replug_cb);
 
         QMetaObject::invokeMethod(this, [this, res, info]() {
           if (res == FlashResult::OK) {
@@ -849,6 +859,28 @@ void Esp32HidToolsWidget::onDownloadAndFlashFactory()
     });
   };
   runBackgroundTask(fetchTask);
+}
+
+std::function<void()> Esp32HidToolsWidget::createReplugCallback()
+{
+  return [this]()
+  {
+    QMetaObject::invokeMethod(
+        this,
+        [this]()
+        {
+          log(tr("Waiting for user to reconnect device..."));
+          QMessageBox msgBox(
+              QMessageBox::Warning, tr("Reconnect Device"), tr("Please disconnect and reconnect the device now."),
+              QMessageBox::NoButton, this
+          );
+          msgBox.addButton(tr("I have reconnected the device"), QMessageBox::AcceptRole);
+          msgBox.exec();
+          log(tr("User confirmed reconnection."));
+        },
+        Qt::BlockingQueuedConnection
+    );
+  };
 }
 
 int Esp32HidToolsWidget::showWideMessageBox(

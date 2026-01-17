@@ -20,7 +20,7 @@ echo   5^) Build Deploy (Configure Release ^& Package)
 echo   q^) Quit
 echo.
 set "input="
-set /p input="Select a task (1-4 or q): "
+set /p input="Select a task (1-5 or q): "
 if not defined input goto Interactive
 
 if /i "%input%"=="q" exit /b 0

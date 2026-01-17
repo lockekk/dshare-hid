@@ -491,7 +491,10 @@ void DeskflowHidExtension::updateBridgeClientDeviceStates()
     const QString &serialNumber = it.value();
 
     if (serialNumber.isEmpty()) {
-      hasPendingDevice = true;
+      // Only treat as pending (and restart timer) if we haven't exceeded retry limit
+      if (m_deviceScanFailures.value(devicePath, 0) <= MAX_HANDSHAKE_FAILURES) {
+        hasPendingDevice = true;
+      }
       continue;
     }
 
@@ -585,16 +588,39 @@ void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
   QString serialNumber = device.serialNumber;
   if (serialNumber.isEmpty()) {
     // fallback to read from firmware(works well for linux/windows)
-    serialNumber = UsbDeviceHelper::readSerialNumber(device.devicePath);
+    // Only attempt to read if we haven't exceeded the failure limit
+    // precise checking allows us to stop probing a device that might be bouncing due to the probe itself
+    if (m_deviceScanFailures.value(device.devicePath, 0) <= MAX_HANDSHAKE_FAILURES) {
+      serialNumber = UsbDeviceHelper::readSerialNumber(device.devicePath);
+    } else {
+      qDebug() << "Skipping serial number probe for" << device.devicePath << "due to excessive failures";
+    }
   }
 
   if (serialNumber.isEmpty()) {
-    qInfo() << "Device serial not ready for:" << device.devicePath << "Retrying scan in 1.5s...";
+    int failures = m_deviceScanFailures.value(device.devicePath, 0) + 1;
+    m_deviceScanFailures[device.devicePath] = failures;
+
+    if (failures > MAX_HANDSHAKE_FAILURES) {
+      if (failures == MAX_HANDSHAKE_FAILURES + 1) {
+        qWarning() << "Device serial still not ready for:" << device.devicePath << "after" << failures
+                   << "attempts. Giving up scan for this device.";
+      } else {
+        qDebug() << "Ignoring recurring scan for" << device.devicePath << "(failure count:" << failures << ")";
+      }
+      return;
+    }
+
+    qInfo() << "Device serial not ready for:" << device.devicePath << "Retrying scan in 1.5s... (Attempt" << failures
+            << ")";
     if (m_retryScanTimer) {
       m_retryScanTimer->start(1500);
     }
     return;
   }
+
+  // Serial found, clear failure count for this device path
+  m_deviceScanFailures.remove(device.devicePath);
 
   // Store serial number mapping
   m_bridgeClientManager->setDeviceAvailable(device.devicePath, serialNumber, true);

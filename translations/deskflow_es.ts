@@ -2455,6 +2455,30 @@ Next step: You need to flash the per-device firmware to use the device. Please s
         <source>Copy Device Secret</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Waiting for user to reconnect device...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reconnect Device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Please disconnect and reconnect the device now.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>I have reconnected the device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>User confirmed reconnection.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reminder: Press &apos;Boot&apos; button then plugin your ESP32-C3. Click Refresh button to ensure the device is detected.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>i18n</name>
