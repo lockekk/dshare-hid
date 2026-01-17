@@ -55,7 +55,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>About Deskflow-HID</source>
-        <translation type="unfinished"></translation>
+        <translation>О Deskflow-HID</translation>
     </message>
 </context>
 <context>
@@ -149,7 +149,7 @@ p, li { white-space: pre-wrap; }
     <name>DeskflowHidExtension</name>
     <message>
         <source>Bridge Client Logs</source>
-        <translation type="unfinished"></translation>
+        <translation>Логи клиента моста</translation>
     </message>
     <message>
         <source>ESP32 HID Tools</source>
@@ -203,19 +203,19 @@ File -&gt; Firmware -&gt; Order.</source>
     </message>
     <message>
         <source>Factory firmware detected. Please update firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>Обнаружена заводская прошивка. Пожалуйста, обновите прошивку.</translation>
     </message>
     <message>
         <source>Factory firmware detected on %1. Auto-connect disabled.</source>
-        <translation type="unfinished"></translation>
+        <translation>Обнаружена заводская прошивка на %1. Автоматическое подключение отключено.</translation>
     </message>
     <message>
         <source>Device handshake failed. Possibly not a Deskflow-HID firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка рукопожатия устройства. Возможно, это не прошивка Deskflow-HID.</translation>
     </message>
     <message>
         <source>Handshake failed on %1. Auto-connect disabled.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка рукопожатия на %1. Автоматическое подключение отключено.</translation>
     </message>
     <message>
         <source>Server is down. Auto-connect will resume once the server starts.</source>
@@ -255,7 +255,7 @@ File -&gt; Firmware -&gt; Order.</source>
     </message>
     <message>
         <source>Device disconnected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройство отключено.</translation>
     </message>
 </context>
 <context>
@@ -471,11 +471,11 @@ Do you want to connect to the server?
     </message>
     <message>
         <source>ESP32 HID Tools are not available in this build (submodule missing).</source>
-        <translation>Инструменты ESP32 HID недоступны в этой сборке (отсутствует подмодуль).</translation>
+        <translation>Инструменты HID ESP32 недоступны в этой сборке (отсутствует подмодуль).</translation>
     </message>
     <message>
         <source>invalid certificate, generating a new one</source>
-        <translation type="unfinished">недействительный сертификат, генерация нового</translation>
+        <translation>недействительный сертификат, создание нового</translation>
     </message>
     <message>
         <source>A new version v%1 is available</source>
@@ -539,7 +539,7 @@ Do you want to connect to the server?
     </message>
     <message>
         <source>Using IP: </source>
-        <translation type="unfinished">Использование IP-адреса: </translation>
+        <translation>Используется IP: </translation>
     </message>
     <message>
         <source>&lt;p&gt;If connecting via the hostname fails, try %1&lt;/p&gt;</source>
@@ -642,7 +642,7 @@ A bound IP is now invalid, you may need to restart the server.</source>
     </message>
     <message>
         <source>Firmware (Unavailable)</source>
-        <translation type="unfinished"></translation>
+        <translation>Прошивка (Недоступна)</translation>
     </message>
     <message>
         <source>About %1...</source>
@@ -711,11 +711,11 @@ Valid names:
     </message>
     <message>
         <source>Suggested IP: </source>
-        <translation type="unfinished">Ваш (рекомендованый) IP адресс: </translation>
+        <translation>Рекомендуемый IP: </translation>
     </message>
     <message>
         <source>The Core executable could not be successfully started, although it does exist. Please check if you have sufficient permissions to run this program.</source>
-        <translation type="unfinished">Не удалось запустить исполняемый файл Core, хотя он существует. Проверьте, есть ли у вас достаточные права для запуска этой программы.</translation>
+        <translation>Исполняемый файл Core не удалось запустить, хотя он существует. Пожалуйста, проверьте наличие достаточных прав для запуска этой программы.</translation>
     </message>
     <message>
         <source>Use another computer&apos;s mouse and keyboard
@@ -725,7 +725,7 @@ Valid names:
     </message>
     <message>
         <source>Bridge Clients</source>
-        <translation>Клиенты моста</translation>
+        <translation>Мост-клиенты</translation>
     </message>
     <message>
         <source>Server already running</source>
@@ -796,7 +796,7 @@ Valid names:
     </message>
     <message>
         <source>&lt;p&gt;Great, the %1 server is now running.&lt;/p&gt;&lt;p&gt;Now you can connect your client computers to this server. You should see a prompt here on the server when a new client tries to connect.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Отлично, %1 сервер запущен и функционирует.&lt;/p&gt;&lt;p&gt;Сейчас Вы можете подключить клиент-компьютеры к серверу. Вам также стоит прочитать промт сервера, когда новый клиент пытается подключиться.&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;Отлично, сервер %1 теперь запущен.&lt;/p&gt;&lt;p&gt;Теперь вы можете подключить свои клиентские компьютеры к этому серверу. Вы должны увидеть запрос здесь на сервере, когда новый клиент попытается подключиться.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;p&gt;%1 is now connected!&lt;/p&gt;</source>
@@ -828,7 +828,7 @@ Valid names:
     </message>
     <message>
         <source>&lt;p&gt;A Client with your name is already connected to the server.&lt;/p&gt;Please ensure that you&apos;re using a unique name and that only a single instance of the client process is running.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Клиент с таким именем уже подключен к серверу.&lt;/p&gt;Пожалуйса, убедитесь, что Вы используете уникальное имя и что только один клиент-процесс в работе.&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;Клиент с вашим именем уже подключен к серверу.&lt;/p&gt;Пожалуйста, убедитесь, что вы используете уникальное имя и что запущена только одна копия клиентского процесса.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;p&gt;Please try to connect to the server using the server IP address instead of the hostname. &lt;/p&gt;&lt;p&gt;If that doesn&apos;t work, please check your TLS and firewall settings.&lt;/p&gt;</source>
@@ -852,7 +852,7 @@ Valid names:
     </message>
     <message>
         <source>A new client called &apos;%1&apos; has been accepted. You&apos;ll need to add it to your server&apos;s screen layout.</source>
-        <translation>Клиент с именем &apos;%1&apos; был принят. Вам нужно добавить его на макет сервера.</translation>
+        <translation>Новый клиент с именем &apos;%1&apos; был принят. Вам нужно добавить его в макет экрана вашего сервера.</translation>
     </message>
     <message>
         <source>Ignore</source>
@@ -917,35 +917,37 @@ Valid names:
     <message>
         <source>failed to read key from certificate file: %1</source>
         <extracomment>%1 will be replaced by the certificate path</extracomment>
-        <translation type="unfinished">не удалось прочитать ключ из файла сертификата: %1</translation>
+        <translation>не удалось прочитать ключ из файла сертификата: %1</translation>
     </message>
     <message>
         <source>failed to parse certificate file: %1</source>
         <extracomment>%1 will be replaced by the certificate path</extracomment>
-        <translation type="unfinished">не удалось проанализировать файл сертификата: %1</translation>
+        <translation>не удалось разобрать файл сертификата: %1</translation>
     </message>
     <message>
         <source>key detected is the incorrect size</source>
-        <translation type="unfinished">обнаружен ключ неправильного размера</translation>
+        <translation>обнаружен ключ неправильного размера</translation>
     </message>
     <message>
         <source>failed to read RSA key from certificate file: %1</source>
         <extracomment>%1 will be replaced by the certificate path</extracomment>
-        <translation type="unfinished">не удалось прочитать ключ RSA из файла сертификата: %1</translation>
+        <translation>не удалось прочитать RSA-ключ из файла сертификата: %1</translation>
     </message>
     <message>
         <source>There is another Deskflow server is already running and has been brought to the foreground.
 This new instance cannot start and will exit now.</source>
-        <translation type="unfinished"></translation>
+        <translation>Другой экземпляр сервера Deskflow уже запущен и выведен на передний план.
+Этот новый экземпляр не может быть запущен и будет закрыт.</translation>
     </message>
     <message>
         <source>Deskflow is already running.
 This new instance cannot start another server, so it will now exit.</source>
-        <translation type="unfinished"></translation>
+        <translation>Deskflow уже запущен.
+Этот новый экземпляр не может запустить еще один сервер, поэтому он будет закрыт.</translation>
     </message>
     <message>
         <source>Deskflow</source>
-        <translation type="unfinished"></translation>
+        <translation>Deskflow</translation>
     </message>
 </context>
 <context>
@@ -956,7 +958,7 @@ This new instance cannot start another server, so it will now exit.</source>
     </message>
     <message>
         <source>Computer Info</source>
-        <translation>Информация об компьютере</translation>
+        <translation>Информация о компьютере</translation>
     </message>
     <message>
         <source>Name</source>
@@ -964,7 +966,7 @@ This new instance cannot start another server, so it will now exit.</source>
     </message>
     <message>
         <source>Modifier Keys</source>
-        <translation>Клавиши модификаторы</translation>
+        <translation>Клавиши-модификаторы</translation>
     </message>
     <message>
         <source>M&amp;eta</source>
@@ -1280,11 +1282,11 @@ Enabling this setting will disable the server config GUI.</source>
     </message>
     <message>
         <source>Enable lock to computer at startup</source>
-        <translation type="unfinished">Включить блокировку компьютера при запуске</translation>
+        <translation>Включить блокировку компьютера при запуске</translation>
     </message>
     <message>
         <source>Delete Bridge Client Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Удалить конфигурацию мост-клиента</translation>
     </message>
     <message>
         <source>The screen &apos;%1&apos; is a bridge client.
@@ -1297,11 +1299,11 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Deletion Failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка удаления</translation>
     </message>
     <message>
         <source>Failed to delete bridge client configuration file for &apos;%1&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось удалить файл конфигурации мост-клиента для &apos;%1&apos;.</translation>
     </message>
 </context>
 <context>
@@ -1461,7 +1463,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Always run as system (work at login screen and UAC)</source>
-        <translation>Всегда запускать при входе в систему (работает на экране входа в систему и UAC)</translation>
+        <translation>Всегда запускать от имени системы (работа на экране входа и UAC)</translation>
     </message>
     <message>
         <source>Force a language to be used for the GUI.</source>
@@ -1529,7 +1531,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Automatic</source>
-        <translation type="unfinished">Автоматический</translation>
+        <translation>Автоматически</translation>
     </message>
 </context>
 <context>
@@ -1788,7 +1790,7 @@ Duplicate: %1</source>
     <name>deskflow::gui::BridgeDeviceService</name>
     <message>
         <source>Failed to open device after retries.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось открыть устройство после нескольких попыток.</translation>
     </message>
 </context>
 <context>
@@ -2419,7 +2421,7 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Found upgrade firmware: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Найдена прошивка обновления: %1</translation>
     </message>
     <message>
         <source>State: Factory Mode (Cannot Activate)</source>
@@ -2581,7 +2583,7 @@ Your firmware will be back in 24 hours.</source>
     </message>
     <message>
         <source>State: %1, %2 Profiles</source>
-        <translation type="unfinished"></translation>
+        <translation>Состояние: %1, %2 профилей</translation>
     </message>
     <message>
         <source>Failed to refresh state: %1</source>
@@ -2621,27 +2623,27 @@ Your firmware will be back in 24 hours.</source>
     </message>
     <message>
         <source>Waiting for user to reconnect device...</source>
-        <translation type="unfinished"></translation>
+        <translation>Ожидание повторного подключения устройства пользователем...</translation>
     </message>
     <message>
         <source>Reconnect Device</source>
-        <translation type="unfinished"></translation>
+        <translation>Переподключить устройство</translation>
     </message>
     <message>
         <source>Please disconnect and reconnect the device now.</source>
-        <translation type="unfinished"></translation>
+        <translation>Пожалуйста, отключите и снова подключите устройство.</translation>
     </message>
     <message>
         <source>I have reconnected the device</source>
-        <translation type="unfinished"></translation>
+        <translation>Я переподключил устройство</translation>
     </message>
     <message>
         <source>User confirmed reconnection.</source>
-        <translation type="unfinished"></translation>
+        <translation>Пользователь подтвердил переподключение.</translation>
     </message>
     <message>
         <source>Reminder: Press &apos;Boot&apos; button then plugin your ESP32-C3. Click Refresh button to ensure the device is detected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Напоминание: Нажмите кнопку &apos;Boot&apos;, затем подключите ваш ESP32-C3. Нажмите кнопку &apos;Обновить&apos;, чтобы убедиться, что устройство обнаружено.</translation>
     </message>
 </context>
 <context>

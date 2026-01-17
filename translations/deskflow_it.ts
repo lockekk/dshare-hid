@@ -53,7 +53,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>About Deskflow-HID</source>
-        <translation type="unfinished"></translation>
+        <translation>Informazioni su Deskflow-HID</translation>
     </message>
 </context>
 <context>
@@ -147,7 +147,7 @@ p, li { white-space: pre-wrap; }
     <name>DeskflowHidExtension</name>
     <message>
         <source>Bridge Client Logs</source>
-        <translation type="unfinished"></translation>
+        <translation>Log del Client Bridge</translation>
     </message>
     <message>
         <source>ESP32 HID Tools</source>
@@ -201,19 +201,19 @@ File -&gt; Firmware -&gt; Ordina.</translation>
     </message>
     <message>
         <source>Factory firmware detected. Please update firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>Rilevato firmware di fabbrica. Aggiornare il firmware.</translation>
     </message>
     <message>
         <source>Factory firmware detected on %1. Auto-connect disabled.</source>
-        <translation type="unfinished"></translation>
+        <translation>Rilevato firmware di fabbrica su %1. Connessione automatica disabilitata.</translation>
     </message>
     <message>
         <source>Device handshake failed. Possibly not a Deskflow-HID firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>Handshake del dispositivo fallito. Probabilmente non è un firmware Deskflow-HID.</translation>
     </message>
     <message>
         <source>Handshake failed on %1. Auto-connect disabled.</source>
-        <translation type="unfinished"></translation>
+        <translation>Handshake fallito su %1. Connessione automatica disabilitata.</translation>
     </message>
     <message>
         <source>Server is down. Auto-connect will resume once the server starts.</source>
@@ -253,7 +253,7 @@ File -&gt; Firmware -&gt; Ordina.</translation>
     </message>
     <message>
         <source>Device disconnected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dispositivo scollegato.</translation>
     </message>
 </context>
 <context>
@@ -573,11 +573,11 @@ Vuoi connetterti al server?
     </message>
     <message>
         <source>Using IP: </source>
-        <translation type="unfinished">Utilizzo dell&apos;indirizzo IP: </translation>
+        <translation>Utilizzo IP: </translation>
     </message>
     <message>
         <source>Suggested IP: </source>
-        <translation type="unfinished">IP suggerito: </translation>
+        <translation>IP suggerito: </translation>
     </message>
     <message>
         <source>&lt;p&gt;If connecting via the hostname fails, try %1&lt;/p&gt;</source>
@@ -615,7 +615,7 @@ L&apos;indirizzo IP associato non è più valido, potrebbe essere necessario ria
     </message>
     <message>
         <source>Firmware (Unavailable)</source>
-        <translation type="unfinished"></translation>
+        <translation>Firmware (Non disponibile)</translation>
     </message>
     <message>
         <source>The name you have chosen is invalid.
@@ -643,7 +643,7 @@ Nomi validi:
     </message>
     <message>
         <source>invalid certificate, generating a new one</source>
-        <translation type="unfinished">certificato non valido, ne viene generato uno nuovo</translation>
+        <translation>certificato non valido, generazione di uno nuovo</translation>
     </message>
     <message>
         <source>%1 will retry in a moment...</source>
@@ -712,7 +712,7 @@ Nomi validi:
     </message>
     <message>
         <source>The Core executable could not be successfully started, although it does exist. Please check if you have sufficient permissions to run this program.</source>
-        <translation type="unfinished">Non è stato possibile avviare correttamente l&apos;eseguibile Core, sebbene esista. Verifica di disporre delle autorizzazioni necessarie per eseguire questo programma.</translation>
+        <translation>L&apos;eseguibile Core non è stato avviato correttamente, nonostante esista. Controllare di avere i permessi sufficienti per eseguire questo programma.</translation>
     </message>
     <message>
         <source>Use another computer&apos;s mouse and keyboard
@@ -793,7 +793,7 @@ Nomi validi:
     </message>
     <message>
         <source>&lt;p&gt;Great, the %1 server is now running.&lt;/p&gt;&lt;p&gt;Now you can connect your client computers to this server. You should see a prompt here on the server when a new client tries to connect.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Ottimo, il server %1 è ora in esecuzione.&lt;/p&gt;&lt;p&gt;Ora puoi connettere i tuoi computer client a questo server. Dovresti vedere un prompt qui sul server quando un nuovo client tenta di connettersi.&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;Ottimo, il server %1 è ora in esecuzione.&lt;/p&gt;&lt;p&gt;Ora puoi connettere i tuoi computer client a questo server. Dovresti vedere un messaggio qui sul server quando un nuovo client tenta di connettersi.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;p&gt;%1 is now connected!&lt;/p&gt;</source>
@@ -849,7 +849,7 @@ Nomi validi:
     </message>
     <message>
         <source>A new client called &apos;%1&apos; has been accepted. You&apos;ll need to add it to your server&apos;s screen layout.</source>
-        <translation>Un nuovo client chiamato &quot;%1&quot; è stato accettato. Dovrai aggiungerlo al layout dello schermo del tuo server.</translation>
+        <translation>Un nuovo client chiamato &apos;%1&apos; è stato accettato. Dovrai aggiungerlo al layout dello schermo del tuo server.</translation>
     </message>
     <message>
         <source>Ignore</source>
@@ -914,35 +914,37 @@ Nomi validi:
     <message>
         <source>failed to read key from certificate file: %1</source>
         <extracomment>%1 will be replaced by the certificate path</extracomment>
-        <translation type="unfinished">impossibile leggere la chiave dal file del certificato: %1</translation>
+        <translation>impossibile leggere la chiave dal file del certificato: %1</translation>
     </message>
     <message>
         <source>failed to parse certificate file: %1</source>
         <extracomment>%1 will be replaced by the certificate path</extracomment>
-        <translation type="unfinished">impossibile analizzare il file del certificato: %1</translation>
+        <translation>impossibile analizzare il file del certificato: %1</translation>
     </message>
     <message>
         <source>key detected is the incorrect size</source>
-        <translation type="unfinished">la chiave rilevata ha una dimensione errata</translation>
+        <translation>la chiave rilevata ha una dimensione errata</translation>
     </message>
     <message>
         <source>failed to read RSA key from certificate file: %1</source>
         <extracomment>%1 will be replaced by the certificate path</extracomment>
-        <translation type="unfinished">impossibile leggere la chiave RSA dal file del certificato: %1</translation>
+        <translation>impossibile leggere la chiave RSA dal file del certificato: %1</translation>
     </message>
     <message>
         <source>There is another Deskflow server is already running and has been brought to the foreground.
 This new instance cannot start and will exit now.</source>
-        <translation type="unfinished"></translation>
+        <translation>Un altro server Deskflow è già in esecuzione ed è stato portato in primo piano.
+Questa nuova istanza non può essere avviata e verrà chiusa ora.</translation>
     </message>
     <message>
         <source>Deskflow is already running.
 This new instance cannot start another server, so it will now exit.</source>
-        <translation type="unfinished"></translation>
+        <translation>Deskflow è già in esecuzione.
+Questa nuova istanza non può avviare un altro server, quindi verrà chiusa ora.</translation>
     </message>
     <message>
         <source>Deskflow</source>
-        <translation type="unfinished"></translation>
+        <translation>Deskflow</translation>
     </message>
 </context>
 <context>
@@ -1276,11 +1278,11 @@ L&apos;abilitazione di questa impostazione disabiliterà l&apos;interfaccia graf
     </message>
     <message>
         <source>Enable lock to computer at startup</source>
-        <translation type="unfinished">Abilita il blocco al computer all&apos;avvio</translation>
+        <translation>Abilita il blocco al computer all&apos;avvio</translation>
     </message>
     <message>
         <source>Delete Bridge Client Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Elimina configurazione client bridge</translation>
     </message>
     <message>
         <source>The screen &apos;%1&apos; is a bridge client.
@@ -1293,11 +1295,11 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Deletion Failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Eliminazione fallita</translation>
     </message>
     <message>
         <source>Failed to delete bridge client configuration file for &apos;%1&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossibile eliminare il file di configurazione del client bridge per &apos;%1&apos;.</translation>
     </message>
 </context>
 <context>
@@ -1452,7 +1454,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Always run as system (work at login screen and UAC)</source>
-        <translation>Esegui sempre come sistema (funziona nella schermata di accesso e UAC)</translation>
+        <translation>Esegui sempre come sistema (funziona alla schermata di login e UAC)</translation>
     </message>
     <message>
         <source>Required messages</source>
@@ -1524,7 +1526,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Automatic</source>
-        <translation type="unfinished">Automatica</translation>
+        <translation>Automatico</translation>
     </message>
 </context>
 <context>
@@ -1783,7 +1785,7 @@ Duplicato: %1</translation>
     <name>deskflow::gui::BridgeDeviceService</name>
     <message>
         <source>Failed to open device after retries.</source>
-        <translation type="unfinished"></translation>
+        <translation>Apertura del dispositivo fallita dopo i tentativi.</translation>
     </message>
 </context>
 <context>
@@ -2412,7 +2414,7 @@ Prossimo passo: Flashare firmware per dispositivo. Vai alla scheda &apos;Ordina&
     </message>
     <message>
         <source>Found upgrade firmware: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Trovato firmware di aggiornamento: %1</translation>
     </message>
     <message>
         <source>State: Factory Mode (Cannot Activate)</source>
@@ -2574,7 +2576,7 @@ Il firmware tornerà in 24 ore.</translation>
     </message>
     <message>
         <source>State: %1, %2 Profiles</source>
-        <translation type="unfinished"></translation>
+        <translation>Stato: %1, %2 Profili</translation>
     </message>
     <message>
         <source>Failed to refresh state: %1</source>
@@ -2614,27 +2616,27 @@ Il firmware tornerà in 24 ore.</translation>
     </message>
     <message>
         <source>Waiting for user to reconnect device...</source>
-        <translation type="unfinished"></translation>
+        <translation>In attesa che l&apos;utente ricolleghi il dispositivo...</translation>
     </message>
     <message>
         <source>Reconnect Device</source>
-        <translation type="unfinished"></translation>
+        <translation>Ricollega Dispositivo</translation>
     </message>
     <message>
         <source>Please disconnect and reconnect the device now.</source>
-        <translation type="unfinished"></translation>
+        <translation>Scollega e ricollega il dispositivo ora.</translation>
     </message>
     <message>
         <source>I have reconnected the device</source>
-        <translation type="unfinished"></translation>
+        <translation>Ho ricollegato il dispositivo</translation>
     </message>
     <message>
         <source>User confirmed reconnection.</source>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;utente ha confermato il ricollegamento.</translation>
     </message>
     <message>
         <source>Reminder: Press &apos;Boot&apos; button then plugin your ESP32-C3. Click Refresh button to ensure the device is detected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Promemoria: Premi il pulsante &apos;Boot&apos; quindi scollega e ricollega il tuo ESP32-C3. Fai clic sul pulsante Aggiorna per assicurarti che il dispositivo venga rilevato.</translation>
     </message>
 </context>
 <context>

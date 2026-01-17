@@ -51,17 +51,19 @@ macro(configure_libs)
   message(STATUS "Qt version: ${Qt6_VERSION}")
 
   # Check if <format> header is available
-  check_cxx_source_compiles("
-    #include <format>
-    int main() {
-        char buffer[100];
-        std::format_to_n(buffer, 100, \"test {}\", 42);
-        return 0;
-    }
-    " HAVE_FORMAT)
+  if(NOT APPLE)
+    check_cxx_source_compiles("
+      #include <format>
+      int main() {
+          char buffer[100];
+          std::format_to_n(buffer, 100, \"test {}\", 42);
+          return 0;
+      }
+      " HAVE_FORMAT)
 
-  if(HAVE_FORMAT)
-    add_definitions(-DHAVE_FORMAT)
+    if(HAVE_FORMAT)
+      add_definitions(-DHAVE_FORMAT)
+    endif()
   endif()
 
   option(ENABLE_COVERAGE "Enable test coverage" OFF)

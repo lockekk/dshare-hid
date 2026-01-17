@@ -1,0 +1,102 @@
+
+# This script is configured by CMake and run at install time.
+# It handles bundling Qt, OpenSSL, and signing.
+
+set(APP_PATH "${CMAKE_INSTALL_PREFIX}/@CMAKE_PROJECT_PROPER_NAME@.app")
+set(DEPLOYQT "@DEPLOYQT@")
+set(OSSL_MOD_PATH "@OSSL_MOD_PATH@")
+set(OPENSSL_ROOT_DIR "@OPENSSL_ROOT_DIR@")
+set(OSX_CODESIGN_IDENTITY "@OSX_CODESIGN_IDENTITY@")
+set(MY_DIR "@MY_DIR@")
+set(CMAKE_COMMAND "@CMAKE_COMMAND@")
+set(CMAKE_PROJECT_PROPER_NAME "@CMAKE_PROJECT_PROPER_NAME@")
+
+message(STATUS "--- POST-PROCESS BUNDLE DEBUG INFO ---")
+message(STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "APP_PATH: ${APP_PATH}")
+message(STATUS "DEPLOYQT: ${DEPLOYQT}")
+message(STATUS "OPENSSL_ROOT_DIR: ${OPENSSL_ROOT_DIR}")
+message(STATUS "OSSL_MOD_PATH: ${OSSL_MOD_PATH}")
+message(STATUS "OSX_CODESIGN_IDENTITY: ${OSX_CODESIGN_IDENTITY}")
+message(STATUS "-------------------------------")
+
+# Sanity Check
+if (NOT EXISTS "${APP_PATH}/Contents/MacOS/@CMAKE_PROJECT_PROPER_NAME@")
+    message(FATAL_ERROR "Critical error: Main executable missing from bundle before signing at: ${APP_PATH}/Contents/MacOS/@CMAKE_PROJECT_PROPER_NAME@")
+endif()
+
+message(STATUS "Running macdeployqt on ${APP_PATH}...")
+execute_process(COMMAND "${DEPLOYQT}" "${APP_PATH}" COMMAND_ECHO STDOUT)
+
+if (NOT "${OSSL_MOD_PATH}" STREQUAL "")
+    message(STATUS "Bundling OpenSSL modules...")
+    execute_process(COMMAND "${CMAKE_COMMAND}" -E copy_directory "${OSSL_MOD_PATH}" "${APP_PATH}/Contents/Frameworks/ossl-modules" COMMAND_ECHO STDOUT)
+endif()
+
+if (NOT "${OPENSSL_ROOT_DIR}" STREQUAL "")
+    message(STATUS "Overwriting OpenSSL with Universal Libraries from ${OPENSSL_ROOT_DIR}...")
+    file(MAKE_DIRECTORY "${APP_PATH}/Contents/Frameworks")
+
+    file(COPY "${OPENSSL_ROOT_DIR}/lib/libssl.3.dylib" DESTINATION "${APP_PATH}/Contents/Frameworks")
+    file(COPY "${OPENSSL_ROOT_DIR}/lib/libcrypto.3.dylib" DESTINATION "${APP_PATH}/Contents/Frameworks")
+
+    # Fix permissions
+    execute_process(COMMAND chmod 755 "${APP_PATH}/Contents/Frameworks/libssl.3.dylib" "${APP_PATH}/Contents/Frameworks/libcrypto.3.dylib")
+
+    # Fix Install Names (ID)
+    execute_process(COMMAND install_name_tool -id "@executable_path/../Frameworks/libssl.3.dylib" "${APP_PATH}/Contents/Frameworks/libssl.3.dylib")
+    execute_process(COMMAND install_name_tool -id "@executable_path/../Frameworks/libcrypto.3.dylib" "${APP_PATH}/Contents/Frameworks/libcrypto.3.dylib")
+
+    # Fix Dependency (libssl depends on libcrypto)
+    # Note: Lipo merged libs point to their original build paths (arm64/lib/libcrypto.3.dylib or x86_64/lib/... )
+    # We must fix BOTH potential paths to the unified bundle path.
+
+    # Path 1: x86_64 build path
+    string(REPLACE "/universal" "/x86_64" OPENSSL_X86_DIR "${OPENSSL_ROOT_DIR}")
+    execute_process(COMMAND install_name_tool -change "${OPENSSL_X86_DIR}/lib/libcrypto.3.dylib" "@executable_path/../Frameworks/libcrypto.3.dylib" "${APP_PATH}/Contents/Frameworks/libssl.3.dylib")
+
+    # Path 2: arm64 build path
+    string(REPLACE "/universal" "/arm64" OPENSSL_ARM_DIR "${OPENSSL_ROOT_DIR}")
+    execute_process(COMMAND install_name_tool -change "${OPENSSL_ARM_DIR}/lib/libcrypto.3.dylib" "@executable_path/../Frameworks/libcrypto.3.dylib" "${APP_PATH}/Contents/Frameworks/libssl.3.dylib")
+
+    # Fix Main Executable (it might link against universal, x86, or arm path depending on how cmake found it)
+    # We try all three to be safe.
+    execute_process(COMMAND install_name_tool -change "${OPENSSL_ROOT_DIR}/lib/libssl.3.dylib" "@executable_path/../Frameworks/libssl.3.dylib" "${APP_PATH}/Contents/MacOS/@CMAKE_PROJECT_PROPER_NAME@")
+    execute_process(COMMAND install_name_tool -change "${OPENSSL_ROOT_DIR}/lib/libcrypto.3.dylib" "@executable_path/../Frameworks/libcrypto.3.dylib" "${APP_PATH}/Contents/MacOS/@CMAKE_PROJECT_PROPER_NAME@")
+
+    execute_process(COMMAND install_name_tool -change "${OPENSSL_X86_DIR}/lib/libssl.3.dylib" "@executable_path/../Frameworks/libssl.3.dylib" "${APP_PATH}/Contents/MacOS/@CMAKE_PROJECT_PROPER_NAME@")
+    execute_process(COMMAND install_name_tool -change "${OPENSSL_X86_DIR}/lib/libcrypto.3.dylib" "@executable_path/../Frameworks/libcrypto.3.dylib" "${APP_PATH}/Contents/MacOS/@CMAKE_PROJECT_PROPER_NAME@")
+
+    execute_process(COMMAND install_name_tool -change "${OPENSSL_ARM_DIR}/lib/libssl.3.dylib" "@executable_path/../Frameworks/libssl.3.dylib" "${APP_PATH}/Contents/MacOS/@CMAKE_PROJECT_PROPER_NAME@")
+    execute_process(COMMAND install_name_tool -change "${OPENSSL_ARM_DIR}/lib/libcrypto.3.dylib" "@executable_path/../Frameworks/libcrypto.3.dylib" "${APP_PATH}/Contents/MacOS/@CMAKE_PROJECT_PROPER_NAME@")
+
+    # Fix Helper Executable (deskflow-hid-core)
+    set(CORE_EXE "${APP_PATH}/Contents/MacOS/deskflow-hid-core")
+    if (EXISTS "${CORE_EXE}")
+        message(STATUS "Fixing up references for deskflow-hid-core...")
+        # Universal paths
+        execute_process(COMMAND install_name_tool -change "${OPENSSL_ROOT_DIR}/lib/libssl.3.dylib" "@executable_path/../Frameworks/libssl.3.dylib" "${CORE_EXE}")
+        execute_process(COMMAND install_name_tool -change "${OPENSSL_ROOT_DIR}/lib/libcrypto.3.dylib" "@executable_path/../Frameworks/libcrypto.3.dylib" "${CORE_EXE}")
+
+        # x86_64 paths
+        execute_process(COMMAND install_name_tool -change "${OPENSSL_X86_DIR}/lib/libssl.3.dylib" "@executable_path/../Frameworks/libssl.3.dylib" "${CORE_EXE}")
+        execute_process(COMMAND install_name_tool -change "${OPENSSL_X86_DIR}/lib/libcrypto.3.dylib" "@executable_path/../Frameworks/libcrypto.3.dylib" "${CORE_EXE}")
+
+        # arm64 paths
+        execute_process(COMMAND install_name_tool -change "${OPENSSL_ARM_DIR}/lib/libssl.3.dylib" "@executable_path/../Frameworks/libssl.3.dylib" "${CORE_EXE}")
+        execute_process(COMMAND install_name_tool -change "${OPENSSL_ARM_DIR}/lib/libcrypto.3.dylib" "@executable_path/../Frameworks/libcrypto.3.dylib" "${CORE_EXE}")
+    else()
+        message(WARNING "deskflow-hid-core not found at ${CORE_EXE}")
+    endif()
+endif()
+
+message(STATUS "Cleaning extended attributes...")
+execute_process(COMMAND xattr -cr "${APP_PATH}" COMMAND_ECHO STDOUT)
+
+if (NOT "${OSX_CODESIGN_IDENTITY}" STREQUAL "-")
+    message(STATUS "Deep signing the bundle with identity: ${OSX_CODESIGN_IDENTITY}")
+    execute_process(COMMAND codesign --force --deep --options=runtime --entitlements "${MY_DIR}/Deskflow-HID.entitlements" -v --sign "${OSX_CODESIGN_IDENTITY}" "${APP_PATH}" COMMAND_ECHO STDOUT)
+
+    message(STATUS "Verifying signature...")
+    execute_process(COMMAND codesign --verify --deep --verbose=4 "${APP_PATH}" COMMAND_ECHO STDOUT)
+endif()

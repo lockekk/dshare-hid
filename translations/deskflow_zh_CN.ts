@@ -53,7 +53,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>About Deskflow-HID</source>
-        <translation type="unfinished"></translation>
+        <translation>关于 Deskflow-HID</translation>
     </message>
 </context>
 <context>
@@ -147,7 +147,7 @@ p, li { white-space: pre-wrap; }
     <name>DeskflowHidExtension</name>
     <message>
         <source>Bridge Client Logs</source>
-        <translation type="unfinished"></translation>
+        <translation>桥接客户端日志</translation>
     </message>
     <message>
         <source>ESP32 HID Tools</source>
@@ -200,19 +200,19 @@ File -&gt; Firmware -&gt; Order.</source>
     </message>
     <message>
         <source>Factory firmware detected. Please update firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>检测到工厂固件。请更新固件。</translation>
     </message>
     <message>
         <source>Factory firmware detected on %1. Auto-connect disabled.</source>
-        <translation type="unfinished"></translation>
+        <translation>在 %1 上检测到工厂固件。自动连接已禁用。</translation>
     </message>
     <message>
         <source>Device handshake failed. Possibly not a Deskflow-HID firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>设备握手失败。可能不是 Deskflow-HID 固件。</translation>
     </message>
     <message>
         <source>Handshake failed on %1. Auto-connect disabled.</source>
-        <translation type="unfinished"></translation>
+        <translation>在 %1 上握手失败。自动连接已禁用。</translation>
     </message>
     <message>
         <source>Server is down. Auto-connect will resume once the server starts.</source>
@@ -252,7 +252,7 @@ File -&gt; Firmware -&gt; Order.</source>
     </message>
     <message>
         <source>Device disconnected.</source>
-        <translation type="unfinished"></translation>
+        <translation>设备已断开连接。</translation>
     </message>
 </context>
 <context>
@@ -472,7 +472,7 @@ Do you want to connect to the server?
     </message>
     <message>
         <source>invalid certificate, generating a new one</source>
-        <translation type="unfinished">证书无效，正在生成新证书</translation>
+        <translation>证书无效，正在生成新证书</translation>
     </message>
     <message>
         <source>A new version v%1 is available</source>
@@ -536,7 +536,7 @@ Do you want to connect to the server?
     </message>
     <message>
         <source>Using IP: </source>
-        <translation type="unfinished">使用IP地址： </translation>
+        <translation>使用 IP：</translation>
     </message>
     <message>
         <source>&lt;p&gt;If connecting via the hostname fails, try %1&lt;/p&gt;</source>
@@ -639,7 +639,7 @@ A bound IP is now invalid, you may need to restart the server.</source>
     </message>
     <message>
         <source>Firmware (Unavailable)</source>
-        <translation type="unfinished"></translation>
+        <translation>固件（不可用）</translation>
     </message>
     <message>
         <source>About %1...</source>
@@ -706,16 +706,16 @@ Valid names:
     </message>
     <message>
         <source>Suggested IP: </source>
-        <translation type="unfinished">建议 IP： </translation>
+        <translation>建议 IP：</translation>
     </message>
     <message>
         <source>The Core executable could not be successfully started, although it does exist. Please check if you have sufficient permissions to run this program.</source>
-        <translation type="unfinished">Core 可执行文件虽然存在，但无法成功启动。请检查您是否拥有运行此程序的足够权限。</translation>
+        <translation>Core 可执行文件虽然存在，但无法成功启动。请检查您是否拥有运行此程序的足够权限。</translation>
     </message>
     <message>
         <source>Use another computer&apos;s mouse and keyboard
 (make this computer the client)</source>
-        <translation>使用另一台计算机的鼠标和键盘
+        <translation>使用另一台计算机的鼠标 and 键盘
 (将此计算机设为客户端)</translation>
     </message>
     <message>
@@ -793,7 +793,7 @@ Valid names:
     </message>
     <message>
         <source>&lt;p&gt;Great, the %1 server is now running.&lt;/p&gt;&lt;p&gt;Now you can connect your client computers to this server. You should see a prompt here on the server when a new client tries to connect.&lt;/p&gt;</source>
-        <translation type="unfinished">&lt;p&gt;太好了，服务器 %1 已在运行。&lt;/p&gt;&lt;p&gt;现在您可以将客户端计算机连接到此服务器。当新客户端尝试连接时，您会在服务器端看到提示。&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;太好了，服务器 %1 正在运行。&lt;/p&gt;&lt;p&gt;现在您可以将客户端计算机连接到此服务器。当新客户端尝试连接时，您会在服务器端看到提示。&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;p&gt;%1 is now connected!&lt;/p&gt;</source>
@@ -825,7 +825,7 @@ Valid names:
     </message>
     <message>
         <source>&lt;p&gt;A Client with your name is already connected to the server.&lt;/p&gt;Please ensure that you&apos;re using a unique name and that only a single instance of the client process is running.&lt;/p&gt;</source>
-        <translation type="unfinished">&lt;p&gt;一个同名的客户端已连接到服务器。&lt;/p&gt;请确保您使用的名称唯一，且只有一个客户端进程实例在运行。&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;一个同名的客户端已连接到服务器。&lt;/p&gt;请确保您使用的名称唯一，且只有一个客户端进程实例在运行。&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;p&gt;Please try to connect to the server using the server IP address instead of the hostname. &lt;/p&gt;&lt;p&gt;If that doesn&apos;t work, please check your TLS and firewall settings.&lt;/p&gt;</source>
@@ -849,7 +849,7 @@ Valid names:
     </message>
     <message>
         <source>A new client called &apos;%1&apos; has been accepted. You&apos;ll need to add it to your server&apos;s screen layout.</source>
-        <translation type="unfinished">已接受名为“%1”的新客户端。您需要将其添加到服务器的屏幕布局中。</translation>
+        <translation>已接受名为“%1”的新客户端。您需要将其添加到服务器的屏幕布局中。</translation>
     </message>
     <message>
         <source>Ignore</source>
@@ -909,40 +909,42 @@ Valid names:
     </message>
     <message>
         <source>&lt;p&gt;There was a problem finding the %1 background service (daemon).&lt;/p&gt;&lt;p&gt;The background service makes %1 work with UAC prompts and the login screen.&lt;/p&gt;&lt;p&gt;If don&apos;t want to use the background service and intentionally stopped it, you can prevent it&apos;s use by disabling this feature.&lt;/p&gt;&lt;p&gt;If you did not stop the background service intentionally, there may be a problem with it. Please retry or try restarting the %1 service from the Windows services program.&lt;/p&gt;</source>
-        <translation type="unfinished">&lt;p&gt;查找 %1 后台服务（守护进程）时出现问题。&lt;/p&gt;&lt;p&gt;%1 需后台服务来与 UAC 提示和登录屏幕配合工作。&lt;/p&gt;&lt;p&gt;如果您不想使用后台服务并已将其停止，可以通过禁用此功能来阻止使用它。&lt;/p&gt;&lt;p&gt;如果您并非有意停止后台服务，则可能存在问题。请重试，或尝试从 Windows 服务程序中重启 %1 服务。&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;查找 %1 后台服务（守护进程）时出现问题。&lt;/p&gt;&lt;p&gt;%1 需后台服务来与 UAC 提示和登录屏幕配合工作。&lt;/p&gt;&lt;p&gt;如果您不想使用后台服务并已将其停止，可以通过禁用此功能来阻止使用它。&lt;/p&gt;&lt;p&gt;如果您并非有意停止后台服务，则可能存在问题。请重试，或尝试从 Windows 服务程序中重启 %1 服务。&lt;/p&gt;</translation>
     </message>
     <message>
         <source>failed to read key from certificate file: %1</source>
         <extracomment>%1 will be replaced by the certificate path</extracomment>
-        <translation type="unfinished">无法从证书文件中读取密钥：%1</translation>
+        <translation>无法从证书文件中读取密钥：%1</translation>
     </message>
     <message>
         <source>failed to parse certificate file: %1</source>
         <extracomment>%1 will be replaced by the certificate path</extracomment>
-        <translation type="unfinished">解析证书文件失败：%1</translation>
+        <translation>解析证书文件失败：%1</translation>
     </message>
     <message>
         <source>key detected is the incorrect size</source>
-        <translation type="unfinished">检测到的密钥大小不正确。</translation>
+        <translation>检测到的密钥大小不正确。</translation>
     </message>
     <message>
         <source>failed to read RSA key from certificate file: %1</source>
         <extracomment>%1 will be replaced by the certificate path</extracomment>
-        <translation type="unfinished">无法从证书文件中读取 RSA 密钥：%1</translation>
+        <translation>无法从证书文件中读取 RSA 密钥：%1</translation>
     </message>
     <message>
         <source>There is another Deskflow server is already running and has been brought to the foreground.
 This new instance cannot start and will exit now.</source>
-        <translation type="unfinished"></translation>
+        <translation>另一个 Deskflow 服务器实例已在运行中，并已切换至前台。
+新实例无法启动，现在将退出。</translation>
     </message>
     <message>
         <source>Deskflow is already running.
 This new instance cannot start another server, so it will now exit.</source>
-        <translation type="unfinished"></translation>
+        <translation>Deskflow 已在运行中。
+新实例无法启动另一个服务器，现在将退出。</translation>
     </message>
     <message>
         <source>Deskflow</source>
-        <translation type="unfinished"></translation>
+        <translation>Deskflow</translation>
     </message>
 </context>
 <context>
@@ -1049,7 +1051,7 @@ This new instance cannot start another server, so it will now exit.</source>
     </message>
     <message>
         <source>XTest for Xinerama</source>
-        <translation type="unfinished">用于 Xinerama 的 XTest</translation>
+        <translation>用于 Xinerama 的 XTest</translation>
     </message>
     <message>
         <source>Aliases</source>
@@ -1276,11 +1278,11 @@ Enabling this setting will disable the server config GUI.</source>
     </message>
     <message>
         <source>Enable lock to computer at startup</source>
-        <translation type="unfinished">启动时启用锁定到计算机</translation>
+        <translation>启动时启用锁定到计算机</translation>
     </message>
     <message>
         <source>Delete Bridge Client Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>删除桥接客户端配置</translation>
     </message>
     <message>
         <source>The screen &apos;%1&apos; is a bridge client.
@@ -1293,11 +1295,11 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Deletion Failed</source>
-        <translation type="unfinished"></translation>
+        <translation>删除失败</translation>
     </message>
     <message>
         <source>Failed to delete bridge client configuration file for &apos;%1&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>删除“%1”的桥接客户端配置文件失败。</translation>
     </message>
 </context>
 <context>
@@ -1456,7 +1458,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Always run as system (work at login screen and UAC)</source>
-        <translation type="unfinished">始终以系统身份运行 (在登录屏幕和 UAC 下工作)</translation>
+        <translation>始终以系统身份运行 (在登录屏幕和 UAC 下工作)</translation>
     </message>
     <message>
         <source>Force a language to be used for the GUI.</source>
@@ -1524,7 +1526,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Automatic</source>
-        <translation type="unfinished">自动的</translation>
+        <translation>自动</translation>
     </message>
 </context>
 <context>
@@ -1783,7 +1785,7 @@ Duplicate: %1</source>
     <name>deskflow::gui::BridgeDeviceService</name>
     <message>
         <source>Failed to open device after retries.</source>
-        <translation type="unfinished"></translation>
+        <translation>在重试后依然无法打开设备。</translation>
     </message>
 </context>
 <context>
@@ -1886,23 +1888,23 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Flash failed, %1</source>
-        <translation type="unfinished"></translation>
+        <translation>固件刷写失败, %1</translation>
     </message>
     <message>
         <source>Failed to find factory firmware in the latest release.</source>
-        <translation type="unfinished"></translation>
+        <translation>在最新发布版本中未找到工厂固件。</translation>
     </message>
     <message>
         <source>Downloading %1...</source>
-        <translation type="unfinished"></translation>
+        <translation>正在下载 %1...</translation>
     </message>
     <message>
         <source>Failed to find upgrade firmware in the latest release.</source>
-        <translation type="unfinished"></translation>
+        <translation>在最新发布版本中未找到升级固件。</translation>
     </message>
     <message>
         <source>Download complete. Starting flash...</source>
-        <translation type="unfinished"></translation>
+        <translation>下载完成。开始刷写...</translation>
     </message>
     <message>
         <source>Free trial for 7 days</source>
@@ -1986,11 +1988,11 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>I will arrange payment via email</source>
-        <translation type="unfinished"></translation>
+        <translation>我将通过电子邮件安排付款</translation>
     </message>
     <message>
         <source>Not required for manual payment</source>
-        <translation type="unfinished"></translation>
+        <translation>手动付款无需此项</translation>
     </message>
     <message>
         <source>Email</source>
@@ -2366,55 +2368,55 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Skip Trial and Purchase Full License</source>
-        <translation type="unfinished"></translation>
+        <translation>跳过试用并购买完整许可</translation>
     </message>
     <message>
         <source>Selected factory firmware: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>已选择工厂固件: %1</translation>
     </message>
     <message>
         <source>Selected upgrade firmware: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>已选择升级固件: %1</translation>
     </message>
     <message>
         <source>Checking for latest factory firmware...</source>
-        <translation type="unfinished"></translation>
+        <translation>正在检查最新工厂固件...</translation>
     </message>
     <message>
         <source>Failed to find factory firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>未找到工厂固件。</translation>
     </message>
     <message>
         <source>Found factory firmware: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>找到工厂固件: %1</translation>
     </message>
     <message>
         <source>Factory flash cancelled.</source>
-        <translation type="unfinished"></translation>
+        <translation>工厂刷写已取消。</translation>
     </message>
     <message>
         <source>About to flash: &lt;b&gt;%1&lt;/b&gt;&lt;br&gt;&lt;br&gt;This action will permanently convert your device to Deskflow-HID. This process is irreversible and precludes non-Deskflow firmware.&lt;br&gt;&lt;br&gt;Proceed?</source>
-        <translation type="unfinished"></translation>
+        <translation>即将刷写: &lt;b&gt;%1&lt;/b&gt;&lt;br&gt;&lt;br&gt;此操作将永久地将您的设备转换为 Deskflow-HID。此过程不可逆转，且会排除非 Deskflow 固件。&lt;br&gt;&lt;br&gt;是否继续？</translation>
     </message>
     <message>
         <source>Device Info copied to clipboard:</source>
-        <translation type="unfinished"></translation>
+        <translation>设备信息已复制到剪贴板:</translation>
     </message>
     <message>
         <source>Device Info fetched and copied to clipboard:</source>
-        <translation type="unfinished"></translation>
+        <translation>已获取设备信息并复制到剪贴板:</translation>
     </message>
     <message>
         <source>Please flash per-device firmware firstly.</source>
-        <translation type="unfinished"></translation>
+        <translation>请先刷写每台设备的固件。</translation>
     </message>
     <message>
         <source>Online flashing disabled: Device missing OTA partition.</source>
-        <translation type="unfinished"></translation>
+        <translation>在线刷写已禁用：设备缺少 OTA 分区。</translation>
     </message>
     <message>
         <source>Found upgrade firmware: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>找到升级固件: %1</translation>
     </message>
     <message>
         <source>State: Factory Mode (Cannot Activate)</source>
@@ -2502,7 +2504,7 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>You are about to open PayPal to pay &lt;b&gt;$%1 USD&lt;/b&gt; to &lt;b&gt;%2&lt;/b&gt;.&lt;br&gt;&lt;br&gt;Product: %3&lt;br&gt;Reference: %4&lt;br&gt;&lt;br&gt;Please confirm to proceed to PayPal.</source>
-        <translation>您即将打开 PayPal 向 &lt;b&gt;%2&lt;/b&gt; 支付 &lt;b&gt;$%1 USD&lt;/b&gt;。&lt;br&gt;&lt;br&gt;产品：%3&lt;br&gt;参考号：%4&lt;br&gt;&lt;br&gt;请确认以前往 PayPal。</translation>
+        <translation>您即将打开 PayPal 向 &lt;b&gt;%2&lt;/b&gt; 支付 &lt;b&gt;$%1 USD&lt;/b&gt; 至 &lt;b&gt;%2&lt;/b&gt;。&lt;br&gt;&lt;br&gt;产品：%3&lt;br&gt;参考号：%4&lt;br&gt;&lt;br&gt;请确认以前往 PayPal。</translation>
     </message>
     <message>
         <source>Confirm Payment</source>
@@ -2576,7 +2578,7 @@ Your firmware will be back in 24 hours.</source>
     </message>
     <message>
         <source>State: %1, %2 Profiles</source>
-        <translation type="unfinished"></translation>
+        <translation>状态: %1, %2个配置</translation>
     </message>
     <message>
         <source>Failed to refresh state: %1</source>
@@ -2616,27 +2618,27 @@ Your firmware will be back in 24 hours.</source>
     </message>
     <message>
         <source>Waiting for user to reconnect device...</source>
-        <translation type="unfinished"></translation>
+        <translation>等待用户重新连接设备...</translation>
     </message>
     <message>
         <source>Reconnect Device</source>
-        <translation type="unfinished"></translation>
+        <translation>重新连接设备</translation>
     </message>
     <message>
         <source>Please disconnect and reconnect the device now.</source>
-        <translation type="unfinished"></translation>
+        <translation>请现在断开并重新连接设备。</translation>
     </message>
     <message>
         <source>I have reconnected the device</source>
-        <translation type="unfinished"></translation>
+        <translation>我已经重新连接了设备</translation>
     </message>
     <message>
         <source>User confirmed reconnection.</source>
-        <translation type="unfinished"></translation>
+        <translation>用户确认重新连接。</translation>
     </message>
     <message>
         <source>Reminder: Press &apos;Boot&apos; button then plugin your ESP32-C3. Click Refresh button to ensure the device is detected.</source>
-        <translation type="unfinished"></translation>
+        <translation>提醒：按住 &apos;Boot&apos; 按钮，然后插入您的 ESP32-C3。点击刷新按钮以确保检测到设备。</translation>
     </message>
 </context>
 <context>

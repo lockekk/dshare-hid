@@ -125,6 +125,19 @@ process_input() {
             if [ "$os_name" = "Darwin" ]; then
                 echo "--- PREPARING MACOS DEPLOY (UNIVERSAL) ---"
 
+                # 1. Ensure Universal OpenSSL (x86_64 + arm64) is available
+                OPENSSL_UNIVERSAL_DIR="$(pwd)/deps/openssl-universal/universal"
+                if [ ! -f "${OPENSSL_UNIVERSAL_DIR}/lib/libssl.dylib" ]; then
+                    echo "Universal OpenSSL not found. Building it now (this takes a few minutes)..."
+                    ./deploy/mac/build_universal_openssl.sh
+                    if [ $? -ne 0 ]; then
+                        echo "Error: Failed to build Universal OpenSSL."
+                        return 1
+                    fi
+                else
+                    echo "Found Universal OpenSSL at: ${OPENSSL_UNIVERSAL_DIR}"
+                fi
+
                 # Check for signing identity
                 TARGET_IDENTITY="-"
                 if [ -n "$APPLE_CODESIGN_DEV" ]; then
@@ -139,10 +152,13 @@ process_input() {
                 rm -rf "$BUILD_DIR"
 
                 echo "--- CONFIGURING ---"
+                # Note: CMAKE_OSX_ARCHITECTURES="arm64;x86_64" enables the universal build
                 cmake -B "$BUILD_DIR" -G "Unix Makefiles" \
                   -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" \
                   -DCMAKE_OSX_SYSROOT="$CMAKE_OSX_SYSROOT" \
                   -DCMAKE_BUILD_TYPE=Release \
+                  -DCMAKE_OSX_DEPLOYMENT_TARGET=12.0 \
+                  -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
                   -DSKIP_BUILD_TESTS=ON \
                   -DBUILD_TESTS=OFF \
                   -DDESKFLOW_PAYPAL_ACCOUNT="$PAYPAL_ACCOUNT" \
@@ -150,7 +166,7 @@ process_input() {
                   -DDESKFLOW_CDC_PUBLIC_KEY="$DESKFLOW_CDC_PUBLIC_KEY" \
                   -DDESKFLOW_ESP32_ENCRYPTION_KEY="$DESKFLOW_ESP32_ENCRYPTION_KEY" \
                   -DOSX_CODESIGN_IDENTITY="$TARGET_IDENTITY" \
-                  -DOPENSSL_USE_STATIC_LIBS=TRUE
+                  -DOPENSSL_ROOT_DIR="${OPENSSL_UNIVERSAL_DIR}"
 
                 if [ $? -ne 0 ]; then
                     echo "Configuration failed."
@@ -163,6 +179,14 @@ process_input() {
                 if [ $? -ne 0 ]; then
                     echo "Build failed."
                     return 1
+                fi
+
+                echo "--- VERIFYING ARCHITECTURES ---"
+                BINARY_PATH="$BUILD_DIR/bin/Deskflow-HID.app/Contents/MacOS/Deskflow-HID"
+                if [ -f "$BINARY_PATH" ]; then
+                    lipo -info "$BINARY_PATH"
+                else
+                    echo "Warning: Binary not found at $BINARY_PATH"
                 fi
 
                 echo "--- PACKAGING (DMG) ---"

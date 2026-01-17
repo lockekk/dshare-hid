@@ -53,7 +53,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>About Deskflow-HID</source>
-        <translation type="unfinished"></translation>
+        <translation>Deskflow-HID について</translation>
     </message>
 </context>
 <context>
@@ -147,7 +147,7 @@ p, li { white-space: pre-wrap; }
     <name>DeskflowHidExtension</name>
     <message>
         <source>Bridge Client Logs</source>
-        <translation type="unfinished"></translation>
+        <translation>ブリッジクライアントログ</translation>
     </message>
     <message>
         <source>ESP32 HID Tools</source>
@@ -201,19 +201,19 @@ File -&gt; Firmware -&gt; Order.</source>
     </message>
     <message>
         <source>Factory firmware detected. Please update firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>工場出荷時ファームウェアを検出しました。ファームウェアを更新してください。</translation>
     </message>
     <message>
         <source>Factory firmware detected on %1. Auto-connect disabled.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 で工場出荷時ファームウェアを検出しました。自動接続を無効にしました。</translation>
     </message>
     <message>
         <source>Device handshake failed. Possibly not a Deskflow-HID firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスのハンドシェイクに失敗しました。Deskflow-HID ファームウェアではない可能性があります。</translation>
     </message>
     <message>
         <source>Handshake failed on %1. Auto-connect disabled.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 でのハンドシェイクに失敗しました。自動接続を無効にしました。</translation>
     </message>
     <message>
         <source>Server is down. Auto-connect will resume once the server starts.</source>
@@ -253,7 +253,7 @@ File -&gt; Firmware -&gt; Order.</source>
     </message>
     <message>
         <source>Device disconnected.</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスが切断されました。</translation>
     </message>
 </context>
 <context>
@@ -469,11 +469,11 @@ Do you want to connect to the server?
     </message>
     <message>
         <source>ESP32 HID Tools are not available in this build (submodule missing).</source>
-        <translation>このビルドでは ESP32 HID ツールは利用できません (サブモジュール欠落)。</translation>
+        <translation>このビルドでは ESP32 HID ツールは利用できません (サブモジュールがありません)。</translation>
     </message>
     <message>
         <source>invalid certificate, generating a new one</source>
-        <translation type="unfinished">無効な証明書、新しい証明書を生成しています</translation>
+        <translation>証明書が無効です。新しい証明書を生成しています</translation>
     </message>
     <message>
         <source>A new version v%1 is available</source>
@@ -537,7 +537,7 @@ Do you want to connect to the server?
     </message>
     <message>
         <source>Using IP: </source>
-        <translation type="unfinished">IPアドレスを使用する： </translation>
+        <translation>使用中の IP: </translation>
     </message>
     <message>
         <source>&lt;p&gt;If connecting via the hostname fails, try %1&lt;/p&gt;</source>
@@ -640,7 +640,7 @@ A bound IP is now invalid, you may need to restart the server.</source>
     </message>
     <message>
         <source>Firmware (Unavailable)</source>
-        <translation type="unfinished"></translation>
+        <translation>ファームウェア (利用不可)</translation>
     </message>
     <message>
         <source>About %1...</source>
@@ -707,17 +707,17 @@ Valid names:
     </message>
     <message>
         <source>Suggested IP: </source>
-        <translation type="unfinished">推奨IPアドレス: </translation>
+        <translation>推奨 IP: </translation>
     </message>
     <message>
         <source>The Core executable could not be successfully started, although it does exist. Please check if you have sufficient permissions to run this program.</source>
-        <translation>コア実行ファイルは存在していますが、起動できませんでした。このプログラムを実行するのに十分な権限があることを確認してください。</translation>
+        <translation>Core 実行ファイルは存在しますが、正常に起動できませんでした。このプログラムを実行するための十分な権限があるか確認してください。</translation>
     </message>
     <message>
         <source>Use another computer&apos;s mouse and keyboard
 (make this computer the client)</source>
-        <translation>別のコンピュータのマウスとキーボードを使用する
-(このコンピュータをクライアントにする)</translation>
+        <translation>別のコンピューターのマウスとキーボードを使用する
+(このコンピューターをクライアントにする)</translation>
     </message>
     <message>
         <source>Bridge Clients</source>
@@ -729,7 +729,7 @@ Valid names:
     </message>
     <message>
         <source>Another Deskflow server instance is already running in the background. Please close the existing server before starting a new one.</source>
-        <translation>別の Deskflow サーバーインスタンスがバックグラウンドで実行中です。新しいサーバーを起動する前に既存のサーバーを閉じてください。</translation>
+        <translation>別の Deskflow サーバーインスタンスがバックグラウンドで既に実行されています。新しいインスタンスを開始する前に、既存のサーバーを閉じてください。</translation>
     </message>
     <message>
         <source>Firmware</source>
@@ -794,7 +794,7 @@ Valid names:
     </message>
     <message>
         <source>&lt;p&gt;Great, the %1 server is now running.&lt;/p&gt;&lt;p&gt;Now you can connect your client computers to this server. You should see a prompt here on the server when a new client tries to connect.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;すばらしい、%1 サーバーが起動できました。&lt;/p&gt;&lt;p&gt;これでクライアントをこのサーバーに接続できます。新しいクライアントが接続する際にはここに通知が表示されます。&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;素晴らしい。%1 サーバーが実行されました。&lt;/p&gt;&lt;p&gt;これでクライアントコンピューターをこのサーバーに接続できます。新しいクライアントが接続を試みると、サーバーにプロンプトが表示されます。&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;p&gt;%1 is now connected!&lt;/p&gt;</source>
@@ -826,7 +826,7 @@ Valid names:
     </message>
     <message>
         <source>&lt;p&gt;A Client with your name is already connected to the server.&lt;/p&gt;Please ensure that you&apos;re using a unique name and that only a single instance of the client process is running.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;同じ名前のクライアントがサーバーに接続済です。&lt;/p&gt;&lt;p&gt;名前の重複がないことと、クライアントプロセスが多重起動していない事を確認してください。&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;あなたの名前のクライアントが既にサーバーに接続されています。&lt;/p&gt;一意の名前を使用し、クライアントプロセスの単一インスタンスのみが実行されていることを確認してください。&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;p&gt;Please try to connect to the server using the server IP address instead of the hostname. &lt;/p&gt;&lt;p&gt;If that doesn&apos;t work, please check your TLS and firewall settings.&lt;/p&gt;</source>
@@ -850,7 +850,7 @@ Valid names:
     </message>
     <message>
         <source>A new client called &apos;%1&apos; has been accepted. You&apos;ll need to add it to your server&apos;s screen layout.</source>
-        <translation>新しいクライアント &apos;%1&apos; が接続許可されました。サーバーのコンピューター配置に追加してください。</translation>
+        <translation>新しいクライアント &apos;%1&apos; が承認されました。サーバーの画面レイアウトに追加する必要があります。</translation>
     </message>
     <message>
         <source>Ignore</source>
@@ -915,42 +915,44 @@ Valid names:
     <message>
         <source>failed to read key from certificate file: %1</source>
         <extracomment>%1 will be replaced by the certificate path</extracomment>
-        <translation type="unfinished">証明書ファイルからキーを読み取ることができませんでした: %1</translation>
+        <translation>証明書ファイルからのキーの読み取りに失敗しました: %1</translation>
     </message>
     <message>
         <source>failed to parse certificate file: %1</source>
         <extracomment>%1 will be replaced by the certificate path</extracomment>
-        <translation type="unfinished">証明書ファイルの解析に失敗しました: %1</translation>
+        <translation>証明書ファイルの解析に失敗しました: %1</translation>
     </message>
     <message>
         <source>key detected is the incorrect size</source>
-        <translation type="unfinished">検出されたキーのサイズが正しくありません</translation>
+        <translation>検出されたキーのサイズが正しくありません</translation>
     </message>
     <message>
         <source>failed to read RSA key from certificate file: %1</source>
         <extracomment>%1 will be replaced by the certificate path</extracomment>
-        <translation type="unfinished">証明書ファイルから RSA キーを読み取ることができませんでした: %1</translation>
+        <translation>証明書ファイルからの RSA キーの読み取りに失敗しました: %1</translation>
     </message>
     <message>
         <source>There is another Deskflow server is already running and has been brought to the foreground.
 This new instance cannot start and will exit now.</source>
-        <translation type="unfinished"></translation>
+        <translation>別の Deskflow サーバーが既に実行されており、最前面に表示されました。
+この新しいインスタンスは開始できず、終了します。</translation>
     </message>
     <message>
         <source>Deskflow is already running.
 This new instance cannot start another server, so it will now exit.</source>
-        <translation type="unfinished"></translation>
+        <translation>Deskflow は既に実行中です。
+この新しいインスタンスは別のサーバーを開始できないため、終了します。</translation>
     </message>
     <message>
         <source>Deskflow</source>
-        <translation type="unfinished"></translation>
+        <translation>Deskflow</translation>
     </message>
 </context>
 <context>
     <name>ScreenSettingsDialog</name>
     <message>
         <source>Computer settings</source>
-        <translation>コンピューター設定</translation>
+        <translation>コンピューターの設定</translation>
     </message>
     <message>
         <source>Computer Info</source>
@@ -1050,7 +1052,7 @@ This new instance cannot start another server, so it will now exit.</source>
     </message>
     <message>
         <source>XTest for Xinerama</source>
-        <translation>Xinerama での XTest</translation>
+        <translation>Xinerama 用 XTest</translation>
     </message>
     <message>
         <source>Aliases</source>
@@ -1277,11 +1279,11 @@ Enabling this setting will disable the server config GUI.</source>
     </message>
     <message>
         <source>Enable lock to computer at startup</source>
-        <translation>起動時にコンピューター間移動のロックを有効にする</translation>
+        <translation>起動時にコンピュータへのロックを有効にする</translation>
     </message>
     <message>
         <source>Delete Bridge Client Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>ブリッジクライアント構成を削除</translation>
     </message>
     <message>
         <source>The screen &apos;%1&apos; is a bridge client.
@@ -1294,11 +1296,11 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Deletion Failed</source>
-        <translation type="unfinished"></translation>
+        <translation>削除に失敗しました</translation>
     </message>
     <message>
         <source>Failed to delete bridge client configuration file for &apos;%1&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>&apos;%1&apos; のブリッジクライアント設定ファイルの削除に失敗しました。</translation>
     </message>
 </context>
 <context>
@@ -1457,7 +1459,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Always run as system (work at login screen and UAC)</source>
-        <translation>常にsystem権限で実行する(ログイン画面とUACで必要)</translation>
+        <translation>常にシステムとして実行（ログイン画面および UAC で動作）</translation>
     </message>
     <message>
         <source>Force a language to be used for the GUI.</source>
@@ -1525,7 +1527,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Automatic</source>
-        <translation type="unfinished">自動</translation>
+        <translation>自動</translation>
     </message>
 </context>
 <context>
@@ -1784,7 +1786,7 @@ Duplicate: %1</source>
     <name>deskflow::gui::BridgeDeviceService</name>
     <message>
         <source>Failed to open device after retries.</source>
-        <translation type="unfinished"></translation>
+        <translation>再試行後にデバイスを開くことができませんでした。</translation>
     </message>
 </context>
 <context>
@@ -2143,7 +2145,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Please enter Bootloader mode to flash Factory Firmware.</source>
-        <translation>工場ファームウェアを書き込むにはブートローダーモードに入ってください。</translation>
+        <translation>工場ファームウェアを書き込むするにはブートローダーモードに入ってください。</translation>
     </message>
     <message>
         <source>Flash Success!</source>
@@ -2415,7 +2417,7 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Found upgrade firmware: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>アップグレードファームウェアが見つかりました: %1</translation>
     </message>
     <message>
         <source>State: Factory Mode (Cannot Activate)</source>
@@ -2577,7 +2579,7 @@ Your firmware will be back in 24 hours.</source>
     </message>
     <message>
         <source>State: %1, %2 Profiles</source>
-        <translation type="unfinished"></translation>
+        <translation>状態: %1, %2 プロファイル</translation>
     </message>
     <message>
         <source>Failed to refresh state: %1</source>
@@ -2617,27 +2619,27 @@ Your firmware will be back in 24 hours.</source>
     </message>
     <message>
         <source>Waiting for user to reconnect device...</source>
-        <translation type="unfinished"></translation>
+        <translation>ユーザーがデバイスを再接続するのを待機しています...</translation>
     </message>
     <message>
         <source>Reconnect Device</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスを再接続</translation>
     </message>
     <message>
         <source>Please disconnect and reconnect the device now.</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスを一度切断し、再度接続してください。</translation>
     </message>
     <message>
         <source>I have reconnected the device</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスを再接続しました</translation>
     </message>
     <message>
         <source>User confirmed reconnection.</source>
-        <translation type="unfinished"></translation>
+        <translation>ユーザーが再接続を確認しました。</translation>
     </message>
     <message>
         <source>Reminder: Press &apos;Boot&apos; button then plugin your ESP32-C3. Click Refresh button to ensure the device is detected.</source>
-        <translation type="unfinished"></translation>
+        <translation>リマインダー: &apos;Boot&apos; ボタンを押しながら ESP32-C3 を接続してください。更新ボタンをクリックしてデバイスが検出されることを確認してください。</translation>
     </message>
 </context>
 <context>

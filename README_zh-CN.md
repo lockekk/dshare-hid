@@ -51,7 +51,10 @@ Deskflow-HID 使用经济实惠的 **ESP32-C3 Supermini** 开发板作为物理�
 如果您已安装 [Homebrew](https://brew.sh/)：
 
 ```bash
-# 安装
+# 1. 添加 Tap 仓库
+brew tap lockekk/deskflow
+
+# 2. 安装
 brew install --cask deskflow-hid
 
 # 卸载

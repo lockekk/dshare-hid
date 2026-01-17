@@ -53,7 +53,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>About Deskflow-HID</source>
-        <translation type="unfinished"></translation>
+        <translation>Acerca de Deskflow-HID</translation>
     </message>
 </context>
 <context>
@@ -147,104 +147,105 @@ p, li { white-space: pre-wrap; }
     <name>DeskflowHidExtension</name>
     <message>
         <source>Bridge Client Logs</source>
-        <translation type="unfinished"></translation>
+        <translation>Registros del cliente puente</translation>
     </message>
     <message>
         <source>ESP32 HID Tools</source>
-        <translation type="unfinished"></translation>
+        <translation>Herramientas HID ESP32</translation>
     </message>
     <message>
         <source>Ready</source>
-        <translation type="unfinished"></translation>
+        <translation>Listo</translation>
     </message>
     <message>
         <source>Unknown Device</source>
-        <translation type="unfinished"></translation>
+        <translation>Dispositivo desconocido</translation>
     </message>
     <message>
         <source>Bridge client device plugged in: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Dispositivo cliente puente conectado: %1</translation>
     </message>
     <message>
         <source>Bridge client device unplugged: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Dispositivo cliente puente desconectado: %1</translation>
     </message>
     <message>
         <source>Error: No configuration found for device: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Error: No se encontró configuración para el dispositivo: %1</translation>
     </message>
     <message>
         <source>Error: Cannot connect. Device path is empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>Error: No se puede conectar. La ruta del dispositivo está vacía.</translation>
     </message>
     <message>
         <source>Already connected via another profile</source>
-        <translation type="unfinished"></translation>
+        <translation>Ya está conectado a través de otro perfil</translation>
     </message>
     <message>
         <source>Activation Required</source>
-        <translation type="unfinished"></translation>
+        <translation>Activación requerida</translation>
     </message>
     <message>
         <source>Free trial is expired. Please consider purchasing a license via 
 File -&gt; Firmware -&gt; Order.</source>
-        <translation type="unfinished"></translation>
+        <translation>La prueba gratuita ha expirado. Por favor, considere comprar una licencia a través de 
+Archivo -&gt; Firmware -&gt; Pedido.</translation>
     </message>
     <message>
         <source>Starting bridge client: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Iniciando cliente puente: %1</translation>
     </message>
     <message>
         <source>Failed to start bridge client: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al iniciar el cliente puente: %1</translation>
     </message>
     <message>
         <source>Factory firmware detected. Please update firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>Firmware de fábrica detectado. Por favor, actualice el firmware.</translation>
     </message>
     <message>
         <source>Factory firmware detected on %1. Auto-connect disabled.</source>
-        <translation type="unfinished"></translation>
+        <translation>Firmware de fábrica detectado en %1. Conexión automática desactivada.</translation>
     </message>
     <message>
         <source>Device handshake failed. Possibly not a Deskflow-HID firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fallo en la negociación del dispositivo. Posiblemente no sea un firmware Deskflow-HID.</translation>
     </message>
     <message>
         <source>Handshake failed on %1. Auto-connect disabled.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fallo en la negociación en %1. Conexión automática desactivada.</translation>
     </message>
     <message>
         <source>Server is down. Auto-connect will resume once the server starts.</source>
-        <translation type="unfinished"></translation>
+        <translation>El servidor está caído. La conexión automática se reanudará cuando el servidor se inicie.</translation>
     </message>
     <message>
         <source>Locked</source>
-        <translation type="unfinished"></translation>
+        <translation>Bloqueado</translation>
     </message>
     <message>
         <source>Locked by %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Bloqueado por %1</translation>
     </message>
     <message>
         <source>Feature Unavailable</source>
-        <translation type="unfinished"></translation>
+        <translation>Función no disponible</translation>
     </message>
     <message>
         <source>The ESP32 HID Tools module is not available in this build.</source>
-        <translation type="unfinished"></translation>
+        <translation>El módulo de herramientas HID ESP32 no está disponible en esta compilación.</translation>
     </message>
     <message>
         <source>Device disconnected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dispositivo desconectado.</translation>
     </message>
     <message>
         <source>Connection failed. Retrying auto-connect (%1/3)...</source>
-        <translation type="unfinished"></translation>
+        <translation>Fallo en la conexión. Reintentando conexión automática (%1/3)...</translation>
     </message>
     <message>
         <source>Auto-connect failed. Giving up after 3 attempts.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fallo en la conexión automática. Desistiendo tras 3 intentos.</translation>
     </message>
 </context>
 <context>
@@ -480,7 +481,7 @@ Do you want to connect to the server?
     </message>
     <message>
         <source>ESP32 HID Tools are not available in this build (submodule missing).</source>
-        <translation type="unfinished"></translation>
+        <translation>Las herramientas HID ESP32 no están disponibles en esta compilación (falta el submódulo).</translation>
     </message>
     <message>
         <source>Address missing</source>
@@ -540,11 +541,11 @@ Do you want to connect to the server?
     </message>
     <message>
         <source>Using IP: </source>
-        <translation type="unfinished">Usando IP: </translation>
+        <translation>Usando IP: </translation>
     </message>
     <message>
         <source>Suggested IP: </source>
-        <translation type="unfinished">IP sugerida: </translation>
+        <translation>IP sugerida: </translation>
     </message>
     <message>
         <source>&lt;p&gt;If connecting via the hostname fails, try %1&lt;/p&gt;</source>
@@ -586,7 +587,7 @@ La dirección IP asignada ahora no es válida; es posible que deba reiniciar el 
     </message>
     <message>
         <source>invalid certificate, generating a new one</source>
-        <translation type="unfinished">certificado no válido, generando uno nuevo</translation>
+        <translation>certificado no válido, generando uno nuevo</translation>
     </message>
     <message>
         <source>%1 will retry in a moment...</source>
@@ -618,7 +619,7 @@ La dirección IP asignada ahora no es válida; es posible que deba reiniciar el 
     </message>
     <message>
         <source>Firmware (Unavailable)</source>
-        <translation type="unfinished"></translation>
+        <translation>Firmware (No disponible)</translation>
     </message>
     <message>
         <source>Ctrl+Q</source>
@@ -667,28 +668,29 @@ Nombres válidos:
     </message>
     <message>
         <source>The Core executable could not be successfully started, although it does exist. Please check if you have sufficient permissions to run this program.</source>
-        <translation type="unfinished">No se pudo iniciar el archivo ejecutable principal, aunque existe. Compruebe si tiene permisos suficientes para ejecutar este programa.</translation>
+        <translation>El ejecutable Core no se pudo iniciar con éxito, aunque existe. Por favor, compruebe si tiene permisos suficientes para ejecutar este programa.</translation>
     </message>
     <message>
         <source>Use another computer&apos;s mouse and keyboard
 (make this computer the client)</source>
-        <translation type="unfinished"></translation>
+        <translation>Usar el ratón y el teclado de otra computadora
+(hacer que esta computadora sea el cliente)</translation>
     </message>
     <message>
         <source>Bridge Clients</source>
-        <translation type="unfinished"></translation>
+        <translation>Clientes puente</translation>
     </message>
     <message>
         <source>Server already running</source>
-        <translation type="unfinished"></translation>
+        <translation>El servidor ya está funcionando</translation>
     </message>
     <message>
         <source>Another Deskflow server instance is already running in the background. Please close the existing server before starting a new one.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ya se está ejecutando otra instancia del servidor Deskflow en segundo plano. Por favor, cierre el servidor existente antes de iniciar uno nuevo.</translation>
     </message>
     <message>
         <source>Firmware</source>
-        <translation type="unfinished"></translation>
+        <translation>Firmware</translation>
     </message>
 </context>
 <context>
@@ -747,7 +749,7 @@ Nombres válidos:
     </message>
     <message>
         <source>&lt;p&gt;Great, the %1 server is now running.&lt;/p&gt;&lt;p&gt;Now you can connect your client computers to this server. You should see a prompt here on the server when a new client tries to connect.&lt;/p&gt;</source>
-        <translation type="unfinished">&lt;p&gt;Genial, el servidor %1 ya está en funcionamiento.&lt;/p&gt;&lt;p&gt;Ahora puedes conectar tus equipos cliente a este servidor. Deberías ver un aviso aquí en el servidor cuando un nuevo cliente intente conectarse.&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;Genial, el servidor %1 ya está funcionando.&lt;/p&gt;&lt;p&gt;Ahora puede conectar sus computadoras cliente a este servidor. Debería ver un aviso aquí en el servidor cuando un nuevo cliente intente conectarse.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;p&gt;%1 is now connected!&lt;/p&gt;</source>
@@ -779,7 +781,7 @@ Nombres válidos:
     </message>
     <message>
         <source>&lt;p&gt;A Client with your name is already connected to the server.&lt;/p&gt;Please ensure that you&apos;re using a unique name and that only a single instance of the client process is running.&lt;/p&gt;</source>
-        <translation type="unfinished">&lt;p&gt;Ya hay un cliente conectado al servidor con su nombre.&lt;/p&gt;Asegúrese de utilizar un nombre único y de que solo se esté ejecutando una única instancia del proceso del cliente.&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;Un cliente con su nombre ya está conectado al servidor.&lt;/p&gt;Asegúrese de que está usando un nombre único y de que solo se está ejecutando una instancia del proceso del cliente.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;p&gt;Please try to connect to the server using the server IP address instead of the hostname. &lt;/p&gt;&lt;p&gt;If that doesn&apos;t work, please check your TLS and firewall settings.&lt;/p&gt;</source>
@@ -803,7 +805,7 @@ Nombres válidos:
     </message>
     <message>
         <source>A new client called &apos;%1&apos; has been accepted. You&apos;ll need to add it to your server&apos;s screen layout.</source>
-        <translation type="unfinished">Se ha aceptado un nuevo cliente llamado &apos;%1&apos;. Deberá agregarlo al diseño de pantalla de su servidor.</translation>
+        <translation>Se ha aceptado un nuevo cliente llamado &apos;%1&apos;. Deberá añadirlo al diseño de pantalla de su servidor.</translation>
     </message>
     <message>
         <source>Ignore</source>
@@ -868,54 +870,56 @@ Nombres válidos:
     <message>
         <source>failed to read key from certificate file: %1</source>
         <extracomment>%1 will be replaced by the certificate path</extracomment>
-        <translation type="unfinished">No se pudo leer la clave del archivo de certificado: %1</translation>
+        <translation>error al leer la clave del archivo de certificado: %1</translation>
     </message>
     <message>
         <source>failed to parse certificate file: %1</source>
         <extracomment>%1 will be replaced by the certificate path</extracomment>
-        <translation type="unfinished">Error al analizar el archivo de certificado: %1</translation>
+        <translation>error al analizar el archivo de certificado: %1</translation>
     </message>
     <message>
         <source>key detected is the incorrect size</source>
-        <translation type="unfinished">La clave detectada es de tamaño incorrecto</translation>
+        <translation>la clave detectada tiene un tamaño incorrecto</translation>
     </message>
     <message>
         <source>failed to read RSA key from certificate file: %1</source>
         <extracomment>%1 will be replaced by the certificate path</extracomment>
-        <translation type="unfinished">No se pudo leer la clave RSA del archivo de certificado: %1</translation>
+        <translation>error al leer la clave RSA del archivo de certificado: %1</translation>
     </message>
     <message>
         <source>There is another Deskflow server is already running and has been brought to the foreground.
 This new instance cannot start and will exit now.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ya se está ejecutando otro servidor Deskflow y se ha traído al primer plano.
+Esta nueva instancia no puede iniciarse y se cerrará ahora.</translation>
     </message>
     <message>
         <source>Deskflow is already running.
 This new instance cannot start another server, so it will now exit.</source>
-        <translation type="unfinished"></translation>
+        <translation>Deskflow ya se está ejecutando.
+Esta nueva instancia no puede iniciar otro servidor, por lo que se cerrará ahora.</translation>
     </message>
     <message>
         <source>Deskflow</source>
-        <translation type="unfinished"></translation>
+        <translation>Deskflow</translation>
     </message>
 </context>
 <context>
     <name>ScreenSettingsDialog</name>
     <message>
         <source>Computer settings</source>
-        <translation type="unfinished">Información de la computadora</translation>
+        <translation>Ajustes de la computadora</translation>
     </message>
     <message>
         <source>Computer Info</source>
-        <translation type="unfinished">Información de la computadora</translation>
+        <translation>Información de la computadora</translation>
     </message>
     <message>
         <source>Name</source>
-        <translation type="unfinished">Nombre</translation>
+        <translation>Nombre</translation>
     </message>
     <message>
         <source>Modifier Keys</source>
-        <translation type="unfinished">Teclas modificadoras</translation>
+        <translation>Teclas modificadoras</translation>
     </message>
     <message>
         <source>M&amp;eta</source>
@@ -1003,7 +1007,7 @@ This new instance cannot start another server, so it will now exit.</source>
     </message>
     <message>
         <source>XTest for Xinerama</source>
-        <translation type="unfinished">XTest para Xinerama</translation>
+        <translation>XTest para Xinerama</translation>
     </message>
     <message>
         <source>Aliases</source>
@@ -1230,11 +1234,11 @@ Al habilitar esta opción, se deshabilitará la interfaz gráfica de usuario (GU
     </message>
     <message>
         <source>Enable lock to computer at startup</source>
-        <translation type="unfinished">Activar el bloqueo del ordenador al iniciar</translation>
+        <translation>Habilitar bloqueo a la computadora al iniciar</translation>
     </message>
     <message>
         <source>Delete Bridge Client Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Eliminar configuración del cliente puente</translation>
     </message>
     <message>
         <source>The screen &apos;%1&apos; is a bridge client.
@@ -1247,11 +1251,11 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Deletion Failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Fallo en la eliminación</translation>
     </message>
     <message>
         <source>Failed to delete bridge client configuration file for &apos;%1&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al eliminar el archivo de configuración del cliente puente para &apos;%1&apos;.</translation>
     </message>
 </context>
 <context>
@@ -1406,7 +1410,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Always run as system (work at login screen and UAC)</source>
-        <translation type="unfinished">Ejecutar siempre como sistema (funcionar en la pantalla de inicio de sesión y UAC)</translation>
+        <translation>Ejecutar siempre como sistema (funciona en pantalla de inicio de sesión y UAC)</translation>
     </message>
     <message>
         <source>Required messages</source>
@@ -1478,90 +1482,90 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Automatic</source>
-        <translation type="unfinished">Automática</translation>
+        <translation>Automático</translation>
     </message>
 </context>
 <context>
     <name>deskflow::gui::BridgeClientConfigDialog</name>
     <message>
         <source>Bridge Client Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Configuración del cliente puente</translation>
     </message>
     <message>
         <source>Screen Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nombre de pantalla:</translation>
     </message>
     <message>
         <source>A-Z, 0-9, spaces, .-_ (max 22 chars)</source>
-        <translation type="unfinished"></translation>
+        <translation>A-Z, 0-9, espacios, .-_ (máx. 22 caracteres)</translation>
     </message>
     <message>
         <source>Landscape</source>
-        <translation type="unfinished"></translation>
+        <translation>Horizontal</translation>
     </message>
     <message>
         <source>Portrait</source>
-        <translation type="unfinished"></translation>
+        <translation>Vertical</translation>
     </message>
     <message>
         <source>Keyboard + Mouse</source>
-        <translation type="unfinished"></translation>
+        <translation>Teclado + Ratón</translation>
     </message>
     <message>
         <source>Switched to %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Cambiado a %1</translation>
     </message>
     <message>
         <source>Rename Failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al renombrar</translation>
     </message>
     <message>
         <source>Failed to rename config file from &apos;%1&apos; to &apos;%2&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al renombrar el archivo de configuración de &apos;%1&apos; a &apos;%2&apos;</translation>
     </message>
     <message>
         <source>Invalid Input</source>
-        <translation type="unfinished"></translation>
+        <translation>Entrada no válida</translation>
     </message>
     <message>
         <source>Screen name cannot be empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>El nombre de pantalla no puede estar vacío.</translation>
     </message>
     <message>
         <source>Device name cannot be empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>El nombre del dispositivo no puede estar vacío.</translation>
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished">Error</translation>
+        <translation>Error</translation>
     </message>
     <message>
         <source>Success</source>
-        <translation type="unfinished"></translation>
+        <translation>Éxito</translation>
     </message>
     <message>
         <source>Advanced</source>
-        <translation type="unfinished">Avanzado</translation>
+        <translation>Avanzado</translation>
     </message>
     <message>
         <source>Device name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nombre del dispositivo:</translation>
     </message>
     <message>
         <source>Automatically disconnect Bluetooth</source>
-        <translation type="unfinished"></translation>
+        <translation>Desconectar Bluetooth automáticamente</translation>
     </message>
     <message>
         <source>Disconnects from the host device when you stop using Deskflow.</source>
-        <translation type="unfinished"></translation>
+        <translation>Se desconecta del dispositivo host cuando deja de usar Deskflow.</translation>
     </message>
     <message>
         <source>Auto-connect when USB device plugged in</source>
-        <translation type="unfinished"></translation>
+        <translation>Conexión automática al conectar dispositivo USB</translation>
     </message>
     <message>
         <source>Automatically connect to the Deskflow server when the device is plugged in.</source>
-        <translation type="unfinished"></translation>
+        <translation>Conectarse automáticamente al servidor Deskflow cuando el dispositivo está conectado.</translation>
     </message>
     <message>
         <source>Automatically restore screen location for the active profile</source>
@@ -1569,43 +1573,43 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Profiles (Device)</source>
-        <translation type="unfinished"></translation>
+        <translation>Perfiles (Dispositivo)</translation>
     </message>
     <message>
         <source>A-Z, 0-9, spaces, .-_ (max 31 chars)</source>
-        <translation type="unfinished"></translation>
+        <translation>A-Z, 0-9, espacios, .-_ (máx. 31 caracteres)</translation>
     </message>
     <message>
         <source>Hostname:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nombre de host:</translation>
     </message>
     <message>
         <source>Resolution:</source>
-        <translation type="unfinished"></translation>
+        <translation>Resolución:</translation>
     </message>
     <message>
         <source>Orientation:</source>
-        <translation type="unfinished"></translation>
+        <translation>Orientación:</translation>
     </message>
     <message>
         <source>Mouse Only</source>
-        <translation type="unfinished"></translation>
+        <translation>Solo ratón</translation>
     </message>
     <message>
         <source>HID Mode:</source>
-        <translation type="unfinished"></translation>
+        <translation>Modo HID:</translation>
     </message>
     <message>
         <source>Invert direction</source>
-        <translation type="unfinished"></translation>
+        <translation>Invertir dirección</translation>
     </message>
     <message>
         <source>Reset</source>
-        <translation type="unfinished"></translation>
+        <translation>Restablecer</translation>
     </message>
     <message>
         <source>Activate</source>
-        <translation type="unfinished"></translation>
+        <translation>Activar</translation>
     </message>
     <message>
         <source>When enabled, the saved screen location for the active profile will be restored automatically.</source>
@@ -1613,409 +1617,410 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Device must be activated to change its name.</source>
-        <translation type="unfinished"></translation>
+        <translation>El dispositivo debe estar activado para cambiar su nombre.</translation>
     </message>
     <message>
         <source>Profiles (Device Not Connected)</source>
-        <translation type="unfinished"></translation>
+        <translation>Perfiles (Dispositivo no conectado)</translation>
     </message>
     <message>
         <source>Profiles (Failed to Open Device)</source>
-        <translation type="unfinished"></translation>
+        <translation>Perfiles (Error al abrir el dispositivo)</translation>
     </message>
     <message>
         <source>Failed to open device</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al abrir el dispositivo</translation>
     </message>
     <message>
         <source>Profile saved to device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Perfil guardado en el dispositivo.</translation>
     </message>
     <message>
         <source>Failed to save profile: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al guardar el perfil: %1</translation>
     </message>
     <message>
         <source>Failed to switch profile: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al cambiar el perfil: %1</translation>
     </message>
     <message>
         <source>Confirm Reset</source>
-        <translation type="unfinished"></translation>
+        <translation>Confirmar restablecimiento</translation>
     </message>
     <message>
         <source>Are you sure you want to reset and erase this profile?</source>
-        <translation type="unfinished"></translation>
+        <translation>¿Está seguro de que desea restablecer y borrar este perfil?</translation>
     </message>
     <message>
         <source>Profile erased.</source>
-        <translation type="unfinished"></translation>
+        <translation>Perfil borrado.</translation>
     </message>
     <message>
         <source>Failed to erase profile: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al borrar el perfil: %1</translation>
     </message>
     <message>
         <source>Duplicate Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Configuración duplicada</translation>
     </message>
     <message>
         <source>A configuration for this device serial number already exists.
 Duplicate: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Ya existe una configuración para este número de serie de dispositivo.
+Duplicado: %1</translation>
     </message>
     <message>
         <source>Save to Device</source>
-        <translation type="unfinished"></translation>
+        <translation>Guardar en el dispositivo</translation>
     </message>
     <message>
         <source>Scroll speed:</source>
-        <translation type="unfinished"></translation>
+        <translation>Velocidad de desplazamiento:</translation>
     </message>
 </context>
 <context>
     <name>deskflow::gui::BridgeClientWidget</name>
     <message>
         <source>Connect</source>
-        <translation type="unfinished">Conectar</translation>
+        <translation>Conectar</translation>
     </message>
     <message>
         <source>Connect/disconnect bridge client</source>
-        <translation type="unfinished"></translation>
+        <translation>Conectar/desconectar cliente puente</translation>
     </message>
     <message>
         <source>Configure</source>
-        <translation type="unfinished"></translation>
+        <translation>Configurar</translation>
     </message>
     <message>
         <source>Configure bridge client settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Configurar ajustes del cliente puente</translation>
     </message>
     <message>
         <source>--</source>
-        <translation type="unfinished"></translation>
+        <translation>--</translation>
     </message>
     <message>
         <source>unknown</source>
-        <translation type="unfinished"></translation>
+        <translation>desconocido</translation>
     </message>
     <message>
         <source>Disconnect</source>
-        <translation type="unfinished">Desconectar</translation>
+        <translation>Desconectar</translation>
     </message>
     <message>
         <source>Device not connected</source>
-        <translation type="unfinished"></translation>
+        <translation>Dispositivo no conectado</translation>
     </message>
     <message>
         <source>Waiting for server to start...</source>
-        <translation type="unfinished"></translation>
+        <translation>Esperando a que el servidor se inicie...</translation>
     </message>
     <message>
         <source>Another profile for this device is already connected</source>
-        <translation type="unfinished"></translation>
+        <translation>Ya hay otro perfil para este dispositivo conectado</translation>
     </message>
     <message>
         <source>Disconnect before configuring</source>
-        <translation type="unfinished"></translation>
+        <translation>Desconectar antes de configurar</translation>
     </message>
     <message>
         <source>This profile is locked because another one is connected</source>
-        <translation type="unfinished"></translation>
+        <translation>Este perfil está bloqueado porque hay otro conectado</translation>
     </message>
     <message>
         <source>Landscape</source>
-        <translation type="unfinished"></translation>
+        <translation>Horizontal</translation>
     </message>
     <message>
         <source>Portrait</source>
-        <translation type="unfinished"></translation>
+        <translation>Vertical</translation>
     </message>
 </context>
 <context>
     <name>deskflow::gui::BridgeDeviceService</name>
     <message>
         <source>Failed to open device after retries.</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al abrir el dispositivo tras varios reintentos.</translation>
     </message>
 </context>
 <context>
     <name>deskflow::gui::Esp32HidToolsWidget</name>
     <message>
         <source>Firmware Flash Tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Herramienta de flasheo de firmware</translation>
     </message>
     <message>
         <source>Firmware Flash Tool - %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Herramienta de flasheo de firmware - %1</translation>
     </message>
     <message>
         <source>Refresh</source>
-        <translation type="unfinished"></translation>
+        <translation>Actualizar</translation>
     </message>
     <message>
         <source>Port:</source>
-        <translation type="unfinished"></translation>
+        <translation>Puerto:</translation>
     </message>
     <message>
         <source>Path to factory.fzip</source>
-        <translation type="unfinished"></translation>
+        <translation>Ruta a factory.fzip</translation>
     </message>
     <message>
         <source>Browse...</source>
-        <translation type="unfinished"></translation>
+        <translation>Examinar...</translation>
     </message>
     <message>
         <source>Factory Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Modo fábrica</translation>
     </message>
     <message>
         <source>Current Version: Unknown</source>
-        <translation type="unfinished"></translation>
+        <translation>Versión actual: Desconocida</translation>
     </message>
     <message>
         <source>Latest Version: Unknown</source>
-        <translation type="unfinished"></translation>
+        <translation>Última versión: Desconocida</translation>
     </message>
     <message>
         <source>Check for Updates</source>
-        <translation type="unfinished"></translation>
+        <translation>Buscar actualizaciones</translation>
     </message>
     <message>
         <source>Path to upgrade.uzip</source>
-        <translation type="unfinished"></translation>
+        <translation>Ruta a upgrade.uzip</translation>
     </message>
     <message>
         <source>File:</source>
-        <translation type="unfinished"></translation>
+        <translation>Archivo:</translation>
     </message>
     <message>
         <source>Upgrade Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Modo de actualización</translation>
     </message>
     <message>
         <source>State: Unknown</source>
-        <translation type="unfinished"></translation>
+        <translation>Estado: Desconocido</translation>
     </message>
     <message>
         <source>Serial:</source>
-        <translation type="unfinished"></translation>
+        <translation>Serie:</translation>
     </message>
     <message>
         <source>-</source>
-        <translation type="unfinished"></translation>
+        <translation>-</translation>
     </message>
     <message>
         <source>Copy Serial</source>
-        <translation type="unfinished"></translation>
+        <translation>Copiar serie</translation>
     </message>
     <message>
         <source>Paste Activation Key Here</source>
-        <translation type="unfinished"></translation>
+        <translation>Pegue la clave de activación aquí</translation>
     </message>
     <message>
         <source>Activate</source>
-        <translation type="unfinished"></translation>
+        <translation>Activar</translation>
     </message>
     <message>
         <source>Activation Key:</source>
-        <translation type="unfinished"></translation>
+        <translation>Clave de activación:</translation>
     </message>
     <message>
         <source>Activation</source>
-        <translation type="unfinished"></translation>
+        <translation>Activación</translation>
     </message>
     <message>
         <source>User Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Información de usuario</translation>
     </message>
     <message>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nombre:</translation>
     </message>
     <message>
         <source>Email:</source>
-        <translation type="unfinished"></translation>
+        <translation>Correo electrónico:</translation>
     </message>
     <message>
         <source>Free trial for 7 days</source>
-        <translation type="unfinished"></translation>
+        <translation>Prueba gratuita de 7 días</translation>
     </message>
     <message>
         <source>I am ok with free trial and want to buy full license</source>
-        <translation type="unfinished"></translation>
+        <translation>Estoy de acuerdo con la prueba gratuita y quiero comprar la licencia completa</translation>
     </message>
     <message>
         <source>Skip trial and buy Full licensed version</source>
-        <translation type="unfinished"></translation>
+        <translation>Omitir prueba y comprar versión con licencia completa</translation>
     </message>
     <message>
         <source>Already licensed, but want bump profiles</source>
-        <translation type="unfinished"></translation>
+        <translation>Ya tengo licencia, pero quiero aumentar los perfiles</translation>
     </message>
     <message>
         <source>Payments</source>
-        <translation type="unfinished"></translation>
+        <translation>Pagos</translation>
     </message>
     <message>
         <source>Request 7-Day Free Trial</source>
-        <translation type="unfinished"></translation>
+        <translation>Solicitar prueba gratuita de 7 días</translation>
     </message>
     <message>
         <source>Purchase Full License</source>
-        <translation type="unfinished"></translation>
+        <translation>Comprar licencia completa</translation>
     </message>
     <message>
         <source>Upgrade Profile Capacity</source>
-        <translation type="unfinished"></translation>
+        <translation>Aumentar capacidad de perfiles</translation>
     </message>
     <message>
         <source>Payment Details: Free Trial ($0.00)</source>
-        <translation type="unfinished"></translation>
+        <translation>Detalles del pago: Prueba gratuita ($0.00)</translation>
     </message>
     <message>
         <source>Please put this Reference No. in your PayPal payment message/note.</source>
-        <translation type="unfinished"></translation>
+        <translation>Por favor, ponga este número de referencia en su mensaje/nota de pago de PayPal.</translation>
     </message>
     <message>
         <source>Paste your PayPal Transaction ID here</source>
-        <translation type="unfinished"></translation>
+        <translation>Pegue su ID de transacción de PayPal aquí</translation>
     </message>
     <message>
         <source>Reference NO.:</source>
-        <translation type="unfinished"></translation>
+        <translation>N.º de referencia:</translation>
     </message>
     <message>
         <source>Pay Now (Secure PayPal Link)</source>
-        <translation type="unfinished"></translation>
+        <translation>Pagar ahora (Enlace seguro de PayPal)</translation>
     </message>
     <message>
         <source>Device Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Información del dispositivo</translation>
     </message>
     <message>
         <source>Device Secret:</source>
-        <translation type="unfinished"></translation>
+        <translation>Secreto del dispositivo:</translation>
     </message>
     <message>
         <source>Serial Number:</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de serie:</translation>
     </message>
     <message>
         <source>Total Profiles:</source>
-        <translation type="unfinished"></translation>
+        <translation>Perfiles totales:</translation>
     </message>
     <message>
         <source>Copy content</source>
-        <translation type="unfinished"></translation>
+        <translation>Copiar contenido</translation>
     </message>
     <message>
         <source>Email</source>
-        <translation type="unfinished"></translation>
+        <translation>Correo electrónico</translation>
     </message>
     <message>
         <source>Order</source>
-        <translation type="unfinished"></translation>
+        <translation>Pedido</translation>
     </message>
     <message>
         <source>Log Output:</source>
-        <translation type="unfinished"></translation>
+        <translation>Salida de registro:</translation>
     </message>
     <message>
         <source>No devices found</source>
-        <translation type="unfinished"></translation>
+        <translation>No se encontraron dispositivos</translation>
     </message>
     <message>
         <source>Select Factory Package</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleccionar paquete de fábrica</translation>
     </message>
     <message>
         <source>Factory Package (*.fzip)</source>
-        <translation type="unfinished"></translation>
+        <translation>Paquete de fábrica (*.fzip)</translation>
     </message>
     <message>
         <source>Select Upgrade Package</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleccionar paquete de actualización</translation>
     </message>
     <message>
         <source>Upgrade Package (*.uzip)</source>
-        <translation type="unfinished"></translation>
+        <translation>Paquete de actualización (*.uzip)</translation>
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished">Error</translation>
+        <translation>Error</translation>
     </message>
     <message>
         <source>Please select a valid serial port.</source>
-        <translation type="unfinished"></translation>
+        <translation>Por favor, seleccione un puerto serie válido.</translation>
     </message>
     <message>
         <source>Error: Failed to read file or file is empty: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Error: Fallo al leer el archivo o el archivo está vacío: %1</translation>
     </message>
     <message>
         <source>Checking device status...</source>
-        <translation type="unfinished"></translation>
+        <translation>Comprobando estado del dispositivo...</translation>
     </message>
     <message>
         <source>Device is already running with factory firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>El dispositivo ya está funcionando con firmware de fábrica.</translation>
     </message>
     <message>
         <source>Attempting to fetch PDEK...</source>
-        <translation type="unfinished"></translation>
+        <translation>Intentando obtener PDEK...</translation>
     </message>
     <message>
         <source>PDEK fetched successfully.</source>
-        <translation type="unfinished"></translation>
+        <translation>PDEK obtenido con éxito.</translation>
     </message>
     <message>
         <source>Device Info: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Información del dispositivo: %1</translation>
     </message>
     <message>
         <source>Info</source>
-        <translation type="unfinished">Información</translation>
+        <translation>Información</translation>
     </message>
     <message>
         <source>Device is already running with factory firmware. Device Info has been fetched.</source>
-        <translation type="unfinished"></translation>
+        <translation>El dispositivo ya está funcionando con firmware de fábrica. Se ha obtenido la información del dispositivo.</translation>
     </message>
     <message>
         <source>Failed to fetch PDEK from factory mode device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al obtener PDEK del dispositivo en modo fábrica.</translation>
     </message>
     <message>
         <source>Device is already running with factory firmware, but failed to fetch PDEK.</source>
-        <translation type="unfinished"></translation>
+        <translation>El dispositivo ya está funcionando con firmware de fábrica, pero no se pudo obtener el PDEK.</translation>
     </message>
     <message>
         <source>Device is running Application Firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>El dispositivo está ejecutando firmware de aplicación.</translation>
     </message>
     <message>
         <source>Wrong Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Modo incorrecto</translation>
     </message>
     <message>
         <source>Device is running Application Firmware. Please enter Bootloader mode to flash Factory Firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>El dispositivo está ejecutando firmware de aplicación. Por favor, entre en modo Bootloader para flashear el firmware de fábrica.</translation>
     </message>
     <message>
         <source>Error: No factory package selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Error: No se seleccionó ningún paquete de fábrica.</translation>
     </message>
     <message>
         <source>Please select a factory package file to flash.</source>
-        <translation type="unfinished"></translation>
+        <translation>Por favor, seleccione un archivo de paquete de fábrica para flashear.</translation>
     </message>
     <message>
         <source>Starting Factory Flash...</source>
-        <translation type="unfinished"></translation>
+        <translation>Iniciando flasheo de fábrica...</translation>
     </message>
     <message>
         <source>Factory Flash Success!</source>
-        <translation type="unfinished"></translation>
+        <translation>¡Éxito en el flasheo de fábrica!</translation>
     </message>
     <message>
         <source>Flash failed, %1</source>
@@ -2023,7 +2028,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Starting Download &amp; Flash process...</source>
-        <translation type="unfinished"></translation>
+        <translation>Iniciando proceso de descarga y flasheo...</translation>
     </message>
     <message>
         <source>Failed to find factory firmware in the latest release.</source>
@@ -2035,43 +2040,43 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Download failed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fallo en la descarga.</translation>
     </message>
     <message>
         <source>Failed to download firmware. Check internet connection.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fallo al descargar el firmware. Compruebe la conexión a internet.</translation>
     </message>
     <message>
         <source>Download complete. Size: %1 bytes</source>
-        <translation type="unfinished"></translation>
+        <translation>Descarga completada. Tamaño: %1 bytes</translation>
     </message>
     <message>
         <source>Starting flashing process...</source>
-        <translation type="unfinished"></translation>
+        <translation>Iniciando proceso de flasheo...</translation>
     </message>
     <message>
         <source>Device is already running factory firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>El dispositivo ya está ejecutando firmware de fábrica.</translation>
     </message>
     <message>
         <source>Device is in App Mode. Please enter Bootloader Mode.</source>
-        <translation type="unfinished"></translation>
+        <translation>El dispositivo está en modo aplicación. Por favor, entre en modo Bootloader.</translation>
     </message>
     <message>
         <source>Please enter Bootloader mode to flash Factory Firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>Por favor, entre en modo Bootloader para flashear el firmware de fábrica.</translation>
     </message>
     <message>
         <source>Flash Success!</source>
-        <translation type="unfinished"></translation>
+        <translation>¡Éxito en el flasheo!</translation>
     </message>
     <message>
         <source>Success</source>
-        <translation type="unfinished"></translation>
+        <translation>Éxito</translation>
     </message>
     <message>
         <source>Paypal Seller: &lt;b&gt;&lt;font color=&apos;red&apos;&gt;%1&lt;/font&gt;&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Vendedor de Paypal: &lt;b&gt;&lt;font color=&apos;red&apos;&gt;%1&lt;/font&gt;&lt;/b&gt;</translation>
     </message>
     <message>
         <source>I will arrange payment via email</source>
@@ -2083,7 +2088,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>PayPal Transaction ID:</source>
-        <translation type="unfinished"></translation>
+        <translation>ID de transacción de PayPal:</translation>
     </message>
     <message>
         <source>Checking for latest factory firmware...</source>
@@ -2099,21 +2104,23 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Confirm Factory Flash</source>
-        <translation type="unfinished"></translation>
+        <translation>Confirmar flasheo de fábrica</translation>
     </message>
     <message>
         <source>Factory firmware flashed successfully.
 
 Next step: You need to flash the per-device firmware to use the device. Please switch to the &apos;Order&apos; tab to request it.</source>
-        <translation type="unfinished"></translation>
+        <translation>Firmware de fábrica flasheado con éxito.
+
+Siguiente paso: Debe flashear el firmware por dispositivo para usar el dispositivo. Por favor, cambie a la pestaña &apos;Pedido&apos; para solicitarlo.</translation>
     </message>
     <message>
         <source>Device Info copied to clipboard.</source>
-        <translation type="unfinished"></translation>
+        <translation>Información del dispositivo copiada al portapapeles.</translation>
     </message>
     <message>
         <source>Checking device info on %1...</source>
-        <translation type="unfinished"></translation>
+        <translation>Comprobando información del dispositivo en %1...</translation>
     </message>
     <message>
         <source>Skip Trial and Purchase Full License</source>
@@ -2137,83 +2144,83 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Device is in Factory Mode. Fetching PDEK...</source>
-        <translation type="unfinished"></translation>
+        <translation>El dispositivo está en modo fábrica. Obteniendo PDEK...</translation>
     </message>
     <message>
         <source>Failed to fetch PDEK.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fallo al obtener PDEK.</translation>
     </message>
     <message>
         <source>Failed to fetch Device Info.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fallo al obtener información del dispositivo.</translation>
     </message>
     <message>
         <source>Device is not in Factory Mode (Mode: %1).</source>
-        <translation type="unfinished"></translation>
+        <translation>El dispositivo no está en modo fábrica (Modo: %1).</translation>
     </message>
     <message>
         <source>Device must be in Factory Mode to copy Device Info.</source>
-        <translation type="unfinished"></translation>
+        <translation>El dispositivo debe estar en modo fábrica para copiar la información del dispositivo.</translation>
     </message>
     <message>
         <source>Handshake complete but no config received.</source>
-        <translation type="unfinished"></translation>
+        <translation>Negociación completada pero no se recibió ninguna configuración.</translation>
     </message>
     <message>
         <source>Device handshake incomplete.</source>
-        <translation type="unfinished"></translation>
+        <translation>Negociación del dispositivo incompleta.</translation>
     </message>
     <message>
         <source>Failed to open device or handshake failed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al abrir el dispositivo o fallo en la negociación.</translation>
     </message>
     <message>
         <source>Connection Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Error de conexión</translation>
     </message>
     <message>
         <source>Failed to connect to device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al conectar con el dispositivo.</translation>
     </message>
     <message>
         <source>Checking for upgrades...</source>
-        <translation type="unfinished"></translation>
+        <translation>Buscando actualizaciones...</translation>
     </message>
     <message>
         <source>Failed to fetch latest version tag from GitHub.</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al obtener la etiqueta de la última versión de GitHub.</translation>
     </message>
     <message>
         <source>Network Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Error de red</translation>
     </message>
     <message>
         <source>Could not check for updates.</source>
-        <translation type="unfinished"></translation>
+        <translation>No se pudieron buscar actualizaciones.</translation>
     </message>
     <message>
         <source>Device handshake failed or no config received. Assuming factory/unknown state.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fallo en la negociación del dispositivo o no se recibió configuración. Asumiendo estado de fábrica/desconocido.</translation>
     </message>
     <message>
         <source>Could not open device. Assuming factory/unknown state.</source>
-        <translation type="unfinished"></translation>
+        <translation>No se pudo abrir el dispositivo. Asumiendo estado de fábrica/desconocido.</translation>
     </message>
     <message>
         <source>Current Version: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Versión actual: %1</translation>
     </message>
     <message>
         <source>Latest Version: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Última versión: %1</translation>
     </message>
     <message>
         <source>Update available (%1 &gt; %2).</source>
-        <translation type="unfinished"></translation>
+        <translation>Actualización disponible (%1 &gt; %2).</translation>
     </message>
     <message>
         <source>Update available (Device version unknown).</source>
-        <translation type="unfinished"></translation>
+        <translation>Actualización disponible (versión del dispositivo desconocida).</translation>
     </message>
     <message>
         <source>Please flash per-device firmware firstly.</source>
@@ -2225,27 +2232,27 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Device is up to date.</source>
-        <translation type="unfinished"></translation>
+        <translation>El dispositivo está actualizado.</translation>
     </message>
     <message>
         <source>Please select a firmware file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Por favor, seleccione un archivo de firmware.</translation>
     </message>
     <message>
         <source>Failed to read firmware file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al leer el archivo de firmware.</translation>
     </message>
     <message>
         <source>Flashing local file: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Flasheando archivo local: %1</translation>
     </message>
     <message>
         <source>Downloading upgrade firmware...</source>
-        <translation type="unfinished"></translation>
+        <translation>Descargando firmware de actualización...</translation>
     </message>
     <message>
         <source>Download failed. No .uzip asset found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fallo en la descarga. No se encontró ningún activo .uzip.</translation>
     </message>
     <message>
         <source>Failed to find upgrade firmware in the latest release.</source>
@@ -2253,35 +2260,35 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Found upgrade firmware: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Firmware de actualización encontrado: %1</translation>
     </message>
     <message>
         <source>Failed to download firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fallo al descargar el firmware.</translation>
     </message>
     <message>
         <source>Flashing... %1%</source>
-        <translation type="unfinished"></translation>
+        <translation>Flasheando... %1%</translation>
     </message>
     <message>
         <source>Firmware upgrade successful.</source>
-        <translation type="unfinished"></translation>
+        <translation>Actualización de firmware exitosa.</translation>
     </message>
     <message>
         <source>Flash failed: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Fallo en el flasheo: %1</translation>
     </message>
     <message>
         <source>Refreshing device state...</source>
-        <translation type="unfinished"></translation>
+        <translation>Actualizando estado del dispositivo...</translation>
     </message>
     <message>
         <source>State: Checking...</source>
-        <translation type="unfinished"></translation>
+        <translation>Estado: Comprobando...</translation>
     </message>
     <message>
         <source>State: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Estado: %1</translation>
     </message>
     <message>
         <source>Device Info copied to clipboard:</source>
@@ -2297,195 +2304,195 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>State: Factory Mode (Cannot Activate)</source>
-        <translation type="unfinished"></translation>
+        <translation>Estado: Modo fábrica (No se puede activar)</translation>
     </message>
     <message>
         <source>Device State Refreshed. Serial: %1, Mode: Factory, Secret: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Estado del dispositivo actualizado. Serie: %1, Modo: Fábrica, Secreto: %2</translation>
     </message>
     <message>
         <source>Device State Refreshed. Serial: %1, State: %2, Profiles: %3</source>
-        <translation type="unfinished"></translation>
+        <translation>Estado del dispositivo actualizado. Serie: %1, Estado: %2, Perfiles: %3</translation>
     </message>
     <message>
         <source>Erased Device Detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Dispositivo borrado detectado</translation>
     </message>
     <message>
         <source>No valid firmware detected on the device. Please go to the &apos;Factory Mode&apos; tab and flash &apos;Online&apos; first.</source>
-        <translation type="unfinished"></translation>
+        <translation>No se detectó ningún firmware válido en el dispositivo. Vaya a la pestaña &apos;Modo fábrica&apos; y flashee &apos;Online&apos; primero.</translation>
     </message>
     <message>
         <source>Serial number copied to clipboard.</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de serie copiado al portapapeles.</translation>
     </message>
     <message>
         <source>Please enter an activation key.</source>
-        <translation type="unfinished"></translation>
+        <translation>Por favor, introduzca una clave de activación.</translation>
     </message>
     <message>
         <source>Activating device...</source>
-        <translation type="unfinished"></translation>
+        <translation>Activando dispositivo...</translation>
     </message>
     <message>
         <source>Activation successful!</source>
-        <translation type="unfinished"></translation>
+        <translation>¡Activación exitosa!</translation>
     </message>
     <message>
         <source>Device activated successfully.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dispositivo activado con éxito.</translation>
     </message>
     <message>
         <source>Activation failed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Activación fallida.</translation>
     </message>
     <message>
         <source>Input Required</source>
-        <translation type="unfinished"></translation>
+        <translation>Entrada requerida</translation>
     </message>
     <message>
         <source>Please enter your name and email address.</source>
-        <translation type="unfinished"></translation>
+        <translation>Por favor, introduzca su nombre y dirección de correo electrónico.</translation>
     </message>
     <message>
         <source>Device Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Error del dispositivo</translation>
     </message>
     <message>
         <source>Serial number missing. Please check device connection.</source>
-        <translation type="unfinished"></translation>
+        <translation>Falta el número de serie. Por favor, compruebe la conexión del dispositivo.</translation>
     </message>
     <message>
         <source>Selection Required</source>
-        <translation type="unfinished"></translation>
+        <translation>Selección requerida</translation>
     </message>
     <message>
         <source>Please select one of the order options.</source>
-        <translation type="unfinished"></translation>
+        <translation>Por favor, seleccione una de las opciones de pedido.</translation>
     </message>
     <message>
         <source>Missing Transaction ID</source>
-        <translation type="unfinished"></translation>
+        <translation>Falta el ID de transacción</translation>
     </message>
     <message>
         <source>Please enter your PayPal Transaction ID for verification.</source>
-        <translation type="unfinished"></translation>
+        <translation>Por favor, introduzca su ID de transacción de PayPal para verificación.</translation>
     </message>
     <message>
         <source>Missing Secret</source>
-        <translation type="unfinished"></translation>
+        <translation>Falta el secreto</translation>
     </message>
     <message>
         <source>Device Secret (PDEK) is required for this option. Please ensure the device is in Factory Mode and the secret has been fetched correctly.</source>
-        <translation type="unfinished"></translation>
+        <translation>El secreto del dispositivo (PDEK) es necesario para esta opción. Asegúrese de que esté en modo fábrica.</translation>
     </message>
     <message>
         <source>Free</source>
-        <translation type="unfinished"></translation>
+        <translation>Gratis</translation>
     </message>
     <message>
         <source>No payment is required for this option.</source>
-        <translation type="unfinished"></translation>
+        <translation>No se requiere pago para esta opción.</translation>
     </message>
     <message>
         <source>You are about to open PayPal to pay &lt;b&gt;$%1 USD&lt;/b&gt; to &lt;b&gt;%2&lt;/b&gt;.&lt;br&gt;&lt;br&gt;Product: %3&lt;br&gt;Reference: %4&lt;br&gt;&lt;br&gt;Please confirm to proceed to PayPal.</source>
-        <translation type="unfinished"></translation>
+        <translation>Está a punto de abrir PayPal para pagar &lt;b&gt;$%1 USD&lt;/b&gt; a &lt;b&gt;%2&lt;/b&gt;.&lt;br&gt;&lt;br&gt;Producto: %3&lt;br&gt;Referencia: %4&lt;br&gt;&lt;br&gt;Por favor, confirme para proceder a PayPal.</translation>
     </message>
     <message>
         <source>Confirm Payment</source>
-        <translation type="unfinished"></translation>
+        <translation>Confirmar pago</translation>
     </message>
     <message>
         <source>Failed to open web browser. Please visit PayPal manually.</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al abrir el navegador web. Visite PayPal manualmente.</translation>
     </message>
     <message>
         <source>Order content copied to clipboard.</source>
-        <translation type="unfinished"></translation>
+        <translation>Contenido del pedido copiado al portapapeles.</translation>
     </message>
     <message>
         <source>Copied</source>
-        <translation type="unfinished"></translation>
+        <translation>Copiado</translation>
     </message>
     <message>
         <source>Order content successfully copied to clipboard.</source>
-        <translation type="unfinished"></translation>
+        <translation>Contenido del pedido copiado con éxito al portapapeles.</translation>
     </message>
     <message>
         <source>Email client opened.</source>
-        <translation type="unfinished"></translation>
+        <translation>Cliente de correo abierto.</translation>
     </message>
     <message>
         <source>Failed to open email client.</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al abrir el cliente de correo.</translation>
     </message>
     <message>
         <source>Failed to open your default email client.</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al abrir su cliente de correo predeterminado.</translation>
     </message>
     <message>
         <source>State: Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Estado: Error</translation>
     </message>
     <message>
         <source>Order Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opciones de pedido</translation>
     </message>
     <message>
         <source>State: %1, %2 Profiles</source>
-        <translation type="unfinished"></translation>
+        <translation>Estado: %1, %2 Perfiles</translation>
     </message>
     <message>
         <source>Failed to refresh state: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al actualizar el estado: %1</translation>
     </message>
     <message>
         <source>Reading factory firmware from: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Leyendo firmware de fábrica de: %1</translation>
     </message>
     <message>
         <source>Reading local firmware from: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Leyendo firmware local de: %1</translation>
     </message>
     <message>
         <source>Online</source>
-        <translation type="unfinished"></translation>
+        <translation>En línea</translation>
     </message>
     <message>
         <source>Flash</source>
-        <translation type="unfinished"></translation>
+        <translation>Flashear</translation>
     </message>
     <message>
         <source>Manual</source>
-        <translation type="unfinished"></translation>
+        <translation>Manual</translation>
     </message>
     <message>
         <source>Copy Device Secret</source>
-        <translation type="unfinished"></translation>
+        <translation>Copiar secreto del dispositivo</translation>
     </message>
     <message>
         <source>Waiting for user to reconnect device...</source>
-        <translation type="unfinished"></translation>
+        <translation>Esperando a que el usuario vuelva a conectar el dispositivo...</translation>
     </message>
     <message>
         <source>Reconnect Device</source>
-        <translation type="unfinished"></translation>
+        <translation>Volver a conectar dispositivo</translation>
     </message>
     <message>
         <source>Please disconnect and reconnect the device now.</source>
-        <translation type="unfinished"></translation>
+        <translation>Por favor, desconecte y vuelva a conectar el dispositivo ahora.</translation>
     </message>
     <message>
         <source>I have reconnected the device</source>
-        <translation type="unfinished"></translation>
+        <translation>He vuelto a conectar el dispositivo</translation>
     </message>
     <message>
         <source>User confirmed reconnection.</source>
-        <translation type="unfinished"></translation>
+        <translation>El usuario confirmó la reconexión.</translation>
     </message>
     <message>
         <source>Reminder: Press &apos;Boot&apos; button then plugin your ESP32-C3. Click Refresh button to ensure the device is detected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Recordatorio: Presione el botón &apos;Boot&apos; y luego conecte su ESP32-C3. Haga clic en el botón Actualizar para asegurarse de que se detecte el dispositivo.</translation>
     </message>
 </context>
 <context>

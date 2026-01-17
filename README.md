@@ -57,13 +57,16 @@ Suitable for macOS 12+ (Intel & Apple Silicon).
 If you have [Homebrew](https://brew.sh/) installed:
 
 ```bash
-# Install
+# 1. Add the Tap
+brew tap lockekk/deskflow
+
+# 2. Install
 brew install --cask deskflow-hid
 
-# Uninstall
+# To Uninstall
 brew uninstall deskflow-hid
 
-# Update
+# To Update
 brew upgrade deskflow-hid
 ```
 

@@ -6,5 +6,15 @@
     <!-- Required for communication with ESP32-C3 CDC devices -->
     <key>com.apple.security.device.usb</key>
     <true/>
+    <!-- Hardened Runtime Exceptions -->
+    <!-- Allow JIT (Required for Qt QML/JS engine in some cases) -->
+    <key>com.apple.security.cs.allow-jit</key>
+    <true/>
+    <!-- Allow Unsigned Executable Memory (Required for some Qt components) -->
+    <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+    <true/>
+    <!-- Disable Library Validation (Critical for loading self-bundled 3rd party libs like OpenSSL without issues) -->
+    <key>com.apple.security.cs.disable-library-validation</key>
+    <true/>
 </dict>
 </plist>

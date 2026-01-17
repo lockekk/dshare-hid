@@ -17,8 +17,6 @@ if(NOT DEFINED OSX_CODESIGN_IDENTITY)
 endif()
 
 if (OSX_BUNDLE)
-  # Consolidated Deployment & Signing Block
-  # This ensures macdeployqt runs first, then we bundle our extras, then clean attributes, then sign.
   find_package(OpenSSL QUIET)
   set(OSSL_MOD_PATH "")
   if (OPENSSL_FOUND)
@@ -29,33 +27,15 @@ if (OSX_BUNDLE)
       endif()
   endif()
 
-  install(CODE "
-    set(APP_PATH \"\${CMAKE_INSTALL_PREFIX}/${CMAKE_PROJECT_PROPER_NAME}.app\")
+  # Configure the bundle post-processing script
+  configure_file(
+      "${MY_DIR}/post_bundle_process.cmake.in"
+      "${CMAKE_CURRENT_BINARY_DIR}/post_bundle_process_generated.cmake"
+      @ONLY
+  )
 
-    # Sanity Check: Ensure the bundle actually exists and has the main binary
-    if (NOT EXISTS \"\${APP_PATH}/Contents/MacOS/${CMAKE_PROJECT_PROPER_NAME}\")
-        message(FATAL_ERROR \"Critical error: Main executable missing from bundle before signing at: \${APP_PATH}/Contents/MacOS/${CMAKE_PROJECT_PROPER_NAME}\")
-    endif()
-
-    message(STATUS \"Running macdeployqt...\")
-    execute_process(COMMAND \"${DEPLOYQT}\" \"\${APP_PATH}\" COMMAND_ECHO STDOUT)
-
-    if (NOT \"${OSSL_MOD_PATH}\" STREQUAL \"\")
-        message(STATUS \"Bundling OpenSSL modules...\")
-        execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory \"${OSSL_MOD_PATH}\" \"\${APP_PATH}/Contents/Frameworks/ossl-modules\" COMMAND_ECHO STDOUT)
-    endif()
-
-    message(STATUS \"Cleaning extended attributes...\")
-    execute_process(COMMAND xattr -cr \"\${APP_PATH}\" COMMAND_ECHO STDOUT)
-
-    if (NOT \"${OSX_CODESIGN_IDENTITY}\" STREQUAL \"-\")
-        message(STATUS \"Deep signing the bundle with identity: ${OSX_CODESIGN_IDENTITY}\")
-        execute_process(COMMAND codesign --force --deep --options=runtime --entitlements \"${MY_DIR}/Deskflow-HID.entitlements\" -v --sign \"${OSX_CODESIGN_IDENTITY}\" \"\${APP_PATH}\" COMMAND_ECHO STDOUT)
-
-        message(STATUS \"Verifying signature...\")
-        execute_process(COMMAND codesign --verify --deep --verbose=4 \"\${APP_PATH}\" COMMAND_ECHO STDOUT)
-    endif()
-  ")
+  # Run the configured script at install time
+  install(SCRIPT "${CMAKE_CURRENT_BINARY_DIR}/post_bundle_process_generated.cmake")
 
   set(CPACK_PACKAGE_ICON "${MY_DIR}/dmg-volume.icns")
   set(CPACK_DMG_BACKGROUND_IMAGE "${MY_DIR}/dmg-background.tiff")
