@@ -135,6 +135,7 @@ private:
   // State
   QString m_devicePath;
   bool m_isTaskRunning = false;
+  bool m_onlineFlashAllowed = false;
   PriceConfig m_prices;
   QNetworkAccessManager *m_network;
 

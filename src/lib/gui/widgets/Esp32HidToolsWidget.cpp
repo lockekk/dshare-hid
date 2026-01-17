@@ -559,7 +559,7 @@ void Esp32HidToolsWidget::setControlsEnabled(bool enabled)
 {
   m_factoryFlashBtn->setEnabled(enabled);
   m_downloadFlashBtn->setEnabled(enabled);
-  m_flashOnlineBtn->setEnabled(enabled);
+  m_flashOnlineBtn->setEnabled(enabled && m_onlineFlashAllowed);
   m_flashLocalBtn->setEnabled(enabled);
   m_factoryBrowseBtn->setEnabled(enabled);
   m_upgradeBrowseBtn->setEnabled(enabled);
@@ -1118,9 +1118,11 @@ void Esp32HidToolsWidget::onCheckUpgrade()
         }
 
         if (cdc.deviceConfig().hasOtaPartition) {
+          m_onlineFlashAllowed = true;
           m_flashOnlineBtn->setEnabled(true);
           m_flashOnlineBtn->setToolTip("");
         } else {
+          m_onlineFlashAllowed = false;
           m_flashOnlineBtn->setEnabled(false);
           m_flashOnlineBtn->setToolTip(tr("Please flash per-device firmware firstly."));
           log(tr("Online flashing disabled: Device missing OTA partition."));
