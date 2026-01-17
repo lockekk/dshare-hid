@@ -256,8 +256,6 @@ void MainWindow::restoreWindow()
 
 void MainWindow::setupControls()
 {
-  setWindowTitle(kAppName);
-
   secureSocket(false);
 
 #if defined(Q_OS_LINUX)
@@ -860,8 +858,15 @@ bool MainWindow::nativeEvent(const QByteArray &eventType, void *message, qintptr
 
 void MainWindow::applyConfig()
 {
+  if (Settings::value(Settings::Gui::ShowVersionInTitle).toBool()) {
+    setWindowTitle(QStringLiteral("%1 - %2").arg(kAppName, kDisplayVersion));
+  } else {
+    setWindowTitle(kAppName);
+  }
+
   if (const auto host = Settings::value(Settings::Client::RemoteHost).toString(); !host.isEmpty())
     ui->lineHostname->setText(host);
+
   updateLocalFingerprint();
   setTrayIcon();
 

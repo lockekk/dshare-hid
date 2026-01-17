@@ -2506,6 +2506,10 @@ Siguiente paso: Debe flashear el firmware por dispositivo para usar el dispositi
         <source>Reminder: Press &apos;Boot&apos; button then plugin your ESP32-C3. Click Refresh button to ensure the device is detected.</source>
         <translation>Recordatorio: Presione el botón &apos;Boot&apos; y luego conecte su ESP32-C3. Haga clic en el botón Actualizar para asegurarse de que se detecte el dispositivo.</translation>
     </message>
+    <message>
+        <source>Include version in the window title</source>
+        <translation type="unfinished">Incluir la versión en el título de la ventana</translation>
+    </message>
 </context>
 <context>
     <name>i18n</name>

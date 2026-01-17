@@ -1545,6 +1545,10 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <source>Automatic</source>
         <translation>Автоматически</translation>
     </message>
+    <message>
+        <source>Include version in the window title</source>
+        <translation type="unfinished">Включить номер версии в заголовок окна</translation>
+    </message>
 </context>
 <context>
     <name>deskflow::gui::BridgeClientConfigDialog</name>

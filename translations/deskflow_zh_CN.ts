@@ -2652,6 +2652,10 @@ Your firmware will be back in 24 hours.</source>
         <source>Reminder: Press &apos;Boot&apos; button then plugin your ESP32-C3. Click Refresh button to ensure the device is detected.</source>
         <translation>提醒：按住 &apos;Boot&apos; 按钮，然后插入您的 ESP32-C3。点击刷新按钮以确保检测到设备。</translation>
     </message>
+    <message>
+        <source>Include version in the window title</source>
+        <translation type="unfinished">在窗口标题中包含版本信息</translation>
+    </message>
 </context>
 <context>
     <name>i18n</name>
