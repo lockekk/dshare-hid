@@ -277,6 +277,18 @@ process_input() {
             # Using 'build' as output directory as requested ("cat the build folder")
             ./deploy/linux/create_appimage.sh build build
             ;;
+        7|"deb")
+            if [ "$os_name" = "Darwin" ]; then
+                echo "Error: Deb generation is only supported on Linux."
+                return 1
+            fi
+            echo "--- GENERATING DEB PACKAGE ---"
+             if [ ! -d "build" ]; then
+                echo "Error: 'build' directory not found. Please run a configuration step (2 or 4) first."
+                return 1
+            fi
+            ./deploy/linux/create_deb.sh build build_deb
+            ;;
         q|"quit"|"exit")
             echo "Exiting..."
             return 1
@@ -306,6 +318,7 @@ while true; do
     echo "  4) Configure Release (Clean & Config with Production Keys)"
     echo "  5) Build Deploy (Flatpak/DMG Release)"
     echo "  6) Build AppImage (Linux)"
+    echo "  7) Build Deb (Ubuntu 24+)"
     echo "  q) Quit"
     echo ""
     read -p "Select a task (1-4 or q): " input

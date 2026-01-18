@@ -18,6 +18,11 @@
 #endif
 // clang-format on
 
+#if defined(Q_OS_LINUX)
+#include <grp.h>
+#include <unistd.h>
+#endif
+
 #include "Diagnostic.h"
 #include "StyleUtils.h"
 
@@ -254,6 +259,10 @@ void MainWindow::setupControls()
   setWindowTitle(kAppName);
 
   secureSocket(false);
+
+#if defined(Q_OS_LINUX)
+  checkLinuxUsbPermissions();
+#endif
 
 #if defined(Q_OS_WIN)
   if (auto hwnd = reinterpret_cast<HWND>(winId())) {
@@ -1465,3 +1474,40 @@ void MainWindow::updateIpLabel(const QStringList &addresses)
   ui->lblIpAddresses->setText(labelText);
   ui->lblIpAddresses->setToolTip(toolTipText);
 }
+
+#if defined(Q_OS_LINUX)
+void MainWindow::checkLinuxUsbPermissions()
+{
+  struct group *grp = getgrnam("dialout");
+  if (grp) {
+    gid_t dialoutGid = grp->gr_gid;
+    int ngroups = getgroups(0, nullptr);
+    if (ngroups > 0) {
+      std::vector<gid_t> groups(ngroups);
+      if (getgroups(ngroups, groups.data()) != -1) {
+        bool inDialout = false;
+        for (gid_t g : groups) {
+          if (g == dialoutGid) {
+            inDialout = true;
+            break;
+          }
+        }
+
+        if (!inDialout) {
+          const QString user = qgetenv("USER");
+          const QString userName = user.isEmpty() ? tr("current user") : user;
+
+          QMessageBox::warning(
+              this, tr("Permission Warning"),
+              tr("User <b>%1</b> is not in the <b>dialout</b> group.<br><br>"
+                 "You may not be able to access the USB device.<br>"
+                 "Please run the following command then <b>log out then log in</b>, or <b>reboot</b>:<br><br>"
+                 "<code>sudo usermod -a -G dialout $USER</code>")
+                  .arg(userName)
+          );
+        }
+      }
+    }
+  }
+}
+#endif

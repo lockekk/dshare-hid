@@ -735,6 +735,18 @@ Valid names:
         <source>Firmware</source>
         <translation>ファームウェア</translation>
     </message>
+    <message>
+        <source>current user</source>
+        <translation>現在のユーザー</translation>
+    </message>
+    <message>
+        <source>Permission Warning</source>
+        <translation>権限の警告</translation>
+    </message>
+    <message>
+        <source>User &lt;b&gt;%1&lt;/b&gt; is not in the &lt;b&gt;dialout&lt;/b&gt; group.&lt;br&gt;&lt;br&gt;You may not be able to access the USB device.&lt;br&gt;Please run the following command then &lt;b&gt;log out then log in&lt;/b&gt;, or &lt;b&gt;reboot&lt;/b&gt;:&lt;br&gt;&lt;br&gt;&lt;code&gt;sudo usermod -a -G dialout $USER&lt;/code&gt;</source>
+        <translation>ユーザー &lt;b&gt;%1&lt;/b&gt; は &lt;b&gt;dialout&lt;/b&gt; グループに属していません。&lt;br&gt;&lt;br&gt;USB デバイスにアクセスできない可能性があります。&lt;br&gt;次のコマンドを実行してから、&lt;b&gt;ログアウトしてログイン&lt;/b&gt;するか、&lt;b&gt;再起動&lt;/b&gt;してください：&lt;br&gt;&lt;br&gt;&lt;code&gt;sudo usermod -a -G dialout $USER&lt;/code&gt;</translation>
+    </message>
 </context>
 <context>
     <name>NewScreenWidget</name>

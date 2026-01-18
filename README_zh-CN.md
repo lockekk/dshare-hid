@@ -89,6 +89,13 @@ brew upgrade deskflow-hid
 ### Linux
 我们支持通过 AppImage 和 Flatpak 在主流发行版上运行。
 
+> [!IMPORTANT]
+> **权限**: 为了访问 USB 设备，您的用户 **必须** 拥有访问串口的权限（通常是 `dialout` 用户组）。
+> 运行以下命令，然后 **注销并重新登录**（或 **重启**）以使更改生效：
+> ```bash
+> sudo usermod -a -G dialout $USER
+> ```
+
 #### 选项 A: AppImage (通用)
 适用于较新的 Linux 发行版 (Ubuntu 22.04+, Fedora 36+ 等)。
 
@@ -135,6 +142,19 @@ flatpak uninstall org.deskflow.hid
 flatpak uninstall org.deskflow.hid
 flatpak install --user ./Deskflow-HID.flatpak
 ```
+
+#### 选项 C: Debian 软件包 (Ubuntu 24+)
+适用于 Ubuntu 24.04 及更新版本。
+
+1.  从 [Releases](https://github.com/lockekk/deskflow-hid/releases) 下载 `.deb` 文件。
+2.  安装:
+    ```bash
+    sudo apt install ./deskflow-hid_*.deb
+    ```
+3.  卸载:
+    ```bash
+    sudo apt remove deskflow-hid
+    ```
 
 ## 首次使用与烧录指南
 

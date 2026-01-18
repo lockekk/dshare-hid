@@ -736,6 +736,18 @@ Nomi validi:
         <source>Firmware</source>
         <translation>Firmware</translation>
     </message>
+    <message>
+        <source>current user</source>
+        <translation>utente corrente</translation>
+    </message>
+    <message>
+        <source>Permission Warning</source>
+        <translation>Avviso di autorizzazione</translation>
+    </message>
+    <message>
+        <source>User &lt;b&gt;%1&lt;/b&gt; is not in the &lt;b&gt;dialout&lt;/b&gt; group.&lt;br&gt;&lt;br&gt;You may not be able to access the USB device.&lt;br&gt;Please run the following command then &lt;b&gt;log out then log in&lt;/b&gt;, or &lt;b&gt;reboot&lt;/b&gt;:&lt;br&gt;&lt;br&gt;&lt;code&gt;sudo usermod -a -G dialout $USER&lt;/code&gt;</source>
+        <translation>L&apos;utente &lt;b&gt;%1&lt;/b&gt; non è nel gruppo &lt;b&gt;dialout&lt;/b&gt;.&lt;br&gt;&lt;br&gt;Potresti non essere in grado di accedere al dispositivo USB.&lt;br&gt;Esegui il comando seguente e poi &lt;b&gt;disconnettiti e riconnettiti&lt;/b&gt;, o &lt;b&gt;riavvia&lt;/b&gt;:&lt;br&gt;&lt;br&gt;&lt;code&gt;sudo usermod -a -G dialout $USER&lt;/code&gt;</translation>
+    </message>
 </context>
 <context>
     <name>NewScreenWidget</name>

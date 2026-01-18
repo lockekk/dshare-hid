@@ -95,6 +95,13 @@ Available as a portable archive (Recommended) or installer.
 ### Linux
 We support major distributions via AppImage and Flatpak.
 
+> [!IMPORTANT]
+> **Permissions**: To access the USB device, your user **must** have permission to access serial ports (usually the `dialout` group).
+> Run the following command and then **logout and login** (or **reboot**) for the change to take effect:
+> ```bash
+> sudo usermod -a -G dialout $USER
+> ```
+
 #### Option A: AppImage (Universal)
 Works on newer Linux distributions (Ubuntu 22.04+, Fedora 36+, etc.).
 
@@ -141,6 +148,19 @@ flatpak uninstall org.deskflow.hid
 flatpak uninstall org.deskflow.hid
 flatpak install --user ./Deskflow-HID.flatpak
 ```
+
+#### Option C: Debian Package (Ubuntu 24+)
+For Ubuntu 24.04 and newer.
+
+1.  Download the `.deb` file from [Releases](https://github.com/lockekk/deskflow-hid/releases).
+2.  Install:
+    ```bash
+    sudo apt install ./deskflow-hid_*.deb
+    ```
+3.  Uninstall:
+    ```bash
+    sudo apt remove deskflow-hid
+    ```
 
 ## First Use & Flashing Guide
 

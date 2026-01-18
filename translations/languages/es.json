@@ -297,7 +297,10 @@
         "The Core executable could not be successfully started, although it does exist. Please check if you have sufficient permissions to run this program.": "El ejecutable Core no se pudo iniciar con éxito, aunque existe. Por favor, compruebe si tiene permisos suficientes para ejecutar este programa.",
         "<p>Great, the %1 server is now running.</p><p>Now you can connect your client computers to this server. You should see a prompt here on the server when a new client tries to connect.</p>": "<p>Genial, el servidor %1 ya está funcionando.</p><p>Ahora puede conectar sus computadoras cliente a este servidor. Debería ver un aviso aquí en el servidor cuando un nuevo cliente intente conectarse.</p>",
         "<p>A Client with your name is already connected to the server.</p>Please ensure that you're using a unique name and that only a single instance of the client process is running.</p>": "<p>Un cliente con su nombre ya está conectado al servidor.</p>Asegúrese de que está usando un nombre único y de que solo se está ejecutando una instancia del proceso del cliente.</p>",
-        "A new client called '%1' has been accepted. You'll need to add it to your server's screen layout.": "Se ha aceptado un nuevo cliente llamado '%1'. Deberá añadirlo al diseño de pantalla de su servidor."
+        "A new client called '%1' has been accepted. You'll need to add it to your server's screen layout.": "Se ha aceptado un nuevo cliente llamado '%1'. Deberá añadirlo al diseño de pantalla de su servidor.",
+        "current user": "usuario actual",
+        "Permission Warning": "Advertencia de permisos",
+        "User <b>%1</b> is not in the <b>dialout</b> group.<br><br>You may not be able to access the USB device.<br>Please run the following command then <b>log out then log in</b>, or <b>reboot</b>:<br><br><code>sudo usermod -a -G dialout $USER</code>": "El usuario <b>%1</b> no está en el grupo <b>dialout</b>.<br><br>Es posible que no pueda acceder al dispositivo USB.<br>Ejecute el siguiente comando y luego <b>cierre sesión e inicie sesión</b>, o <b>reinicie</b>:<br><br><code>sudo usermod -a -G dialout $USER</code>"
     },
     "AboutDialog": {
         "About Deskflow-HID": "Acerca de Deskflow-HID"

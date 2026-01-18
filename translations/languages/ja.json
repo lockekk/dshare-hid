@@ -298,7 +298,10 @@
         "The Core executable could not be successfully started, although it does exist. Please check if you have sufficient permissions to run this program.": "Core 実行ファイルは存在しますが、正常に起動できませんでした。このプログラムを実行するための十分な権限があるか確認してください。",
         "<p>Great, the %1 server is now running.</p><p>Now you can connect your client computers to this server. You should see a prompt here on the server when a new client tries to connect.</p>": "<p>素晴らしい。%1 サーバーが実行されました。</p><p>これでクライアントコンピューターをこのサーバーに接続できます。新しいクライアントが接続を試みると、サーバーにプロンプトが表示されます。</p>",
         "<p>A Client with your name is already connected to the server.</p>Please ensure that you're using a unique name and that only a single instance of the client process is running.</p>": "<p>あなたの名前のクライアントが既にサーバーに接続されています。</p>一意の名前を使用し、クライアントプロセスの単一インスタンスのみが実行されていることを確認してください。</p>",
-        "A new client called '%1' has been accepted. You'll need to add it to your server's screen layout.": "新しいクライアント '%1' が承認されました。サーバーの画面レイアウトに追加する必要があります。"
+        "A new client called '%1' has been accepted. You'll need to add it to your server's screen layout.": "新しいクライアント '%1' が承認されました。サーバーの画面レイアウトに追加する必要があります。",
+        "current user": "現在のユーザー",
+        "Permission Warning": "権限の警告",
+        "User <b>%1</b> is not in the <b>dialout</b> group.<br><br>You may not be able to access the USB device.<br>Please run the following command then <b>log out then log in</b>, or <b>reboot</b>:<br><br><code>sudo usermod -a -G dialout $USER</code>": "ユーザー <b>%1</b> は <b>dialout</b> グループに属していません。<br><br>USB デバイスにアクセスできない可能性があります。<br>次のコマンドを実行してから、<b>ログアウトしてログイン</b>するか、<b>再起動</b>してください：<br><br><code>sudo usermod -a -G dialout $USER</code>"
     },
     "AboutDialog": {
         "About Deskflow-HID": "Deskflow-HID について"

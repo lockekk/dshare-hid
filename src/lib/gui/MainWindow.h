@@ -180,6 +180,10 @@ private:
   void handleNewClientPromptRequest(const QString &clientName, bool usePeerAuth);
   void updateIpLabel(const QStringList &addresses);
 
+#if defined(Q_OS_LINUX)
+  void checkLinuxUsbPermissions();
+#endif
+
   /**
    * @brief showClientError
    * @param error Error Type

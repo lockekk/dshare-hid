@@ -314,7 +314,10 @@
         "The Core executable could not be successfully started, although it does exist. Please check if you have sufficient permissions to run this program.": "Core 可执行文件虽然存在，但无法成功启动。请检查您是否拥有运行此程序的足够权限。",
         "<p>Great, the %1 server is now running.</p><p>Now you can connect your client computers to this server. You should see a prompt here on the server when a new client tries to connect.</p>": "<p>太好了，服务器 %1 正在运行。</p><p>现在您可以将客户端计算机连接到此服务器。当新客户端尝试连接时，您会在服务器端看到提示。</p>",
         "<p>A Client with your name is already connected to the server.</p>Please ensure that you're using a unique name and that only a single instance of the client process is running.</p>": "<p>一个同名的客户端已连接到服务器。</p>请确保您使用的名称唯一，且只有一个客户端进程实例在运行。</p>",
-        "A new client called '%1' has been accepted. You'll need to add it to your server's screen layout.": "已接受名为“%1”的新客户端。您需要将其添加到服务器的屏幕布局中。"
+        "A new client called '%1' has been accepted. You'll need to add it to your server's screen layout.": "已接受名为“%1”的新客户端。您需要将其添加到服务器的屏幕布局中。",
+        "current user": "当前用户",
+        "Permission Warning": "权限警告",
+        "User <b>%1</b> is not in the <b>dialout</b> group.<br><br>You may not be able to access the USB device.<br>Please run the following command then <b>log out then log in</b>, or <b>reboot</b>:<br><br><code>sudo usermod -a -G dialout $USER</code>": "用户 <b>%1</b> 不在 <b>dialout</b> 用户组中。<br><br>您可能无法访问 USB 设备。<br>请运行以下命令，然后<b>注销并重新登录</b>，或者<b>重启</b>：<br><br><code>sudo usermod -a -G dialout $USER</code>"
     },
     "AboutDialog": {
         "About Deskflow-HID": "关于 Deskflow-HID"

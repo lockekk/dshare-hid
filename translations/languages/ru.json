@@ -298,7 +298,10 @@
         "The Core executable could not be successfully started, although it does exist. Please check if you have sufficient permissions to run this program.": "Исполняемый файл Core не удалось запустить, хотя он существует. Пожалуйста, проверьте наличие достаточных прав для запуска этой программы.",
         "<p>Great, the %1 server is now running.</p><p>Now you can connect your client computers to this server. You should see a prompt here on the server when a new client tries to connect.</p>": "<p>Отлично, сервер %1 запущен.</p><p>Теперь вы можете подключать свои компьютеры-клиенты к этому серверу. Вы увидите запрос на сервере, когда новый клиент попытается подключиться.</p>",
         "<p>A Client with your name is already connected to the server.</p>Please ensure that you're using a unique name and that only a single instance of the client process is running.</p>": "<p>Клиент с вашим именем уже подключен к серверу.</p>Убедитесь, что вы используете уникальное имя и что запущено только одно приложение клиента.</p>",
-        "A new client called '%1' has been accepted. You'll need to add it to your server's screen layout.": "Новый клиент с именем «%1» принят. Вам необходимо добавить его в макет экрана вашего сервера."
+        "A new client called '%1' has been accepted. You'll need to add it to your server's screen layout.": "Новый клиент с именем «%1» принят. Вам необходимо добавить его в макет экрана вашего сервера.",
+        "current user": "текущий пользователь",
+        "Permission Warning": "Предупреждение о правах доступа",
+        "User <b>%1</b> is not in the <b>dialout</b> group.<br><br>You may not be able to access the USB device.<br>Please run the following command then <b>log out then log in</b>, or <b>reboot</b>:<br><br><code>sudo usermod -a -G dialout $USER</code>": "Пользователь <b>%1</b> не состоит в группе <b>dialout</b>.<br><br>Возможны проблемы с доступом к USB-устройству.<br>Выполните следующую команду, затем <b>выйдите и войдите в систему</b> или <b>перезагрузите компьютер</b>:<br><br><code>sudo usermod -a -G dialout $USER</code>"
     },
     "AboutDialog": {
         "About Deskflow-HID": "О Deskflow-HID"

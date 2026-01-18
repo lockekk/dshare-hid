@@ -734,6 +734,18 @@ Valid names:
         <source>Firmware</source>
         <translation>固件</translation>
     </message>
+    <message>
+        <source>current user</source>
+        <translation>当前用户</translation>
+    </message>
+    <message>
+        <source>Permission Warning</source>
+        <translation>权限警告</translation>
+    </message>
+    <message>
+        <source>User &lt;b&gt;%1&lt;/b&gt; is not in the &lt;b&gt;dialout&lt;/b&gt; group.&lt;br&gt;&lt;br&gt;You may not be able to access the USB device.&lt;br&gt;Please run the following command then &lt;b&gt;log out then log in&lt;/b&gt;, or &lt;b&gt;reboot&lt;/b&gt;:&lt;br&gt;&lt;br&gt;&lt;code&gt;sudo usermod -a -G dialout $USER&lt;/code&gt;</source>
+        <translation>用户 &lt;b&gt;%1&lt;/b&gt; 不在 &lt;b&gt;dialout&lt;/b&gt; 用户组中。&lt;br&gt;&lt;br&gt;您可能无法访问 USB 设备。&lt;br&gt;请运行以下命令，然后&lt;b&gt;注销并重新登录&lt;/b&gt;，或者&lt;b&gt;重启&lt;/b&gt;：&lt;br&gt;&lt;br&gt;&lt;code&gt;sudo usermod -a -G dialout $USER&lt;/code&gt;</translation>
+    </message>
 </context>
 <context>
     <name>NewScreenWidget</name>
