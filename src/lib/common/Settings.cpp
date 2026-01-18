@@ -170,9 +170,6 @@ QVariant Settings::defaultValue(const QString &key)
   if (key == Gui::AutoUpdateCheck)
     return false;
 
-  if (key == Gui::WindowGeometry)
-    return QRect();
-
   if (key == Security::Certificate) {
     // Bridge clients (in bridge-clients subdirectory) share the server's certificates
     const auto currentPath = instance()->settingsPath();
