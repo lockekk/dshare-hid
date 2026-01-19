@@ -53,9 +53,10 @@ We provide pre-built binaries for all major platforms. Choose the one that fits 
 ### macOS (Universal)
 Suitable for macOS 12+ (Intel & Apple Silicon).
 
-#### Option A: Homebrew (Recommended)
-If you have [Homebrew](https://brew.sh/) installed:
+#### Option A: Homebrew (Disabled - Coming Soon)
+This option is currently disabled and will be supported in a future update.
 
+<!--
 ```bash
 # 1. Add the Tap
 brew tap lockekk/deskflow
@@ -69,10 +70,11 @@ brew uninstall deskflow-hid
 # To Update
 brew upgrade deskflow-hid
 ```
+-->
 
 #### Option B: Manual Install
 1.  Download the latest `.dmg` from the [Releases](https://github.com/lockekk/deskflow-hid/releases) page.
-2.  Open `Deskflow-HID.dmg` and drag the application to your `Applications` folder.
+2.  Open `deskflow-hid-1.25.0-macos-universal.dmg` and drag the application to your `Applications` folder.
 3.  **Note**: If you encounter a "Damaged" or "Unverified" error, run the following command in Terminal:
     ```bash
     xattr -cr /Applications/Deskflow-HID.app
@@ -108,11 +110,11 @@ Works on newer Linux distributions (Ubuntu 22.04+, Fedora 36+, etc.).
 1.  Download the `.AppImage` file from [Releases](https://github.com/lockekk/deskflow-hid/releases).
 2.  Make it executable:
     ```bash
-    chmod +x Deskflow-HID-x86_64.AppImage
+    chmod +x deskflow-hid-1.25.0-x86_64.AppImage
     ```
 3.  Run it:
     ```bash
-    ./Deskflow-HID-x86_64.AppImage
+    ./deskflow-hid-1.25.0-x86_64.AppImage
     ```
 
 #### Option B: Flatpak
@@ -136,17 +138,17 @@ flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.f
 
 **2. Install**
 ```bash
-flatpak install --user ./Deskflow-HID.flatpak
+flatpak install --user ./deskflow-1.25.0-linux-x86_64.flatpak
 ```
 
-**3. Manage**
+# Manage
 ```bash
 # Uninstall
 flatpak uninstall org.deskflow.hid
 
 # Reinstall (Remove then Install)
 flatpak uninstall org.deskflow.hid
-flatpak install --user ./Deskflow-HID.flatpak
+flatpak install --user ./deskflow-1.25.0-linux-x86_64.flatpak
 ```
 
 #### Option C: Debian Package (Ubuntu 24+)
@@ -155,7 +157,7 @@ For Ubuntu 24.04 and newer.
 1.  Download the `.deb` file from [Releases](https://github.com/lockekk/deskflow-hid/releases).
 2.  Install:
     ```bash
-    sudo apt install ./deskflow-hid_*.deb
+    sudo apt install ./deskflow-hid_1.25.0_ubuntu_24_amd64.deb
     ```
 3.  Uninstall:
     ```bash

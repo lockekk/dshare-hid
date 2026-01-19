@@ -47,9 +47,10 @@ Deskflow-HID 使用经济实惠的 **ESP32-C3 Supermini** 开发板作为物理�
 ### macOS (通用版本)
 适用于 macOS 12+ (Intel & Apple Silicon)。
 
-#### 选项 A: Homebrew (推荐)
-如果您已安装 [Homebrew](https://brew.sh/)：
+#### 选项 A: Homebrew (已禁用 - 即将支持)
+此选项目前已禁用，将在未来的更新中支持。
 
+<!--
 ```bash
 # 1. 添加 Tap 仓库
 brew tap lockekk/deskflow
@@ -63,10 +64,11 @@ brew uninstall deskflow-hid
 # 更新
 brew upgrade deskflow-hid
 ```
+-->
 
 #### 选项 B: 手动安装
 1.  从 [Releases](https://github.com/lockekk/deskflow-hid/releases) 页面下载最新的 `.dmg` 文件。
-2.  打开 `Deskflow-HID.dmg` 并将应用程序拖入 `Applications` 文件夹。
+2.  打开 `deskflow-hid-1.25.0-macos-universal.dmg` 并将应用程序拖入 `Applications` 文件夹。
 3.  **注意**: 如果遇到“已损坏”或“无法验证”的错误提示，请在终端中运行以下命令：
     ```bash
     xattr -cr /Applications/Deskflow-HID.app
@@ -102,11 +104,11 @@ brew upgrade deskflow-hid
 1.  从 [Releases](https://github.com/lockekk/deskflow-hid/releases) 下载 `.AppImage` 文件。
 2.  赋予可执行权限:
     ```bash
-    chmod +x Deskflow-HID-x86_64.AppImage
+    chmod +x deskflow-hid-1.25.0-x86_64.AppImage
     ```
 3.  运行:
     ```bash
-    ./Deskflow-HID-x86_64.AppImage
+    ./deskflow-hid-1.25.0-x86_64.AppImage
     ```
 
 #### 选项 B: Flatpak
@@ -130,7 +132,7 @@ flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.f
 
 **2. 安装**
 ```bash
-flatpak install --user ./Deskflow-HID.flatpak
+flatpak install --user ./deskflow-1.25.0-linux-x86_64.flatpak
 ```
 
 **3. 管理应用**
@@ -140,7 +142,7 @@ flatpak uninstall org.deskflow.hid
 
 # 重装 (先卸载再安装)
 flatpak uninstall org.deskflow.hid
-flatpak install --user ./Deskflow-HID.flatpak
+flatpak install --user ./deskflow-1.25.0-linux-x86_64.flatpak
 ```
 
 #### 选项 C: Debian 软件包 (Ubuntu 24+)
@@ -149,7 +151,7 @@ flatpak install --user ./Deskflow-HID.flatpak
 1.  从 [Releases](https://github.com/lockekk/deskflow-hid/releases) 下载 `.deb` 文件。
 2.  安装:
     ```bash
-    sudo apt install ./deskflow-hid_*.deb
+    sudo apt install ./deskflow-hid_1.25.0_ubuntu_24_amd64.deb
     ```
 3.  卸载:
     ```bash
