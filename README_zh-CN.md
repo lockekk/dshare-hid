@@ -22,7 +22,7 @@ Deskflow-HID 是 [Deskflow](https://github.com/deskflow/deskflow) 项目的高�
 
 ## 解决方案：硬件辅助桥接
 
-Deskflow-HID 使用经济实惠的 **ESP32-C3 Supermini** 开发板作为物理硬件桥接器。它将 Deskflow 事件转换为 **低功耗蓝牙 (BLE) HID**，让您能够通过无线方式与任何移动设备共享键盘和鼠标。
+Deskflow-HID 使用经济实惠（AliExpress 上约 2.5 美元）的 **ESP32-C3 Supermini** 开发板作为物理硬件桥接器。它将 Deskflow 事件转换为 **低功耗蓝牙 (BLE) HID**，让您能够通过无线方式与任何移动设备共享键盘和鼠标。
 
 <br/> <img src="doc/images/esp32-c3-supermini.png" height="120" alt="ESP32-C3 Super Mini"> <br/> <sub>图片来源: [Josselin Hefti](https://www.printables.com/model/1360390-esp32-c3-super-mini-model)</sub>
 
@@ -210,6 +210,8 @@ Deskflow-HID 本质上是一个开源项目。桌面应用程序和桥接架构�
 
 ## 致谢
 特别感谢 [Deskflow](https://github.com/deskflow/deskflow) 项目及其贡献者。本项目建立在他们的坚实基础之上。
+
+同时感谢 [Josselin Hefti](https://www.printables.com/model/1360390-esp32-c3-super-mini-model) 提供的 ESP32-C3 Supermini 精美 3D 模型图片。
 
 ## 支持与联系
 - **邮箱**: [deskflow.hid@gmail.com](mailto:deskflow.hid@gmail.com)

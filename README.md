@@ -23,7 +23,7 @@ While traditional software KVM solutions like Deskflow work great between comput
 
 ## The Solution: Hardware Bridge Client
 
-Deskflow-HID uses a budget-friendly **ESP32-C3 Supermini** board as a hardware bridge. It converts Deskflow events into **Bluetooth Low Energy (BLE) HID**, letting you wirelessly share your keyboard and mouse with any mobile device.
+Deskflow-HID uses a budget-friendly (~$2.50 USD on AliExpress) **ESP32-C3 Supermini** board as a hardware bridge. It converts Deskflow events into **Bluetooth Low Energy (BLE) HID**, letting you wirelessly share your keyboard and mouse with any mobile device.
 
 <br/> <img src="doc/images/esp32-c3-supermini.png" height="120" alt="ESP32-C3 Super Mini"> <br/> <sub>Image credit: [Josselin Hefti](https://www.printables.com/model/1360390-esp32-c3-super-mini-model)</sub>
 
@@ -216,6 +216,8 @@ Deskflow-HID is an open-source project at its core. The desktop application and 
 
 ## Acknowledgments
 Special thanks to the [Deskflow](https://github.com/deskflow/deskflow) project and its contributors. This project is built upon their strong foundation.
+
+We also thank [Josselin Hefti](https://www.printables.com/model/1360390-esp32-c3-super-mini-model) for the excellent 3D model image of the ESP32-C3 Supermini.
 
 ## Support & Contact
 - **Email**: [deskflow.hid@gmail.com](mailto:deskflow.hid@gmail.com)
