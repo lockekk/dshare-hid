@@ -105,7 +105,7 @@ public:
    * @param allowInsecure If true, perform an insecure handshake (no HMAC).
    * @return true if successful
    */
-  bool open(bool allowInsecure = false);
+  virtual bool open(bool allowInsecure = false);
 
   /**
    * @brief Close the CDC device
@@ -115,7 +115,7 @@ public:
   /**
    * @brief Check if device is open
    */
-  bool isOpen() const;
+  virtual bool isOpen() const;
 
   /**
    * @brief Check if connection is authenticated/secure
@@ -129,7 +129,7 @@ public:
    * @brief Send HID event packet to firmware device
    * @return true if successful
    */
-  bool sendHidEvent(const HidEventPacket &packet);
+  virtual bool sendHidEvent(const HidEventPacket &packet);
 
   bool fetchDeviceName(std::string &outName);
   bool setDeviceName(const std::string &name);
@@ -166,7 +166,7 @@ public:
    * @param outProfile Output profile data
    * @return true if successful
    */
-  bool getProfile(uint8_t index, DeviceProfile &outProfile);
+  virtual bool getProfile(uint8_t index, DeviceProfile &outProfile);
 
   /**
    * @brief Set a profile on the device
@@ -199,7 +199,7 @@ public:
   /**
    * @brief Get last error message
    */
-  std::string lastError() const
+  virtual std::string lastError() const
   {
     return m_lastError;
   }
@@ -215,7 +215,7 @@ public:
   /**
    * @brief Retrieve configuration discovered during the CDC handshake
    */
-  const FirmwareConfig &deviceConfig() const
+  virtual const FirmwareConfig &deviceConfig() const
   {
     return m_deviceConfig;
   }

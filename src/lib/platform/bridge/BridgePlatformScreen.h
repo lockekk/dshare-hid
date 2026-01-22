@@ -152,6 +152,11 @@ private:
   mutable std::chrono::steady_clock::time_point m_lastCdcCommand;
   void *m_keepAliveTimer = nullptr;
   bool m_bluetoothKeepAliveEnabled = false;
+
+  // Scroll accumulation
+  mutable int32_t m_wheelAccumulatorX = 0;
+  mutable int32_t m_wheelAccumulatorY = 0;
+  uint8_t m_scrollSpeed = 120; // Default speed
 };
 
 } // namespace deskflow::bridge

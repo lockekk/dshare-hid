@@ -1540,6 +1540,10 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <source>Automatic</source>
         <translation>Automatico</translation>
     </message>
+    <message>
+        <source>Include version in the window title</source>
+        <translation type="unfinished">Includi la versione nel titolo della finestra</translation>
+    </message>
 </context>
 <context>
     <name>deskflow::gui::BridgeClientConfigDialog</name>
@@ -2652,7 +2656,7 @@ Il firmware tornerà in 24 ore.</translation>
     </message>
     <message>
         <source>Include version in the window title</source>
-        <translation type="unfinished">Includi la versione nel titolo della finestra</translation>
+        <translation type="obsolete">Includi la versione nel titolo della finestra</translation>
     </message>
 </context>
 <context>

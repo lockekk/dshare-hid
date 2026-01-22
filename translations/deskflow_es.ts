@@ -1496,6 +1496,10 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <source>Automatic</source>
         <translation>Automático</translation>
     </message>
+    <message>
+        <source>Include version in the window title</source>
+        <translation type="unfinished">Incluir la versión en el título de la ventana</translation>
+    </message>
 </context>
 <context>
     <name>deskflow::gui::BridgeClientConfigDialog</name>
@@ -2508,7 +2512,7 @@ Siguiente paso: Debe flashear el firmware por dispositivo para usar el dispositi
     </message>
     <message>
         <source>Include version in the window title</source>
-        <translation type="unfinished">Incluir la versión en el título de la ventana</translation>
+        <translation type="obsolete">Incluir la versión en el título de la ventana</translation>
     </message>
 </context>
 <context>

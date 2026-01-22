@@ -119,7 +119,6 @@ void BridgePlatformScreen::warpCursor(int32_t x, int32_t y)
 {
   m_cursorX = x;
   m_cursorY = y;
-
 }
 
 uint32_t BridgePlatformScreen::registerHotKey(KeyID key, KeyModifierMask mask)
@@ -129,17 +128,14 @@ uint32_t BridgePlatformScreen::registerHotKey(KeyID key, KeyModifierMask mask)
 
 void BridgePlatformScreen::unregisterHotKey(uint32_t id)
 {
-
 }
 
 void BridgePlatformScreen::fakeInputBegin()
 {
-
 }
 
 void BridgePlatformScreen::fakeInputEnd()
 {
-
 }
 
 int32_t BridgePlatformScreen::getJumpZoneSize() const
@@ -209,12 +205,10 @@ void BridgePlatformScreen::fakeMouseRelativeMove(int32_t dx, int32_t dy) const
     return;
   }
 
-  int16_t stepDx = std::clamp(
-      static_cast<int64_t>(dx), static_cast<int64_t>(kMinMouseDelta), static_cast<int64_t>(kMaxMouseDelta)
-  );
-  int16_t stepDy = std::clamp(
-      static_cast<int64_t>(dy), static_cast<int64_t>(kMinMouseDelta), static_cast<int64_t>(kMaxMouseDelta)
-  );
+  int16_t stepDx =
+      std::clamp(static_cast<int64_t>(dx), static_cast<int64_t>(kMinMouseDelta), static_cast<int64_t>(kMaxMouseDelta));
+  int16_t stepDy =
+      std::clamp(static_cast<int64_t>(dy), static_cast<int64_t>(kMinMouseDelta), static_cast<int64_t>(kMaxMouseDelta));
 
   if (!sendMouseMoveEvent(stepDx, stepDy)) {
     LOG_ERR("BridgeScreen: failed to send mouse move");
@@ -230,15 +224,28 @@ void BridgePlatformScreen::fakeMouseWheel(int32_t, int32_t yDelta) const
   }
 
   yDelta = mapClientScrollDirection(yDelta);
-  yDelta = std::clamp(yDelta, -128, 127);
-  if (!sendMouseScrollEvent(static_cast<int8_t>(yDelta))) {
-    LOG_ERR("BridgeScreen: failed to send scroll event");
+
+  int32_t speed = (m_scrollSpeed > 0) ? m_scrollSpeed : 120;
+  m_wheelAccumulatorY += (yDelta * speed);
+
+  constexpr int32_t kStepThreshold = 14400;
+  int8_t steps = static_cast<int8_t>(m_wheelAccumulatorY / kStepThreshold);
+
+  if (steps != 0) {
+    m_wheelAccumulatorY %= kStepThreshold;
+
+    if (!sendMouseScrollEvent(steps)) {
+      LOG_ERR("BridgeScreen: failed to send scroll event");
+    }
   }
 }
 
 void BridgePlatformScreen::resetMouseAccumulator() const
 {
-
+  if (m_events) {
+    m_wheelAccumulatorX = 0;
+    m_wheelAccumulatorY = 0;
+  }
 }
 
 void BridgePlatformScreen::fakeKeyDown(KeyID id, KeyModifierMask mask, KeyButton button, const std::string &)
@@ -395,17 +402,14 @@ void BridgePlatformScreen::fakeAllKeysUp()
 
 void BridgePlatformScreen::updateKeyMap()
 {
-
 }
 
 void BridgePlatformScreen::updateKeyState()
 {
-
 }
 
 void BridgePlatformScreen::setHalfDuplexMask(KeyModifierMask)
 {
-
 }
 
 bool BridgePlatformScreen::fakeCtrlAltDel()
@@ -459,6 +463,19 @@ void BridgePlatformScreen::enter()
   if (m_transport != nullptr && !m_transport->open()) {
     LOG_WARN("BridgeScreen: failed to open transport on enter (%s)", m_transport->lastError().c_str());
   }
+
+  if (m_transport != nullptr && m_transport->isOpen()) {
+    if (m_transport->hasDeviceConfig()) {
+      const auto &config = m_transport->deviceConfig();
+      DeviceProfile profile;
+      if (m_transport->getProfile(config.activeProfile, profile)) {
+        m_scrollSpeed = profile.speed;
+        LOG_INFO("BridgeScreen: loaded scroll speed %d from profile %d", m_scrollSpeed, config.activeProfile);
+      } else {
+        LOG_WARN("BridgeScreen: failed to load profile %d", config.activeProfile);
+      }
+    }
+  }
 }
 
 bool BridgePlatformScreen::canLeave()
@@ -480,32 +497,26 @@ bool BridgePlatformScreen::setClipboard(ClipboardID id, const IClipboard *clipbo
 
 void BridgePlatformScreen::checkClipboards()
 {
-
 }
 
 void BridgePlatformScreen::openScreensaver(bool notify)
 {
-
 }
 
 void BridgePlatformScreen::closeScreensaver()
 {
-
 }
 
 void BridgePlatformScreen::screensaver(bool activate)
 {
-
 }
 
 void BridgePlatformScreen::resetOptions()
 {
-
 }
 
 void BridgePlatformScreen::setOptions(const OptionsList &options)
 {
-
 }
 
 void BridgePlatformScreen::setSequenceNumber(uint32_t seqNum)
@@ -525,7 +536,6 @@ std::string BridgePlatformScreen::getSecureInputApp() const
 
 void BridgePlatformScreen::updateButtons()
 {
-
 }
 
 IKeyState *BridgePlatformScreen::getKeyState() const
@@ -535,7 +545,6 @@ IKeyState *BridgePlatformScreen::getKeyState() const
 
 void BridgePlatformScreen::handleSystemEvent(const Event &event)
 {
-
 }
 
 bool BridgePlatformScreen::sendEvent(HidEventType type, const std::vector<uint8_t> &payload) const
