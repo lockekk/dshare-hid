@@ -19,8 +19,8 @@ import argparse
 
 # Configuration
 PROJECT_ROOT = Path(__file__).parent.parent
-DEFAULT_SOURCE = PROJECT_ROOT / "src/apps/res/DShare.icns"
-ICNS_PATH = PROJECT_ROOT / "src/apps/res/DShare.icns"
+DEFAULT_SOURCE = PROJECT_ROOT / "src/apps/res/DShare-HID.icns"
+ICNS_PATH = PROJECT_ROOT / "src/apps/res/DShare-HID.icns"
 LINUX_ICON_PATH = PROJECT_ROOT / "deploy/linux/org.lockekk.dshare-hid.png"
 WINDOWS_ICON_PATH = PROJECT_ROOT / "src/apps/res/dshare.ico"
 WIX_DIALOG_PATH = PROJECT_ROOT / "deploy/windows/wix-dialog.png"
@@ -109,6 +109,17 @@ def main():
         else:
             print(
                 f"  -> Warning: {ICNS_PATH} not found, cannot update dmg-volume.icns")
+
+        # 2.3 Update Mac DMG Background (Remove baked-in artifacts)
+        # Create a plain white background to ensure no old artifacts persist.
+        # Dimensions 600x400 match the bounds in generate_ds_store.applescript
+        print(
+            f"Updating Mac DMG background: {MAC_VOLUME_ICON_PATH.parent / 'dmg-background.tiff'}")
+        bg_width, bg_height = 600, 400
+        dmg_bg = Image.new("RGB", (bg_width, bg_height), "white")
+        dmg_bg.save(MAC_VOLUME_ICON_PATH.parent /
+                    "dmg-background.tiff", format="TIFF")
+        print("  -> Done")
 
         # 3. Update Internal SVGs (Embedded PNG in SVG)
         # We need to replace the vector SVGs with our raster icon wrapped in SVG

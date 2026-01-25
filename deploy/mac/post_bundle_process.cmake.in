@@ -26,7 +26,7 @@ if (NOT EXISTS "${APP_PATH}/Contents/MacOS/@CMAKE_PROJECT_PROPER_NAME@")
 endif()
 
 message(STATUS "Running macdeployqt on ${APP_PATH}...")
-execute_process(COMMAND "${DEPLOYQT}" "${APP_PATH}" COMMAND_ECHO STDOUT)
+execute_process(COMMAND "${DEPLOYQT}" "${APP_PATH}" "-executable=${APP_PATH}/Contents/MacOS/dshare-hid-core" COMMAND_ECHO STDOUT)
 
 if (NOT "${OSSL_MOD_PATH}" STREQUAL "")
     message(STATUS "Bundling OpenSSL modules...")

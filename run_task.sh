@@ -41,7 +41,7 @@ process_input() {
             if [ $? -eq 0 ]; then
                 if [ "$os_name" = "Darwin" ]; then
                     echo "--- DEPLOYING QT ---"
-                    $CMAKE_PREFIX_PATH/bin/macdeployqt build/bin/DShare-HID.app
+                    $CMAKE_PREFIX_PATH/bin/macdeployqt build/bin/DShare-HID.app -executable=build/bin/DShare-HID.app/Contents/MacOS/dshare-hid-core
                     echo "--- SIGNING ---"
                     codesign --force --deep --sign "$APPLE_CODESIGN_DEV" build/bin/DShare-HID.app
                 fi
