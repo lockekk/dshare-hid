@@ -43,11 +43,11 @@ inline void updateIconTheme()
   // Sets the fallback icon path and fallback theme
   // Rebranding workaround: We force the use of "deskflow" theme folder name
   // because we avoided renaming the resource directories to match the new kAppId (dshare-hid).
-  const auto themeName = QStringLiteral("deskflow-%1").arg(iconMode());
+  const auto themeName = QStringLiteral("dshare-hid-%1").arg(iconMode());
   if (QIcon::themeName().isEmpty() || QIcon::themeName().startsWith(kAppId))
     QIcon::setThemeName(themeName);
   else
     QIcon::setFallbackThemeName(themeName);
-  QIcon::setFallbackSearchPaths({QStringLiteral(":/icons/%1").arg(themeName)});
+  QIcon::setFallbackSearchPaths({QStringLiteral(":/icons")});
 }
 } // namespace deskflow::gui

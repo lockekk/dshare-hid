@@ -20,7 +20,7 @@
         "Locked": "已锁定",
         "Locked by %1": "被 %1 锁定",
         "Device disconnected.": "设备已断开连接。",
-        "Device handshake failed. Possibly not a Deskflow-HID firmware.": "设备握手失败。可能不是 Deskflow-HID 固件。",
+        "Device handshake failed. Possibly not a DShare-HID firmware.": "设备握手失败。可能不是 DShare-HID 固件。",
         "Factory firmware detected. Please update firmware.": "检测到工厂固件。请更新固件。",
         "Factory firmware detected on %1. Auto-connect disabled.": "在 %1 上检测到工厂固件。自动连接已禁用。",
         "Handshake failed on %1. Auto-connect disabled.": "在 %1 上握手失败。自动连接已禁用。",
@@ -46,9 +46,9 @@
         "Advanced": "高级",
         "Device name:": "设备名称：",
         "Automatically disconnect Bluetooth": "自动断开蓝牙",
-        "Disconnects from the host device when you stop using Deskflow.": "停止使用 Deskflow 时断开与主机设备的连接。",
+        "Disconnects from the host device when you stop using DShare-HID.": "停止使用 DShare-HID 时断开与主机设备的连接。",
         "Auto-connect when USB device plugged in": "USB 设备插入时自动连接",
-        "Automatically connect to the Deskflow server when the device is plugged in.": "设备插入时自动连接到 Deskflow 服务器。",
+        "Automatically connect to the DShare-HID server when the device is plugged in.": "设备插入时自动连接到 DShare-HID 服务器。",
         "Profiles (Device)": "配置文件 (设备)",
         "A-Z, 0-9, spaces, .-_ (max 31 chars)": "A-Z, 0-9, 空格, .-_ (最多 31 个字符)",
         "Hostname:": "主机名：",
@@ -180,7 +180,7 @@
         "Paypal Seller: <b><font color='red'>%1</font></b>": "Paypal 卖家：<b><font color='red'>%1</font></b>",
         "PayPal Transaction ID:": "PayPal 交易 ID：",
         "Flashing failed. Error code: %1": "烧录失败。错误代码：%1",
-        "This process permanently converts your ESP32 into a Deskflow-HID device. This is irreversible and blocks non-Deskflow firmware.\n\nDo you want to proceed?": "此过程将把您的 ESP32 永久转换为 Deskflow-HID 设备。此操作不可逆，并将阻止非 Deskflow 固件。\n\n您要继续吗？",
+        "This process permanently converts your ESP32 into a DShare-HID device. This is irreversible and blocks non-DShare-HID firmware.\n\nDo you want to proceed?": "此过程将把您的 ESP32 永久转换为 DShare-HID 设备。此操作不可逆，并将阻止非 DShare-HID 固件。\n\n您要继续吗？",
         "Confirm Factory Flash": "确认工厂烧录",
         "Factory firmware flashed successfully.\n\nNext step: You need to flash the per-device firmware to use the device. Please switch to the 'Order' tab to request it.": "工厂固件烧录成功。\n\n下一步：您需要烧录每设备特定的固件才能使用该设备。请切换到“订购”选项卡进行申请。",
         "Device Info copied to clipboard.": "设备信息已复制到剪贴板。",
@@ -248,7 +248,7 @@
         "Device Secret (PDEK) is required for this option. Please ensure the device is in Factory Mode and the secret has been fetched correctly.": "此选项需要设备密钥 (PDEK)。请确保设备处于工厂模式且已正确获取密钥。",
         "Free": "免费",
         "No payment is required for this option.": "此选项无需付款。",
-        "You are about to open PayPal to pay <b>$%1 USD</b> to <b>%2</b>.<br><br>Product: %3<br>Reference: %4<br><br>Please confirm to proceed to PayPal.": "您即将打开 PayPal 向 <b>%2</b> 支付 <b>$%1 USD</b> \u81F3 <b>%2</b>。<br><br>\u4EA7\u54C1\uFF1A%3<br>\u53C2\u8003\u53F7\uFF1A%4<br><br>\u8BF7\u786E\u8BA4\u4EE5\u524D\u5F80 PayPal\u3002",
+        "You are about to open PayPal to pay <b>$%1 USD</b> to <b>%2</b>.<br><br>Product: %3<br>Reference: %4<br><br>Please confirm to proceed to PayPal.": "您即将打开 PayPal 向 <b>%2</b> 支付 <b>$%1 USD</b> 至 <b>%2</b>。<br><br>产品：%3<br>参考号：%4<br><br>请确认以前往 PayPal。",
         "Confirm Payment": "确认付款",
         "Failed to open web browser. Please visit PayPal manually.": "无法打开 Web 浏览器。请手动访问 PayPal。",
         "Save Request File": "保存请求文件",
@@ -286,7 +286,7 @@
         "Failed to find factory firmware.": "未找到工厂固件。",
         "Found factory firmware: %1": "找到工厂固件: %1",
         "Factory flash cancelled.": "工厂刷写已取消。",
-        "About to flash: <b>%1</b><br><br>This action will permanently convert your device to Deskflow-HID. This process is irreversible and precludes non-Deskflow firmware.<br><br>Proceed?": "即将刷写: <b>%1</b><br><br>此操作将永久地将您的设备转换为 Deskflow-HID。此过程不可逆转，且会排除非 Deskflow 固件。<br><br>是否继续？",
+        "About to flash: <b>%1</b><br><br>This action will permanently convert your device to DShare-HID. This process is irreversible and precludes non-DShare-HID firmware.<br><br>Proceed?": "即将刷写: <b>%1</b><br><br>此操作将永久地将您的设备转换为 DShare-HID。此过程不可逆转，且会排除非 DShare-HID 固件。<br><br>是否继续？",
         "Device Info copied to clipboard:": "设备信息已复制到剪贴板:",
         "Device Info fetched and copied to clipboard:": "已获取设备信息并复制到剪贴板:",
         "Please flash per-device firmware firstly.": "请先刷写每台设备的固件。",
@@ -305,7 +305,7 @@
         "Use another computer's mouse and keyboard\n(make this computer the client)": "使用另一台计算机的鼠标 and 键盘\n(将此计算机设为客户端)",
         "Bridge Clients": "桥接客户端",
         "Server already running": "服务器已在运行",
-        "Another Deskflow server instance is already running in the background. Please close the existing server before starting a new one.": "另一个 Deskflow 服务器实例已在后台运行。请在启动新服务器之前关闭现有服务器。",
+        "Another DShare-HID server instance is already running in the background. Please close the existing server before starting a new one.": "另一个 DShare-HID 服务器实例已在后台运行。请在启动新服务器之前关闭现有服务器。",
         "Firmware": "固件",
         "invalid certificate, generating a new one": "证书无效，正在生成新证书",
         "Using IP: ": "使用 IP：",
@@ -320,7 +320,7 @@
         "User <b>%1</b> is not in the <b>dialout</b> group.<br><br>You may not be able to access the USB device.<br>Please run the following command then <b>log out then log in</b>, or <b>reboot</b>:<br><br><code>sudo usermod -a -G dialout $USER</code>": "用户 <b>%1</b> 不在 <b>dialout</b> 用户组中。<br><br>您可能无法访问 USB 设备。<br>请运行以下命令，然后<b>注销并重新登录</b>，或者<b>重启</b>：<br><br><code>sudo usermod -a -G dialout $USER</code>"
     },
     "AboutDialog": {
-        "About Deskflow-HID": "关于 Deskflow-HID"
+        "About DShare-HID": "关于 DShare-HID"
     },
     "QObject": {
         "<p>There was a problem finding the %1 background service (daemon).</p><p>The background service makes %1 work with UAC prompts and the login screen.</p><p>If don't want to use the background service and intentionally stopped it, you can prevent it's use by disabling this feature.</p><p>If you did not stop the background service intentionally, there may be a problem with it. Please retry or try restarting the %1 service from the Windows services program.</p>": "<p>查找 %1 后台服务（守护进程）时出现问题。</p><p>%1 需后台服务来与 UAC 提示和登录屏幕配合工作。</p><p>如果您不想使用后台服务并已将其停止，可以通过禁用此功能来阻止使用它。</p><p>如果您并非有意停止后台服务，则可能存在问题。请重试，或尝试从 Windows 服务程序中重启 %1 服务。</p>",
@@ -328,9 +328,9 @@
         "failed to parse certificate file: %1": "解析证书文件失败：%1",
         "key detected is the incorrect size": "检测到的密钥大小不正确。",
         "failed to read RSA key from certificate file: %1": "无法从证书文件中读取 RSA 密钥：%1",
-        "There is another Deskflow server is already running and has been brought to the foreground.\nThis new instance cannot start and will exit now.": "另一个 Deskflow 服务器实例已在运行中，并已切换至前台。\n新实例无法启动，现在将退出。",
-        "Deskflow is already running.\nThis new instance cannot start another server, so it will now exit.": "Deskflow 已在运行中。\n新实例无法启动另一个服务器，现在将退出。",
-        "Deskflow": "Deskflow"
+        "There is another DShare-HID server is already running and has been brought to the foreground.\nThis new instance cannot start and will exit now.": "另一个 DShare-HID 服务器实例已在运行中，并已切换至前台。\n新实例无法启动，现在将退出。",
+        "DShare-HID is already running.\nThis new instance cannot start another server, so it will now exit.": "DShare-HID 已在运行中。\n新实例无法启动另一个服务器，现在将退出。",
+        "DShare-HID": "DShare-HID"
     },
     "ServerConfigDialog": {
         "Enable lock to computer at startup": "启动时启用锁定到计算机",

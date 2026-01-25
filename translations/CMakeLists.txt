@@ -6,7 +6,7 @@ find_package(Qt6 ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE COMPONENTS LinguistTo
 
 # Temporarily change project name to match original translation filenames
 set(ORIGINAL_PROJECT_NAME ${CMAKE_PROJECT_NAME})
-set(CMAKE_PROJECT_NAME "deskflow")
+set(CMAKE_PROJECT_NAME "dshare-hid")
 
 # To add a new language Add 639 shortname
 set (${CMAKE_PROJECT_NAME}_TRS

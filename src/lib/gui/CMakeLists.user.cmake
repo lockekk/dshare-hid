@@ -90,7 +90,7 @@ endif()
 
 # PayPal Configuration
 if(NOT DEFINED DESKFLOW_PAYPAL_ACCOUNT)
-  set(DESKFLOW_PAYPAL_ACCOUNT "sb-uqhcf48362835@business.example.com")
+  set(DESKFLOW_PAYPAL_ACCOUNT "example@business.example.com")
 endif()
 
 if(NOT DEFINED DESKFLOW_PAYPAL_URL)

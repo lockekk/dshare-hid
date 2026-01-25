@@ -1,5 +1,5 @@
 /*
- * Deskflow -- mouse and keyboard sharing utility
+ * DShare-HID -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2024 - 2025 Chris Rizzitello <sithlord48@gmail.com>
  * SPDX-FileCopyrightText: (C) 2025 Symless Ltd.
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
@@ -10,8 +10,8 @@
 const auto kAppName = "@CMAKE_PROJECT_PROPER_NAME@";
 const auto kAppId = "dshare-hid";
 const auto kAppDescription = "@CMAKE_PROJECT_DESCRIPTION@";
-const auto kDaemonBinName = "@CMAKE_PROJECT_NAME@-daemon";
-const auto kDaemonIpcName = "@CMAKE_PROJECT_NAME@-daemon";
+const auto kDaemonBinName = "dshare-hid-daemon";
+const auto kDaemonIpcName = "dshare-hid-daemon";
 const auto kRevFqdnName = "@CMAKE_PROJECT_REV_FQDN@";
 
 const auto kCopyright = //

@@ -1,36 +1,36 @@
 # GUI Config
 
- Deskflow will automatically figure out where to save settings and other files.
+ DShare-HID will automatically figure out where to save settings and other files.
 
 
 ## Search paths
 
-Deskflow will look for settings in several places depending on your operating system.
+DShare-HID will look for settings in several places depending on your operating system.
 The search order for a setting file depends on your operating system
 
 ### Linux
 
-  1. `<XDG_CONFIG_HOME>/Deskflow/Deskflow.conf`
-  2. `~/.config/Deskflow/Deskflow.conf`
-  3. `/etc/Deskflow/Deskflow.conf`
+  1. `<XDG_CONFIG_HOME>/DShare-HID/DShare-HID.conf`
+  2. `~/.config/DShare-HID/DShare-HID.conf`
+  3. `/etc/DShare-HID/DShare-HID.conf`
  
 A new settings file will be created in the user path if no settings file is found.
 The path of the settings file will be used as the base for all other config files.
 
 ### macOS
  
-  1. `~/Library/Deskflow/Deskflow.conf`
-  2. `/Library/Deskflow/Deskflow.conf`
+  1. `~/Library/DShare-HID/DShare-HID.conf`
+  2. `/Library/DShare-HID/DShare-HID.conf`
  
 A new settings file will be created in the user path if no settings file is found.
 The path of the settings file will be used as the base for all other config files.
 
 ### Windows
 
-  1. `<install-path>/settings/Deskflow.conf`
-  2. Windows Registry `HKCU\Software\Deskflow\Deskflow`
+  1. `<install-path>/settings/DShare-HID.conf`
+  2. Windows Registry `HKCU\Software\DShare-HID\DShare-HID`
 
-Windows will save to the install dir if settings are loaded from there. If not, it saves any other config files in: `C:\ProgramData\Deskflow\`
+Windows will save to the install dir if settings are loaded from there. If not, it saves any other config files in: `C:\ProgramData\DShare-HID\`
 
 When using settings from the install dir, the service mode will not be available.
 
@@ -70,7 +70,7 @@ This section contains general options it will begin with `[core]`
 | interface     | IP Address        | Preferred IP to use for network communication. By default the server board casts on any available address |
 | lastVersion   | M.m.p.t           | The version last run used for checking for updates |
 | port          | port #            | Port to use when connecting [default: 24800 |
-| preventSleep  | `true` or `false` | Prevent sleep when Deskflow is active [default: false] |
+| preventSleep  | `true` or `false` | Prevent sleep when DShare-HID is active [default: false] |
 | processMode   | `1` or `0`        | The mode we use to start the process Service or Desktop |
 | screenName    | string            | Name used to identify the screen [default: machine's hostname] |
 | useHooks      | `true` or `false` | If Windows uses hooks or not [default: true] |
@@ -83,7 +83,7 @@ This section contains options used by the daemon on windows it will begin with `
 
 |Option | Valid Values|Description|
 |:----------|:-----------:|:-----------|
-| command   | Filename          | The filename of the binary the daemon. This binary exists in the same path as the deskflow GUI |
+| command   | Filename          | The filename of the binary the daemon. This binary exists in the same path as the dshare-hid GUI |
 | elevate   | `true` or `false` | Elevate the daemon app [default: true unless portable mode ] |
 | logFile   | Filepath          | Filepath of the daemon log |
 | logLevel  | valid log Level,  | Log Level  |
@@ -103,7 +103,7 @@ This section contains options used by the GUI it will begin with `[gui]`
 | windowGeometry                 | QRect             | Geometry of the window used to restore the window geometry after exiting the app |
 | showGenericClientFailureDialog | `true` or `false` | When `true` client connection errors will not show popup error messages [default: true] |
 | shownFirstConnectedMessage     | `true` or `false` | When `true` GUI has shown the user the message for connecting the first time [default: false] |
-| shownServerFirstStartMessage   | `true` or `false` | When `true` GUI has shown the user the Deskflow server is now running message [default: false] |
+| shownServerFirstStartMessage   | `true` or `false` | When `true` GUI has shown the user the DShare-HID server is now running message [default: false] |
 | shownVerionInTitle             | `true` or `false` | When `true` GUI will include the version in the window title [default: false] |
 | startCoreWithGui               | `true` or `false` | When true the Core will be started with the GUI. It is set to the Core's state on exit. |
 | updateCheckUrl                 | URL               | The URL to use when checking for a new version number, it should return a version [default: https://api.deskflow.org/version]|
@@ -278,7 +278,7 @@ win32KeepForeground=false
 
 # Server Config
 
-The `deskflow-server` command accepts the `-c` or `--config` option, which takes one argument,
+The `dshare-hid-server` command accepts the `-c` or `--config` option, which takes one argument,
 the path to a server configuration file. When using the GUI the `internalConfig` section of the GUI settings will be exported as the server configuration.
 The configuration file is plain text and case-sensitive. The file is broken into sections, and each section has the form:
 ```
@@ -394,21 +394,21 @@ end
 | Options | Value Values| Description|
 |:--------|:-----------:|:-----------|
 |protocol | barrier or synergy| The protocol to use when saying hello to clients. Can be set to barrier or synergy. If not set barrier is used as the default |
-|heartbeat| integer (N) | The server will expect each client to send a message no less than every `N` milliseconds. If no message arrives from a client within `3N` seconds the server forces that client to disconnect. If deskflow fails to detect clients disconnecting while the server is sleeping or vice versa, try using this option. |
-|switchCorners | none top-left top-right bottom-left bottom-right left right top bottom all | Deskflow won't switch screens when the mouse reaches the edge of the screen if it's in a listed corner. The size of all corners is given by the `switchCornerSize` option. The first name in the list is one of the above names and defines the initial set of corners. Subsequent names are prefixed with + or - to add the corner to or remove the corner from the set, respectively. For example: `all -left +top-left` starts will all corners, removes the left corners (top and bottom) then adds the top-left back in, resulting in the top-left, bottom-left and bottom-right corners.|
+|heartbeat| integer (N) | The server will expect each client to send a message no less than every `N` milliseconds. If no message arrives from a client within `3N` seconds the server forces that client to disconnect. If dshare-hid fails to detect clients disconnecting while the server is sleeping or vice versa, try using this option. |
+|switchCorners | none top-left top-right bottom-left bottom-right left right top bottom all | DShare-HID won't switch screens when the mouse reaches the edge of the screen if it's in a listed corner. The size of all corners is given by the `switchCornerSize` option. The first name in the list is one of the above names and defines the initial set of corners. Subsequent names are prefixed with + or - to add the corner to or remove the corner from the set, respectively. For example: `all -left +top-left` starts will all corners, removes the left corners (top and bottom) then adds the top-left back in, resulting in the top-left, bottom-left and bottom-right corners.|
 |switchCornerSize | integer (N) | Sets the size of all corners in pixels. The cursor must be within `N` pixels of the corner to be considered to be in the corner.|
-|switchDelay | integer| Deskflow won't switch screens when the mouse reaches the edge of a screen unless it stays on the edge for `N` milliseconds. This helps prevent unintentional switching when working near the edge of a screen.|
-|switchDoubleTap| integer(N) | Deskflow won't switch screens when the mouse reaches the edge of a screen unless it's moved away from the edge and then back to the edge within `N` milliseconds. With the option you have to quickly tap the edge twice to switch. This helps prevent unintentional switching when working near the edge of a screen.|
-|screenSaverSync| `true` or `false`| ''Note: Removed in v1.14.1'' If set to ''false'' then Deskflow won't synchronize screen savers. Client screen savers will start according to their individual configurations. The server screen saver won't start if there is input, even if that input is directed toward a client screen.|
-|relativeMouseMoves| `true` or `false`| If set to ''true'' then secondary screens move the mouse using relative rather than absolute mouse moves when and only when the cursor is locked to the screen (by ''Scroll Lock'' or a configured hot key). This is intended to make Deskflow work better with certain games. If set to ''false'' or not set then all mouse moves are absolute.|
+|switchDelay | integer| DShare-HID won't switch screens when the mouse reaches the edge of a screen unless it stays on the edge for `N` milliseconds. This helps prevent unintentional switching when working near the edge of a screen.|
+|switchDoubleTap| integer(N) | DShare-HID won't switch screens when the mouse reaches the edge of a screen unless it's moved away from the edge and then back to the edge within `N` milliseconds. With the option you have to quickly tap the edge twice to switch. This helps prevent unintentional switching when working near the edge of a screen.|
+|screenSaverSync| `true` or `false`| ''Note: Removed in v1.14.1'' If set to ''false'' then DShare-HID won't synchronize screen savers. Client screen savers will start according to their individual configurations. The server screen saver won't start if there is input, even if that input is directed toward a client screen.|
+|relativeMouseMoves| `true` or `false`| If set to ''true'' then secondary screens move the mouse using relative rather than absolute mouse moves when and only when the cursor is locked to the screen (by ''Scroll Lock'' or a configured hot key). This is intended to make DShare-HID work better with certain games. If set to ''false'' or not set then all mouse moves are absolute.|
 |clipboardSharing| `true` or `false`|If set to ''true'' then clipboard sharing will be enabled and the ''clipboardSharingSize'' setting will be used. If set to false, then clipboard sharing will be disabled and the the ''clipboardSharingSize'' setting will be ignored.|
-|clipboardSharingSize| integer (N)| Deskflow will send a maximum of `N` kilobytes of clipboard data to another computer when the mouse transitions to that computer.|
-|win32KeepForeground | `true` or `false`| If set to ''true'' (the default), Deskflow will grab the foreground focus on a Windows server (thereby putting all other windows in the background) upon switching to a client. If set to ''false'', it will leave the currently foreground window in the foreground. Deskflow grabs the focus to avoid issues with other apps interfering with Deskflow's ability to read the hardware inputs. |
+|clipboardSharingSize| integer (N)| DShare-HID will send a maximum of `N` kilobytes of clipboard data to another computer when the mouse transitions to that computer.|
+|win32KeepForeground | `true` or `false`| If set to ''true'' (the default), DShare-HID will grab the foreground focus on a Windows server (thereby putting all other windows in the background) upon switching to a client. If set to ''false'', it will leave the currently foreground window in the foreground. DShare-HID grabs the focus to avoid issues with other apps interfering with DShare-HID's ability to read the hardware inputs. |
 |keystroke(key) | actions | Binds the ''key'' combination key to the given ''actions''. ''key'' is an optional list of modifiers (''shift'', ''control'', ''alt'', ''meta'' or ''super'') optionally followed by a character or a key name, all separated by + (plus signs). You must have either modifiers or a character/key name or both. See below for `valid key names` and `actions`. Keyboard hot keys are handled while the cursor is on the primary screen and secondary screens. Separate actions can be assigned to press and release.|
 |mousebutton(button) | actions| Binds the modifier and mouse button combination ''button'' to the given ''actions''. ''button'' is an optional list of modifiers (''shift'', ''control'', ''alt'', ''meta'' or ''super'') followed by a button number. The primary button (the left button for right handed users) is button 1, the middle button is 2, etc. Actions can be found below. Mouse button actions are not handled while the cursor is on the primary screen. You cannot use these to perform an action while on the primary screen. Separate actions can be assigned to press and release.|
 
 
-You can use both the ''switchDelay'' and ''switchDoubleTap'' options at the same time. Deskflow will switch when either requirement is satisfied.
+You can use both the ''switchDelay'' and ''switchDoubleTap'' options at the same time. DShare-HID will switch when either requirement is satisfied.
 
 ##### Actions
 
@@ -610,10 +610,10 @@ Additionally, a name of the form `\uXXXX` where ''XXXX'' is a hexadecimal number
 
 ### Example textual configuration file
 
-This example comes from doc/deskflow-basic.conf
+This example comes from doc/dshare-hid-basic.conf
 
 ```
-# sample deskflow configuration file
+# sample dshare-hid configuration file
 #
 # comments begin with the # character and continue to the end of
 # line.  comments may appear anywhere the syntax permits.
@@ -659,7 +659,7 @@ end
 The text config allows screens to be wrapped around. For example, with two machines (a server and a client), the mouse can go off the right of the server onto the left side of the client, then off the right side of the client back onto the left side of server. This config also uses ''Ctrl''+''Super''+(''left arrow''/''right arrow'') to switch between machines on keypress.
 
 ```
-# Physical monitor arrangement, with machine names as used by Deskflow.
+# Physical monitor arrangement, with machine names as used by DShare-HID.
 #  +----------+----------+
 #  | syn-serv | syn-cli  |
 #  |          |          |
@@ -693,7 +693,7 @@ section: screens
 end
 ```
 
-See also: the man page for ''deskflow-core''.
+See also: the man page for ''dshare-hid-core''.
 
 ### Stacked Example
 

@@ -20,7 +20,7 @@
         "Locked": "ロック済み",
         "Locked by %1": "%1 によってロックされています",
         "Device disconnected.": "デバイスが切断されました。",
-        "Device handshake failed. Possibly not a Deskflow-HID firmware.": "デバイスのハンドシェイクに失敗しました。Deskflow-HID ファームウェアではない可能性があります。",
+        "Device handshake failed. Possibly not a DShare-HID firmware.": "デバイスのハンドシェイクに失敗しました。DShare-HID ファームウェアではない可能性があります。",
         "Factory firmware detected. Please update firmware.": "工場出荷時ファームウェアを検出しました。ファームウェアを更新してください。",
         "Factory firmware detected on %1. Auto-connect disabled.": "%1 で工場出荷時ファームウェアを検出しました。自動接続を無効にしました。",
         "Handshake failed on %1. Auto-connect disabled.": "%1 でのハンドシェイクに失敗しました。自動接続を無効にしました。",
@@ -46,9 +46,9 @@
         "Advanced": "詳細",
         "Device name:": "デバイス名:",
         "Automatically disconnect Bluetooth": "Bluetooth を自動的に切断",
-        "Disconnects from the host device when you stop using Deskflow.": "Deskflow の使用を停止するとホストデバイスから切断します。",
+        "Disconnects from the host device when you stop using DShare-HID.": "DShare-HID の使用を停止するとホストデバイスから切断します。",
         "Auto-connect when USB device plugged in": "USB デバイス接続時に自動接続",
-        "Automatically connect to the Deskflow server when the device is plugged in.": "デバイスが接続されると自動的に Deskflow サーバーに接続します。",
+        "Automatically connect to the DShare-HID server when the device is plugged in.": "デバイスが接続されると自動的に DShare-HID サーバーに接続します。",
         "Profiles (Device)": "プロファイル (デバイス)",
         "A-Z, 0-9, spaces, .-_ (max 31 chars)": "A-Z, 0-9, スペース, .-_ (最大 31 文字)",
         "Hostname:": "ホスト名:",
@@ -180,7 +180,7 @@
         "Paypal Seller: <b><font color='red'>%1</font></b>": "PayPal 販売者: <b><font color='red'>%1</font></b>",
         "PayPal Transaction ID:": "PayPal トランザクション ID:",
         "Flashing failed. Error code: %1": "書き込みに失敗しました。エラーコード: %1",
-        "This process permanently converts your ESP32 into a Deskflow-HID device. This is irreversible and blocks non-Deskflow firmware.\n\nDo you want to proceed?": "このプロセスは ESP32 を Deskflow-HID デバイスに恒久的に変換します。これは不可逆的であり、Deskflow 以外のファームウェアをブロックします。\n\n続行しますか？",
+        "This process permanently converts your ESP32 into a DShare-HID device. This is irreversible and blocks non-DShare-HID firmware.\n\nDo you want to proceed?": "このプロセスは ESP32 を DShare-HID デバイスに恒久的に変換します。これは不可逆的であり、DShare-HID 以外のファームウェアをブロックします。\n\n続行しますか？",
         "Confirm Factory Flash": "工場書き込みの確認",
         "Factory firmware flashed successfully.\n\nNext step: You need to flash the per-device firmware to use the device. Please switch to the 'Order' tab to request it.": "工場ファームウェアの書き込みに成功しました。\n\n次のステップ: デバイスを使用するにはデバイスごとのファームウェアを書き込む必要があります。「注文」タブに切り替えてリクエストしてください。",
         "Device Info copied to clipboard.": "デバイス情報がクリップボードにコピーされました。",
@@ -284,12 +284,12 @@
         "Reminder: Press 'Boot' button then plugin your ESP32-C3. Click Refresh button to ensure the device is detected.": "リマインダー: 'Boot' ボタンを押しながら ESP32-C3 を接続してください。更新ボタンをクリックしてデバイスが検出されることを確認してください。"
     },
     "MainWindow": {
-        "About Deskflow-HID": "Deskflow-HID について",
+        "About DShare-HID": "DShare-HID について",
         "ESP32 HID Tools are not available in this build (submodule missing).": "このビルドでは ESP32 HID ツールは利用できません (サブモジュールがありません)。",
         "Use another computer's mouse and keyboard\n(make this computer the client)": "別のコンピューターのマウスとキーボードを使用する\n(このコンピューターをクライアントにする)",
         "Bridge Clients": "ブリッジクライアント",
         "Server already running": "サーバーは既に実行中です",
-        "Another Deskflow server instance is already running in the background. Please close the existing server before starting a new one.": "別の Deskflow サーバーインスタンスがバックグラウンドで既に実行されています。新しいインスタンスを開始する前に、既存のサーバーを閉じてください。",
+        "Another DShare-HID server instance is already running in the background. Please close the existing server before starting a new one.": "別の DShare-HID サーバーインスタンスがバックグラウンドで既に実行されています。新しいインスタンスを開始する前に、既存のサーバーを閉じてください。",
         "Firmware": "ファームウェア",
         "invalid certificate, generating a new one": "証明書が無効です。新しい証明書を生成しています",
         "Using IP: ": "使用中の IP: ",
@@ -304,16 +304,16 @@
         "User <b>%1</b> is not in the <b>dialout</b> group.<br><br>You may not be able to access the USB device.<br>Please run the following command then <b>log out then log in</b>, or <b>reboot</b>:<br><br><code>sudo usermod -a -G dialout $USER</code>": "ユーザー <b>%1</b> は <b>dialout</b> グループに属していません。<br><br>USB デバイスにアクセスできない可能性があります。<br>次のコマンドを実行してから、<b>ログアウトしてログイン</b>するか、<b>再起動</b>してください：<br><br><code>sudo usermod -a -G dialout $USER</code>"
     },
     "AboutDialog": {
-        "About Deskflow-HID": "Deskflow-HID について"
+        "About DShare-HID": "DShare-HID について"
     },
     "QObject": {
         "failed to read key from certificate file: %1": "証明書ファイルからのキーの読み取りに失敗しました: %1",
         "failed to parse certificate file: %1": "証明書ファイルの解析に失敗しました: %1",
         "key detected is the incorrect size": "検出されたキーのサイズが正しくありません",
         "failed to read RSA key from certificate file: %1": "証明書ファイルからの RSA キーの読み取りに失敗しました: %1",
-        "There is another Deskflow server is already running and has been brought to the foreground.\nThis new instance cannot start and will exit now.": "別の Deskflow サーバーが既に実行されており、最前面に表示されました。\nこの新しいインスタンスは開始できず、終了します。",
-        "Deskflow is already running.\nThis new instance cannot start another server, so it will now exit.": "Deskflow は既に実行中です。\nこの新しいインスタンスは別のサーバーを開始できないため、終了します。",
-        "Deskflow": "Deskflow",
+        "There is another DShare-HID server is already running and has been brought to the foreground.\nThis new instance cannot start and will exit now.": "別の DShare-HID サーバーが既に実行されており、最前面に表示されました。\nこの新しいインスタンスは開始できず、終了します。",
+        "DShare-HID is already running.\nThis new instance cannot start another server, so it will now exit.": "DShare-HID は既に実行中です。\nこの新しいインスタンスは別のサーバーを開始できないため、終了します。",
+        "DShare-HID": "DShare-HID",
         "XTest for Xinerama": "Xinerama 用 XTest"
     },
     "ServerConfigDialog": {

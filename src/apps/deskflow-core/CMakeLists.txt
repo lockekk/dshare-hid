@@ -17,12 +17,12 @@ set_target_properties(${target} PROPERTIES OUTPUT_NAME "dshare-hid-core")
 if(WIN32)
   # Generate rc file
   set(EXE_DESCRIPTION "${CMAKE_PROJECT_PROPER_NAME} combined server and client application")
-  set(EXE_ICON "IDI_DESKFLOW ICON DISCARDABLE \"${CMAKE_SOURCE_DIR}/src/apps/res/deskflow.ico\"")
+  set(EXE_ICON "IDI_DESKFLOW ICON DISCARDABLE \"${CMAKE_SOURCE_DIR}/src/apps/res/dshare-hid.ico\"")
   configure_file(${CMAKE_SOURCE_DIR}/src/apps/res/windows.rc.in ${target}.rc)
 
   target_sources(${target} PRIVATE
     "deskflow-core.exe.manifest"
-    ${CMAKE_SOURCE_DIR}/src/apps/res/deskflow.ico
+    ${CMAKE_SOURCE_DIR}/src/apps/res/dshare-hid.ico
     ${CMAKE_CURRENT_BINARY_DIR}/${target}.rc
   )
 endif()
@@ -48,7 +48,6 @@ install(
 
 if(BUILD_OSX_BUNDLE)
   set_target_properties(${target} PROPERTIES
-    BUILD_WITH_INSTALL_RPATH TRUE
     INSTALL_RPATH "@loader_path/../Libraries;@loader_path/../Frameworks"
     RUNTIME_OUTPUT_DIRECTORY $<TARGET_BUNDLE_CONTENT_DIR:${CMAKE_PROJECT_PROPER_NAME}>/MacOS
   )

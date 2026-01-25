@@ -56,7 +56,7 @@ DESTDIR="$STAGING_DIR" cmake --install "$BUILD_DIR" --prefix "/usr"
 # 2. Find resources
 DESKTOP_FILE=$(find "$STAGING_DIR" -name "*.desktop" | head -n 1)
 EXECUTABLE="$STAGING_DIR/usr/bin/dshare-hid"
-ICON_FILE="$STAGING_DIR/usr/share/icons/hicolor/512x512/apps/org.lockekk.dshare-hid.png"
+ICON_FILE="$STAGING_DIR/usr/share/icons/hicolor/512x512/apps/io.github.lockekk.dshare-hid.png"
 
 if [ ! -f "$EXECUTABLE" ]; then
     echo "Error: Could not find executable at $EXECUTABLE"
@@ -191,11 +191,11 @@ EOF
 cat > "$DEB_ROOT/DEBIAN/postinst" <<EOF
 #!/bin/bash
 ln -sf $INSTALL_PREFIX/bin/dshare-hid /usr/bin/dshare-hid
-ln -sf $INSTALL_PREFIX/share/applications/org.lockekk.dshare-hid.desktop /usr/share/applications/org.lockekk.dshare-hid.desktop
+ln -sf $INSTALL_PREFIX/share/applications/io.github.lockekk.dshare-hid.desktop /usr/share/applications/io.github.lockekk.dshare-hid.desktop
 
 # Symlink Icon
 mkdir -p /usr/share/icons/hicolor/512x512/apps
-ln -sf $INSTALL_PREFIX/share/icons/hicolor/512x512/apps/org.lockekk.dshare-hid.png /usr/share/icons/hicolor/512x512/apps/org.lockekk.dshare-hid.png
+ln -sf $INSTALL_PREFIX/share/icons/hicolor/512x512/apps/io.github.lockekk.dshare-hid.png /usr/share/icons/hicolor/512x512/apps/io.github.lockekk.dshare-hid.png
 
 # Update caches
 if command -v update-desktop-database > /dev/null; then
@@ -211,11 +211,10 @@ chmod 755 "$DEB_ROOT/DEBIAN/postinst"
 cat > "$DEB_ROOT/DEBIAN/prerm" <<EOF
 #!/bin/bash
 rm -f /usr/bin/dshare-hid
-rm -f /usr/share/applications/org.lockekk.dshare-hid.desktop
-rm -f /usr/share/icons/hicolor/512x512/apps/org.lockekk.dshare-hid.png
+rm -f /usr/share/applications/io.github.lockekk.dshare-hid.desktop
+rm -f /usr/share/icons/hicolor/512x512/apps/io.github.lockekk.dshare-hid.png
 EOF
 chmod 755 "$DEB_ROOT/DEBIAN/prerm"
-
 
 # 8. Build Deb
 echo "Building Debian Package..."

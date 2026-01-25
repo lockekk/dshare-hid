@@ -43,7 +43,7 @@
 
 	<!-- Local Lan Entitlements -->
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>This app uses local network permissions for communication between a Deskflow server and clients.</string>
+	<string>This app uses local network permissions for communication between a DShare-HID server and clients.</string>
 	<key>com.apple.security.networking.local</key>
 	<true/>
 

@@ -20,7 +20,7 @@
         "Locked": "Bloccato",
         "Locked by %1": "Bloccato da %1",
         "Device disconnected.": "Dispositivo scollegato.",
-        "Device handshake failed. Possibly not a Deskflow-HID firmware.": "Handshake del dispositivo fallito. Probabilmente non è un firmware Deskflow-HID.",
+        "Device handshake failed. Possibly not a DShare-HID firmware.": "Handshake del dispositivo fallito. Probabilmente non è un firmware DShare-HID.",
         "Factory firmware detected. Please update firmware.": "Rilevato firmware di fabbrica. Aggiornare il firmware.",
         "Factory firmware detected on %1. Auto-connect disabled.": "Rilevato firmware di fabbrica su %1. Connessione automatica disabilitata.",
         "Handshake failed on %1. Auto-connect disabled.": "Handshake fallito su %1. Connessione automatica disabilitata.",
@@ -46,9 +46,9 @@
         "Advanced": "Avanzate",
         "Device name:": "Nome dispositivo:",
         "Automatically disconnect Bluetooth": "Disconnetti automaticamente Bluetooth",
-        "Disconnects from the host device when you stop using Deskflow.": "Si disconnette dal dispositivo host quando smetti di usare Deskflow.",
+        "Disconnects from the host device when you stop using DShare-HID.": "Si disconnette dal dispositivo host quando smetti di usare DShare-HID.",
         "Auto-connect when USB device plugged in": "Connessione automatica al collegamento USB",
-        "Automatically connect to the Deskflow server when the device is plugged in.": "Connettiti automaticamente al server Deskflow quando il dispositivo è collegato.",
+        "Automatically connect to the DShare-HID server when the device is plugged in.": "Connettiti automaticamente al server DShare-HID quando il dispositivo è collegato.",
         "Profiles (Device)": "Profili (Dispositivo)",
         "A-Z, 0-9, spaces, .-_ (max 31 chars)": "A-Z, 0-9, spazi, .-_ (max 31 caratteri)",
         "Hostname:": "Hostname:",
@@ -180,7 +180,7 @@
         "Paypal Seller: <b><font color='red'>%1</font></b>": "Venditore Paypal: <b><font color='red'>%1</font></b>",
         "PayPal Transaction ID:": "ID Transazione PayPal:",
         "Flashing failed. Error code: %1": "Flash fallito. Codice errore: %1",
-        "This process permanently converts your ESP32 into a Deskflow-HID device. This is irreversible and blocks non-Deskflow firmware.\n\nDo you want to proceed?": "Questo processo converte permanentemente il tuo ESP32 in un dispositivo Deskflow-HID. Irreversibile. Vuoi procedere?",
+        "This process permanently converts your ESP32 into a DShare-HID device. This is irreversible and blocks non-DShare-HID firmware.\n\nDo you want to proceed?": "Questo processo converte permanentemente il tuo ESP32 in un dispositivo DShare-HID. Irreversibile. Vuoi procedere?",
         "Confirm Factory Flash": "Conferma Flash Fabbrica",
         "Factory firmware flashed successfully.\n\nNext step: You need to flash the per-device firmware to use the device. Please switch to the 'Order' tab to request it.": "Firmware fabbrica flashato con successo.\n\nProssimo passo: Flashare firmware per dispositivo. Vai alla scheda 'Ordina'.",
         "Device Info copied to clipboard.": "Info Dispositivo copiate negli appunti.",
@@ -284,12 +284,12 @@
         "Reminder: Press 'Boot' button then plugin your ESP32-C3. Click Refresh button to ensure the device is detected.": "Promemoria: Premi il pulsante 'Boot' quindi scollega e ricollega il tuo ESP32-C3. Fai clic sul pulsante Aggiorna per assicurarti che il dispositivo venga rilevato."
     },
     "MainWindow": {
-        "About Deskflow-HID": "Info su Deskflow-HID",
+        "About DShare-HID": "Info su DShare-HID",
         "ESP32 HID Tools are not available in this build (submodule missing).": "Strumenti HID ESP32 non disponibili (sottomodulo mancante).",
         "Use another computer's mouse and keyboard\n(make this computer the client)": "Usa mouse e tastiera di un altro computer\n(rendi questo computer il client)",
         "Bridge Clients": "Client Bridge",
         "Server already running": "Server già in esecuzione",
-        "Another Deskflow server instance is already running in the background. Please close the existing server before starting a new one.": "Un'altra istanza server è in esecuzione. Chiudila prima di avviarne una nuova.",
+        "Another DShare-HID server instance is already running in the background. Please close the existing server before starting a new one.": "Un'altra istanza server è in esecuzione. Chiudila prima di avviarne una nuova.",
         "Firmware": "Firmware",
         "invalid certificate, generating a new one": "certificato non valido, generazione di uno nuovo",
         "Using IP: ": "Utilizzo IP: ",
@@ -304,10 +304,10 @@
         "User <b>%1</b> is not in the <b>dialout</b> group.<br><br>You may not be able to access the USB device.<br>Please run the following command then <b>log out then log in</b>, or <b>reboot</b>:<br><br><code>sudo usermod -a -G dialout $USER</code>": "L'utente <b>%1</b> non è nel gruppo <b>dialout</b>.<br><br>Potresti non essere in grado di accedere al dispositivo USB.<br>Esegui il comando seguente e poi <b>disconnettiti e riconnettiti</b>, o <b>riavvia</b>:<br><br><code>sudo usermod -a -G dialout $USER</code>"
     },
     "AboutDialog": {
-        "About Deskflow-HID": "Informazioni su Deskflow-HID"
+        "About DShare-HID": "Informazioni su DShare-HID"
     },
     "QObject": {
-        "Deskflow": "Deskflow",
+        "DShare-HID": "DShare-HID",
         "failed to read key from certificate file: %1": "impossibile leggere la chiave dal file del certificato: %1",
         "failed to parse certificate file: %1": "impossibile analizzare il file del certificato: %1",
         "key detected is the incorrect size": "la chiave rilevata ha una dimensione errata",

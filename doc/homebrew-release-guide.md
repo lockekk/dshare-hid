@@ -1,6 +1,6 @@
 # Homebrew Release Guide
 
-This guide explains how to release **DShare HID** via Homebrew, enabling users to easily install the application on macOS. The application is distributed as a single **Universal DMG**, which contains both Intel (`x86_64`) and Apple Silicon (`arm64`) architectures in a single package.
+This guide explains how to release **DShare-HID** via Homebrew, enabling users to easily install the application on macOS. The application is distributed as a single **Universal DMG**, which contains both Intel (`x86_64`) and Apple Silicon (`arm64`) architectures in a single package.
 
 ## Prerequisites
 
@@ -14,15 +14,15 @@ Homebrew allows you to create your own package repository called a "Tap".
 
 1.  Create a **new public GitHub repository**.
 2.  Name it with the prefix `homebrew-`. This is required for the shorthand `brew tap <user>/<repo>` command to work.
-    *   **Recommended Name**: `homebrew-dshare`
-    *   **Resulting Tap Command**: `brew tap lockekk/dshare`
+    *   **Recommended Name**: `homebrew-dshare-hid`
+    *   **Resulting Tap Command**: `brew tap lockekk/dshare-hid`
 
 ## 2. Create the Cask File
 
-In your new `homebrew-deskflow` repository, create the following directory structure and file:
+In your new `homebrew-dshare-hid` repository, create the following directory structure and file:
 
 ```text
-homebrew-deskflow/
+homebrew-dshare-hid/
 └── Casks/
     └── dshare-hid.rb
 ```
@@ -55,7 +55,7 @@ end
 
 ## 3. How Users Install
 
-Once you have pushed this file to your `homebrew-deskflow` repository, users can install the application using two standard commands:
+Once you have pushed this file to your `homebrew-dshare-hid` repository, users can install the application using two standard commands:
 
 ### Step 1: Add the Tap
 ```bash
@@ -79,7 +79,7 @@ When you release a new version (e.g., `1.0.1`), follow these steps:
     ```bash
     shasum -a 256 DShare-HID-1.0.1-macos-universal.dmg
     ```
-3.  **Update Cask**: Edit `Casks/dshare-hid.rb` in your `homebrew-dshare` repo:
+3.  **Update Cask**: Edit `Casks/dshare-hid.rb` in your `homebrew-dshare-hid` repo:
     *   Update `version "1.0.1"`
     *   Update the `sha256` value.
 4.  **Push**: Commit and push the changes. Users can now run `brew upgrade dshare-hid` to get the latest version.

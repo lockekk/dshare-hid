@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+	<id>io.github.lockekk.Dshare-hid</id>
+	<metadata_license>CC0-1.0</metadata_license>
+	<project_license>GPL-2.0-only</project_license>
+	<name>DShare-HID</name>
+	<developer id="io.github.lockekk.Dshare-hid">
+		<name>DShare-HID Developers</name>
+	</developer>
+	<summary>Hardware-accelerated keyboard and mouse sharing</summary>
+	<summary xml:lang="zh_CN">带硬件加速的键鼠共享工具</summary>
+	<description>
+		<p>
+			Use the keyboard, mouse, or trackpad of one computer to control nearby computers, and work seamlessly between them.
+		</p>
+		<p xml:lang="zh_CN">
+			使用一台计算机的键盘、鼠标或触控板来控制附近的其它计算机，并在它们之间无缝工作。
+		</p>
+	</description>
+	<launchable type="desktop-id">io.github.lockekk.Dshare-hid.desktop</launchable>
+	<url type="homepage">https://github.com/lockekk/dshare-hid</url>
+	<url type="bugtracker">https://github.com/lockekk/dshare-hid/issues</url>
+	<url type="faq">https://github.com/lockekk/dshare-hid/wiki</url>
+	<url type="help">https://github.com/lockekk/dshare-hid/wiki</url>
+	<url type="vcs-browser">https://github.com/lockekk/dshare-hid</url>
+	<url type="contribute">https://github.com/lockekk/dshare-hid/wiki</url>
+	<screenshots>
+		<screenshot type="default">
+			<image>https://raw.githubusercontent.com/lockekk/dshare-hid/main/doc/images/main_ui.png</image>
+			<caption>DShare-HID Main UI</caption>
+		</screenshot>
+		<screenshot>
+			<image>https://raw.githubusercontent.com/lockekk/dshare-hid/main/doc/images/device_config.png</image>
+			<caption>Device Configuration</caption>
+		</screenshot>
+	</screenshots>
+	<provides> <id>io.github.lockekk.Dshare-hid.desktop</id> </provides>
+	<categories>
+		<category>Utility</category>
+	</categories>
+	<keywords>
+		<keyword>Input</keyword>
+		<keyword xml:lang="zh_CN">输入</keyword>
+		<keyword>Sharing</keyword>
+		<keyword xml:lang="zh_CN">共享</keyword>
+		<keyword translate="no">KVM</keyword>
+		<keyword translate="no">Synergy</keyword>
+	</keywords>
+	<branding>
+		<color type="primary" scheme_preference="light">#dddddd</color>
+		<color type="primary" scheme_preference="dark">#555555</color>
+	</branding>
+	<content_rating type="oars-1.0" />
+	<releases>
+	</releases>
+</component>

@@ -29,24 +29,31 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent), ui{std::make_unique
   connect(ui->btnCopyVersion, &QPushButton::clicked, this, &AboutDialog::copyVersionText);
 
   ui->lblVersion->setText(kDisplayVersion);
-  ui->lblDescription->setText(QStringLiteral("%1\n\nSupport: %2").arg(kAppDescription, kSupportEmail));
-  ui->lblCopyright->setText(kCopyright);
+  // Simplified About Dialog as requested
+  // Line 1: Description
+  // Line 2: Fork info + Acknowledgement
+  // Line 3: Support
 
-  // Use non-breaking space in each awesome dev name so names are not split across lines.
-  auto formatNames = [](const QStringList &names) {
-    QStringList formatted;
-    for (const auto &name : names) {
-      QString withNbsp = name;
-      formatted.append(withNbsp.replace(" ", QStringLiteral("&nbsp;")));
-    }
-    return formatted.join(", ");
-  };
+  // Note: kAppDescription is "Keyboard and mouse sharing utility - HID version" (verified in Constants.h.in)
+  // We construct the HTML text manually for rich text support in the description label if needed,
+  // or just use newlines. The user requested:
+  // Forked from Deskflow(<- with link to it, and show ackorelage to them plolitely)
 
-  ui->lblImportantDevs->setTextFormat(Qt::RichText);
-  QString devsText =
-      QStringLiteral("<b>HID Project Developer(s):</b><br/>%1<br/><br/><b>Core Upstream Developers:</b><br/>%2")
-          .arg(formatNames(s_hidDevs), formatNames(s_awesomeDevs));
-  ui->lblImportantDevs->setText(devsText);
+  ui->lblDescription->setTextFormat(Qt::RichText);
+  ui->lblDescription->setOpenExternalLinks(true);
+
+  const QString text =
+      QStringLiteral("%1<br/><br/>"
+                     "Forked from <a href='https://github.com/deskflow/deskflow'>Deskflow</a>. "
+                     "We gratefully acknowledge their work and thank the original contributors.<br/><br/>"
+                     "Support: %2")
+          .arg(kAppDescription, kSupportEmail);
+
+  ui->lblDescription->setText(text);
+
+  // Clear the copyright label if not needed, or keep it. User said "Just keep them items".
+  // The user listed 3 items. I will hide the other labels to be safe/clean as requested ("Clean UI").
+  ui->lblCopyright->setVisible(false);
 
   ui->btnOk->setDefault(true);
   connect(ui->btnOk, &QPushButton::clicked, this, &AboutDialog::close);

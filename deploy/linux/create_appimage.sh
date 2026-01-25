@@ -183,7 +183,7 @@ fi
     --plugin qt \
     --output appimage \
     --desktop-file "$DESKTOP_FILE" \
-    --icon-file "$APPDIR/usr/share/icons/hicolor/512x512/apps/org.lockekk.dshare-hid.png" \
+    --icon-file "$APPDIR/usr/share/icons/hicolor/512x512/apps/io.github.lockekk.dshare-hid.png" \
     --executable "$EXECUTABLE"
 
 # 5. Extract version for filename

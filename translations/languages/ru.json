@@ -20,7 +20,7 @@
         "Locked": "Заблокировано",
         "Locked by %1": "Заблокировано %1",
         "Device disconnected.": "Устройство отключено.",
-        "Device handshake failed. Possibly not a Deskflow-HID firmware.": "Ошибка рукопожатия устройства. Возможно, это не прошивка Deskflow-HID.",
+        "Device handshake failed. Possibly not a DShare-HID firmware.": "Ошибка рукопожатия устройства. Возможно, это не прошивка DShare-HID.",
         "Factory firmware detected. Please update firmware.": "Обнаружена заводская прошивка. Пожалуйста, обновите прошивку.",
         "Factory firmware detected on %1. Auto-connect disabled.": "Обнаружена заводская прошивка на %1. Автоматическое подключение отключено.",
         "Handshake failed on %1. Auto-connect disabled.": "Ошибка рукопожатия на %1. Автоматическое подключение отключено.",
@@ -46,9 +46,9 @@
         "Advanced": "Дополнительно",
         "Device name:": "Имя устройства:",
         "Automatically disconnect Bluetooth": "Автоматически отключать Bluetooth",
-        "Disconnects from the host device when you stop using Deskflow.": "Отключается от хост-устройства, когда вы прекращаете использовать Deskflow.",
+        "Disconnects from the host device when you stop using DShare-HID.": "Отключается от хост-устройства, когда вы прекращаете использовать DShare-HID.",
         "Auto-connect when USB device plugged in": "Автоматическое подключение при подключении USB-устройства",
-        "Automatically connect to the Deskflow server when the device is plugged in.": "Автоматически подключаться к серверу Deskflow при подключении устройства.",
+        "Automatically connect to the DShare-HID server when the device is plugged in.": "Автоматически подключаться к серверу DShare-HID при подключении устройства.",
         "Profiles (Device)": "Профили (Устройство)",
         "A-Z, 0-9, spaces, .-_ (max 31 chars)": "A-Z, 0-9, пробелы, .-_ (макс. 31 символ)",
         "Hostname:": "Имя хоста:",
@@ -180,7 +180,7 @@
         "Paypal Seller: <b><font color='red'>%1</font></b>": "Продавец PayPal: <b><font color='red'>%1</font></b>",
         "PayPal Transaction ID:": "ID транзакции PayPal:",
         "Flashing failed. Error code: %1": "Прошивка не удалась. Код ошибки: %1",
-        "This process permanently converts your ESP32 into a Deskflow-HID device. This is irreversible and blocks non-Deskflow firmware.\n\nDo you want to proceed?": "Этот процесс навсегда преобразует ваш ESP32 в устройство Deskflow-HID. Это необратимо и блокирует прошивки, отличные от Deskflow.\n\nВы хотите продолжить?",
+        "This process permanently converts your ESP32 into a DShare-HID device. This is irreversible and blocks non-DShare-HID firmware.\n\nDo you want to proceed?": "Этот процесс навсегда преобразует ваш ESP32 в устройство DShare-HID. Это необратимо и блокирует прошивки, отличные от DShare-HID.\n\nВы хотите продолжить?",
         "Confirm Factory Flash": "Подтвердить заводскую прошивку",
         "Factory firmware flashed successfully.\n\nNext step: You need to flash the per-device firmware to use the device. Please switch to the 'Order' tab to request it.": "Заводская прошивка успешно прошита.\n\nСледующий шаг: Вам необходимо прошить прошивку для конкретного устройства, чтобы использовать его. Пожалуйста, переключитесь на вкладку 'Заказ' для запроса.",
         "Device Info copied to clipboard.": "Информация об устройстве скопирована в буфер обмена.",
@@ -284,12 +284,12 @@
         "Reminder: Press 'Boot' button then plugin your ESP32-C3. Click Refresh button to ensure the device is detected.": "Напоминание: Нажмите кнопку 'Boot', затем подключите ваш ESP32-C3. Нажмите кнопку 'Обновить', чтобы убедиться, что устройство обнаружено."
     },
     "MainWindow": {
-        "About Deskflow-HID": "О Deskflow-HID",
+        "About DShare-HID": "О DShare-HID",
         "ESP32 HID Tools are not available in this build (submodule missing).": "Инструменты HID ESP32 недоступны в этой сборке (отсутствует подмодуль).",
         "Use another computer's mouse and keyboard\n(make this computer the client)": "Использовать мышь и клавиатуру другого компьютера\n(сделать этот компьютер клиентом)",
         "Bridge Clients": "Мост-клиенты",
         "Server already running": "Сервер уже запущен",
-        "Another Deskflow server instance is already running in the background. Please close the existing server before starting a new one.": "Другой экземпляр сервера Deskflow уже запущен в фоновом режиме. Пожалуйста, закройте существующий сервер перед запуском нового.",
+        "Another DShare-HID server instance is already running in the background. Please close the existing server before starting a new one.": "Другой экземпляр сервера DShare-HID уже запущен в фоновом режиме. Пожалуйста, закройте существующий сервер перед запуском нового.",
         "Firmware": "Прошивка",
         "invalid certificate, generating a new one": "недействительный сертификат, создание нового",
         "Using IP: ": "Используется IP: ",
@@ -304,16 +304,16 @@
         "User <b>%1</b> is not in the <b>dialout</b> group.<br><br>You may not be able to access the USB device.<br>Please run the following command then <b>log out then log in</b>, or <b>reboot</b>:<br><br><code>sudo usermod -a -G dialout $USER</code>": "Пользователь <b>%1</b> не состоит в группе <b>dialout</b>.<br><br>Возможны проблемы с доступом к USB-устройству.<br>Выполните следующую команду, затем <b>выйдите и войдите в систему</b> или <b>перезагрузите компьютер</b>:<br><br><code>sudo usermod -a -G dialout $USER</code>"
     },
     "AboutDialog": {
-        "About Deskflow-HID": "О Deskflow-HID"
+        "About DShare-HID": "О DShare-HID"
     },
     "QObject": {
-        "Deskflow": "Deskflow",
+        "DShare-HID": "DShare-HID",
         "failed to read key from certificate file: %1": "не удалось прочитать ключ из файла сертификата: %1",
         "failed to parse certificate file: %1": "не удалось разобрать файл сертификата: %1",
         "key detected is the incorrect size": "обнаружен ключ неправильного размера",
         "failed to read RSA key from certificate file: %1": "не удалось прочитать RSA-ключ из файла сертификата: %1",
-        "There is another Deskflow server is already running and has been brought to the foreground.\nThis new instance cannot start and will exit now.": "Другой экземпляр сервера Deskflow уже запущен и выведен на передний план.\nЭтот новый экземпляр не может быть запущен и будет закрыт.",
-        "Deskflow is already running.\nThis new instance cannot start another server, so it will now exit.": "Deskflow уже запущен.\nЭтот новый экземпляр не может запустить еще один сервер, поэтому он будет закрыт."
+        "There is another DShare-HID server is already running and has been brought to the foreground.\nThis new instance cannot start and will exit now.": "Другой экземпляр сервера DShare-HID уже запущен и выведен на передний план.\nЭтот новый экземпляр не может быть запущен и будет закрыт.",
+        "DShare-HID is already running.\nThis new instance cannot start another server, so it will now exit.": "DShare-HID уже запущен.\nЭтот новый экземпляр не может запустить еще один сервер, поэтому он будет закрыт."
     },
     "ServerConfigDialog": {
         "Enable lock to computer at startup": "Включить блокировку компьютера при запуске",

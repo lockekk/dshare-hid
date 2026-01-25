@@ -72,7 +72,7 @@ project(
   dshare-hid
   VERSION "${DESKFLOW_VERSION_MAJOR}.${DESKFLOW_VERSION_MINOR}.${DESKFLOW_VERSION_PATCH}.${DESKFLOW_VERSION_TWEAK}"
   DESCRIPTION "Keyboard and mouse sharing utility - HID version"
-  HOMEPAGE_URL "https://deskflow.org"
+  HOMEPAGE_URL "https://github.com/lockekk/dshare-hid"
   LANGUAGES C CXX
 )
 
@@ -80,8 +80,8 @@ project(
 set(CMAKE_PROJECT_PROPER_NAME "DShare-HID")
 set(CMAKE_PROJECT_VENDOR "${CMAKE_PROJECT_PROPER_NAME} Devs")
 set(CMAKE_PROJECT_COPYRIGHT "(C) 2024-2026 ${CMAKE_PROJECT_VENDOR}")
-set(CMAKE_PROJECT_CONTACT "${CMAKE_PROJECT_PROPER_NAME} <maintainers@deskflow.org>")
-set(CMAKE_PROJECT_REV_FQDN "org.lockekk.dshare-hid")
+set(CMAKE_PROJECT_CONTACT "${CMAKE_PROJECT_PROPER_NAME} <dshare-hid@gmail.com>")
+set(CMAKE_PROJECT_REV_FQDN "io.github.lockekk.dshare-hid")
 
 #Unset the vars used in the project call
 unset(DESKFLOW_VERSION_MAJOR)

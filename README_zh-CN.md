@@ -6,9 +6,7 @@
 
 ---
 
-<p align="center">
-  <img src="doc/images/dshare-hid-post.png" width="800" alt="DShare-HID Post">
-</p>
+
 
 ## 简介
 

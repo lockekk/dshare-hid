@@ -25,7 +25,7 @@
            Value="RunDeskflow"
            Condition= "WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed" />
        <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" />
-       <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Run Deskflow when finished" />
+       <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Run DShare-HID when finished" />
     </UI>
     <CustomAction
       Id="CheckVCRedist"

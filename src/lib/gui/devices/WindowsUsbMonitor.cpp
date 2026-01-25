@@ -45,8 +45,7 @@ bool WindowsUsbMonitor::startMonitoring()
   WNDCLASSW wc = {};
   wc.lpfnWndProc = windowProc;
   wc.hInstance = GetModuleHandle(nullptr);
-  wc.lpszClassName = L"DeskflowUsbMonitorClass";
-
+  wc.lpszClassName = L"DShareHidUsbMonitorClass";
   if (!RegisterClassW(&wc)) {
     DWORD error = GetLastError();
     if (error != ERROR_CLASS_ALREADY_EXISTS) {
@@ -56,7 +55,7 @@ bool WindowsUsbMonitor::startMonitoring()
   }
 
   m_hwnd = CreateWindowW(
-      L"DeskflowUsbMonitorClass", L"Deskflow USB Monitor", 0, 0, 0, 0, 0,
+      L"DShareHidUsbMonitorClass", L"DShare-HID USB Monitor", 0, 0, 0, 0, 0,
       HWND_MESSAGE, // Message-only window
       nullptr, GetModuleHandle(nullptr), nullptr
   );

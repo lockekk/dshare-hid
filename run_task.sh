@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# Deskflow Task Runner
-
 # Ensure required environment variables are set
 if [ "$(uname)" = "Darwin" ]; then
     if [ -z "$CMAKE_PREFIX_PATH" ]; then
@@ -220,24 +218,24 @@ process_input() {
       - \"-DDESKFLOW_ESP32_ENCRYPTION_KEY=${DESKFLOW_ESP32_ENCRYPTION_KEY}\"\\
       - \"-DSKIP_BUILD_TESTS=ON\"\\
       - \"-DBUILD_TESTS=OFF\"" \
-            deploy/linux/flatpak/org.lockekk.dshare-hid.yml > org.lockekk.dshare-hid.generated.yml
+            deploy/linux/flatpak/io.github.lockekk.dshare-hid.yml > io.github.lockekk.dshare-hid.generated.yml
 
             # 1. Fix patch file path
-            sed -i "s|path: libportal-qt69.patch|path: deploy/linux/flatpak/libportal-qt69.patch|g" org.lockekk.dshare-hid.generated.yml
+            sed -i "s|path: libportal-qt69.patch|path: deploy/linux/flatpak/libportal-qt69.patch|g" io.github.lockekk.dshare-hid.generated.yml
 
             # 2. Fix source dir path (../../../ becomes .)
-            sed -i "s|path: ../../../|path: .|g" org.lockekk.dshare-hid.generated.yml
+            sed -i "s|path: ../../../|path: .|g" io.github.lockekk.dshare-hid.generated.yml
 
             # 3. Inject build-time filesystem permissions for keys
-            # We insert 'build-options' -> 'build-args' after the module name 'deskflow'
-            sed -i "/- name: deskflow/a \\    build-options:\\n      build-args:\\n        - \"--filesystem=${ENC_KEY_DIR}\"\\n        - \"--filesystem=${CDC_KEY_DIR}\"" org.lockekk.dshare-hid.generated.yml
+            # We insert 'build-options' -> 'build-args' after the module name 'dshare-hid'
+            sed -i "/- name: dshare-hid/a \\    build-options:\\n      build-args:\\n        - \"--filesystem=${ENC_KEY_DIR}\"\\n        - \"--filesystem=${CDC_KEY_DIR}\"" io.github.lockekk.dshare-hid.generated.yml
 
-            echo "Generated manifest: org.lockekk.dshare-hid.generated.yml"
+            echo "Generated manifest: io.github.lockekk.dshare-hid.generated.yml"
 
             echo "--- BUILDING FLATPAK ---"
 
             # Build using the generated manifest
-            flatpak-builder --user --force-clean --repo=repo build_flatpak org.lockekk.dshare-hid.generated.yml
+            flatpak-builder --user --force-clean --repo=repo build_flatpak io.github.lockekk.dshare-hid.generated.yml
 
             if [ $? -eq 0 ]; then
                 echo "--- CREATING BUNDLE ---"
@@ -249,7 +247,7 @@ process_input() {
                 ARCH=$(uname -m)
                 BUNDLE_NAME="dshare-hid-${VERSION}-linux-${ARCH}.flatpak"
 
-                flatpak build-bundle --runtime-repo=https://dl.flathub.org/repo/flathub.flatpakrepo repo "build_flatpak/${BUNDLE_NAME}" org.lockekk.dshare-hid
+                flatpak build-bundle --runtime-repo=https://dl.flathub.org/repo/flathub.flatpakrepo repo "build_flatpak/${BUNDLE_NAME}" io.github.lockekk.dshare-hid
 
                 if [ $? -eq 0 ]; then
                     echo "Flatpak bundle created: ${BUNDLE_NAME}"
@@ -258,11 +256,11 @@ process_input() {
                 fi
             else
                 echo "Flatpak build failed."
-                rm org.lockekk.dshare-hid.generated.yml
+                rm io.github.lockekk.dshare-hid.generated.yml
                 return 1
             fi
 
-            rm org.lockekk.dshare-hid.generated.yml
+            rm io.github.lockekk.dshare-hid.generated.yml
             ;;
         6|"appimage")
             if [ "$os_name" = "Darwin" ]; then

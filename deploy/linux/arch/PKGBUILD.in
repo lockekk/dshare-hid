@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2024 Deskflow Developers
 # SPDX-License-Identifier: MIT
-# Maintainer: Deskflow Developers
+# Maintainer: DShare-HID Developers
 
 _basename=@CMAKE_PROJECT_NAME@
 pkgname=${_basename}-git

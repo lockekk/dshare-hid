@@ -10,7 +10,7 @@ if "%~1" neq "" (
 :Interactive
 
 echo ==================================================
-echo            Deskflow Interactive Build
+echo            DShare-HID Interactive Build
 echo ==================================================
 echo   1^) Build (Compile Only)
 echo   2^) Configure Pristine (Clean ^& Reconfigure)
