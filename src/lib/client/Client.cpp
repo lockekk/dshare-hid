@@ -624,6 +624,11 @@ void Client::handleResume()
 void Client::bindNetworkInterface(IDataSocket *socket) const
 {
   try {
+    if (Settings::isBridgeClientMode()) {
+      LOG_DEBUG1("bridge client mode detected; skipping network interface binding");
+      return;
+    }
+
     if (const auto address = Settings::value(Settings::Core::Interface).toString(); !address.isEmpty()) {
       LOG_DEBUG1("bind to network interface: %s", qPrintable(address));
 

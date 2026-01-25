@@ -1100,10 +1100,12 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
       }
     }
 
-    // Get server hostname and port
-    QString serverHost = Settings::value(Settings::Client::RemoteHost).toString();
-    if (serverHost.isEmpty()) {
-      serverHost = "127.0.0.1"; // Default to localhost
+    QString serverHost = Settings::value(Settings::Core::Interface).toString().trimmed();
+    if (serverHost.isEmpty() || serverHost.toLower() == QStringLiteral("automatic")) {
+      serverHost = Settings::value(Settings::Client::RemoteHost).toString().trimmed();
+      if (serverHost.isEmpty()) {
+        serverHost = QStringLiteral("127.0.0.1");
+      }
     }
 
     QVariant portValue = Settings::value(Settings::Core::Port);
