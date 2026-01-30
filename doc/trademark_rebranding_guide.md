@@ -161,3 +161,9 @@ Use this table to identify which rebranded file corresponds to an upstream file 
     1.  Accept dependency updates.
     2.  **ENSURE** `project(dshare-hid ...)` remains. Do not revert to `project(deskflow ...)`.
     3.  **ENSURE** `HOMEPAGE_URL` remains `lockekk/dshare-hid`.
+### Scenario E: README.md Conflicts
+*   **Issue**: Upstream updates `README.md` with new features, community links, or documentation.
+*   **Resolution**:
+    1.  **Ignore** upstream changes to `README.md`.
+    2.  **NEVER** let upstream changes overwrite the local `README.md`.
+    3.  If critical information is added upstream, manually port it to the local `README.md` while maintaining the **DShare-HID** branding and structure.
