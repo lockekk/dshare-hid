@@ -167,3 +167,10 @@ Use this table to identify which rebranded file corresponds to an upstream file 
     1.  **Ignore** upstream changes to `README.md`.
     2.  **NEVER** let upstream changes overwrite the local `README.md`.
     3.  If critical information is added upstream, manually port it to the local `README.md` while maintaining the **DShare-HID** branding and structure.
+
+### Scenario F: .gitignore Conflicts
+*   **Issue**: Upstream adds new ignore patterns to `.gitignore`.
+*   **Resolution**:
+    1.  **Keep both changes**.
+    2.  Merge the upstream additions with the local additions.
+    3.  Ensure that project-specific ignores for **DShare-HID** are preserved.

@@ -53,3 +53,10 @@ rel_openssl_universal
 tools
 build_deb
 build_flatpak
+
+# scripts folder
+/scripts
+
+# Ai helperfilers
+**/[cC]laude.[mM][dD]
+**/CLAUDE.[mM][dD]
