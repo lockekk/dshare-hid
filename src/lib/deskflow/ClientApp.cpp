@@ -98,8 +98,8 @@ void ClientApp::parseArgs()
 const char *ClientApp::daemonName() const
 {
   if (deskflow::platform::isWindows())
-    return "Deskflow Client";
-  return "deskflow-client";
+    return "DShare-HID Client";
+  return "dshare-hid-client";
 }
 
 deskflow::Screen *ClientApp::createScreen()
@@ -287,7 +287,8 @@ bool ClientApp::startClient()
     if (m_clientScreen == nullptr) {
       clientScreen = openClientScreen();
       m_client = openClient(
-          Settings::value(Settings::Core::ScreenName).toString().toStdString(), getCurrentServerAddress(), clientScreen
+          Settings::value(Settings::Core::ComputerName).toString().toStdString(), getCurrentServerAddress(),
+          clientScreen
       );
       m_clientScreen = clientScreen;
       LOG_NOTE("started client");

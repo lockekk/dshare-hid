@@ -174,3 +174,18 @@ Use this table to identify which rebranded file corresponds to an upstream file 
     1.  **Keep both changes**.
     2.  Merge the upstream additions with the local additions.
     3.  Ensure that project-specific ignores for **DShare-HID** are preserved.
+
+### Scenario G: Configuration Documentation Updates
+*   **Issue**: Upstream updates `doc/user/configuration.md` with clearer wording or new configuration keys.
+*   **Resolution**:
+    1.  **Adopt the logic/wording Improvements**: Upstream often clarifies how settings work. Use their new descriptions.
+    2.  **STRICT BRANDING**: Manually replace all instances of "Deskflow" or "deskflow" in the new text with **DShare-HID** or **dshare-hid**.
+    3.  **Preserve Layout**: Ensure tables and links match the DShare-HID structure.
+
+### Scenario H: Daemon & Process Naming Regressions
+*   **Issue**: Upstream modifies `daemonName()` or similar methods in `ClientApp.cpp`, `ServerApp.cpp`, or `MainWindow.cpp`.
+*   **Git Behavior**: Often auto-merges successfully but reintroduces the string "Deskflow".
+*   **Resolution**:
+    1.  **POST-MERGE SWEEP**: Always run a grep for "Deskflow" in the source code after a merge.
+    2.  **Restore Identity**: Ensure `daemonName()` returns "DShare-HID Client/Server" (Windows) and "dshare-hid-client/server" (Unix).
+    3.  **Check Titles**: Ensure window titles and tray icons continue to use the **DShare-HID** constants.

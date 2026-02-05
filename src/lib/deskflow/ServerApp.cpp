@@ -59,7 +59,7 @@ using namespace deskflow::server;
 
 ServerApp::ServerApp(IEventQueue *events, const QString &processName) : App(events, processName)
 {
-  m_name = Settings::value(Settings::Core::ScreenName).toString().toStdString();
+  m_name = Settings::value(Settings::Core::ComputerName).toString().toStdString();
   // do nothing
 }
 
@@ -606,8 +606,8 @@ int ServerApp::start()
 const char *ServerApp::daemonName() const
 {
   if (deskflow::platform::isWindows())
-    return "Deskflow Server";
-  return "deskflow-server";
+    return "DShare-HID Server";
+  return "dshare-hid-server";
 }
 
 void ServerApp::startNode()
