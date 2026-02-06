@@ -95,6 +95,7 @@ QString BridgeClientConfigManager::createDefaultConfig(const QString &serialNumb
 
   // [core] section
   config.setValue(Settings::Core::ScreenName, defaultScreenName);
+  config.setValue(Settings::Core::ComputerName, defaultScreenName);
   config.setValue(Settings::Core::RestartOnFailure, true);
   config.setValue(Settings::Core::ProcessMode, Settings::Desktop);
   config.setValue(Settings::Core::CoreMode, Settings::Client);
@@ -126,7 +127,11 @@ void BridgeClientConfigManager::removeLegacySecuritySettings(const QString &conf
 QString BridgeClientConfigManager::readScreenName(const QString &configPath)
 {
   QSettings config(configPath, QSettings::IniFormat);
-  return config.value(Settings::Core::ScreenName).toString();
+  QString name = config.value(Settings::Core::ComputerName).toString();
+  if (name.isEmpty()) {
+    name = config.value(Settings::Core::ScreenName).toString();
+  }
+  return name;
 }
 
 QString BridgeClientConfigManager::readSerialNumber(const QString &configPath)

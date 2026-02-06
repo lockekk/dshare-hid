@@ -60,7 +60,9 @@ void CoreArgParser::parse()
   }
 
   if (m_parser.isSet(CoreArgs::nameOption)) {
-    Settings::setValue(Settings::Core::ScreenName, m_parser.value(CoreArgs::nameOption));
+    const QString name = m_parser.value(CoreArgs::nameOption);
+    Settings::setValue(Settings::Core::ScreenName, name);
+    Settings::setValue(Settings::Core::ComputerName, name);
   }
 
   if (m_parser.isSet(CoreArgs::logLevelOption)) {
