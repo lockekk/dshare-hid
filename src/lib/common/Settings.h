@@ -39,7 +39,7 @@ public:
   struct Client
   {
     inline static const auto InvertScrollDirection = QStringLiteral("client/invertScrollDirection");
-    inline static const auto ScrollSpeed = QStringLiteral("client/yscroll");
+    inline static const auto YScrollScale = QStringLiteral("client/yScrollScale");
     inline static const auto LanguageSync = QStringLiteral("client/languageSync");
     inline static const auto RemoteHost = QStringLiteral("client/remoteHost");
     inline static const auto XdpRestoreToken = QStringLiteral("client/xdpRestoreToken");
@@ -215,7 +215,7 @@ private:
       Settings::Client::InvertScrollDirection
     , Settings::Client::LanguageSync
     , Settings::Client::RemoteHost
-    , Settings::Client::ScrollSpeed
+    , Settings::Client::YScrollScale
     , Settings::Client::XdpRestoreToken
     , Settings::Core::CoreMode
     , Settings::Core::Interface

@@ -7,13 +7,13 @@
 
 #include "deskflow/PlatformScreen.h"
 #include "base/DirectionTypes.h"
+#include "common/Settings.h"
 #include "deskflow/App.h"
 
-PlatformScreen::PlatformScreen(IEventQueue *events, bool invertScrolling)
-    : IPlatformScreen(events),
-      m_invertScrollDirection(invertScrolling)
+PlatformScreen::PlatformScreen(IEventQueue *events) : IPlatformScreen(events)
 {
-  // do nothing
+  m_invertScrollDirection = Settings::value(Settings::Client::InvertScrollDirection).toBool();
+  m_yScrollScale = std::clamp(Settings::value(Settings::Client::YScrollScale).toDouble(), 0.1, 10.0);
 }
 
 void PlatformScreen::updateKeyMap()
@@ -89,9 +89,11 @@ void PlatformScreen::clearStaleModifiers()
   getKeyState()->clearStaleModifiers();
 }
 
-int32_t PlatformScreen::mapClientScrollDirection(int32_t x) const
+PlatformScreen::ScrollDelta PlatformScreen::applyClientScrollModifier(const PlatformScreen::ScrollDelta rawDelta) const
 {
-  return (m_invertScrollDirection ? -x : x);
+  ScrollDelta correctedDelta = rawDelta;
+  correctedDelta.yDelta *= m_invertScrollDirection ? -m_yScrollScale : m_yScrollScale;
+  return correctedDelta;
 }
 
 std::string PlatformScreen::sidesMaskToString(uint32_t sides)

@@ -1264,14 +1264,6 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation>在此计算机上使用服务器的键盘语言</translation>
     </message>
     <message>
-        <source>Invert scroll direction on this computer</source>
-        <translation>反转此计算机上的滚动方向</translation>
-    </message>
-    <message>
-        <source>Scroll Speed</source>
-        <translation>滚动速度</translation>
-    </message>
-    <message>
         <source>App</source>
         <translation>应用程序</translation>
     </message>
@@ -2484,6 +2476,14 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     <message>
         <source>Reminder: Press &apos;Boot&apos; button then plugin your ESP32-C3. Click Refresh button to ensure the device is detected.</source>
         <translation>提醒：按住 &apos;Boot&apos; 按钮，然后插入您的 ESP32-C3。点击刷新按钮以确保检测到设备。</translation>
+    </message>
+    <message>
+        <source>Invert vertical scroll direction on this computer</source>
+        <translation type="unfinished">在此计算机上反转垂直滚动方向</translation>
+    </message>
+    <message>
+        <source>Vertical Scroll Scale</source>
+        <translation type="unfinished">垂直滚动比例</translation>
     </message>
 </context>
 <context>

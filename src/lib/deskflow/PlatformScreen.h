@@ -18,7 +18,12 @@ subclasses to implement the rest.
 class PlatformScreen : public IPlatformScreen
 {
 public:
-  explicit PlatformScreen(IEventQueue *events, bool invertScrollDirection);
+  struct ScrollDelta
+  {
+    int32_t xDelta;
+    int32_t yDelta;
+  };
+  explicit PlatformScreen(IEventQueue *events);
   ~PlatformScreen() override = default;
 
   // IScreen overrides
@@ -96,11 +101,11 @@ protected:
   void handleSystemEvent(const Event &event) override = 0;
 
   /*!
-   * \brief mapClientScrollDirection
-   * Convert scroll according to client scroll directio
-   * \return converted value according to the client scroll direction
+   * \brief applyClientYScrollModifier
+   * Convert scroll according to client's scroll modifiers
+   * \return converted value according to the client's scroll modifiers
    */
-  virtual int32_t mapClientScrollDirection(int32_t) const;
+  virtual ScrollDelta applyClientScrollModifier(const ScrollDelta rawDelta) const;
 
   /*!
   Converts a sides mask (e.g. LeftMask | RightMask) to a string representation (e.g. "LR").
@@ -114,4 +119,11 @@ private:
    * This member is used only on client side.
    */
   bool m_invertScrollDirection = false;
+
+  /**
+   * @brief m_yScrollScale
+   * This member is used to scale the y scroll speed
+   * It is only used on the client side
+   */
+  double m_yScrollScale = 1.0;
 };

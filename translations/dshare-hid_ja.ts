@@ -1265,14 +1265,6 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation>サーバー側のキーボード言語をこのコンピューターで使用する</translation>
     </message>
     <message>
-        <source>Invert scroll direction on this computer</source>
-        <translation>このコンピューターのスクロール方向を反転する</translation>
-    </message>
-    <message>
-        <source>Scroll Speed</source>
-        <translation>スクロール速度</translation>
-    </message>
-    <message>
         <source>App</source>
         <translation>アプリケーション</translation>
     </message>
@@ -1475,6 +1467,14 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     <message>
         <source>Include version in the window title</source>
         <translation type="unfinished">ウィンドウタイトルにバージョン情報を含める</translation>
+    </message>
+    <message>
+        <source>Invert vertical scroll direction on this computer</source>
+        <translation type="unfinished">このコンピューターで垂直スクロールの方向を反転させる</translation>
+    </message>
+    <message>
+        <source>Vertical Scroll Scale</source>
+        <translation type="unfinished">垂直スクロールスケール</translation>
     </message>
 </context>
 <context>
