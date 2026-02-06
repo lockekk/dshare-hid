@@ -98,8 +98,8 @@ void ClientApp::parseArgs()
 const char *ClientApp::daemonName() const
 {
   if (deskflow::platform::isWindows())
-    return "DShare-HID Client";
-  return "dshare-hid-client";
+    return "Deskflow Client";
+  return "deskflow-client";
 }
 
 deskflow::Screen *ClientApp::createScreen()

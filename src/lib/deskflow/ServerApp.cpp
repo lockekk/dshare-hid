@@ -606,8 +606,8 @@ int ServerApp::start()
 const char *ServerApp::daemonName() const
 {
   if (deskflow::platform::isWindows())
-    return "DShare-HID Server";
-  return "dshare-hid-server";
+    return "Deskflow Server";
+  return "deskflow-server";
 }
 
 void ServerApp::startNode()
