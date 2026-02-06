@@ -35,7 +35,7 @@ public:
     return m_configPath;
   }
 
-  int scrollSpeed() const;
+  double yScrollScale() const;
   bool invertScroll() const;
   QString deviceName() const;
   bool deviceNameChanged() const;
@@ -66,7 +66,7 @@ private:
 
   QLineEdit *m_editScreenName;
   QLineEdit *m_editDeviceName;
-  QSpinBox *m_spinScrollSpeed;
+  QDoubleSpinBox *m_spinScrollScale;
   QCheckBox *m_checkInvertScroll;
   QCheckBox *m_checkBluetoothKeepAlive;
   QCheckBox *m_checkAutoConnect;

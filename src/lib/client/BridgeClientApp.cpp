@@ -38,10 +38,8 @@ deskflow::Screen *BridgeClientApp::createScreen()
   LOG_INFO("BridgeClientApp: creating BridgePlatformScreen");
 
   // Create BridgePlatformScreen instead of platform-specific screen
-  const bool invertScrolling = Settings::value(Settings::Client::InvertScrollDirection).toBool();
-  auto *platformScreen = new deskflow::bridge::BridgePlatformScreen(
-      getEvents(), m_transport, m_screenWidth, m_screenHeight, invertScrolling
-  );
+  auto *platformScreen =
+      new deskflow::bridge::BridgePlatformScreen(getEvents(), m_transport, m_screenWidth, m_screenHeight);
 
   // Wrap in deskflow::Screen
   return new deskflow::Screen(platformScreen, getEvents());

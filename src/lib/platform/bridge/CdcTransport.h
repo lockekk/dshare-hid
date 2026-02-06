@@ -58,8 +58,9 @@ struct DeviceProfile
   uint16_t screenHeight; // Pixels (default 2424)
   uint8_t rotation;      // 0: Portrait, 1: Landscape
   uint8_t invert;        // scroll direction 0: no invert, 1: invert
-  uint8_t speed;         // scroll speed  0: 120; default is 120
-  uint8_t reserved[11];  // reserved for future use, total size is 52 bytes
+  uint8_t speed;         // legacy scroll speed
+  uint8_t yScrollScale;  // scroll scale (1-100 representing 0.1-10.0, 0 treats as 1)
+  uint8_t reserved[10];  // reserved for future use, total size is 52 bytes
 };
 #pragma pack(pop)
 

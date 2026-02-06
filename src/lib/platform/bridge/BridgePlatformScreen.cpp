@@ -50,10 +50,9 @@ std::string hexDump(const uint8_t *data, size_t length, size_t maxBytes = 32)
 } // namespace
 
 BridgePlatformScreen::BridgePlatformScreen(
-    IEventQueue *events, std::shared_ptr<CdcTransport> transport, int32_t screenWidth, int32_t screenHeight,
-    bool invertScroll
+    IEventQueue *events, std::shared_ptr<CdcTransport> transport, int32_t screenWidth, int32_t screenHeight
 )
-    : PlatformScreen(events, invertScroll),
+    : PlatformScreen(events),
       m_transport(std::move(transport)),
       m_screenWidth(screenWidth),
       m_screenHeight(screenHeight),
@@ -215,29 +214,23 @@ void BridgePlatformScreen::fakeMouseRelativeMove(int32_t dx, int32_t dy) const
   }
 }
 
-void BridgePlatformScreen::fakeMouseWheel(int32_t, int32_t yDelta) const
-{
-  LOG_DEBUG("BridgeScreen: mouse wheel y=%d", yDelta);
+const ScrollDelta rawDelta = {0, yDelta};
+const ScrollDelta correctedDelta = applyClientScrollModifier(rawDelta);
+yDelta = correctedDelta.yDelta;
 
-  if (yDelta == 0) {
-    return;
+int32_t speed = (m_scrollSpeed > 0) ? m_scrollSpeed : 120;
+m_wheelAccumulatorY += (yDelta * speed);
+
+constexpr int32_t kStepThreshold = 14400;
+int8_t steps = static_cast<int8_t>(m_wheelAccumulatorY / kStepThreshold);
+
+if (steps != 0) {
+  m_wheelAccumulatorY %= kStepThreshold;
+
+  if (!sendMouseScrollEvent(steps)) {
+    LOG_ERR("BridgeScreen: failed to send scroll event");
   }
-
-  yDelta = mapClientScrollDirection(yDelta);
-
-  int32_t speed = (m_scrollSpeed > 0) ? m_scrollSpeed : 120;
-  m_wheelAccumulatorY += (yDelta * speed);
-
-  constexpr int32_t kStepThreshold = 14400;
-  int8_t steps = static_cast<int8_t>(m_wheelAccumulatorY / kStepThreshold);
-
-  if (steps != 0) {
-    m_wheelAccumulatorY %= kStepThreshold;
-
-    if (!sendMouseScrollEvent(steps)) {
-      LOG_ERR("BridgeScreen: failed to send scroll event");
-    }
-  }
+}
 }
 
 void BridgePlatformScreen::resetMouseAccumulator() const
@@ -289,9 +282,8 @@ void BridgePlatformScreen::fakeKeyDown(KeyID id, KeyModifierMask mask, KeyButton
   }
 }
 
-bool BridgePlatformScreen::fakeKeyRepeat(
-    KeyID id, KeyModifierMask mask, int32_t count, KeyButton button, const std::string &
-)
+bool BridgePlatformScreen::
+    fakeKeyRepeat(KeyID id, KeyModifierMask mask, int32_t count, KeyButton button, const std::string &)
 {
   LOG_DEBUG("BridgeScreen: key repeat id=0x%04x button=%d count=%d", id, button, count);
 
@@ -470,7 +462,12 @@ void BridgePlatformScreen::enter()
       DeviceProfile profile;
       if (m_transport->getProfile(config.activeProfile, profile)) {
         m_scrollSpeed = profile.speed;
-        LOG_INFO("BridgeScreen: loaded scroll speed %d from profile %d", m_scrollSpeed, config.activeProfile);
+        m_scrollScaleProfile = profile.yScrollScale;
+        m_scrollInvertProfile = (profile.invert != 0);
+        LOG_INFO(
+            "BridgeScreen: loaded profile %d: speed=%d, scale=%d, invert=%d", config.activeProfile, m_scrollSpeed,
+            m_scrollScaleProfile, m_scrollInvertProfile
+        );
       } else {
         LOG_WARN("BridgeScreen: failed to load profile %d", config.activeProfile);
       }
@@ -509,6 +506,18 @@ void BridgePlatformScreen::closeScreensaver()
 
 void BridgePlatformScreen::screensaver(bool activate)
 {
+}
+
+PlatformScreen::ScrollDelta BridgePlatformScreen::applyClientScrollModifier(const ScrollDelta rawDelta) const
+{
+  ScrollDelta correctedDelta = rawDelta;
+
+  // Decoding scale: 0 -> 0.1, otherwise value / 10.0
+  double scale = (m_scrollScaleProfile == 0) ? 0.1 : static_cast<double>(m_scrollScaleProfile) / 10.0;
+
+  correctedDelta.yDelta *= m_scrollInvertProfile ? -scale : scale;
+
+  return correctedDelta;
 }
 
 void BridgePlatformScreen::resetOptions()

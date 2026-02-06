@@ -33,8 +33,7 @@ class BridgePlatformScreen : public PlatformScreen
 {
 public:
   BridgePlatformScreen(
-      IEventQueue *events, std::shared_ptr<CdcTransport> transport, int32_t screenWidth, int32_t screenHeight,
-      bool invertScroll
+      IEventQueue *events, std::shared_ptr<CdcTransport> transport, int32_t screenWidth, int32_t screenHeight
   );
   ~BridgePlatformScreen() override;
 
@@ -99,6 +98,8 @@ protected:
   IKeyState *getKeyState() const override;
   void handleSystemEvent(const Event &event) override;
 
+  ScrollDelta applyClientScrollModifier(const ScrollDelta rawDelta) const override;
+
 private:
   bool sendEvent(HidEventType type, const std::vector<uint8_t> &payload) const;
   bool sendKeyboardEvent(HidEventType type, uint8_t modifiers, uint8_t keycode) const;
@@ -156,7 +157,9 @@ private:
   // Scroll accumulation
   mutable int32_t m_wheelAccumulatorX = 0;
   mutable int32_t m_wheelAccumulatorY = 0;
-  uint8_t m_scrollSpeed = 120; // Default speed
+  uint8_t m_scrollSpeed = 120;        // Default speed
+  uint8_t m_scrollScaleProfile = 0;   // 0-100 from profile
+  bool m_scrollInvertProfile = false; // from profile
 };
 
 } // namespace deskflow::bridge

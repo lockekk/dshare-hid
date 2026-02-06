@@ -83,12 +83,12 @@ BridgeClientConfigDialog::BridgeClientConfigDialog(
 
   // Bluetooth Keep-Alive
   m_checkBluetoothKeepAlive = new QCheckBox(tr("Automatically disconnect Bluetooth"), this);
-  m_checkBluetoothKeepAlive->setToolTip(tr("Disconnects from the host device when you stop using Deskflow."));
+  m_checkBluetoothKeepAlive->setToolTip(tr("Disconnects from the host device when you stop using DShare-HID."));
   advancedLayout->addWidget(m_checkBluetoothKeepAlive);
 
   // Auto-connect
   m_checkAutoConnect = new QCheckBox(tr("Auto-connect when USB device plugged in"), this);
-  m_checkAutoConnect->setToolTip(tr("Automatically connect to the Deskflow server when the device is plugged in."));
+  m_checkAutoConnect->setToolTip(tr("Automatically connect to the DShare-HID server when the device is plugged in."));
 
   advancedLayout->addWidget(m_checkAutoConnect);
 
@@ -293,10 +293,11 @@ void BridgeClientConfigDialog::setupProfileUI(QVBoxLayout *mainLayout)
   spinContainer->setMinimumWidth(180);
   {
     auto *spinLayout = createHBox();
-    m_spinScrollSpeed = new QSpinBox(this);
-    m_spinScrollSpeed->setRange(0, 255);
-    m_spinScrollSpeed->setSingleStep(1);
-    spinLayout->addWidget(m_spinScrollSpeed);
+    m_spinScrollScale = new QDoubleSpinBox(this);
+    m_spinScrollScale->setRange(0.1, 10.0);
+    m_spinScrollScale->setSingleStep(0.1);
+    m_spinScrollScale->setDecimals(1);
+    spinLayout->addWidget(m_spinScrollScale);
     spinLayout->addStretch();
     spinContainer->setLayout(spinLayout);
   }
@@ -308,7 +309,7 @@ void BridgeClientConfigDialog::setupProfileUI(QVBoxLayout *mainLayout)
   scrollLayout->addWidget(m_checkInvertScroll);
   scrollLayout->addStretch();
 
-  addComplexRow(tr("Scroll speed:"), scrollLayout);
+  addComplexRow(tr("Vertical Scroll Scale:"), scrollLayout);
 
   groupLayout->addLayout(detailsLayout);
 
@@ -472,7 +473,7 @@ void BridgeClientConfigDialog::saveUiToCache(int index)
   p.hidMode = m_radioProfileMouseOnly->isChecked() ? 1 : 0;
   p.slot = index;
   p.invert = m_checkInvertScroll->isChecked() ? 1 : 0;
-  p.speed = static_cast<uint8_t>(m_spinScrollSpeed->value());
+  p.yScrollScale = static_cast<uint8_t>(m_spinScrollScale->value() * 10);
 }
 
 void BridgeClientConfigDialog::updateTabLabels()
@@ -528,7 +529,8 @@ void BridgeClientConfigDialog::updateProfileDetailUI(int index)
   else
     m_radioProfileCombo->setChecked(true);
 
-  m_spinScrollSpeed->setValue(p.speed);
+  double scale = (p.yScrollScale == 0) ? 0.1 : static_cast<double>(p.yScrollScale) / 10.0;
+  m_spinScrollScale->setValue(scale);
   m_checkInvertScroll->setChecked(p.invert != 0);
 
   blockSignals(blocked);
@@ -811,6 +813,11 @@ QString BridgeClientConfigDialog::screenName() const
 bool BridgeClientConfigDialog::invertScroll() const
 {
   return m_checkInvertScroll->isChecked();
+}
+
+double BridgeClientConfigDialog::yScrollScale() const
+{
+  return m_spinScrollScale->value();
 }
 
 bool BridgeClientConfigDialog::eventFilter(QObject *watched, QEvent *event)
