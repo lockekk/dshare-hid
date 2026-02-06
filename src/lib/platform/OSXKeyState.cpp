@@ -145,13 +145,13 @@ io_connect_t getEventDriver()
   static io_connect_t sEventDrvrRef = 0;
 
   if (!sEventDrvrRef) {
-    // Get master device port
-    mach_port_t masterPort = 0;
-    if (!IOMasterPort(bootstrap_port, &masterPort)) {
+    // Get main device port
+    mach_port_t mainPort = 0;
+    if (!IOMainPort(bootstrap_port, &mainPort)) {
       io_iterator_t iter = 0;
       auto dict = IOServiceMatching(kIOHIDSystemClass);
 
-      if (!IOServiceGetMatchingServices(masterPort, dict, &iter)) {
+      if (!IOServiceGetMatchingServices(mainPort, dict, &iter)) {
         sEventDrvrRef = getService(iter);
       } else {
         LOG_WARN("io service not found");

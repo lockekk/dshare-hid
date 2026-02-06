@@ -214,23 +214,29 @@ void BridgePlatformScreen::fakeMouseRelativeMove(int32_t dx, int32_t dy) const
   }
 }
 
-const ScrollDelta rawDelta = {0, yDelta};
-const ScrollDelta correctedDelta = applyClientScrollModifier(rawDelta);
-yDelta = correctedDelta.yDelta;
-
-int32_t speed = (m_scrollSpeed > 0) ? m_scrollSpeed : 120;
-m_wheelAccumulatorY += (yDelta * speed);
-
-constexpr int32_t kStepThreshold = 14400;
-int8_t steps = static_cast<int8_t>(m_wheelAccumulatorY / kStepThreshold);
-
-if (steps != 0) {
-  m_wheelAccumulatorY %= kStepThreshold;
-
-  if (!sendMouseScrollEvent(steps)) {
-    LOG_ERR("BridgeScreen: failed to send scroll event");
+void BridgePlatformScreen::fakeMouseWheel(int32_t, int32_t yDelta) const
+{
+  if (yDelta == 0) {
+    return;
   }
-}
+
+  const ScrollDelta rawDelta = {0, yDelta};
+  const ScrollDelta correctedDelta = applyClientScrollModifier(rawDelta);
+  yDelta = correctedDelta.yDelta;
+
+  int32_t speed = (m_scrollSpeed > 0) ? m_scrollSpeed : 120;
+  m_wheelAccumulatorY += (yDelta * speed);
+
+  constexpr int32_t kStepThreshold = 14400;
+  int8_t steps = static_cast<int8_t>(m_wheelAccumulatorY / kStepThreshold);
+
+  if (steps != 0) {
+    m_wheelAccumulatorY %= kStepThreshold;
+
+    if (!sendMouseScrollEvent(steps)) {
+      LOG_ERR("BridgeScreen: failed to send scroll event");
+    }
+  }
 }
 
 void BridgePlatformScreen::resetMouseAccumulator() const

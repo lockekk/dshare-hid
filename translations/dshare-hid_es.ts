@@ -1548,7 +1548,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Disconnects from the host device when you stop using Deskflow.</source>
-        <translation>Se desconecta del dispositivo host cuando deja de usar DShare-HID.</translation>
+        <translation type="vanished">Se desconecta del dispositivo host cuando deja de usar DShare-HID.</translation>
     </message>
     <message>
         <source>Auto-connect when USB device plugged in</source>
@@ -1556,7 +1556,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Automatically connect to the Deskflow server when the device is plugged in.</source>
-        <translation>Conectarse automáticamente al servidor DShare-HID cuando el dispositivo está conectado.</translation>
+        <translation type="vanished">Conectarse automáticamente al servidor DShare-HID cuando el dispositivo está conectado.</translation>
     </message>
     <message>
         <source>Automatically restore screen location for the active profile</source>
@@ -1603,7 +1603,19 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation>Activar</translation>
     </message>
     <message>
+        <source>Disconnects from the host device when you stop using DShare-HID.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Automatically connect to the DShare-HID server when the device is plugged in.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>When enabled, the saved screen location for the active profile will be restored automatically.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Vertical Scroll Scale:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1666,7 +1678,7 @@ Duplicado: %1</translation>
     </message>
     <message>
         <source>Scroll speed:</source>
-        <translation>Velocidad de desplazamiento:</translation>
+        <translation type="vanished">Velocidad de desplazamiento:</translation>
     </message>
 </context>
 <context>

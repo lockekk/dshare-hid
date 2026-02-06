@@ -1467,6 +1467,14 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <source>Include version in the window title</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Invert vertical scroll direction on this computer</source>
+        <translation type="unfinished">在此计算机上反转垂直滚动方向</translation>
+    </message>
+    <message>
+        <source>Vertical Scroll Scale</source>
+        <translation type="unfinished">垂直滚动比例</translation>
+    </message>
 </context>
 <context>
     <name>deskflow::gui::BridgeClientConfigDialog</name>
@@ -1540,7 +1548,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Disconnects from the host device when you stop using Deskflow.</source>
-        <translation>停止使用 DShare-HID 时断开与主机设备的连接。</translation>
+        <translation type="vanished">停止使用 DShare-HID 时断开与主机设备的连接。</translation>
     </message>
     <message>
         <source>Auto-connect when USB device plugged in</source>
@@ -1548,7 +1556,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Automatically connect to the Deskflow server when the device is plugged in.</source>
-        <translation>设备插入时自动连接到 DShare-HID 服务器。</translation>
+        <translation type="vanished">设备插入时自动连接到 DShare-HID 服务器。</translation>
     </message>
     <message>
         <source>Automatically restore screen location for the active profile</source>
@@ -1595,7 +1603,19 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation>激活</translation>
     </message>
     <message>
+        <source>Disconnects from the host device when you stop using DShare-HID.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Automatically connect to the DShare-HID server when the device is plugged in.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>When enabled, the saved screen location for the active profile will be restored automatically.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Vertical Scroll Scale:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1658,7 +1678,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Scroll speed:</source>
-        <translation>滚动速度：</translation>
+        <translation type="vanished">滚动速度：</translation>
     </message>
 </context>
 <context>
@@ -2479,11 +2499,11 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Invert vertical scroll direction on this computer</source>
-        <translation type="unfinished">在此计算机上反转垂直滚动方向</translation>
+        <translation type="obsolete">在此计算机上反转垂直滚动方向</translation>
     </message>
     <message>
         <source>Vertical Scroll Scale</source>
-        <translation type="unfinished">垂直滚动比例</translation>
+        <translation type="obsolete">垂直滚动比例</translation>
     </message>
 </context>
 <context>

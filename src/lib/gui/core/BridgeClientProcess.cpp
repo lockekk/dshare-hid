@@ -53,7 +53,7 @@ bool BridgeClientProcess::start(const Config &config)
   args << "--log-level" << config.logLevel;
   args << "--screen-width" << QString::number(config.screenWidth);
   args << "--screen-height" << QString::number(config.screenHeight);
-  args << "--yscroll" << QString::number(config.scrollSpeed);
+  args << "--yscroll" << QString::number(config.yScrollScale, 'f', 1);
   args << "--invertScrollDirection" << (config.invertScroll ? "true" : "false");
 
   connect(m_process, &QProcess::readyReadStandardOutput, this, &BridgeClientProcess::onReadyRead);

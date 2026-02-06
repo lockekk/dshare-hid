@@ -90,7 +90,7 @@ QString BridgeClientConfigManager::createDefaultConfig(const QString &serialNumb
   config.setValue(
       Settings::Client::InvertScrollDirection, Settings::defaultValue(Settings::Client::InvertScrollDirection)
   );
-  config.setValue(Settings::Client::ScrollSpeed, Settings::defaultValue(Settings::Client::ScrollSpeed));
+  config.setValue(Settings::Client::YScrollScale, Settings::defaultValue(Settings::Client::YScrollScale));
   config.setValue(Settings::Client::LanguageSync, true);
 
   // [core] section

@@ -1549,7 +1549,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Disconnects from the host device when you stop using Deskflow.</source>
-        <translation>DShare-HID の使用を停止するとホストデバイスから切断します。</translation>
+        <translation type="vanished">DShare-HID の使用を停止するとホストデバイスから切断します。</translation>
     </message>
     <message>
         <source>Auto-connect when USB device plugged in</source>
@@ -1557,7 +1557,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Automatically connect to the Deskflow server when the device is plugged in.</source>
-        <translation>デバイスが接続されると自動的に DShare-HID サーバーに接続します。</translation>
+        <translation type="vanished">デバイスが接続されると自動的に DShare-HID サーバーに接続します。</translation>
     </message>
     <message>
         <source>Automatically restore screen location for the active profile</source>
@@ -1604,7 +1604,19 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation>有効化</translation>
     </message>
     <message>
+        <source>Disconnects from the host device when you stop using DShare-HID.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Automatically connect to the DShare-HID server when the device is plugged in.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>When enabled, the saved screen location for the active profile will be restored automatically.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Vertical Scroll Scale:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1667,7 +1679,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Scroll speed:</source>
-        <translation>スクロール速度:</translation>
+        <translation type="vanished">スクロール速度:</translation>
     </message>
 </context>
 <context>

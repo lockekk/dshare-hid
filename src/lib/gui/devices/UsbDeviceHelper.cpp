@@ -353,7 +353,7 @@ QMap<QString, QString> UsbDeviceHelper::getConnectedDevices(bool queryDevice)
   const char *className = "IOUSBHostDevice";
 
   io_iterator_t iter = 0;
-  kern_return_t kr = IOServiceGetMatchingServices(kIOMasterPortDefault, IOServiceMatching(className), &iter);
+  kern_return_t kr = IOServiceGetMatchingServices(kIOMainPortDefault, IOServiceMatching(className), &iter);
   if (kr != kIOReturnSuccess) {
     LOG_WARN("Failed to iterate USB devices for class %s on macOS", className);
     return devices;

@@ -1270,11 +1270,11 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Invert scroll direction on this computer</source>
-        <translation>Инвертировать направление прокрутки на этом компьюторе</translation>
+        <translation type="vanished">Инвертировать направление прокрутки на этом компьюторе</translation>
     </message>
     <message>
         <source>Scroll Speed</source>
-        <translation>Скорость прокрутки</translation>
+        <translation type="vanished">Скорость прокрутки</translation>
     </message>
     <message>
         <source>App</source>
@@ -1480,6 +1480,14 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <source>Include version in the window title</source>
         <translation type="unfinished">Включить номер версии в заголовок окна</translation>
     </message>
+    <message>
+        <source>Invert vertical scroll direction on this computer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Vertical Scroll Scale</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>deskflow::gui::BridgeClientConfigDialog</name>
@@ -1553,7 +1561,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Disconnects from the host device when you stop using Deskflow.</source>
-        <translation>Отключается от хост-устройства, когда вы прекращаете использовать DShare-HID.</translation>
+        <translation type="vanished">Отключается от хост-устройства, когда вы прекращаете использовать DShare-HID.</translation>
     </message>
     <message>
         <source>Auto-connect when USB device plugged in</source>
@@ -1561,7 +1569,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Automatically connect to the Deskflow server when the device is plugged in.</source>
-        <translation>Автоматически подключаться к серверу DShare-HID при подключении устройства.</translation>
+        <translation type="vanished">Автоматически подключаться к серверу DShare-HID при подключении устройства.</translation>
     </message>
     <message>
         <source>Automatically restore screen location for the active profile</source>
@@ -1608,7 +1616,19 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation>Активировать</translation>
     </message>
     <message>
+        <source>Disconnects from the host device when you stop using DShare-HID.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Automatically connect to the DShare-HID server when the device is plugged in.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>When enabled, the saved screen location for the active profile will be restored automatically.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Vertical Scroll Scale:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1671,7 +1691,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Scroll speed:</source>
-        <translation>Скорость прокрутки:</translation>
+        <translation type="vanished">Скорость прокрутки:</translation>
     </message>
 </context>
 <context>

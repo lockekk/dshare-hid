@@ -76,8 +76,8 @@ void CoreArgParser::parse()
 
   if (m_parser.isSet(CoreArgs::secureOption)) {
     bool value =
-        ((m_parser.value(CoreArgs::secureOption).toLower() == "true") ||
-         (m_parser.value(CoreArgs::secureOption) == "1"));
+        ((m_parser.value(CoreArgs::secureOption).toLower() == "true") || (m_parser.value(CoreArgs::secureOption) == "1")
+        );
     Settings::setValue(Settings::Security::TlsEnabled, value);
   }
 
@@ -123,7 +123,7 @@ void CoreArgParser::parse()
   }
 
   if (m_parser.isSet(CoreArgs::yscrollOption)) {
-    Settings::setValue(Settings::Client::ScrollSpeed, m_parser.value(CoreArgs::yscrollOption));
+    Settings::setValue(Settings::Client::YScrollScale, m_parser.value(CoreArgs::yscrollOption));
   }
 
   if (m_parser.isSet(CoreArgs::languageSyncOption)) {

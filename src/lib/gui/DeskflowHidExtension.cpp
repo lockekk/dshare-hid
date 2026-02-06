@@ -1009,8 +1009,8 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
     int screenHeight = 1080;
     QString screenOrientation = QStringLiteral("landscape");
 
-    const QVariant defaultScrollSpeed = Settings::defaultValue(Settings::Client::ScrollSpeed);
-    int scrollSpeed = config.value(Settings::Client::ScrollSpeed, defaultScrollSpeed).toInt();
+    const QVariant defaultScrollScale = Settings::defaultValue(Settings::Client::YScrollScale);
+    double yScrollScale = config.value(Settings::Client::YScrollScale, defaultScrollScale).toDouble();
     const QVariant defaultInvertScroll = Settings::defaultValue(Settings::Client::InvertScrollDirection);
     bool invertScroll = config.value(Settings::Client::InvertScrollDirection, defaultInvertScroll).toBool();
 
@@ -1053,12 +1053,12 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
             screenHeight = profile.screenHeight;
             screenOrientation = (profile.rotation == 0) ? QStringLiteral("portrait") : QStringLiteral("landscape");
 
-            // Use profile values for speed and invert, handling default for speed=0
-            scrollSpeed = (profile.speed == 0) ? 120 : profile.speed;
+            // Use profile values for scale and invert, handling default for scale=0
+            yScrollScale = (profile.yScrollScale == 0) ? 1.0 : static_cast<double>(profile.yScrollScale) / 10.0;
             invertScroll = (profile.invert != 0);
 
             qInfo() << "Using device profile resolution:" << screenWidth << "x" << screenHeight
-                    << "orientation:" << screenOrientation << "speed:" << scrollSpeed << "invert:" << invertScroll;
+                    << "orientation:" << screenOrientation << "scale:" << yScrollScale << "invert:" << invertScroll;
           }
 
           if (targetWidget) {
@@ -1128,8 +1128,9 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
     command << "--log-level" << logLevel;
     command << "--screen-width" << QString::number(screenWidth);
     command << "--screen-height" << QString::number(screenHeight);
-    command << "--yscroll" << QString::number(scrollSpeed);
+    command << "--yscroll" << QString::number(yScrollScale, 'f', 1);
     command << "--invertScrollDirection" << (invertScroll ? "true" : "false");
+    command << "--yScrollScale" << QString::number(yScrollScale, 'f', 1); // For compatibility if upstream uses both
 
     // Print the command
     QString commandString = command.join(" ");
@@ -1150,7 +1151,7 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
     bridgeProcConfig.logLevel = logLevel;
     bridgeProcConfig.screenWidth = screenWidth;
     bridgeProcConfig.screenHeight = screenHeight;
-    bridgeProcConfig.scrollSpeed = scrollSpeed;
+    bridgeProcConfig.yScrollScale = yScrollScale;
     bridgeProcConfig.invertScroll = invertScroll;
 
     auto *process = new BridgeClientProcess(devicePath, this);

@@ -643,7 +643,7 @@ void BridgeClientConfigDialog::saveConfig()
   config.setValue(Settings::Bridge::DeviceName, deviceName());
 
   // Remove keys that are now managed solely by the device profile
-  config.remove(Settings::Client::ScrollSpeed);
+  config.remove(QStringLiteral("client/scrollSpeed"));
   config.remove(Settings::Client::InvertScrollDirection);
   if (m_deviceActiveProfileIndex >= 0 && m_profileCache.contains(m_deviceActiveProfileIndex)) {
     const auto &p = m_profileCache[m_deviceActiveProfileIndex];

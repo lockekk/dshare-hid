@@ -26,7 +26,7 @@ public:
     QString logLevel;
     int screenWidth;
     int screenHeight;
-    int scrollSpeed;
+    double yScrollScale;
     bool invertScroll;
   };
 
