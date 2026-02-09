@@ -1,6 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
+ * SPDX-FileCopyrightText: (C) 2025 - 2026 Deskflow Developers
  * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
@@ -706,10 +706,10 @@ void MSWindowsScreen::fakeMouseRelativeMove(int32_t dx, int32_t dy) const
   m_desks->fakeMouseRelativeMove(dx, dy);
 }
 
-void MSWindowsScreen::fakeMouseWheel(int32_t xDelta, int32_t yDelta) const
+void MSWindowsScreen::fakeMouseWheel(ScrollDelta delta) const
 {
-  auto adjustedDeltas = applyClientScrollModifier({xDelta, yDelta});
-  m_desks->fakeMouseWheel(adjustedDeltas.xDelta, adjustedDeltas.yDelta);
+  delta = applyScrollModifier(delta);
+  m_desks->fakeMouseWheel(delta.x, delta.y);
 }
 
 void MSWindowsScreen::updateKeys()

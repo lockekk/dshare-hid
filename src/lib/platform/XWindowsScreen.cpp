@@ -1,6 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
+ * SPDX-FileCopyrightText: (C) 2025 - 2026 Deskflow Developers
  * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
@@ -784,23 +784,23 @@ void XWindowsScreen::fakeMouseRelativeMove(int32_t dx, int32_t dy) const
   XFlush(m_display);
 }
 
-void XWindowsScreen::fakeMouseWheel(int32_t, int32_t yDelta) const
+void XWindowsScreen::fakeMouseWheel(ScrollDelta delta) const
 {
   // XXX -- support x-axis scrolling
-  if (yDelta == 0) {
+  if (delta.y == 0) {
     return;
   }
 
-  yDelta = applyClientScrollModifier({0, yDelta}).yDelta;
+  delta = applyScrollModifier(delta);
 
   // choose button depending on rotation direction
-  const unsigned int xButton = mapButtonToX(yDelta >= 0 ? kX11ScrollWheelUp : kX11ScrollWheelDown);
+  const unsigned int xButton = mapButtonToX(delta.y >= 0 ? kX11ScrollWheelUp : kX11ScrollWheelDown);
   if (xButton == 0) {
     // If we get here, then the XServer does not support the scroll
     // wheel buttons, so send PageUp/PageDown keystrokes instead.
     // Patch by Tom Chadwick.
     KeyCode keycode = 0;
-    if (yDelta >= 0) {
+    if (delta.y >= 0) {
       keycode = XKeysymToKeycode(m_display, XK_Page_Up);
     } else {
       keycode = XKeysymToKeycode(m_display, XK_Page_Down);
@@ -813,15 +813,15 @@ void XWindowsScreen::fakeMouseWheel(int32_t, int32_t yDelta) const
   }
 
   // now use absolute value of delta
-  if (yDelta < 0) {
-    yDelta = -yDelta;
+  if (delta.y < 0) {
+    delta.y = -delta.y;
   }
 
   // Delta for a "click"
   static const auto s_mouseDelta = 120;
 
   // send as many clicks as necessary
-  for (; yDelta >= 0; yDelta -= s_mouseDelta) {
+  for (; delta.y >= 0; delta.y -= s_mouseDelta) {
     XTestFakeButtonEvent(m_display, xButton, True, CurrentTime);
     XTestFakeButtonEvent(m_display, xButton, False, CurrentTime);
   }
