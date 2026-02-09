@@ -34,15 +34,18 @@ if(WIN32)
     ${libs}
     Qt6::Core)
 
-  # The daemon is intentionally removed from the MSI for this project.
-  # install(
-  #   TARGETS ${target}
-  #   RUNTIME_DEPENDENCY_SET daemonDeps
-  #   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-  # )
-  # install(RUNTIME_DEPENDENCY_SET daemonDeps
-  #   PRE_EXCLUDE_REGEXES ${WIN32_PRE_EXCLUDE_REGEXES}
-  #   POST_EXCLUDE_REGEXES ${WIN32_POST_EXCLUDE_REGEXES}
-  #   RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  # )
+  # Only install the daemon if specifically requested (not included in default dshare-hid MSI)
+  option(INSTALL_DAEMON "Install the daemon executable" OFF)
+  if(INSTALL_DAEMON)
+    install(
+      TARGETS ${target}
+      RUNTIME_DEPENDENCY_SET daemonDeps
+      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    )
+    install(RUNTIME_DEPENDENCY_SET daemonDeps
+      PRE_EXCLUDE_REGEXES ${WIN32_PRE_EXCLUDE_REGEXES}
+      POST_EXCLUDE_REGEXES ${WIN32_POST_EXCLUDE_REGEXES}
+      RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    )
+  endif()
 endif()
