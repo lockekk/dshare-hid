@@ -78,6 +78,11 @@ public:
   void setSequenceNumber(uint32_t) override = 0;
   bool isPrimary() const override = 0;
 
+  virtual ScrollDelta applyClientScrollModifier(const ScrollDelta rawDelta) const
+  {
+    return rawDelta;
+  }
+
 protected:
   //! Update mouse buttons
   /*!

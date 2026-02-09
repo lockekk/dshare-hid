@@ -70,6 +70,8 @@ The following files were modified in-place. The modification usually involves re
     *   Updated `HOMEPAGE_URL` to `https://github.com/lockekk/dshare-hid`.
 *   **`src/lib/common/CMakeLists.txt`**: Updated library definitions if applicable.
 *   **`translations/CMakeLists.txt`**: Updated to generate `dshare-hid_*.qm` files instead of `deskflow_*.qm`.
+*   **`src/apps/deskflow-daemon/CMakeLists.txt`**:
+    *   Wrapped `install()` commands in `if(INSTALL_DAEMON)` block (default `OFF`) to exclude the daemon from the MSI installation.
 *   **`src/lib/gui/CMakeLists.user.cmake`**: References to new icon paths.
 
 ### Core Logic & Constants
@@ -189,3 +191,9 @@ Use this table to identify which rebranded file corresponds to an upstream file 
     1.  **POST-MERGE SWEEP**: Always run a grep for "Deskflow" in the source code after a merge.
     2.  **Restore Identity**: Ensure `daemonName()` returns "DShare-HID Client/Server" (Windows) and "dshare-hid-client/server" (Unix).
     3.  **Check Titles**: Ensure window titles and tray icons continue to use the **DShare-HID** constants.
+### Scenario I: Daemon Exclusion from MSI (Windows)
+*   **Issue**: Upstream's `src/apps/deskflow-daemon/CMakeLists.txt` automatically installs the daemon, which includes it in the MSI. In this project, the daemon is intentionally excluded from the MSI.
+*   **Git Behavior**: Merge conflicts in `src/apps/deskflow-daemon/CMakeLists.txt` when upstream updates `install()` logic.
+*   **Resolution**:
+    1.  **Keep the `INSTALL_DAEMON` Toggle**: Ensure the `install()` commands remain wrapped in the `if(INSTALL_DAEMON)` conditional.
+    2.  **Maintain Defaults**: Do not accidentally enable `INSTALL_DAEMON` or revert to unconditional `install()` calls during conflict resolution.

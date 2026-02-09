@@ -214,15 +214,14 @@ void BridgePlatformScreen::fakeMouseRelativeMove(int32_t dx, int32_t dy) const
   }
 }
 
-void BridgePlatformScreen::fakeMouseWheel(int32_t, int32_t yDelta) const
+void BridgePlatformScreen::fakeMouseWheel(ScrollDelta delta) const
 {
-  if (yDelta == 0) {
+  if (delta.y == 0) {
     return;
   }
 
-  const ScrollDelta rawDelta = {0, yDelta};
-  const ScrollDelta correctedDelta = applyClientScrollModifier(rawDelta);
-  yDelta = correctedDelta.yDelta;
+  const ScrollDelta correctedDelta = applyClientScrollModifier(delta);
+  int32_t yDelta = correctedDelta.y;
 
   int32_t speed = (m_scrollSpeed > 0) ? m_scrollSpeed : 120;
   m_wheelAccumulatorY += (yDelta * speed);
@@ -514,14 +513,14 @@ void BridgePlatformScreen::screensaver(bool activate)
 {
 }
 
-PlatformScreen::ScrollDelta BridgePlatformScreen::applyClientScrollModifier(const ScrollDelta rawDelta) const
+ScrollDelta BridgePlatformScreen::applyClientScrollModifier(const ScrollDelta rawDelta) const
 {
   ScrollDelta correctedDelta = rawDelta;
 
   // Decoding scale: 0 -> 0.1, otherwise value / 10.0
   double scale = (m_scrollScaleProfile == 0) ? 0.1 : static_cast<double>(m_scrollScaleProfile) / 10.0;
 
-  correctedDelta.yDelta *= m_scrollInvertProfile ? -scale : scale;
+  correctedDelta.y = static_cast<int32_t>(m_scrollInvertProfile ? correctedDelta.y * -scale : correctedDelta.y * scale);
 
   return correctedDelta;
 }
