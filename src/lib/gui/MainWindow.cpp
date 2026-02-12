@@ -913,7 +913,7 @@ void MainWindow::setTrayIcon()
     if (deskflow::platform::isMac())
       m_trayIcon->setIcon(QIcon::fromTheme(themeIcon));
     else
-      m_trayIcon->setIcon(QIcon(fallbackPath.arg(QStringLiteral("deskflow"), QStringLiteral("dark"), themeIcon)));
+      m_trayIcon->setIcon(QIcon(fallbackPath.arg(kAppId, QStringLiteral("dark"), themeIcon)));
     return;
   }
 
@@ -1337,12 +1337,11 @@ void MainWindow::setHostName()
     if (existingScreen) {
       body = tr("Screen name already exists");
     } else {
-      body =
-          tr("The name you have chosen is invalid.\n\n"
-             "Valid names:\n"
-             "• Use letters and numbers\n"
-             "• May also use _ or -\n"
-             "• Are between 1 and 255 characters");
+      body = tr("The name you have chosen is invalid.\n\n"
+                "Valid names:\n"
+                "• Use letters and numbers\n"
+                "• May also use _ or -\n"
+                "• Are between 1 and 255 characters");
     }
     QMessageBox::information(this, title, body);
     return;

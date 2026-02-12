@@ -74,9 +74,9 @@ endif()
 get_property(PROJECT_TESTS GLOBAL PROPERTY ${CMAKE_PROJECT_NAME}_tests)
 
 if(APPLE)
-  set(guiApp Deskflow)
+  set(guiApp DShare-HID)
 else()
-  set(guiApp deskflow)
+  set(guiApp dshare-hid)
 endif()
 
 option(SKIP_BUILD_TESTS "Skip build time test" OFF)

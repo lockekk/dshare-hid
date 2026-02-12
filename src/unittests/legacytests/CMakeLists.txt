@@ -60,7 +60,7 @@ macro(set_sources)
     list(APPEND sources ${headers})
   endif()
 
-  list(APPEND sources ${PROJECT_SOURCE_DIR}/src/apps/res/deskflow.qrc)
+  list(APPEND sources ${PROJECT_SOURCE_DIR}/src/apps/res/dshare-hid.qrc)
 
   replace_platform_sources()
   replace_arch_sources()

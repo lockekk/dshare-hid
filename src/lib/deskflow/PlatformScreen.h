@@ -106,18 +106,6 @@ protected:
    */
   static std::string sidesMaskToString(uint32_t sides);
 
-private:
-  /*!
-   * \brief m_clientScrollDirection
-   * This member contains client scroll direction.
-   * This member is used only on client side.
-   */
-  bool m_invertScrollDirection = false;
-
-  /**
-   * @brief m_yScrollScale
-   * This member is used to scale the y scroll speed
-   * It is only used on the client side
-   */
-  double m_yScrollScale = 1.0;
+  // Delta for a "click"
+  static const auto s_scrollDelta = 120;
 };

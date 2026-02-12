@@ -197,3 +197,10 @@ Use this table to identify which rebranded file corresponds to an upstream file 
 *   **Resolution**:
     1.  **Keep the `INSTALL_DAEMON` Toggle**: Ensure the `install()` commands remain wrapped in the `if(INSTALL_DAEMON)` conditional.
     2.  **Maintain Defaults**: Do not accidentally enable `INSTALL_DAEMON` or revert to unconditional `install()` calls during conflict resolution.
+
+### Scenario J: Upstream CI/CD Workflows (.github)
+*   **Issue**: Upstream adds or modifies files in the `.github/` directory (workflows, actions, templates).
+*   **Resolution**:
+    1.  **Discard All Changes**: This repository does not use upstream GitHub workflows.
+    2.  **Delete the Directory**: If Git re-introduces the `.github` directory during a merge, delete it entirely.
+    3.  **Rationale**: Rebranding and custom build logic (e.g., ESP32 HID tools) require a divergent deployment strategy that is incompatible with upstream CI.
