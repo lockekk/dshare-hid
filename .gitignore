@@ -60,3 +60,5 @@ build_flatpak
 # Ai helperfilers
 **/[cC]laude.[mM][dD]
 **/CLAUDE.[mM][dD]
+
+__pycache__
