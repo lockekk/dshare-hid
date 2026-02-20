@@ -132,6 +132,53 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>ClientConfigDialog</name>
+    <message>
+        <source>Client Configuration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use server&apos;s keyboard language on this computer</source>
+        <translation type="unfinished">Usa la lingua della tastiera del server su questo computer</translation>
+    </message>
+    <message>
+        <source>Scroll Modifiers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invert</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Scale</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Horizontal Scroll</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Vertical Scroll</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close and save changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close and forget changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset to stored values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset to default values</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>DeskflowHidExtension</name>
     <message>
         <source>Bridge Client Logs</source>
@@ -370,11 +417,11 @@ Vuoi connetterti al server?
     </message>
     <message>
         <source>Server IP or hostname:</source>
-        <translation>IP o hostname del server:</translation>
+        <translation type="vanished">IP o hostname del server:</translation>
     </message>
     <message>
         <source>Hostname or IP address of the server computer.</source>
-        <translation>Hostname o indirizzo IP del computer server.</translation>
+        <translation type="vanished">Hostname o indirizzo IP del computer server.</translation>
     </message>
     <message>
         <source>&amp;Start</source>
@@ -678,6 +725,18 @@ Nomi validi:
     <message>
         <source>Another DShare-HID server instance is already running in the background. Please close the existing server before starting a new one.</source>
         <translation>Un&apos;altra istanza server è in esecuzione. Chiudila prima di avviarne una nuova.</translation>
+    </message>
+    <message>
+        <source>&amp;Configure Client</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connect to:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;Hostname or IP address of the server computer.&lt;br/&gt;May contain a comma seperated list.&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1253,19 +1312,19 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>&amp;Regular</source>
-        <translation>&amp;Regolare</translation>
+        <translation type="vanished">&amp;Regolare</translation>
     </message>
     <message>
         <source>Client mode</source>
-        <translation>Modalità client</translation>
+        <translation type="vanished">Modalità client</translation>
     </message>
     <message>
         <source>Use server&apos;s keyboard language on this computer</source>
-        <translation>Usa la lingua della tastiera del server su questo computer</translation>
+        <translation type="vanished">Usa la lingua della tastiera del server su questo computer</translation>
     </message>
     <message>
         <source>App</source>
-        <translation>App</translation>
+        <translation type="vanished">App</translation>
     </message>
     <message>
         <source>Check for updates on startup</source>
@@ -1321,7 +1380,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Networking</source>
-        <translation>Rete</translation>
+        <translation type="vanished">Rete</translation>
     </message>
     <message>
         <source>Port</source>
@@ -1333,7 +1392,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Logs</source>
-        <translation>Log</translation>
+        <translation type="vanished">Log</translation>
     </message>
     <message>
         <source>Log path</source>
@@ -1424,6 +1483,22 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation>Output di debug dettagliato</translation>
     </message>
     <message>
+        <source>Close and save changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close and forget changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset to stored values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset to default values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>TLS Certificate Regenerated</source>
         <translation>Certificato TLS rigenerato</translation>
     </message>
@@ -1469,11 +1544,23 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Invert vertical scroll direction on this computer</source>
-        <translation type="unfinished">Inverti la direzione dello scorrimento verticale su questo computer</translation>
+        <translation type="obsolete">Inverti la direzione dello scorrimento verticale su questo computer</translation>
     </message>
     <message>
         <source>Vertical Scroll Scale</source>
-        <translation type="unfinished">Scala di scorrimento verticale</translation>
+        <translation type="obsolete">Scala di scorrimento verticale</translation>
+    </message>
+    <message>
+        <source>&amp;General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Logs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Network</source>
+        <translation type="unfinished">&amp;Rete</translation>
     </message>
 </context>
 <context>

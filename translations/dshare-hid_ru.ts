@@ -134,6 +134,53 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>ClientConfigDialog</name>
+    <message>
+        <source>Client Configuration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use server&apos;s keyboard language on this computer</source>
+        <translation type="unfinished">Использовать языковую раскладку сервера на этом компьютере</translation>
+    </message>
+    <message>
+        <source>Scroll Modifiers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invert</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Scale</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Horizontal Scroll</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Vertical Scroll</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close and save changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close and forget changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset to stored values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset to default values</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>DeskflowHidExtension</name>
     <message>
         <source>Bridge Client Logs</source>
@@ -382,11 +429,11 @@ Do you want to connect to the server?
     </message>
     <message>
         <source>Server IP or hostname:</source>
-        <translation>Ip сервера или имя хоста:</translation>
+        <translation type="vanished">Ip сервера или имя хоста:</translation>
     </message>
     <message>
         <source>Hostname or IP address of the server computer.</source>
-        <translation>Имя хоста или IP адресс сервера.</translation>
+        <translation type="vanished">Имя хоста или IP адресс сервера.</translation>
     </message>
     <message>
         <source>&amp;Start</source>
@@ -681,6 +728,18 @@ Valid names:
     <message>
         <source>Another DShare-HID server instance is already running in the background. Please close the existing server before starting a new one.</source>
         <translation>Другой экземпляр сервера DShare-HID уже запущен в фоновом режиме. Пожалуйста, закройте существующий сервер перед запуском нового.</translation>
+    </message>
+    <message>
+        <source>&amp;Configure Client</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connect to:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;Hostname or IP address of the server computer.&lt;br/&gt;May contain a comma seperated list.&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1257,16 +1316,16 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>&amp;Regular</source>
-        <translation>&amp;Основные</translation>
+        <translation type="vanished">&amp;Основные</translation>
     </message>
     <message>
         <source>Client mode</source>
         <translatorcomment>режим - mode</translatorcomment>
-        <translation>Режим клиента</translation>
+        <translation type="vanished">Режим клиента</translation>
     </message>
     <message>
         <source>Use server&apos;s keyboard language on this computer</source>
-        <translation>Использовать языковую раскладку сервера на этом компьютере</translation>
+        <translation type="vanished">Использовать языковую раскладку сервера на этом компьютере</translation>
     </message>
     <message>
         <source>Invert scroll direction on this computer</source>
@@ -1278,7 +1337,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>App</source>
-        <translation>Приложение</translation>
+        <translation type="vanished">Приложение</translation>
     </message>
     <message>
         <source>Check for updates on startup</source>
@@ -1334,7 +1393,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Networking</source>
-        <translation>Сеть</translation>
+        <translation type="vanished">Сеть</translation>
     </message>
     <message>
         <source>Port</source>
@@ -1346,7 +1405,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Logs</source>
-        <translation>Логи</translation>
+        <translation type="vanished">Логи</translation>
     </message>
     <message>
         <source>Level</source>
@@ -1469,6 +1528,22 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation>Подробный отладочный вывод</translation>
     </message>
     <message>
+        <source>Close and save changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close and forget changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset to stored values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset to default values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Requires the wl-clipboard package&lt;/p&gt;&lt;p&gt;When using wl-clipboard v2.2.1, there is a focus stealing bug that may make Deskflow harder to use. This has been fixed when using the wl-clipboard master branch, unless your Compositor lacks wlroots-data-control protocol support.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Для этого необходим пакет wl-clipboard.&lt;/p&gt;&lt;p&gt;Когда ты используешь wl-clipboard v2.2.1. Возникает ошибка перехвата фокуса, которая мешает использовать deskflowю. Это фиксется если использовать wl-clipboard из ветки master, если только ваш Compositor не поддерживает протокол wlroots-data-control.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
@@ -1481,12 +1556,16 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation type="unfinished">Включить номер версии в заголовок окна</translation>
     </message>
     <message>
-        <source>Invert vertical scroll direction on this computer</source>
+        <source>&amp;General</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Vertical Scroll Scale</source>
+        <source>&amp;Logs</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Network</source>
+        <translation type="unfinished">&amp;Сеть</translation>
     </message>
 </context>
 <context>
