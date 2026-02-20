@@ -28,6 +28,7 @@
 
 #include "dialogs/AboutDialog.h"
 #include "dialogs/BridgeClientConfigDialog.h"
+#include "dialogs/ClientConfigDialog.h"
 #include "dialogs/FingerprintDialog.h"
 #include "dialogs/ServerConfigDialog.h"
 #include "dialogs/SettingsDialog.h"
@@ -193,8 +194,6 @@ MainWindow::MainWindow()
   m_deskflowHidExtension = std::make_unique<DeskflowHidExtension>(this);
 
   updateScreenName();
-  applyConfig();
-  restoreWindow();
 
   qDebug().noquote() << "active settings path:" << Settings::settingsPath();
 
@@ -213,6 +212,9 @@ MainWindow::MainWindow()
       m_fingerprint = {QCryptographicHash::Sha256, TlsUtility::certFingerprint()};
     }
   }
+
+  applyConfig();
+  restoreWindow();
 }
 MainWindow::~MainWindow()
 {
@@ -269,6 +271,7 @@ void MainWindow::setupControls()
 #endif
 
   ui->btnConfigureServer->setIcon(QIcon::fromTheme(QStringLiteral("configure")));
+  ui->btnConfigureClient->setIcon(QIcon::fromTheme(QStringLiteral("configure")));
 
   if (Settings::value(Settings::Core::LastVersion).toString() != kVersion) {
     Settings::setValue(Settings::Core::LastVersion, kVersion);
@@ -323,9 +326,6 @@ void MainWindow::setupControls()
 
   ui->rbModeClient->setChecked(coreMode == Settings::CoreMode::Client);
   ui->rbModeServer->setChecked(coreMode == Settings::CoreMode::Server);
-
-  if (coreMode != Settings::CoreMode::None)
-    updateModeControls(coreMode == Settings::CoreMode::Server);
 
   ui->lineEditName->setValidator(new QRegularExpressionValidator(m_nameRegEx, this));
   ui->lineEditName->setVisible(false);
@@ -434,6 +434,7 @@ void MainWindow::connectSlots()
 
   connect(ui->btnSaveServerConfig, &QPushButton::clicked, this, &MainWindow::saveServerConfig);
   connect(ui->btnConfigureServer, &QPushButton::clicked, this, [this] { showConfigureServer(""); });
+  connect(ui->btnConfigureClient, &QPushButton::clicked, this, [this] { showConfigureClient(); });
   connect(ui->lblComputerName, &QLabel::linkActivated, this, &MainWindow::openSettings);
   connect(m_btnFingerprint, &QPushButton::clicked, this, &MainWindow::showMyFingerprint);
 
@@ -624,7 +625,7 @@ void MainWindow::openGetNewVersionUrl() const
 
 void MainWindow::openSettings()
 {
-  auto dialog = SettingsDialog(this, m_serverConfig, m_coreProcess);
+  auto dialog = SettingsDialog(this, m_serverConfig);
 
   if (dialog.exec() == QDialog::Accepted) {
     Settings::save();
@@ -655,42 +656,53 @@ void MainWindow::showMyFingerprint()
   fingerprintDialog.exec();
 }
 
-void MainWindow::coreModeToggled()
+void MainWindow::coreModeToggled(bool checked)
 {
-  auto serverMode = ui->rbModeServer->isChecked();
+  // this method is called when rbClient or rbServer toggles
+  // with both being in the same group one must be turned on if the other is turned off
+  // only react to toggle on to avoid calling everything twice when the user switches modes
+  if (!checked)
+    return;
 
-  const auto mode = serverMode ? QStringLiteral("server enabled") : QStringLiteral("client enabled");
-  qDebug() << mode;
+  Settings::CoreMode mode = Settings::CoreMode::None;
 
-  const auto coreMode = serverMode ? Settings::CoreMode::Server : Settings::CoreMode::Client;
-  Settings::setValue(Settings::Core::CoreMode, coreMode);
+  if (ui->rbModeServer->isChecked())
+    mode = Settings::CoreMode::Server;
+  if (ui->rbModeClient->isChecked())
+    mode = Settings::CoreMode::Client;
+
+  qDebug() << QStringLiteral("change mode to: %1").arg(QVariant::fromValue(mode).toString());
+
+  if (m_coreProcess.isStarted() && m_coreProcess.mode() != mode)
+    m_coreProcess.stop();
+  m_coreProcess.setMode(mode);
+
+  Settings::setValue(Settings::Core::CoreMode, mode);
   Settings::save();
-  updateModeControls(serverMode);
+
+  updateModeControls();
 }
 
-void MainWindow::updateModeControls(bool serverMode)
+void MainWindow::updateModeControls()
 {
-  ui->serverOptions->setVisible(serverMode);
-  ui->clientOptions->setVisible(!serverMode);
-  ui->lblNoMode->setVisible(false);
-  ui->btnToggleCore->setEnabled(true);
-  m_actionStartCore->setEnabled(true);
-  auto expectedCoreMode = serverMode ? Settings::CoreMode::Server : Settings::CoreMode::Client;
-  if (m_coreProcess.isStarted() && m_coreProcess.mode() != expectedCoreMode)
-    m_coreProcess.stop();
-  m_coreProcess.setMode(expectedCoreMode);
-  updateModeControlLabels();
+  const auto mode = m_coreProcess.mode();
+  const bool isServer = mode == Settings::CoreMode::Server;
+  const bool isClient = mode == Settings::CoreMode::Client;
+  ui->serverOptions->setVisible(isServer);
+  ui->lblIpAddresses->setVisible(isServer);
+  ui->clientOptions->setVisible(isClient);
+  ui->lblNoMode->setVisible(!isServer && !isClient);
+  toggleCanRunCore((isServer || isClient) && (isClient && !ui->lineHostname->text().isEmpty()) || isServer);
 
-  toggleCanRunCore((!serverMode && !ui->lineHostname->text().isEmpty()) || serverMode);
-
-  ui->lblIpAddresses->setVisible(serverMode);
-  if (serverMode) {
-    // Initialize network monitoring
+  if (isServer) {
     updateNetworkInfo();
     m_networkMonitor->startMonitoring();
   } else {
     m_networkMonitor->stopMonitoring();
   }
+
+  if (isServer || isClient)
+    updateModeControlLabels();
 }
 
 void MainWindow::updateModeControlLabels()
@@ -885,11 +897,7 @@ void MainWindow::applyConfig()
     m_serverStartSuggestedIP = ip;
   }
 
-  const auto coreMode = Settings::value(Settings::Core::CoreMode).value<Settings::CoreMode>();
-
-  if (coreMode == Settings::CoreMode::None)
-    return;
-  updateModeControls(coreMode == Settings::CoreMode::Server);
+  coreModeToggled(true);
 }
 
 void MainWindow::saveSettings() const
@@ -1273,6 +1281,14 @@ void MainWindow::showConfigureServer(const QString &message)
   }
 }
 
+void MainWindow::showConfigureClient()
+{
+  ClientConfigDialog dialog(this);
+  if ((dialog.exec() == QDialog::Accepted) && m_coreProcess.isStarted()) {
+    m_coreProcess.restart();
+  }
+}
+
 void MainWindow::secureSocket(bool secureSocket)
 {
   m_secureSocket = secureSocket;
@@ -1407,10 +1423,11 @@ void MainWindow::daemonIpcClientConnectionFailed()
 
 void MainWindow::toggleCanRunCore(bool enableButtons)
 {
+  const bool isStarted = m_coreProcess.isStarted();
   ui->btnToggleCore->setEnabled(enableButtons);
-  ui->btnRestartCore->setEnabled(enableButtons && m_coreProcess.isStarted());
+  ui->btnRestartCore->setEnabled(enableButtons && isStarted);
   m_actionStartCore->setEnabled(enableButtons);
-  m_actionStopCore->setEnabled(enableButtons);
+  m_actionStopCore->setEnabled(enableButtons && isStarted);
 }
 
 void MainWindow::remoteHostChanged(const QString &newRemoteHost)
