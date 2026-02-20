@@ -160,6 +160,53 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>ClientConfigDialog</name>
+    <message>
+        <source>Client Configuration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use server&apos;s keyboard language on this computer</source>
+        <translation type="unfinished">이 컴퓨터에서 서버의 키보드 언어 사용</translation>
+    </message>
+    <message>
+        <source>Scroll Modifiers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invert</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Scale</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Horizontal Scroll</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Vertical Scroll</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close and save changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close and forget changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset to stored values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset to default values</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>DeskflowHidExtension</name>
     <message>
         <source>Bridge Client Logs</source>
@@ -413,11 +460,11 @@ Do you want to connect to the server?
     </message>
     <message>
         <source>Server IP or hostname:</source>
-        <translation>서버 IP 또는 호스트 이름:</translation>
+        <translation type="vanished">서버 IP 또는 호스트 이름:</translation>
     </message>
     <message>
         <source>Hostname or IP address of the server computer.</source>
-        <translation>서버 컴퓨터의 호스트 이름 또는 IP 주소입니다.</translation>
+        <translation type="vanished">서버 컴퓨터의 호스트 이름 또는 IP 주소입니다.</translation>
     </message>
     <message>
         <source>&amp;Start</source>
@@ -708,6 +755,18 @@ Valid names:
     </message>
     <message>
         <source>Bridge Clients</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Configure Client</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connect to:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;Hostname or IP address of the server computer.&lt;br/&gt;May contain a comma seperated list.&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1301,19 +1360,19 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>&amp;Regular</source>
-        <translation>일반(&amp;R)</translation>
+        <translation type="vanished">일반(&amp;R)</translation>
     </message>
     <message>
         <source>Client mode</source>
-        <translation>클라이언트 모드</translation>
+        <translation type="vanished">클라이언트 모드</translation>
     </message>
     <message>
         <source>Use server&apos;s keyboard language on this computer</source>
-        <translation>이 컴퓨터에서 서버의 키보드 언어 사용</translation>
+        <translation type="vanished">이 컴퓨터에서 서버의 키보드 언어 사용</translation>
     </message>
     <message>
         <source>App</source>
-        <translation>앱</translation>
+        <translation type="vanished">앱</translation>
     </message>
     <message>
         <source>Check for updates on startup</source>
@@ -1369,7 +1428,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Networking</source>
-        <translation>네트워크</translation>
+        <translation type="vanished">네트워크</translation>
     </message>
     <message>
         <source>Port</source>
@@ -1381,7 +1440,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Logs</source>
-        <translation>로그</translation>
+        <translation type="vanished">로그</translation>
     </message>
     <message>
         <source>Level</source>
@@ -1500,6 +1559,22 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation>상세 디버그 출력</translation>
     </message>
     <message>
+        <source>Close and save changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close and forget changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset to stored values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset to default values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Enable wl-clipboard support</source>
         <translation>wl-clipboard 지원 사용</translation>
     </message>
@@ -1517,11 +1592,23 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Invert vertical scroll direction on this computer</source>
-        <translation type="unfinished">이 컴퓨터에서 세로 스크롤 방향을 반전합니다</translation>
+        <translation type="obsolete">이 컴퓨터에서 세로 스크롤 방향을 반전합니다</translation>
     </message>
     <message>
         <source>Vertical Scroll Scale</source>
-        <translation type="unfinished">수직 스크롤 스케일</translation>
+        <translation type="obsolete">수직 스크롤 스케일</translation>
+    </message>
+    <message>
+        <source>&amp;General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Logs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Network</source>
+        <translation type="unfinished">네트워크(&amp;N)</translation>
     </message>
 </context>
 <context>

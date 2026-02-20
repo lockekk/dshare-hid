@@ -132,6 +132,53 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>ClientConfigDialog</name>
+    <message>
+        <source>Client Configuration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use server&apos;s keyboard language on this computer</source>
+        <translation type="unfinished">在此计算机上使用服务器的键盘语言</translation>
+    </message>
+    <message>
+        <source>Scroll Modifiers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invert</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Scale</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Horizontal Scroll</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Vertical Scroll</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close and save changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close and forget changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset to stored values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset to default values</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>DeskflowHidExtension</name>
     <message>
         <source>Bridge Client Logs</source>
@@ -379,11 +426,11 @@ Do you want to connect to the server?
     </message>
     <message>
         <source>Server IP or hostname:</source>
-        <translation>服务器 IP 或主机名：</translation>
+        <translation type="vanished">服务器 IP 或主机名：</translation>
     </message>
     <message>
         <source>Hostname or IP address of the server computer.</source>
-        <translation>服务器计算机的主机名或 IP 地址。</translation>
+        <translation type="vanished">服务器计算机的主机名或 IP 地址。</translation>
     </message>
     <message>
         <source>&amp;Start</source>
@@ -676,6 +723,18 @@ Valid names:
     <message>
         <source>Firmware</source>
         <translation>固件</translation>
+    </message>
+    <message>
+        <source>&amp;Configure Client</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connect to:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;Hostname or IP address of the server computer.&lt;br/&gt;May contain a comma seperated list.&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1253,19 +1312,19 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>&amp;Regular</source>
-        <translation>常规(&amp;R)</translation>
+        <translation type="vanished">常规(&amp;R)</translation>
     </message>
     <message>
         <source>Client mode</source>
-        <translation>客户端模式</translation>
+        <translation type="vanished">客户端模式</translation>
     </message>
     <message>
         <source>Use server&apos;s keyboard language on this computer</source>
-        <translation>在此计算机上使用服务器的键盘语言</translation>
+        <translation type="vanished">在此计算机上使用服务器的键盘语言</translation>
     </message>
     <message>
         <source>App</source>
-        <translation>应用程序</translation>
+        <translation type="vanished">应用程序</translation>
     </message>
     <message>
         <source>Check for updates on startup</source>
@@ -1321,7 +1380,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Networking</source>
-        <translation>网络</translation>
+        <translation type="vanished">网络</translation>
     </message>
     <message>
         <source>Port</source>
@@ -1333,7 +1392,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Logs</source>
-        <translation>日志</translation>
+        <translation type="vanished">日志</translation>
     </message>
     <message>
         <source>Level</source>
@@ -1452,6 +1511,22 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation>详细调试输出</translation>
     </message>
     <message>
+        <source>Close and save changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close and forget changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset to stored values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset to default values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Enable wl-clipboard support</source>
         <translation>启用 wl-clipboard 支持</translation>
     </message>
@@ -1469,11 +1544,23 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Invert vertical scroll direction on this computer</source>
-        <translation type="unfinished">在此计算机上反转垂直滚动方向</translation>
+        <translation type="obsolete">在此计算机上反转垂直滚动方向</translation>
     </message>
     <message>
         <source>Vertical Scroll Scale</source>
-        <translation type="unfinished">垂直滚动比例</translation>
+        <translation type="obsolete">垂直滚动比例</translation>
+    </message>
+    <message>
+        <source>&amp;General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Logs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Network</source>
+        <translation type="unfinished">网络(&amp;N)</translation>
     </message>
 </context>
 <context>

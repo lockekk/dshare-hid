@@ -204,3 +204,10 @@ Use this table to identify which rebranded file corresponds to an upstream file 
     1.  **Discard All Changes**: This repository does not use upstream GitHub workflows.
     2.  **Delete the Directory**: If Git re-introduces the `.github` directory during a merge, delete it entirely.
     3.  **Rationale**: Rebranding and custom build logic (e.g., ESP32 HID tools) require a divergent deployment strategy that is incompatible with upstream CI.
+
+### Scenario K: Linux Deployment Files (metainfo.xml)
+*   **Issue**: Upstream modifies `deploy/linux/org.deskflow.deskflow.metainfo.xml` with new release notes or translations. Because we use a rebranded file, Git sees the upstream file as deleted/modified and creates a conflict.
+*   **Resolution**:
+    1.  **Do NOT blindly discard**: Check the diff of the upstream file (`git diff upstream-master^1 upstream-master deploy/linux/org.deskflow.deskflow.metainfo.xml`) to identify what was added (e.g., new `<release>` blocks, new `<summary xml:lang="...">` nodes).
+    2.  **Port the changes**: Manually copy the new release descriptions and translation tags from the upstream `org.*` file into our local `deploy/linux/io.github.lockekk.dshare-hid.metainfo.xml`.
+    3.  **Discard the original**: Once the changes are safely ported over to the rebranded file, discard the re-introduced upstream `org.deskflow.deskflow.metainfo.xml` by running `git rm`.

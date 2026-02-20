@@ -132,6 +132,53 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>ClientConfigDialog</name>
+    <message>
+        <source>Client Configuration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use server&apos;s keyboard language on this computer</source>
+        <translation type="unfinished">Utilice el idioma del teclado del servidor en esta computadora</translation>
+    </message>
+    <message>
+        <source>Scroll Modifiers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invert</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Scale</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Horizontal Scroll</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Vertical Scroll</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close and save changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close and forget changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset to stored values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset to default values</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>DeskflowHidExtension</name>
     <message>
         <source>Bridge Client Logs</source>
@@ -376,11 +423,11 @@ Do you want to connect to the server?
     </message>
     <message>
         <source>Server IP or hostname:</source>
-        <translation type="unfinished">IP del servidor o nombre de host:</translation>
+        <translation type="obsolete">IP del servidor o nombre de host:</translation>
     </message>
     <message>
         <source>Hostname or IP address of the server computer.</source>
-        <translation type="unfinished">Nombre de host o dirección IP del ordenador servidor.</translation>
+        <translation type="obsolete">Nombre de host o dirección IP del ordenador servidor.</translation>
     </message>
     <message>
         <source>&amp;Start</source>
@@ -678,6 +725,18 @@ Nombres válidos:
     <message>
         <source>Another DShare-HID server instance is already running in the background. Please close the existing server before starting a new one.</source>
         <translation>Ya se está ejecutando otra instancia del servidor DShare-HID en segundo plano. Por favor, cierre el servidor existente antes de iniciar uno nuevo.</translation>
+    </message>
+    <message>
+        <source>&amp;Configure Client</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connect to:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;Hostname or IP address of the server computer.&lt;br/&gt;May contain a comma seperated list.&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1253,19 +1312,19 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>&amp;Regular</source>
-        <translation type="unfinished">&amp;Regular</translation>
+        <translation type="obsolete">&amp;Regular</translation>
     </message>
     <message>
         <source>Client mode</source>
-        <translation type="unfinished">Modo cliente</translation>
+        <translation type="obsolete">Modo cliente</translation>
     </message>
     <message>
         <source>Use server&apos;s keyboard language on this computer</source>
-        <translation type="unfinished">Utilice el idioma del teclado del servidor en esta computadora</translation>
+        <translation type="obsolete">Utilice el idioma del teclado del servidor en esta computadora</translation>
     </message>
     <message>
         <source>App</source>
-        <translation type="unfinished">Aplicación</translation>
+        <translation type="obsolete">Aplicación</translation>
     </message>
     <message>
         <source>Check for updates on startup</source>
@@ -1321,7 +1380,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Networking</source>
-        <translation type="unfinished">Redes</translation>
+        <translation type="obsolete">Redes</translation>
     </message>
     <message>
         <source>Port</source>
@@ -1333,7 +1392,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Logs</source>
-        <translation type="unfinished">Registros</translation>
+        <translation type="obsolete">Registros</translation>
     </message>
     <message>
         <source>Log path</source>
@@ -1424,6 +1483,22 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation type="unfinished">Salida de depuración detallada</translation>
     </message>
     <message>
+        <source>Close and save changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close and forget changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset to stored values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset to default values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>TLS Certificate Regenerated</source>
         <translation type="unfinished">Certificado TLS regenerado</translation>
     </message>
@@ -1469,11 +1544,23 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Invert vertical scroll direction on this computer</source>
-        <translation type="unfinished">Invertir la dirección del desplazamiento vertical en este ordenador</translation>
+        <translation type="obsolete">Invertir la dirección del desplazamiento vertical en este ordenador</translation>
     </message>
     <message>
         <source>Vertical Scroll Scale</source>
-        <translation type="unfinished">Escala de desplazamiento vertical</translation>
+        <translation type="obsolete">Escala de desplazamiento vertical</translation>
+    </message>
+    <message>
+        <source>&amp;General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Logs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Network</source>
+        <translation type="unfinished">&amp;Red</translation>
     </message>
 </context>
 <context>

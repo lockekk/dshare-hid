@@ -132,6 +132,53 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>ClientConfigDialog</name>
+    <message>
+        <source>Client Configuration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use server&apos;s keyboard language on this computer</source>
+        <translation type="unfinished">サーバー側のキーボード言語をこのコンピューターで使用する</translation>
+    </message>
+    <message>
+        <source>Scroll Modifiers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invert</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Scale</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Horizontal Scroll</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Vertical Scroll</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close and save changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close and forget changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset to stored values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset to default values</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>DeskflowHidExtension</name>
     <message>
         <source>Bridge Client Logs</source>
@@ -380,11 +427,11 @@ Do you want to connect to the server?
     </message>
     <message>
         <source>Server IP or hostname:</source>
-        <translation>サーバーのIPアドレスかホスト名:</translation>
+        <translation type="vanished">サーバーのIPアドレスかホスト名:</translation>
     </message>
     <message>
         <source>Hostname or IP address of the server computer.</source>
-        <translation>サーバーのIPアドレスかホスト名</translation>
+        <translation type="vanished">サーバーのIPアドレスかホスト名</translation>
     </message>
     <message>
         <source>&amp;Start</source>
@@ -677,6 +724,18 @@ Valid names:
     <message>
         <source>Another DShare-HID server instance is already running in the background. Please close the existing server before starting a new one.</source>
         <translation>別の DShare-HID サーバーインスタンスがバックグラウンドで既に実行されています。新しいインスタンスを開始する前に、既存のサーバーを閉じてください。</translation>
+    </message>
+    <message>
+        <source>&amp;Configure Client</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connect to:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;Hostname or IP address of the server computer.&lt;br/&gt;May contain a comma seperated list.&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1254,19 +1313,19 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>&amp;Regular</source>
-        <translation>基本(&amp;R)</translation>
+        <translation type="vanished">基本(&amp;R)</translation>
     </message>
     <message>
         <source>Client mode</source>
-        <translation>クライアントモード</translation>
+        <translation type="vanished">クライアントモード</translation>
     </message>
     <message>
         <source>Use server&apos;s keyboard language on this computer</source>
-        <translation>サーバー側のキーボード言語をこのコンピューターで使用する</translation>
+        <translation type="vanished">サーバー側のキーボード言語をこのコンピューターで使用する</translation>
     </message>
     <message>
         <source>App</source>
-        <translation>アプリケーション</translation>
+        <translation type="vanished">アプリケーション</translation>
     </message>
     <message>
         <source>Check for updates on startup</source>
@@ -1322,7 +1381,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Networking</source>
-        <translation>ネットワーク</translation>
+        <translation type="vanished">ネットワーク</translation>
     </message>
     <message>
         <source>Port</source>
@@ -1334,7 +1393,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Logs</source>
-        <translation>ログ</translation>
+        <translation type="vanished">ログ</translation>
     </message>
     <message>
         <source>Level</source>
@@ -1453,6 +1512,22 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation>詳細なデバッグ出力</translation>
     </message>
     <message>
+        <source>Close and save changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close and forget changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset to stored values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset to default values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Enable wl-clipboard support</source>
         <translation>wl-clipboard によるクリップボード対応を有効にする</translation>
     </message>
@@ -1470,11 +1545,23 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Invert vertical scroll direction on this computer</source>
-        <translation type="unfinished">このコンピューターで垂直スクロールの方向を反転させる</translation>
+        <translation type="obsolete">このコンピューターで垂直スクロールの方向を反転させる</translation>
     </message>
     <message>
         <source>Vertical Scroll Scale</source>
-        <translation type="unfinished">垂直スクロールスケール</translation>
+        <translation type="obsolete">垂直スクロールスケール</translation>
+    </message>
+    <message>
+        <source>&amp;General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Logs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Network</source>
+        <translation type="unfinished">ネットワーク(&amp;N)</translation>
     </message>
 </context>
 <context>
