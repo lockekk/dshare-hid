@@ -83,7 +83,6 @@ public:
     inline static const auto LogExpanded = QStringLiteral("gui/logExpanded");
     inline static const auto SymbolicTrayIcon = QStringLiteral("gui/symbolicTrayIcon");
     inline static const auto WindowGeometry = QStringLiteral("gui/windowGeometry");
-    inline static const auto ShowGenericClientFailureDialog = QStringLiteral("gui/showGenericClientFailureDialog");
     inline static const auto ShownFirstConnectedMessage = QStringLiteral("gui/shownFirstConnectedMessage");
     inline static const auto ShownServerFirstStartMessage = QStringLiteral("gui/shownServerFirstStartMessage");
     inline static const auto ShowVersionInTitle = QStringLiteral("gui/showVersionInTitle");
@@ -149,10 +148,12 @@ public:
   static QVariant value(const QString &key = QString());
   static void restoreDefaultSettings();
   static QVariant defaultValue(const QString &key);
+  static bool isServerConfigFileReadable();
   static bool isWritable();
   static bool isPortableMode();
   static QString settingsFile();
   static QString settingsPath();
+  static QString serverConfigFile();
   static QString tlsDir();
   static QString tlsTrustedServersDb();
   static QString tlsTrustedClientsDb();
@@ -238,6 +239,7 @@ private:
     , Settings::Daemon::Command
     , Settings::Daemon::Elevate
     , Settings::Daemon::LogFile
+    , Settings::Daemon::LogLevel
     , Settings::Log::File
     , Settings::Log::Level
     , Settings::Log::ToFile
@@ -251,7 +253,6 @@ private:
     , Settings::Gui::LogExpanded
     , Settings::Gui::SymbolicTrayIcon
     , Settings::Gui::WindowGeometry
-    , Settings::Gui::ShowGenericClientFailureDialog
     , Settings::Gui::ShownFirstConnectedMessage
     , Settings::Gui::ShownServerFirstStartMessage
     , Settings::Gui::ShowVersionInTitle
@@ -291,7 +292,6 @@ private:
     , Settings::Gui::CloseReminder
     , Settings::Gui::LogExpanded
     , Settings::Gui::SymbolicTrayIcon
-    , Settings::Gui::ShowGenericClientFailureDialog
     , Settings::Security::TlsEnabled
     , Settings::Security::CheckPeers
   };

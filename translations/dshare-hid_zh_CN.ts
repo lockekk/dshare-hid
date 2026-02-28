@@ -179,107 +179,211 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
-    <name>DeskflowHidExtension</name>
+    <name>DShare-HIDHidExtension</name>
     <message>
         <source>Bridge Client Logs</source>
-        <translation>桥接客户端日志</translation>
+        <translation type="vanished">桥接客户端日志</translation>
     </message>
     <message>
         <source>ESP32 HID Tools</source>
-        <translation>ESP32 HID 工具</translation>
+        <translation type="vanished">ESP32 HID 工具</translation>
     </message>
     <message>
         <source>Ready</source>
-        <translation>就绪</translation>
+        <translation type="vanished">就绪</translation>
     </message>
     <message>
         <source>Unknown Device</source>
-        <translation>未知设备</translation>
+        <translation type="vanished">未知设备</translation>
     </message>
     <message>
         <source>Bridge client device plugged in: %1</source>
-        <translation>桥接客户端设备已插入：%1</translation>
+        <translation type="vanished">桥接客户端设备已插入：%1</translation>
     </message>
     <message>
         <source>Bridge client device unplugged: %1</source>
-        <translation>桥接客户端设备已拔出：%1</translation>
+        <translation type="vanished">桥接客户端设备已拔出：%1</translation>
     </message>
     <message>
         <source>Error: No configuration found for device: %1</source>
-        <translation>错误：未找到设备配置：%1</translation>
+        <translation type="vanished">错误：未找到设备配置：%1</translation>
     </message>
     <message>
         <source>Error: Cannot connect. Device path is empty.</source>
-        <translation>错误：无法连接。设备路径为空。</translation>
+        <translation type="vanished">错误：无法连接。设备路径为空。</translation>
     </message>
     <message>
         <source>Already connected via another profile</source>
-        <translation>已通过另一个配置文件连接</translation>
+        <translation type="vanished">已通过另一个配置文件连接</translation>
     </message>
     <message>
         <source>Activation Required</source>
-        <translation>需要激活</translation>
+        <translation type="vanished">需要激活</translation>
     </message>
     <message>
         <source>Free trial is expired. Please consider purchasing a license via 
 File -&gt; Firmware -&gt; Order.</source>
-        <translation>免费试用已过期。请通过 文件 -&gt; 固件 -&gt; 订购 购买许可。</translation>
+        <translation type="vanished">免费试用已过期。请通过 文件 -&gt; 固件 -&gt; 订购 购买许可。</translation>
     </message>
     <message>
         <source>Starting bridge client: %1</source>
-        <translation>正在启动桥接客户端：%1</translation>
+        <translation type="vanished">正在启动桥接客户端：%1</translation>
     </message>
     <message>
         <source>Failed to start bridge client: %1</source>
-        <translation>启动桥接客户端失败：%1</translation>
+        <translation type="vanished">启动桥接客户端失败：%1</translation>
     </message>
     <message>
         <source>Factory firmware detected. Please update firmware.</source>
-        <translation>检测到工厂固件。请更新固件。</translation>
+        <translation type="vanished">检测到工厂固件。请更新固件。</translation>
     </message>
     <message>
         <source>Factory firmware detected on %1. Auto-connect disabled.</source>
-        <translation>在 %1 上检测到工厂固件。自动连接已禁用。</translation>
+        <translation type="vanished">在 %1 上检测到工厂固件。自动连接已禁用。</translation>
     </message>
     <message>
         <source>Handshake failed on %1. Auto-connect disabled.</source>
-        <translation>在 %1 上握手失败。自动连接已禁用。</translation>
+        <translation type="vanished">在 %1 上握手失败。自动连接已禁用。</translation>
     </message>
     <message>
         <source>Server is down. Auto-connect will resume once the server starts.</source>
-        <translation>服务器已停机。服务器启动后将恢复自动连接。</translation>
+        <translation type="vanished">服务器已停机。服务器启动后将恢复自动连接。</translation>
     </message>
     <message>
         <source>Connection failed. Retrying auto-connect (%1/3)...</source>
-        <translation>连接失败。正在重试自动连接 (%1/3)...</translation>
+        <translation type="vanished">连接失败。正在重试自动连接 (%1/3)...</translation>
     </message>
     <message>
         <source>Auto-connect failed. Giving up after 3 attempts.</source>
-        <translation>自动连接失败。尝试 3 次后放弃。</translation>
+        <translation type="vanished">自动连接失败。尝试 3 次后放弃。</translation>
     </message>
     <message>
         <source>Locked</source>
-        <translation>已锁定</translation>
+        <translation type="vanished">已锁定</translation>
     </message>
     <message>
         <source>Locked by %1</source>
-        <translation>被 %1 锁定</translation>
+        <translation type="vanished">被 %1 锁定</translation>
     </message>
     <message>
         <source>Feature Unavailable</source>
-        <translation>功能不可用</translation>
+        <translation type="vanished">功能不可用</translation>
     </message>
     <message>
         <source>The ESP32 HID Tools module is not available in this build.</source>
-        <translation>此构建版本中 ESP32 HID 工具模块不可用。</translation>
+        <translation type="vanished">此构建版本中 ESP32 HID 工具模块不可用。</translation>
     </message>
     <message>
         <source>Device handshake failed. Possibly not a DShare-HID firmware.</source>
-        <translation>设备握手失败。可能不是 DShare-HID 固件。</translation>
+        <translation type="vanished">设备握手失败。可能不是 DShare-HID 固件。</translation>
     </message>
     <message>
         <source>Device disconnected.</source>
-        <translation>设备已断开连接。</translation>
+        <translation type="vanished">设备已断开连接。</translation>
+    </message>
+</context>
+<context>
+    <name>DeskflowHidExtension</name>
+    <message>
+        <source>Bridge Client Logs</source>
+        <translation type="unfinished">桥接客户端日志</translation>
+    </message>
+    <message>
+        <source>ESP32 HID Tools</source>
+        <translation type="unfinished">ESP32 HID 工具</translation>
+    </message>
+    <message>
+        <source>Ready</source>
+        <translation type="unfinished">就绪</translation>
+    </message>
+    <message>
+        <source>Feature Unavailable</source>
+        <translation type="unfinished">功能不可用</translation>
+    </message>
+    <message>
+        <source>The ESP32 HID Tools module is not available in this build.</source>
+        <translation type="unfinished">此构建版本中 ESP32 HID 工具模块不可用。</translation>
+    </message>
+    <message>
+        <source>Unknown Device</source>
+        <translation type="unfinished">未知设备</translation>
+    </message>
+    <message>
+        <source>Bridge client device plugged in: %1</source>
+        <translation type="unfinished">桥接客户端设备已插入：%1</translation>
+    </message>
+    <message>
+        <source>Bridge client device unplugged: %1</source>
+        <translation type="unfinished">桥接客户端设备已拔出：%1</translation>
+    </message>
+    <message>
+        <source>Error: No configuration found for device: %1</source>
+        <translation type="unfinished">错误：未找到设备配置：%1</translation>
+    </message>
+    <message>
+        <source>Error: Cannot connect. Device path is empty.</source>
+        <translation type="unfinished">错误：无法连接。设备路径为空。</translation>
+    </message>
+    <message>
+        <source>Already connected via another profile</source>
+        <translation type="unfinished">已通过另一个配置文件连接</translation>
+    </message>
+    <message>
+        <source>Activation Required</source>
+        <translation type="unfinished">需要激活</translation>
+    </message>
+    <message>
+        <source>Free trial is expired. Please consider purchasing a license via 
+File -&gt; Firmware -&gt; Order.</source>
+        <translation type="unfinished">免费试用已过期。请通过 文件 -&gt; 固件 -&gt; 订购 购买许可。</translation>
+    </message>
+    <message>
+        <source>Starting bridge client: %1</source>
+        <translation type="unfinished">正在启动桥接客户端：%1</translation>
+    </message>
+    <message>
+        <source>Failed to start bridge client: %1</source>
+        <translation type="unfinished">启动桥接客户端失败：%1</translation>
+    </message>
+    <message>
+        <source>Factory firmware detected. Please update firmware.</source>
+        <translation type="unfinished">检测到工厂固件。请更新固件。</translation>
+    </message>
+    <message>
+        <source>Factory firmware detected on %1. Auto-connect disabled.</source>
+        <translation type="unfinished">在 %1 上检测到工厂固件。自动连接已禁用。</translation>
+    </message>
+    <message>
+        <source>Device handshake failed. Possibly not a DShare-HID firmware.</source>
+        <translation type="unfinished">设备握手失败。可能不是 DShare-HID 固件。</translation>
+    </message>
+    <message>
+        <source>Handshake failed on %1. Auto-connect disabled.</source>
+        <translation type="unfinished">在 %1 上握手失败。自动连接已禁用。</translation>
+    </message>
+    <message>
+        <source>Device disconnected.</source>
+        <translation type="unfinished">设备已断开连接。</translation>
+    </message>
+    <message>
+        <source>Server is down. Auto-connect will resume once the server starts.</source>
+        <translation type="unfinished">服务器已停机。服务器启动后将恢复自动连接。</translation>
+    </message>
+    <message>
+        <source>Connection failed. Retrying auto-connect (%1/3)...</source>
+        <translation type="unfinished">连接失败。正在重试自动连接 (%1/3)...</translation>
+    </message>
+    <message>
+        <source>Auto-connect failed. Giving up after 3 attempts.</source>
+        <translation type="unfinished">自动连接失败。尝试 3 次后放弃。</translation>
+    </message>
+    <message>
+        <source>Locked</source>
+        <translation type="unfinished">已锁定</translation>
+    </message>
+    <message>
+        <source>Locked by %1</source>
+        <translation type="unfinished">被 %1 锁定</translation>
     </message>
 </context>
 <context>
@@ -454,7 +558,7 @@ Do you want to connect to the server?
     </message>
     <message>
         <source>A new version v%1 is available</source>
-        <translation>新版本 v%1 可用</translation>
+        <translation type="vanished">新版本 v%1 可用</translation>
     </message>
     <message>
         <source>Address missing</source>
@@ -498,11 +602,11 @@ Do you want to connect to the server?
     </message>
     <message>
         <source>%1 Encryption Enabled</source>
-        <translation>%1 加密已启用</translation>
+        <translation type="vanished">%1 加密已启用</translation>
     </message>
     <message>
         <source>Encryption Disabled</source>
-        <translation>加密已禁用</translation>
+        <translation type="vanished">加密已禁用</translation>
     </message>
     <message>
         <source>No IP Detected</source>
@@ -540,35 +644,35 @@ A bound IP is now invalid, you may need to restart the server.</source>
     </message>
     <message>
         <source>%1 is starting...</source>
-        <translation>%1 正在启动...</translation>
+        <translation type="vanished">%1 正在启动...</translation>
     </message>
     <message>
         <source>%1 will retry in a moment...</source>
-        <translation>%1 将稍后重试...</translation>
+        <translation type="vanished">%1 将稍后重试...</translation>
     </message>
     <message>
         <source>%1 is stopping...</source>
-        <translation>%1 正在停止...</translation>
+        <translation type="vanished">%1 正在停止...</translation>
     </message>
     <message>
         <source>%1 is not running</source>
-        <translation>%1 未在运行</translation>
+        <translation type="vanished">%1 未在运行</translation>
     </message>
     <message>
         <source>%1 is waiting for clients</source>
-        <translation>%1 正在等待客户端连接</translation>
+        <translation type="vanished">%1 正在等待客户端连接</translation>
     </message>
     <message>
         <source>%1 is connecting...</source>
-        <translation>%1 正在连接...</translation>
+        <translation type="vanished">%1 正在连接...</translation>
     </message>
     <message>
         <source>%1 is connected as client of %2</source>
-        <translation>%1 已作为 %2 的客户端连接</translation>
+        <translation type="vanished">%1 已作为 %2 的客户端连接</translation>
     </message>
     <message>
         <source>%1 is disconnected</source>
-        <translation>%1 已断开连接</translation>
+        <translation type="vanished">%1 已断开连接</translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -644,12 +748,20 @@ A bound IP is now invalid, you may need to restart the server.</source>
         <translation>Ctrl+Q</translation>
     </message>
     <message>
+        <source>%1 Connection Error</source>
+        <translation type="unfinished">%1 连接错误</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Failed to connect to the server &apos;%1&apos;.&lt;/p&gt;&lt;p&gt;A Client with your name is already connected to the server.&lt;/p&gt;Please ensure that you&apos;re using a unique name and that only a single instance of the client process is running.&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>View local fingerprint</source>
-        <translation>查看本地指纹</translation>
+        <translation type="vanished">查看本地指纹</translation>
     </message>
     <message>
         <source>Update available</source>
-        <translation>有可用更新</translation>
+        <translation type="vanished">有可用更新</translation>
     </message>
     <message>
         <source>Invalid Screen Name</source>
@@ -676,14 +788,14 @@ Valid names:
     <message numerus="yes">
         <source>%1 is connected, with %n client(s): %2</source>
         <extracomment>Shown when in server mode and at least 1 client is connected %1 is replaced by the app name %2 will be a list of at least one client %n will be replaced by the number of clients (n is &gt;=1), it is not requried to be in the translation</extracomment>
-        <translation>
+        <translation type="vanished">
             <numerusform>%1 已连接，共有 %n 个客户端：%2</numerusform>
         </translation>
     </message>
     <message>
         <source>Clients:
  %1</source>
-        <translation>客户端：
+        <translation type="vanished">客户端：
  %1</translation>
     </message>
     <message>
@@ -839,27 +951,15 @@ This new instance cannot start another server, so it will now exit.</source>
     </message>
     <message>
         <source>&lt;p&gt;Failed to connect to the server &apos;%1&apos;.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;连接到服务器“%1”失败。&lt;/p&gt;</translation>
+        <translation type="vanished">&lt;p&gt;连接到服务器“%1”失败。&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;p&gt;A Client with your name is already connected to the server.&lt;/p&gt;Please ensure that you&apos;re using a unique name and that only a single instance of the client process is running.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;一个同名的客户端已连接到服务器。&lt;/p&gt;请确保您使用的名称唯一，且只有一个客户端进程实例在运行。&lt;/p&gt;</translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;Please try to connect to the server using the server IP address instead of the hostname. &lt;/p&gt;&lt;p&gt;If that doesn&apos;t work, please check your TLS and firewall settings.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;请尝试使用服务器 IP 地址而不是主机名来连接服务器。&lt;/p&gt;&lt;p&gt;如果不起作用，请检查您的 TLS 和防火墙设置。&lt;/p&gt;</translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;Please check your TLS and firewall settings.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;请检查您的 TLS 和防火墙设置。&lt;/p&gt;</translation>
+        <translation type="vanished">&lt;p&gt;一个同名的客户端已连接到服务器。&lt;/p&gt;请确保您使用的名称唯一，且只有一个客户端进程实例在运行。&lt;/p&gt;</translation>
     </message>
     <message>
         <source>%1 Connection Error</source>
-        <translation>%1 连接错误</translation>
-    </message>
-    <message>
-        <source>Do not show this message again</source>
-        <translation>不再显示此消息</translation>
+        <translation type="vanished">%1 连接错误</translation>
     </message>
     <message>
         <source>%1 - New Client</source>
@@ -899,7 +999,7 @@ This new instance cannot start another server, so it will now exit.</source>
     </message>
     <message>
         <source>&lt;p&gt;Sorry, while this version of %1 does support Wayland, this build was not linked with one or more of the required libraries.&lt;/p&gt;&lt;p&gt;Please either switch to X from your login screen or use a build that uses the correct libraries.&lt;/p&gt;&lt;p&gt;If you think this is incorrect, please &lt;a href=&quot;%2&quot;&gt;report a bug&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Please check the logs for more information.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;抱歉，虽然此版本的 %1 支持 Wayland，但此构建版本未链接一个或多个所需的库。&lt;/p&gt;&lt;p&gt;请从登录屏幕切换到 X，或者使用链接了正确库的构建版本。&lt;/p&gt;&lt;p&gt;如果您认为存在问题，请 &lt;a href=&quot;%2&quot;&gt;报告 Bug&lt;/a&gt;。&lt;/p&gt;&lt;p&gt;请查看日志以获取更多信息。&lt;/p&gt;</translation>
+        <translation type="vanished">&lt;p&gt;抱歉，虽然此版本的 %1 支持 Wayland，但此构建版本未链接一个或多个所需的库。&lt;/p&gt;&lt;p&gt;请从登录屏幕切换到 X，或者使用链接了正确库的构建版本。&lt;/p&gt;&lt;p&gt;如果您认为存在问题，请 &lt;a href=&quot;%2&quot;&gt;报告 Bug&lt;/a&gt;。&lt;/p&gt;&lt;p&gt;请查看日志以获取更多信息。&lt;/p&gt;</translation>
     </message>
     <message>
         <source>No thanks</source>
@@ -1092,6 +1192,25 @@ This new instance cannot start another server, so it will now exit.</source>
     </message>
 </context>
 <context>
+    <name>SearchWidget</name>
+    <message>
+        <source>Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find next</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find previous</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find...</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ServerConfigDialog</name>
     <message>
         <source>Server Configuration</source>
@@ -1226,8 +1345,8 @@ This new instance cannot start another server, so it will now exit.</source>
         <translation>毫秒</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enables compatibility with programs that use either the Synergy or Barrier protocols:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 uses the Synergy protocol.&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap and Synergy 1 uses the Barrier protocol.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;A Deskflow client will automatically use either the Synergy or Barrier protocol depending on the server protocol.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;启用与使用 Synergy 或 Barrier 协议的程序的兼容性：&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 使用 Synergy 协议。&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap 和 Synergy 1 使用 Barrier 协议。&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;DShare-HID 客户端将根据服务器协议自动使用 Synergy 或 Barrier 协议。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enables compatibility with programs that use either the Synergy or Barrier protocols:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 uses the Synergy protocol.&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap and Synergy 1 uses the Barrier protocol.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;A DShare-HID client will automatically use either the Synergy or Barrier protocol depending on the server protocol.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;启用与使用 Synergy 或 Barrier 协议的程序的兼容性：&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 使用 Synergy 协议。&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap 和 Synergy 1 使用 Barrier 协议。&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;DShare-HID 客户端将根据服务器协议自动使用 Synergy 或 Barrier 协议。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Network protocol</source>
@@ -1302,6 +1421,10 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     <message>
         <source>Failed to delete bridge client configuration file for &apos;%1&apos;.</source>
         <translation>删除“%1”的桥接客户端配置文件失败。</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enables compatibility with programs that use either the Synergy or Barrier protocols:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 uses the Synergy protocol.&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap and Synergy 1 uses the Barrier protocol.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;A Deskflow client will automatically use either the Synergy or Barrier protocol depending on the server protocol.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1531,8 +1654,8 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation>启用 wl-clipboard 支持</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Requires the wl-clipboard package&lt;/p&gt;&lt;p&gt;When using wl-clipboard v2.2.1, there is a focus stealing bug that may make Deskflow harder to use. This has been fixed when using the wl-clipboard master branch, unless your Compositor lacks wlroots-data-control protocol support.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;需要 wl-clipboard 包&lt;/p&gt;&lt;p&gt;使用 wl-clipboard v2.2.1 时存在一个焦点抢夺 Bug，可能导致 DShare-HID 使用不便。该问题已在 wl-clipboard 的 master 分支中修复，除非您的合成器不支持 wlroots-data-control 协议。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Requires the wl-clipboard package&lt;/p&gt;&lt;p&gt;When using wl-clipboard v2.2.1, there is a focus stealing bug that may make DShare-HID harder to use. This has been fixed when using the wl-clipboard master branch, unless your Compositor lacks wlroots-data-control protocol support.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;需要 wl-clipboard 包&lt;/p&gt;&lt;p&gt;使用 wl-clipboard v2.2.1 时存在一个焦点抢夺 Bug，可能导致 DShare-HID 使用不便。该问题已在 wl-clipboard 的 master 分支中修复，除非您的合成器不支持 wlroots-data-control 协议。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Automatic</source>
@@ -1561,6 +1684,78 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     <message>
         <source>&amp;Network</source>
         <translation type="unfinished">网络(&amp;N)</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Requires the wl-clipboard package&lt;/p&gt;&lt;p&gt;When using wl-clipboard v2.2.1, there is a focus stealing bug that may make Deskflow harder to use. This has been fixed when using the wl-clipboard master branch, unless your Compositor lacks wlroots-data-control protocol support.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>StatusBar</name>
+    <message>
+        <source>%1 is not running</source>
+        <translation type="unfinished">%1 未在运行</translation>
+    </message>
+    <message>
+        <source>%1 is starting...</source>
+        <translation type="unfinished">%1 正在启动...</translation>
+    </message>
+    <message>
+        <source>%1 will retry in a moment...</source>
+        <translation type="unfinished">%1 将稍后重试...</translation>
+    </message>
+    <message>
+        <source>%1 is stopping...</source>
+        <translation type="unfinished">%1 正在停止...</translation>
+    </message>
+    <message>
+        <source>%1 is waiting for clients</source>
+        <translation type="unfinished">%1 正在等待客户端连接</translation>
+    </message>
+    <message>
+        <source>%1 is connecting...</source>
+        <translation type="unfinished">%1 正在连接...</translation>
+    </message>
+    <message>
+        <source>%1 is connected as client of %2</source>
+        <translation type="unfinished">%1 已作为 %2 的客户端连接</translation>
+    </message>
+    <message>
+        <source>%1 is disconnected</source>
+        <translation type="unfinished">%1 已断开连接</translation>
+    </message>
+    <message numerus="yes">
+        <source>%1 is connected, with %n client(s): %2</source>
+        <extracomment>Shown when in server mode and at least 1 client is connected %1 is replaced by the app name %2 will be a list of at least one client %n will be replaced by the number of clients (n is &gt;=1), it is not requried to be in the translation</extracomment>
+        <translation type="unfinished">
+            <numerusform>%1 已连接，共有 %n 个客户端：%2</numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Clients:
+ %1</source>
+        <translation type="unfinished">客户端：
+ %1</translation>
+    </message>
+    <message>
+        <source>A new version v%1 is available</source>
+        <translation type="unfinished">新版本 v%1 可用</translation>
+    </message>
+    <message>
+        <source>View local fingerprint</source>
+        <translation type="unfinished">查看本地指纹</translation>
+    </message>
+    <message>
+        <source>Update available</source>
+        <translation type="unfinished">有可用更新</translation>
+    </message>
+    <message>
+        <source>%1 Encryption Enabled</source>
+        <translation type="unfinished">%1 加密已启用</translation>
+    </message>
+    <message>
+        <source>Encryption Disabled</source>
+        <translation type="unfinished">加密已禁用</translation>
     </message>
 </context>
 <context>
@@ -1634,16 +1829,16 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation>自动断开蓝牙</translation>
     </message>
     <message>
-        <source>Disconnects from the host device when you stop using Deskflow.</source>
-        <translation type="vanished">停止使用 DShare-HID 时断开与主机设备的连接。</translation>
+        <source>Disconnects from the host device when you stop using DShare-HID.</source>
+        <translation>停止使用 DShare-HID 时断开与主机设备的连接。</translation>
     </message>
     <message>
         <source>Auto-connect when USB device plugged in</source>
         <translation>USB 设备插入时自动连接</translation>
     </message>
     <message>
-        <source>Automatically connect to the Deskflow server when the device is plugged in.</source>
-        <translation type="vanished">设备插入时自动连接到 DShare-HID 服务器。</translation>
+        <source>Automatically connect to the DShare-HID server when the device is plugged in.</source>
+        <translation>设备插入时自动连接到 DShare-HID 服务器。</translation>
     </message>
     <message>
         <source>Automatically restore screen location for the active profile</source>
@@ -1688,14 +1883,6 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     <message>
         <source>Activate</source>
         <translation>激活</translation>
-    </message>
-    <message>
-        <source>Disconnects from the host device when you stop using DShare-HID.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Automatically connect to the DShare-HID server when the device is plugged in.</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>When enabled, the saved screen location for the active profile will be restored automatically.</source>

@@ -559,7 +559,11 @@ bool CoreProcess::checkSecureSocket(const QString &line)
   }
 
   Q_EMIT secureSocket(true);
-  m_secureSocketVersion = line.mid(index + tlsCheckString.size());
+  if (const auto ssv = line.mid(index + tlsCheckString.size()); ssv != m_secureSocketVersion) {
+    m_secureSocketVersion = ssv;
+    Q_EMIT securityLevelChanged(ssv);
+  }
+
   return true;
 }
 

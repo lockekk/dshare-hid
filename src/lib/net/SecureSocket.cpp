@@ -759,6 +759,7 @@ ISocketMultiplexerJob *SecureSocket::serviceAccept(ISocketMultiplexerJob *const,
 #endif
   // If status < 0, error happened
   if (status < 0) {
+    sendEvent(EventTypes::ClientListenerDisconnectedOnAccept);
     return nullptr;
   }
 
