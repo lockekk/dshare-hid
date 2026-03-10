@@ -1640,7 +1640,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Force a language to be used for the GUI.</source>
-        <translation type="unfinished">Fuerza el uso de un idioma para la interfaz gráfica de usuario.</translation>
+        <translation type="obsolete">Fuerza el uso de un idioma para la interfaz gráfica de usuario.</translation>
     </message>
     <message>
         <source>Enable GUI debug messages</source>

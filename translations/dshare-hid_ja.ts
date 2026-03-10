@@ -1577,7 +1577,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Force a language to be used for the GUI.</source>
-        <translation>GUIの使用言語を設定します。</translation>
+        <translation type="vanished">GUIの使用言語を設定します。</translation>
     </message>
     <message>
         <source>Language</source>

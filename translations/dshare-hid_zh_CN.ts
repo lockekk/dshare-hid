@@ -1579,7 +1579,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Force a language to be used for the GUI.</source>
-        <translation>强制 GUI 使用特定语言。</translation>
+        <translation type="vanished">强制 GUI 使用特定语言。</translation>
     </message>
     <message>
         <source>Language</source>
