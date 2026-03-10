@@ -77,7 +77,7 @@ brew upgrade dshare-hid
 
 #### Option B: Manual Install
 1.  Download the latest `.dmg` from the [Releases](https://github.com/lockekk/dshare-hid/releases) page.
-2.  Open `dshare-hid-1.25.0-macos-universal.dmg` and drag the application to your `Applications` folder.
+2.  Open `dshare-hid-1.26.0-macos-universal.dmg` and drag the application to your `Applications` folder.
 3.  **Note**: If you encounter a "Damaged" or "Unverified" error, run the following command in Terminal:
     ```bash
     xattr -cr /Applications/DShare-HID.app
@@ -113,11 +113,11 @@ Works on newer Linux distributions (Ubuntu 22.04+, Fedora 36+, etc.).
 1.  Download the `.AppImage` file from [Releases](https://github.com/lockekk/dshare-hid/releases).
 2.  Make it executable:
     ```bash
-    chmod +x dshare-hid-1.25.0-linux-x86_64.AppImage
+    chmod +x dshare-hid-1.26.0-linux-x86_64.AppImage
     ```
 3.  Run it:
     ```bash
-    ./dshare-hid-1.25.0-linux-x86_64.AppImage
+    ./dshare-hid-1.26.0-linux-x86_64.AppImage
     ```
 
 #### Option B: Flatpak
@@ -141,17 +141,17 @@ flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.f
 
 **2. Install**
 ```bash
-flatpak install --user ./dshare-hid-1.25.0-linux-x86_64.flatpak
+flatpak install --user ./dshare-hid-1.26.0-linux-x86_64.flatpak
 ```
 
 # Manage
 ```bash
 # Uninstall
-flatpak uninstall org.lockekk.dshare-hid
+flatpak uninstall io.github.lockekk.dshare-hid
 
 # Reinstall (Remove then Install)
-flatpak uninstall org.lockekk.dshare-hid
-flatpak install --user ./dshare-hid-1.25.0-linux-x86_64.flatpak
+flatpak uninstall io.github.lockekk.dshare-hid
+flatpak install --user ./dshare-hid-1.26.0-linux-x86_64.flatpak
 ```
 
 #### Option C: Debian Package (Ubuntu 24+)
@@ -160,7 +160,7 @@ For Ubuntu 24.04 and newer.
 1.  Download the `.deb` file from [Releases](https://github.com/lockekk/dshare-hid/releases).
 2.  Install:
     ```bash
-    sudo apt install ./dshare-hid_1.25.0_ubuntu_24.04_amd64.deb
+    sudo apt install ./dshare-hid_1.26.0_ubuntu_24.04_amd64.deb
     ```
 3.  Uninstall:
     ```bash

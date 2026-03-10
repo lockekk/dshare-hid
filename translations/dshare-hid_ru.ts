@@ -181,108 +181,209 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
-    <name>DeskflowHidExtension</name>
+    <name>DShare-HIDHidExtension</name>
     <message>
         <source>Bridge Client Logs</source>
-        <translation>Логи клиента моста</translation>
+        <translation type="vanished">Логи клиента моста</translation>
     </message>
     <message>
         <source>ESP32 HID Tools</source>
-        <translation>Инструменты ESP32 HID</translation>
+        <translation type="vanished">Инструменты ESP32 HID</translation>
     </message>
     <message>
         <source>Ready</source>
-        <translation>Готово</translation>
+        <translation type="vanished">Готово</translation>
     </message>
     <message>
         <source>Unknown Device</source>
-        <translation>Неизвестное устройство</translation>
+        <translation type="vanished">Неизвестное устройство</translation>
     </message>
     <message>
         <source>Bridge client device plugged in: %1</source>
-        <translation>Подключено устройство клиента моста: %1</translation>
+        <translation type="vanished">Подключено устройство клиента моста: %1</translation>
     </message>
     <message>
         <source>Bridge client device unplugged: %1</source>
-        <translation>Отключено устройство клиента моста: %1</translation>
+        <translation type="vanished">Отключено устройство клиента моста: %1</translation>
     </message>
     <message>
         <source>Error: No configuration found for device: %1</source>
-        <translation>Ошибка: Конфигурация для устройства не найдена: %1</translation>
+        <translation type="vanished">Ошибка: Конфигурация для устройства не найдена: %1</translation>
     </message>
     <message>
         <source>Error: Cannot connect. Device path is empty.</source>
-        <translation>Ошибка: Невозможно подключиться. Путь к устройству пуст.</translation>
+        <translation type="vanished">Ошибка: Невозможно подключиться. Путь к устройству пуст.</translation>
     </message>
     <message>
         <source>Already connected via another profile</source>
-        <translation>Уже подключено через другой профиль</translation>
+        <translation type="vanished">Уже подключено через другой профиль</translation>
     </message>
     <message>
         <source>Activation Required</source>
-        <translation>Требуется активация</translation>
+        <translation type="vanished">Требуется активация</translation>
     </message>
     <message>
         <source>Free trial is expired. Please consider purchasing a license via 
 File -&gt; Firmware -&gt; Order.</source>
-        <translation>Истекла бесплатная пробная версия. Пожалуйста, рассмотрите покупку лицензии через 
+        <translation type="vanished">Истекла бесплатная пробная версия. Пожалуйста, рассмотрите покупку лицензии через 
 Файл -&gt; Прошивка -&gt; Заказ.</translation>
     </message>
     <message>
         <source>Starting bridge client: %1</source>
-        <translation>Запуск клиента моста: %1</translation>
+        <translation type="vanished">Запуск клиента моста: %1</translation>
     </message>
     <message>
         <source>Failed to start bridge client: %1</source>
-        <translation>Не удалось запустить клиент моста: %1</translation>
+        <translation type="vanished">Не удалось запустить клиент моста: %1</translation>
     </message>
     <message>
         <source>Factory firmware detected. Please update firmware.</source>
-        <translation>Обнаружена заводская прошивка. Пожалуйста, обновите прошивку.</translation>
+        <translation type="vanished">Обнаружена заводская прошивка. Пожалуйста, обновите прошивку.</translation>
     </message>
     <message>
         <source>Factory firmware detected on %1. Auto-connect disabled.</source>
-        <translation>Обнаружена заводская прошивка на %1. Автоматическое подключение отключено.</translation>
+        <translation type="vanished">Обнаружена заводская прошивка на %1. Автоматическое подключение отключено.</translation>
     </message>
     <message>
         <source>Handshake failed on %1. Auto-connect disabled.</source>
-        <translation>Ошибка рукопожатия на %1. Автоматическое подключение отключено.</translation>
+        <translation type="vanished">Ошибка рукопожатия на %1. Автоматическое подключение отключено.</translation>
     </message>
     <message>
         <source>Server is down. Auto-connect will resume once the server starts.</source>
-        <translation>Сервер недоступен. Автоматическое подключение возобновится после запуска сервера.</translation>
+        <translation type="vanished">Сервер недоступен. Автоматическое подключение возобновится после запуска сервера.</translation>
     </message>
     <message>
         <source>Connection failed. Retrying auto-connect (%1/3)...</source>
-        <translation>Ошибка подключения. Повторная попытка автоматического подключения (%1/3)...</translation>
+        <translation type="vanished">Ошибка подключения. Повторная попытка автоматического подключения (%1/3)...</translation>
     </message>
     <message>
         <source>Auto-connect failed. Giving up after 3 attempts.</source>
-        <translation>Ошибка автоматического подключения. Отмена после 3 попыток.</translation>
+        <translation type="vanished">Ошибка автоматического подключения. Отмена после 3 попыток.</translation>
     </message>
     <message>
         <source>Locked</source>
-        <translation>Заблокировано</translation>
+        <translation type="vanished">Заблокировано</translation>
     </message>
     <message>
         <source>Locked by %1</source>
-        <translation>Заблокировано %1</translation>
+        <translation type="vanished">Заблокировано %1</translation>
     </message>
     <message>
         <source>Feature Unavailable</source>
-        <translation>Функция недоступна</translation>
+        <translation type="vanished">Функция недоступна</translation>
     </message>
     <message>
         <source>The ESP32 HID Tools module is not available in this build.</source>
-        <translation>Модуль инструментов ESP32 HID недоступен в этой сборке.</translation>
+        <translation type="vanished">Модуль инструментов ESP32 HID недоступен в этой сборке.</translation>
     </message>
     <message>
         <source>Device disconnected.</source>
-        <translation>Устройство отключено.</translation>
+        <translation type="vanished">Устройство отключено.</translation>
+    </message>
+</context>
+<context>
+    <name>DeskflowHidExtension</name>
+    <message>
+        <source>Bridge Client Logs</source>
+        <translation type="unfinished">Логи клиента моста</translation>
+    </message>
+    <message>
+        <source>ESP32 HID Tools</source>
+        <translation type="unfinished">Инструменты ESP32 HID</translation>
+    </message>
+    <message>
+        <source>Ready</source>
+        <translation type="unfinished">Готово</translation>
+    </message>
+    <message>
+        <source>Feature Unavailable</source>
+        <translation type="unfinished">Функция недоступна</translation>
+    </message>
+    <message>
+        <source>The ESP32 HID Tools module is not available in this build.</source>
+        <translation type="unfinished">Модуль инструментов ESP32 HID недоступен в этой сборке.</translation>
+    </message>
+    <message>
+        <source>Unknown Device</source>
+        <translation type="unfinished">Неизвестное устройство</translation>
+    </message>
+    <message>
+        <source>Bridge client device plugged in: %1</source>
+        <translation type="unfinished">Подключено устройство клиента моста: %1</translation>
+    </message>
+    <message>
+        <source>Bridge client device unplugged: %1</source>
+        <translation type="unfinished">Отключено устройство клиента моста: %1</translation>
+    </message>
+    <message>
+        <source>Error: No configuration found for device: %1</source>
+        <translation type="unfinished">Ошибка: Конфигурация для устройства не найдена: %1</translation>
+    </message>
+    <message>
+        <source>Error: Cannot connect. Device path is empty.</source>
+        <translation type="unfinished">Ошибка: Невозможно подключиться. Путь к устройству пуст.</translation>
+    </message>
+    <message>
+        <source>Already connected via another profile</source>
+        <translation type="unfinished">Уже подключено через другой профиль</translation>
+    </message>
+    <message>
+        <source>Activation Required</source>
+        <translation type="unfinished">Требуется активация</translation>
+    </message>
+    <message>
+        <source>Free trial is expired. Please consider purchasing a license via 
+File -&gt; Firmware -&gt; Order.</source>
+        <translation type="unfinished">Истекла бесплатная пробная версия. Пожалуйста, рассмотрите покупку лицензии через 
+Файл -&gt; Прошивка -&gt; Заказ.</translation>
+    </message>
+    <message>
+        <source>Starting bridge client: %1</source>
+        <translation type="unfinished">Запуск клиента моста: %1</translation>
+    </message>
+    <message>
+        <source>Failed to start bridge client: %1</source>
+        <translation type="unfinished">Не удалось запустить клиент моста: %1</translation>
+    </message>
+    <message>
+        <source>Factory firmware detected. Please update firmware.</source>
+        <translation type="unfinished">Обнаружена заводская прошивка. Пожалуйста, обновите прошивку.</translation>
+    </message>
+    <message>
+        <source>Factory firmware detected on %1. Auto-connect disabled.</source>
+        <translation type="unfinished">Обнаружена заводская прошивка на %1. Автоматическое подключение отключено.</translation>
     </message>
     <message>
         <source>Device handshake failed. Possibly not a DShare-HID firmware.</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Handshake failed on %1. Auto-connect disabled.</source>
+        <translation type="unfinished">Ошибка рукопожатия на %1. Автоматическое подключение отключено.</translation>
+    </message>
+    <message>
+        <source>Device disconnected.</source>
+        <translation type="unfinished">Устройство отключено.</translation>
+    </message>
+    <message>
+        <source>Server is down. Auto-connect will resume once the server starts.</source>
+        <translation type="unfinished">Сервер недоступен. Автоматическое подключение возобновится после запуска сервера.</translation>
+    </message>
+    <message>
+        <source>Connection failed. Retrying auto-connect (%1/3)...</source>
+        <translation type="unfinished">Ошибка подключения. Повторная попытка автоматического подключения (%1/3)...</translation>
+    </message>
+    <message>
+        <source>Auto-connect failed. Giving up after 3 attempts.</source>
+        <translation type="unfinished">Ошибка автоматического подключения. Отмена после 3 попыток.</translation>
+    </message>
+    <message>
+        <source>Locked</source>
+        <translation type="unfinished">Заблокировано</translation>
+    </message>
+    <message>
+        <source>Locked by %1</source>
+        <translation type="unfinished">Заблокировано %1</translation>
     </message>
 </context>
 <context>
@@ -457,7 +558,7 @@ Do you want to connect to the server?
     </message>
     <message>
         <source>A new version v%1 is available</source>
-        <translation>Новая версия %1 доступна</translation>
+        <translation type="vanished">Новая версия %1 доступна</translation>
     </message>
     <message>
         <source>Address missing</source>
@@ -501,11 +602,11 @@ Do you want to connect to the server?
     </message>
     <message>
         <source>%1 Encryption Enabled</source>
-        <translation>%1 Шифрование включено</translation>
+        <translation type="vanished">%1 Шифрование включено</translation>
     </message>
     <message>
         <source>Encryption Disabled</source>
-        <translation>Шифрование выключино</translation>
+        <translation type="vanished">Шифрование выключино</translation>
     </message>
     <message>
         <source>No IP Detected</source>
@@ -539,35 +640,35 @@ A bound IP is now invalid, you may need to restart the server.</source>
     </message>
     <message>
         <source>%1 is starting...</source>
-        <translation>%1 запускается...</translation>
+        <translation type="vanished">%1 запускается...</translation>
     </message>
     <message>
         <source>%1 will retry in a moment...</source>
-        <translation>%1 пробует переподкючиться...</translation>
+        <translation type="vanished">%1 пробует переподкючиться...</translation>
     </message>
     <message>
         <source>%1 is stopping...</source>
-        <translation>%1 выключается...</translation>
+        <translation type="vanished">%1 выключается...</translation>
     </message>
     <message>
         <source>%1 is not running</source>
-        <translation>%1 не включён</translation>
+        <translation type="vanished">%1 не включён</translation>
     </message>
     <message>
         <source>%1 is waiting for clients</source>
-        <translation>%1 ожидает клиент компьютер</translation>
+        <translation type="vanished">%1 ожидает клиент компьютер</translation>
     </message>
     <message>
         <source>%1 is connecting...</source>
-        <translation>%1 подключается...</translation>
+        <translation type="vanished">%1 подключается...</translation>
     </message>
     <message>
         <source>%1 is connected as client of %2</source>
-        <translation>%1 подключен как клиент к %2</translation>
+        <translation type="vanished">%1 подключен как клиент к %2</translation>
     </message>
     <message>
         <source>%1 is disconnected</source>
-        <translation>%1 отключён</translation>
+        <translation type="vanished">%1 отключён</translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -644,11 +745,11 @@ A bound IP is now invalid, you may need to restart the server.</source>
     </message>
     <message>
         <source>View local fingerprint</source>
-        <translation>Показать локальный отпечаток</translation>
+        <translation type="vanished">Показать локальный отпечаток</translation>
     </message>
     <message>
         <source>Update available</source>
-        <translation>Доступно обновление</translation>
+        <translation type="vanished">Доступно обновление</translation>
     </message>
     <message>
         <source>Invalid Screen Name</source>
@@ -675,7 +776,7 @@ Valid names:
     <message numerus="yes">
         <source>%1 is connected, with %n client(s): %2</source>
         <extracomment>Shown when in server mode and at least 1 client is connected %1 is replaced by the app name %2 will be a list of at least one client %n will be replaced by the number of clients (n is &gt;=1), it is not requried to be in the translation</extracomment>
-        <translation type="unfinished">
+        <translation type="obsolete">
             <numerusform>%1 подключен %n к клиенту: %2</numerusform>
             <numerusform>%1 подключен к %n клиентам:: %2</numerusform>
             <numerusform>%1 подключен к %n клиентам:: %2</numerusform>
@@ -684,7 +785,7 @@ Valid names:
     <message>
         <source>Clients:
  %1</source>
-        <translation>Клиент:
+        <translation type="vanished">Клиент:
  %1</translation>
     </message>
     <message>
@@ -712,6 +813,14 @@ Valid names:
     <message>
         <source>Firmware</source>
         <translation>Прошивка</translation>
+    </message>
+    <message>
+        <source>%1 Connection Error</source>
+        <translation type="unfinished">%1 Ошибка соединения</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Failed to connect to the server &apos;%1&apos;.&lt;/p&gt;&lt;p&gt;A Client with your name is already connected to the server.&lt;/p&gt;Please ensure that you&apos;re using a unique name and that only a single instance of the client process is running.&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>current user</source>
@@ -826,27 +935,27 @@ Valid names:
     </message>
     <message>
         <source>&lt;p&gt;Failed to connect to the server &apos;%1&apos;.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Неудалось подключиться к серверу &apos;%1&apos;.&lt;/p&gt;</translation>
+        <translation type="vanished">&lt;p&gt;Неудалось подключиться к серверу &apos;%1&apos;.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;p&gt;A Client with your name is already connected to the server.&lt;/p&gt;Please ensure that you&apos;re using a unique name and that only a single instance of the client process is running.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Клиент с вашим именем уже подключен к серверу.&lt;/p&gt;Пожалуйста, убедитесь, что вы используете уникальное имя и что запущена только одна копия клиентского процесса.&lt;/p&gt;</translation>
+        <translation type="vanished">&lt;p&gt;Клиент с вашим именем уже подключен к серверу.&lt;/p&gt;Пожалуйста, убедитесь, что вы используете уникальное имя и что запущена только одна копия клиентского процесса.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;p&gt;Please try to connect to the server using the server IP address instead of the hostname. &lt;/p&gt;&lt;p&gt;If that doesn&apos;t work, please check your TLS and firewall settings.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Попробуйте подключиться к серверу, используя IP-адресс вместо имени хоста. &lt;/p&gt;&lt;p&gt;Если это не помогло, проверьте Ваши TLS и Firewall настройки.&lt;/p&gt;</translation>
+        <translation type="vanished">&lt;p&gt;Попробуйте подключиться к серверу, используя IP-адресс вместо имени хоста. &lt;/p&gt;&lt;p&gt;Если это не помогло, проверьте Ваши TLS и Firewall настройки.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;p&gt;Please check your TLS and firewall settings.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Пожалуйста, проверьте Ваши TLS и Firewall настройки.&lt;/p&gt;</translation>
+        <translation type="vanished">&lt;p&gt;Пожалуйста, проверьте Ваши TLS и Firewall настройки.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>%1 Connection Error</source>
-        <translation>%1 Ошибка соединения</translation>
+        <translation type="vanished">%1 Ошибка соединения</translation>
     </message>
     <message>
         <source>Do not show this message again</source>
-        <translation>Не показывать это сообщение ещё раз</translation>
+        <translation type="vanished">Не показывать это сообщение ещё раз</translation>
     </message>
     <message>
         <source>%1 - New Client</source>
@@ -886,7 +995,7 @@ Valid names:
     </message>
     <message>
         <source>&lt;p&gt;Sorry, while this version of %1 does support Wayland, this build was not linked with one or more of the required libraries.&lt;/p&gt;&lt;p&gt;Please either switch to X from your login screen or use a build that uses the correct libraries.&lt;/p&gt;&lt;p&gt;If you think this is incorrect, please &lt;a href=&quot;%2&quot;&gt;report a bug&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Please check the logs for more information.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Извините, пока эта версия %1 поддерживает Wayland, эта сборка не связана с одной или несколькими необходимыми библиотеками.&lt;/p&gt;&lt;p&gt;Пожалуйста, либо перейдите в X, либо используйте сборку, которая поддерживает необходимые библиотеки.&lt;/p&gt;&lt;p&gt;Если Вы считаете, что это не работает, пожалуйста &lt;a href=&quot;%2&quot;&gt;сообщите о баге&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Проверьте лог для большей информации.&lt;/p&gt;</translation>
+        <translation type="vanished">&lt;p&gt;Извините, пока эта версия %1 поддерживает Wayland, эта сборка не связана с одной или несколькими необходимыми библиотеками.&lt;/p&gt;&lt;p&gt;Пожалуйста, либо перейдите в X, либо используйте сборку, которая поддерживает необходимые библиотеки.&lt;/p&gt;&lt;p&gt;Если Вы считаете, что это не работает, пожалуйста &lt;a href=&quot;%2&quot;&gt;сообщите о баге&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Проверьте лог для большей информации.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>No thanks</source>
@@ -1097,6 +1206,25 @@ This new instance cannot start another server, so it will now exit.</source>
     </message>
 </context>
 <context>
+    <name>SearchWidget</name>
+    <message>
+        <source>Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find next</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find previous</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find...</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ServerConfigDialog</name>
     <message>
         <source>Server Configuration</source>
@@ -1231,8 +1359,8 @@ This new instance cannot start another server, so it will now exit.</source>
         <translation>ms</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enables compatibility with programs that use either the Synergy or Barrier protocols:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 uses the Synergy protocol.&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap and Synergy 1 uses the Barrier protocol.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;A Deskflow client will automatically use either the Synergy or Barrier protocol depending on the server protocol.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Включить совместимость с программы, использующие либо Synergy  или Barrier протоколы:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 используеть протокол Synergy.&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap и Synergy 1 использует Barrier протокл.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;DShare-HID клиенты буду автоматически использовать Synergy или взависимотси от протокола сервера.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enables compatibility with programs that use either the Synergy or Barrier protocols:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 uses the Synergy protocol.&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap and Synergy 1 uses the Barrier protocol.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;A DShare-HID client will automatically use either the Synergy or Barrier protocol depending on the server protocol.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Включить совместимость с программы, использующие либо Synergy  или Barrier протоколы:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 используеть протокол Synergy.&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap и Synergy 1 использует Barrier протокл.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;DShare-HID клиенты буду автоматически использовать Synergy или взависимотси от протокола сервера.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Network protocol</source>
@@ -1306,6 +1434,10 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     <message>
         <source>Failed to delete bridge client configuration file for &apos;%1&apos;.</source>
         <translation>Не удалось удалить файл конфигурации мост-клиента для &apos;%1&apos;.</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enables compatibility with programs that use either the Synergy or Barrier protocols:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 uses the Synergy protocol.&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap and Synergy 1 uses the Barrier protocol.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;A Deskflow client will automatically use either the Synergy or Barrier protocol depending on the server protocol.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1469,7 +1601,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Force a language to be used for the GUI.</source>
-        <translation>Принудительно выбрать язык, используемый для графического интерфейса.</translation>
+        <translation type="vanished">Принудительно выбрать язык, используемый для графического интерфейса.</translation>
     </message>
     <message>
         <source>Language</source>
@@ -1544,8 +1676,8 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Requires the wl-clipboard package&lt;/p&gt;&lt;p&gt;When using wl-clipboard v2.2.1, there is a focus stealing bug that may make Deskflow harder to use. This has been fixed when using the wl-clipboard master branch, unless your Compositor lacks wlroots-data-control protocol support.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Для этого необходим пакет wl-clipboard.&lt;/p&gt;&lt;p&gt;Когда ты используешь wl-clipboard v2.2.1. Возникает ошибка перехвата фокуса, которая мешает использовать deskflowю. Это фиксется если использовать wl-clipboard из ветки master, если только ваш Compositor не поддерживает протокол wlroots-data-control.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Requires the wl-clipboard package&lt;/p&gt;&lt;p&gt;When using wl-clipboard v2.2.1, there is a focus stealing bug that may make DShare-HID harder to use. This has been fixed when using the wl-clipboard master branch, unless your Compositor lacks wlroots-data-control protocol support.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Для этого необходим пакет wl-clipboard.&lt;/p&gt;&lt;p&gt;Когда ты используешь wl-clipboard v2.2.1. Возникает ошибка перехвата фокуса, которая мешает использовать deskflowю. Это фиксется если использовать wl-clipboard из ветки master, если только ваш Compositor не поддерживает протокол wlroots-data-control.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Automatic</source>
@@ -1566,6 +1698,80 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     <message>
         <source>&amp;Network</source>
         <translation type="unfinished">&amp;Сеть</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Requires the wl-clipboard package&lt;/p&gt;&lt;p&gt;When using wl-clipboard v2.2.1, there is a focus stealing bug that may make Deskflow harder to use. This has been fixed when using the wl-clipboard master branch, unless your Compositor lacks wlroots-data-control protocol support.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>StatusBar</name>
+    <message>
+        <source>%1 is not running</source>
+        <translation type="unfinished">%1 не включён</translation>
+    </message>
+    <message>
+        <source>%1 is starting...</source>
+        <translation type="unfinished">%1 запускается...</translation>
+    </message>
+    <message>
+        <source>%1 will retry in a moment...</source>
+        <translation type="unfinished">%1 пробует переподкючиться...</translation>
+    </message>
+    <message>
+        <source>%1 is stopping...</source>
+        <translation type="unfinished">%1 выключается...</translation>
+    </message>
+    <message>
+        <source>%1 is waiting for clients</source>
+        <translation type="unfinished">%1 ожидает клиент компьютер</translation>
+    </message>
+    <message>
+        <source>%1 is connecting...</source>
+        <translation type="unfinished">%1 подключается...</translation>
+    </message>
+    <message>
+        <source>%1 is connected as client of %2</source>
+        <translation type="unfinished">%1 подключен как клиент к %2</translation>
+    </message>
+    <message>
+        <source>%1 is disconnected</source>
+        <translation type="unfinished">%1 отключён</translation>
+    </message>
+    <message numerus="yes">
+        <source>%1 is connected, with %n client(s): %2</source>
+        <extracomment>Shown when in server mode and at least 1 client is connected %1 is replaced by the app name %2 will be a list of at least one client %n will be replaced by the number of clients (n is &gt;=1), it is not requried to be in the translation</extracomment>
+        <translation type="unfinished">
+            <numerusform>%1 подключен %n к клиенту: %2</numerusform>
+            <numerusform>%1 подключен к %n клиентам:: %2</numerusform>
+            <numerusform>%1 подключен к %n клиентам:: %2</numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Clients:
+ %1</source>
+        <translation type="unfinished">Клиент:
+ %1</translation>
+    </message>
+    <message>
+        <source>A new version v%1 is available</source>
+        <translation type="unfinished">Новая версия %1 доступна</translation>
+    </message>
+    <message>
+        <source>View local fingerprint</source>
+        <translation type="unfinished">Показать локальный отпечаток</translation>
+    </message>
+    <message>
+        <source>Update available</source>
+        <translation type="unfinished">Доступно обновление</translation>
+    </message>
+    <message>
+        <source>%1 Encryption Enabled</source>
+        <translation type="unfinished">%1 Шифрование включено</translation>
+    </message>
+    <message>
+        <source>Encryption Disabled</source>
+        <translation type="unfinished">Шифрование выключино</translation>
     </message>
 </context>
 <context>
@@ -1639,16 +1845,16 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation>Автоматически отключать Bluetooth</translation>
     </message>
     <message>
-        <source>Disconnects from the host device when you stop using Deskflow.</source>
-        <translation type="vanished">Отключается от хост-устройства, когда вы прекращаете использовать DShare-HID.</translation>
+        <source>Disconnects from the host device when you stop using DShare-HID.</source>
+        <translation>Отключается от хост-устройства, когда вы прекращаете использовать DShare-HID.</translation>
     </message>
     <message>
         <source>Auto-connect when USB device plugged in</source>
         <translation>Автоматическое подключение при подключении USB-устройства</translation>
     </message>
     <message>
-        <source>Automatically connect to the Deskflow server when the device is plugged in.</source>
-        <translation type="vanished">Автоматически подключаться к серверу DShare-HID при подключении устройства.</translation>
+        <source>Automatically connect to the DShare-HID server when the device is plugged in.</source>
+        <translation>Автоматически подключаться к серверу DShare-HID при подключении устройства.</translation>
     </message>
     <message>
         <source>Automatically restore screen location for the active profile</source>
@@ -1693,14 +1899,6 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     <message>
         <source>Activate</source>
         <translation>Активировать</translation>
-    </message>
-    <message>
-        <source>Disconnects from the host device when you stop using DShare-HID.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Automatically connect to the DShare-HID server when the device is plugged in.</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>When enabled, the saved screen location for the active profile will be restored automatically.</source>

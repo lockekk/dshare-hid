@@ -27,39 +27,46 @@ Run these commands from the root of the repository.
 1.  **Build the Project**
     This compiles the project using the manifest. It automatically uses all available CPU cores.
     ```bash
-    flatpak-builder --user --force-clean --repo=repo build-dir deploy/linux/flatpak/org.lockekk.dshare-hid.yml
+    flatpak-builder --user --force-clean --repo=repo build_flatpak deploy/linux/flatpak/io.github.lockekk.dshare-hid.yml
     ```
 
 2.  **Create Bundle**
     Packet the build into a single `.flatpak` file.
-    *   **App ID**: `org.lockekk.dshare-hid`
+    *   **App ID**: `io.github.lockekk.dshare-hid`
     ```bash
-    flatpak build-bundle repo dshare-hid-1.25.0-linux-x86_64.flatpak org.lockekk.dshare-hid
+    flatpak build-bundle repo dshare-hid-1.26.0-linux-x86_64.flatpak io.github.lockekk.dshare-hid
     ```
+
+3.  **Using run_task.sh (Recommended)**
+    You can also use the interactive task runner to handle the configuration and build process automatically.
+    ```bash
+    ./run_task.sh 5
+    ```
+    This will generate the bundle inside the `build_flatpak/` directory.
 
 ### Installing & Running
 
 1.  **Install**
     ```bash
-    flatpak install --user -y dshare-hid-1.25.0-linux-x86_64.flatpak
+    flatpak install --user -y dshare-hid-1.26.0-linux-x86_64.flatpak
     ```
 
 2.  **Run**
     ```bash
-    flatpak run org.lockekk.dshare-hid
+    flatpak run io.github.lockekk.dshare-hid
     ```
 
 ### Uninstalling & Reinstalling
 
 *   **Uninstall**
     ```bash
-    flatpak uninstall --user org.lockekk.dshare-hid
+    flatpak uninstall --user io.github.lockekk.dshare-hid
     ```
 
 *   **Reinstall (Update)**
     If you have rebuilt the package and want to update your existing installation:
     ```bash
-    flatpak install --user --reinstall -y dshare-hid-1.25.0-linux-x86_64.flatpak
+    flatpak install --user --reinstall -y dshare-hid-1.26.0-linux-x86_64.flatpak
     ```
 
 ### Notes

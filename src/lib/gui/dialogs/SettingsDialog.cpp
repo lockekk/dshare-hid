@@ -31,8 +31,8 @@ SettingsDialog::SettingsDialog(QWidget *parent, const IServerConfig &serverConfi
 
   ui->setupUi(this);
 
-  // no advanced options on macOS
-  if (deskflow::platform::isMac()) {
+  // hide advanced options on macOS and portable windows
+  if (deskflow::platform::isMac() || (deskflow::platform::isWindows() && Settings::isPortableMode())) {
     ui->tabWidget->removeTab(ui->tabWidget->indexOf(ui->tabAdvanced));
   }
 
@@ -55,8 +55,8 @@ SettingsDialog::SettingsDialog(QWidget *parent, const IServerConfig &serverConfi
   ui->tabWidget->setCurrentIndex(0);
 
   // Populate the list of IP addresses
-  NetworkMonitor networkMonitor(this);
-  for (const auto &address : networkMonitor.getAvailableIPv4Addresses()) {
+  const auto validAddresses = NetworkMonitor::validAddresses();
+  for (const auto &address : validAddresses) {
     QString ipString = address;
     if (ui->comboInterface->findText(ipString) == -1) {
       ui->comboInterface->addItem(ipString, ipString);
@@ -264,10 +264,15 @@ void SettingsDialog::loadFromConfig()
   ui->lblDebugWarning->setVisible(Settings::value(Settings::Log::Level).toInt() > 4);
 
   ui->comboInterface->setCurrentText(Settings::value(Settings::Core::Interface).toString());
-  if (ui->comboInterface->currentIndex() < 0)
+  if (ui->comboInterface->currentIndex() <= 0) {
     ui->comboInterface->setCurrentIndex(0);
+    m_interfaceSetOnLoad = false;
+  } else {
+    m_interfaceSetOnLoad = true;
+  }
 
   qDebug() << "load from config done";
+
   updateControls();
 }
 
@@ -381,9 +386,9 @@ void SettingsDialog::logLevelChanged()
 bool SettingsDialog::isModified() const
 {
   const auto processMode = Settings::value(Settings::Core::ProcessMode).value<Settings::ProcessMode>();
-  const auto interfaceSet = ui->comboInterface->currentIndex();
+  const bool ignoreInterface = !m_interfaceSetOnLoad && (ui->comboInterface->currentIndex() == 0);
 
-  return (
+  bool modified =
       (ui->sbPort->value() != Settings::value(Settings::Core::Port).toInt()) ||
       (ui->comboLogLevel->currentIndex() != Settings::value(Settings::Log::Level).toInt()) ||
       (ui->groupLogToFile->isChecked() != Settings::value(Settings::Log::ToFile).toBool()) ||
@@ -398,13 +403,15 @@ bool SettingsDialog::isModified() const
       (ui->cbShowVersion->isChecked() != Settings::value(Settings::Gui::ShowVersionInTitle).toBool()) ||
       (ui->rbIconMono->isChecked() != Settings::value(Settings::Gui::SymbolicTrayIcon).toBool()) ||
       (ui->groupService->isChecked() != (processMode == Settings::ProcessMode::Service)) ||
-      ((ui->comboInterface->currentText() != Settings::value(Settings::Core::Interface).toString()) && interfaceSet) ||
       (ui->lineTlsCertPath->text() != Settings::value(Settings::Security::Certificate).toString()) ||
       (ui->comboTlsKeyLength->currentText() != Settings::value(Settings::Security::KeySize).toString()) ||
       (ui->groupSecurity->isChecked() != Settings::value(Settings::Security::TlsEnabled).toBool()) ||
       (ui->cbRequireClientCert->isChecked() != Settings::value(Settings::Security::CheckPeers).toBool()) ||
-      (I18N::nativeTo639Name(ui->comboLanguage->currentText()) != Settings::value(Settings::Core::Language).toString())
-  );
+      (I18N::nativeTo639Name(ui->comboLanguage->currentText()) != Settings::value(Settings::Core::Language).toString());
+
+  if (!ignoreInterface)
+    modified = modified || ui->comboInterface->currentText() != Settings::value(Settings::Core::Interface).toString();
+  return modified;
 }
 
 bool SettingsDialog::isDefault() const

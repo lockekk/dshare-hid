@@ -179,108 +179,209 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
-    <name>DeskflowHidExtension</name>
+    <name>DShare-HIDHidExtension</name>
     <message>
         <source>Bridge Client Logs</source>
-        <translation>ブリッジクライアントログ</translation>
+        <translation type="vanished">ブリッジクライアントログ</translation>
     </message>
     <message>
         <source>ESP32 HID Tools</source>
-        <translation>ESP32 HID ツール</translation>
+        <translation type="vanished">ESP32 HID ツール</translation>
     </message>
     <message>
         <source>Ready</source>
-        <translation>準備完了</translation>
+        <translation type="vanished">準備完了</translation>
     </message>
     <message>
         <source>Unknown Device</source>
-        <translation>不明なデバイス</translation>
+        <translation type="vanished">不明なデバイス</translation>
     </message>
     <message>
         <source>Bridge client device plugged in: %1</source>
-        <translation>ブリッジクライアントデバイスが接続されました: %1</translation>
+        <translation type="vanished">ブリッジクライアントデバイスが接続されました: %1</translation>
     </message>
     <message>
         <source>Bridge client device unplugged: %1</source>
-        <translation>ブリッジクライアントデバイスが切断されました: %1</translation>
+        <translation type="vanished">ブリッジクライアントデバイスが切断されました: %1</translation>
     </message>
     <message>
         <source>Error: No configuration found for device: %1</source>
-        <translation>エラー: デバイスの設定が見つかりません: %1</translation>
+        <translation type="vanished">エラー: デバイスの設定が見つかりません: %1</translation>
     </message>
     <message>
         <source>Error: Cannot connect. Device path is empty.</source>
-        <translation>エラー: 接続できません。デバイスパスが空です。</translation>
+        <translation type="vanished">エラー: 接続できません。デバイスパスが空です。</translation>
     </message>
     <message>
         <source>Already connected via another profile</source>
-        <translation>別のプロファイル経由で既に接続されています</translation>
+        <translation type="vanished">別のプロファイル経由で既に接続されています</translation>
     </message>
     <message>
         <source>Activation Required</source>
-        <translation>アクティベーションが必要です</translation>
+        <translation type="vanished">アクティベーションが必要です</translation>
     </message>
     <message>
         <source>Free trial is expired. Please consider purchasing a license via 
 File -&gt; Firmware -&gt; Order.</source>
-        <translation>無料トライアルの有効期限が切れました。
+        <translation type="vanished">無料トライアルの有効期限が切れました。
 ファイル -&gt; ファームウェア -&gt; 注文 からライセンスの購入をご検討ください。</translation>
     </message>
     <message>
         <source>Starting bridge client: %1</source>
-        <translation>ブリッジクライアントを開始中: %1</translation>
+        <translation type="vanished">ブリッジクライアントを開始中: %1</translation>
     </message>
     <message>
         <source>Failed to start bridge client: %1</source>
-        <translation>ブリッジクライアントの開始に失敗しました: %1</translation>
+        <translation type="vanished">ブリッジクライアントの開始に失敗しました: %1</translation>
     </message>
     <message>
         <source>Factory firmware detected. Please update firmware.</source>
-        <translation>工場出荷時ファームウェアを検出しました。ファームウェアを更新してください。</translation>
+        <translation type="vanished">工場出荷時ファームウェアを検出しました。ファームウェアを更新してください。</translation>
     </message>
     <message>
         <source>Factory firmware detected on %1. Auto-connect disabled.</source>
-        <translation>%1 で工場出荷時ファームウェアを検出しました。自動接続を無効にしました。</translation>
+        <translation type="vanished">%1 で工場出荷時ファームウェアを検出しました。自動接続を無効にしました。</translation>
     </message>
     <message>
         <source>Handshake failed on %1. Auto-connect disabled.</source>
-        <translation>%1 でのハンドシェイクに失敗しました。自動接続を無効にしました。</translation>
+        <translation type="vanished">%1 でのハンドシェイクに失敗しました。自動接続を無効にしました。</translation>
     </message>
     <message>
         <source>Server is down. Auto-connect will resume once the server starts.</source>
-        <translation>サーバーがダウンしています。サーバーが起動すると自動接続が再開されます。</translation>
+        <translation type="vanished">サーバーがダウンしています。サーバーが起動すると自動接続が再開されます。</translation>
     </message>
     <message>
         <source>Connection failed. Retrying auto-connect (%1/3)...</source>
-        <translation>接続に失敗しました。自動接続を再試行中 (%1/3)...</translation>
+        <translation type="vanished">接続に失敗しました。自動接続を再試行中 (%1/3)...</translation>
     </message>
     <message>
         <source>Auto-connect failed. Giving up after 3 attempts.</source>
-        <translation>自動接続に失敗しました。3回試行しましたが諦めます。</translation>
+        <translation type="vanished">自動接続に失敗しました。3回試行しましたが諦めます。</translation>
     </message>
     <message>
         <source>Locked</source>
-        <translation>ロック済み</translation>
+        <translation type="vanished">ロック済み</translation>
     </message>
     <message>
         <source>Locked by %1</source>
-        <translation>%1 によってロックされています</translation>
+        <translation type="vanished">%1 によってロックされています</translation>
     </message>
     <message>
         <source>Feature Unavailable</source>
-        <translation>機能は利用できません</translation>
+        <translation type="vanished">機能は利用できません</translation>
     </message>
     <message>
         <source>The ESP32 HID Tools module is not available in this build.</source>
-        <translation>このビルドでは ESP32 HID ツールモジュールは利用できません。</translation>
+        <translation type="vanished">このビルドでは ESP32 HID ツールモジュールは利用できません。</translation>
     </message>
     <message>
         <source>Device disconnected.</source>
-        <translation>デバイスが切断されました。</translation>
+        <translation type="vanished">デバイスが切断されました。</translation>
+    </message>
+</context>
+<context>
+    <name>DeskflowHidExtension</name>
+    <message>
+        <source>Bridge Client Logs</source>
+        <translation type="unfinished">ブリッジクライアントログ</translation>
+    </message>
+    <message>
+        <source>ESP32 HID Tools</source>
+        <translation type="unfinished">ESP32 HID ツール</translation>
+    </message>
+    <message>
+        <source>Ready</source>
+        <translation type="unfinished">準備完了</translation>
+    </message>
+    <message>
+        <source>Feature Unavailable</source>
+        <translation type="unfinished">機能は利用できません</translation>
+    </message>
+    <message>
+        <source>The ESP32 HID Tools module is not available in this build.</source>
+        <translation type="unfinished">このビルドでは ESP32 HID ツールモジュールは利用できません。</translation>
+    </message>
+    <message>
+        <source>Unknown Device</source>
+        <translation type="unfinished">不明なデバイス</translation>
+    </message>
+    <message>
+        <source>Bridge client device plugged in: %1</source>
+        <translation type="unfinished">ブリッジクライアントデバイスが接続されました: %1</translation>
+    </message>
+    <message>
+        <source>Bridge client device unplugged: %1</source>
+        <translation type="unfinished">ブリッジクライアントデバイスが切断されました: %1</translation>
+    </message>
+    <message>
+        <source>Error: No configuration found for device: %1</source>
+        <translation type="unfinished">エラー: デバイスの設定が見つかりません: %1</translation>
+    </message>
+    <message>
+        <source>Error: Cannot connect. Device path is empty.</source>
+        <translation type="unfinished">エラー: 接続できません。デバイスパスが空です。</translation>
+    </message>
+    <message>
+        <source>Already connected via another profile</source>
+        <translation type="unfinished">別のプロファイル経由で既に接続されています</translation>
+    </message>
+    <message>
+        <source>Activation Required</source>
+        <translation type="unfinished">アクティベーションが必要です</translation>
+    </message>
+    <message>
+        <source>Free trial is expired. Please consider purchasing a license via 
+File -&gt; Firmware -&gt; Order.</source>
+        <translation type="unfinished">無料トライアルの有効期限が切れました。
+ファイル -&gt; ファームウェア -&gt; 注文 からライセンスの購入をご検討ください。</translation>
+    </message>
+    <message>
+        <source>Starting bridge client: %1</source>
+        <translation type="unfinished">ブリッジクライアントを開始中: %1</translation>
+    </message>
+    <message>
+        <source>Failed to start bridge client: %1</source>
+        <translation type="unfinished">ブリッジクライアントの開始に失敗しました: %1</translation>
+    </message>
+    <message>
+        <source>Factory firmware detected. Please update firmware.</source>
+        <translation type="unfinished">工場出荷時ファームウェアを検出しました。ファームウェアを更新してください。</translation>
+    </message>
+    <message>
+        <source>Factory firmware detected on %1. Auto-connect disabled.</source>
+        <translation type="unfinished">%1 で工場出荷時ファームウェアを検出しました。自動接続を無効にしました。</translation>
     </message>
     <message>
         <source>Device handshake failed. Possibly not a DShare-HID firmware.</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Handshake failed on %1. Auto-connect disabled.</source>
+        <translation type="unfinished">%1 でのハンドシェイクに失敗しました。自動接続を無効にしました。</translation>
+    </message>
+    <message>
+        <source>Device disconnected.</source>
+        <translation type="unfinished">デバイスが切断されました。</translation>
+    </message>
+    <message>
+        <source>Server is down. Auto-connect will resume once the server starts.</source>
+        <translation type="unfinished">サーバーがダウンしています。サーバーが起動すると自動接続が再開されます。</translation>
+    </message>
+    <message>
+        <source>Connection failed. Retrying auto-connect (%1/3)...</source>
+        <translation type="unfinished">接続に失敗しました。自動接続を再試行中 (%1/3)...</translation>
+    </message>
+    <message>
+        <source>Auto-connect failed. Giving up after 3 attempts.</source>
+        <translation type="unfinished">自動接続に失敗しました。3回試行しましたが諦めます。</translation>
+    </message>
+    <message>
+        <source>Locked</source>
+        <translation type="unfinished">ロック済み</translation>
+    </message>
+    <message>
+        <source>Locked by %1</source>
+        <translation type="unfinished">%1 によってロックされています</translation>
     </message>
 </context>
 <context>
@@ -455,7 +556,7 @@ Do you want to connect to the server?
     </message>
     <message>
         <source>A new version v%1 is available</source>
-        <translation>新しいバージョン(v%1)が利用できます</translation>
+        <translation type="vanished">新しいバージョン(v%1)が利用できます</translation>
     </message>
     <message>
         <source>Address missing</source>
@@ -499,11 +600,11 @@ Do you want to connect to the server?
     </message>
     <message>
         <source>%1 Encryption Enabled</source>
-        <translation>%1 暗号化有効</translation>
+        <translation type="vanished">%1 暗号化有効</translation>
     </message>
     <message>
         <source>Encryption Disabled</source>
-        <translation>暗号化無効</translation>
+        <translation type="vanished">暗号化無効</translation>
     </message>
     <message>
         <source>No IP Detected</source>
@@ -537,35 +638,35 @@ A bound IP is now invalid, you may need to restart the server.</source>
     </message>
     <message>
         <source>%1 is starting...</source>
-        <translation>%1 は起動処理中です…</translation>
+        <translation type="vanished">%1 は起動処理中です…</translation>
     </message>
     <message>
         <source>%1 will retry in a moment...</source>
-        <translation>%1 はまもなく再試行します…</translation>
+        <translation type="vanished">%1 はまもなく再試行します…</translation>
     </message>
     <message>
         <source>%1 is stopping...</source>
-        <translation>%1 は停止処理中です…</translation>
+        <translation type="vanished">%1 は停止処理中です…</translation>
     </message>
     <message>
         <source>%1 is not running</source>
-        <translation>%1 は起動していません</translation>
+        <translation type="vanished">%1 は起動していません</translation>
     </message>
     <message>
         <source>%1 is waiting for clients</source>
-        <translation>%1 はクライアント接続を待機中</translation>
+        <translation type="vanished">%1 はクライアント接続を待機中</translation>
     </message>
     <message>
         <source>%1 is connecting...</source>
-        <translation>%1 は接続処理中…</translation>
+        <translation type="vanished">%1 は接続処理中…</translation>
     </message>
     <message>
         <source>%1 is connected as client of %2</source>
-        <translation>%1 は %2 にクライアントとして接続中</translation>
+        <translation type="vanished">%1 は %2 にクライアントとして接続中</translation>
     </message>
     <message>
         <source>%1 is disconnected</source>
-        <translation>%1 は切断しました</translation>
+        <translation type="vanished">%1 は切断しました</translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -642,11 +743,11 @@ A bound IP is now invalid, you may need to restart the server.</source>
     </message>
     <message>
         <source>View local fingerprint</source>
-        <translation>自分の指紋を表示</translation>
+        <translation type="vanished">自分の指紋を表示</translation>
     </message>
     <message>
         <source>Update available</source>
-        <translation>ソフトウェア更新あり</translation>
+        <translation type="vanished">ソフトウェア更新あり</translation>
     </message>
     <message>
         <source>Invalid Screen Name</source>
@@ -673,14 +774,14 @@ Valid names:
     <message numerus="yes">
         <source>%1 is connected, with %n client(s): %2</source>
         <extracomment>Shown when in server mode and at least 1 client is connected %1 is replaced by the app name %2 will be a list of at least one client %n will be replaced by the number of clients (n is &gt;=1), it is not requried to be in the translation</extracomment>
-        <translation>
+        <translation type="vanished">
             <numerusform>%1 は%n台のクライアントと接続中: %2</numerusform>
         </translation>
     </message>
     <message>
         <source>Clients:
  %1</source>
-        <translation>クライアント:
+        <translation type="vanished">クライアント:
  %1</translation>
     </message>
     <message>
@@ -708,6 +809,14 @@ Valid names:
     <message>
         <source>Firmware</source>
         <translation>ファームウェア</translation>
+    </message>
+    <message>
+        <source>%1 Connection Error</source>
+        <translation type="unfinished">%1 接続エラー</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Failed to connect to the server &apos;%1&apos;.&lt;/p&gt;&lt;p&gt;A Client with your name is already connected to the server.&lt;/p&gt;Please ensure that you&apos;re using a unique name and that only a single instance of the client process is running.&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>current user</source>
@@ -824,27 +933,15 @@ Valid names:
     </message>
     <message>
         <source>&lt;p&gt;Failed to connect to the server &apos;%1&apos;.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;サーバー &apos;%1&apos; への接続に失敗しました。&lt;/p&gt;</translation>
+        <translation type="vanished">&lt;p&gt;サーバー &apos;%1&apos; への接続に失敗しました。&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;p&gt;A Client with your name is already connected to the server.&lt;/p&gt;Please ensure that you&apos;re using a unique name and that only a single instance of the client process is running.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;あなたの名前のクライアントが既にサーバーに接続されています。&lt;/p&gt;一意の名前を使用し、クライアントプロセスの単一インスタンスのみが実行されていることを確認してください。&lt;/p&gt;</translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;Please try to connect to the server using the server IP address instead of the hostname. &lt;/p&gt;&lt;p&gt;If that doesn&apos;t work, please check your TLS and firewall settings.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;サーバーのホスト名ではなくIPアドレスで接続してみてください。&lt;/p&gt;&lt;p&gt;それでも接続できない場合は、TLSとファイアウォールの設定を確認してください。&lt;/p&gt;</translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;Please check your TLS and firewall settings.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;TLSとファイアウォールの設定を確認してください。&lt;/p&gt;</translation>
+        <translation type="vanished">&lt;p&gt;あなたの名前のクライアントが既にサーバーに接続されています。&lt;/p&gt;一意の名前を使用し、クライアントプロセスの単一インスタンスのみが実行されていることを確認してください。&lt;/p&gt;</translation>
     </message>
     <message>
         <source>%1 Connection Error</source>
-        <translation>%1 接続エラー</translation>
-    </message>
-    <message>
-        <source>Do not show this message again</source>
-        <translation>このメッセージを再表示しない</translation>
+        <translation type="vanished">%1 接続エラー</translation>
     </message>
     <message>
         <source>%1 - New Client</source>
@@ -884,7 +981,7 @@ Valid names:
     </message>
     <message>
         <source>&lt;p&gt;Sorry, while this version of %1 does support Wayland, this build was not linked with one or more of the required libraries.&lt;/p&gt;&lt;p&gt;Please either switch to X from your login screen or use a build that uses the correct libraries.&lt;/p&gt;&lt;p&gt;If you think this is incorrect, please &lt;a href=&quot;%2&quot;&gt;report a bug&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Please check the logs for more information.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;申し訳ありません、このバージョンの %1 は Wayland に対応していますが、このビルドには必要なライブラリがリンクされていません。&lt;/p&gt;&lt;p&gt;ログイン画面から X に切り替えるか、正しいライブラリをリンクしたビルドを使用してください。&lt;/p&gt;&lt;p&gt;もしこの説明が正しくないと思われる場合は、&lt;a href=&quot;%2&quot;&gt;バグレポート&lt;/a&gt;してください。&lt;/p&gt;&lt;p&gt;詳細はログを確認してください。&lt;/p&gt;</translation>
+        <translation type="vanished">&lt;p&gt;申し訳ありません、このバージョンの %1 は Wayland に対応していますが、このビルドには必要なライブラリがリンクされていません。&lt;/p&gt;&lt;p&gt;ログイン画面から X に切り替えるか、正しいライブラリをリンクしたビルドを使用してください。&lt;/p&gt;&lt;p&gt;もしこの説明が正しくないと思われる場合は、&lt;a href=&quot;%2&quot;&gt;バグレポート&lt;/a&gt;してください。&lt;/p&gt;&lt;p&gt;詳細はログを確認してください。&lt;/p&gt;</translation>
     </message>
     <message>
         <source>No thanks</source>
@@ -1093,6 +1190,25 @@ This new instance cannot start another server, so it will now exit.</source>
     </message>
 </context>
 <context>
+    <name>SearchWidget</name>
+    <message>
+        <source>Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find next</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find previous</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find...</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ServerConfigDialog</name>
     <message>
         <source>Server Configuration</source>
@@ -1227,8 +1343,8 @@ This new instance cannot start another server, so it will now exit.</source>
         <translation>ms</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enables compatibility with programs that use either the Synergy or Barrier protocols:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 uses the Synergy protocol.&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap and Synergy 1 uses the Barrier protocol.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;A Deskflow client will automatically use either the Synergy or Barrier protocol depending on the server protocol.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Synergy もしくは Barrier プロトコルを利用するプログラムとの互換性を有効にします。&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 は Synergy プロトコルを利用します。&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier、Input-Leap、Synergy 1 は Barrier プロトコルを利用します。&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;DShare-HID クライアントはサーバー側のプロトコルに従って自動的に Synergy か Barrier プロトコルを選択します。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enables compatibility with programs that use either the Synergy or Barrier protocols:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 uses the Synergy protocol.&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap and Synergy 1 uses the Barrier protocol.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;A DShare-HID client will automatically use either the Synergy or Barrier protocol depending on the server protocol.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Synergy もしくは Barrier プロトコルを利用するプログラムとの互換性を有効にします。&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 は Synergy プロトコルを利用します。&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier、Input-Leap、Synergy 1 は Barrier プロトコルを利用します。&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;DShare-HID クライアントはサーバー側のプロトコルに従って自動的に Synergy か Barrier プロトコルを選択します。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Network protocol</source>
@@ -1303,6 +1419,10 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     <message>
         <source>Failed to delete bridge client configuration file for &apos;%1&apos;.</source>
         <translation>&apos;%1&apos; のブリッジクライアント設定ファイルの削除に失敗しました。</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enables compatibility with programs that use either the Synergy or Barrier protocols:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 uses the Synergy protocol.&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap and Synergy 1 uses the Barrier protocol.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;A Deskflow client will automatically use either the Synergy or Barrier protocol depending on the server protocol.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1457,7 +1577,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Force a language to be used for the GUI.</source>
-        <translation>GUIの使用言語を設定します。</translation>
+        <translation type="vanished">GUIの使用言語を設定します。</translation>
     </message>
     <message>
         <source>Language</source>
@@ -1532,8 +1652,8 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation>wl-clipboard によるクリップボード対応を有効にする</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Requires the wl-clipboard package&lt;/p&gt;&lt;p&gt;When using wl-clipboard v2.2.1, there is a focus stealing bug that may make Deskflow harder to use. This has been fixed when using the wl-clipboard master branch, unless your Compositor lacks wlroots-data-control protocol support.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;wl-clipboard パッケージが必要です。&lt;/p&gt;&lt;p&gt;wl-clipboard v2.2.1 を使用すると、フォーカス盗用のバグにより DShare-HID の使い勝手が悪くなる可能性があります。この問題は wl-clipboard のマスターブランチで修正されていますが、使用しているコンポジターが wlroots-data-control プロトコルに対応している必要があります。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Requires the wl-clipboard package&lt;/p&gt;&lt;p&gt;When using wl-clipboard v2.2.1, there is a focus stealing bug that may make DShare-HID harder to use. This has been fixed when using the wl-clipboard master branch, unless your Compositor lacks wlroots-data-control protocol support.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;wl-clipboard パッケージが必要です。&lt;/p&gt;&lt;p&gt;wl-clipboard v2.2.1 を使用すると、フォーカス盗用のバグにより DShare-HID の使い勝手が悪くなる可能性があります。この問題は wl-clipboard のマスターブランチで修正されていますが、使用しているコンポジターが wlroots-data-control プロトコルに対応している必要があります。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Automatic</source>
@@ -1562,6 +1682,78 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     <message>
         <source>&amp;Network</source>
         <translation type="unfinished">ネットワーク(&amp;N)</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Requires the wl-clipboard package&lt;/p&gt;&lt;p&gt;When using wl-clipboard v2.2.1, there is a focus stealing bug that may make Deskflow harder to use. This has been fixed when using the wl-clipboard master branch, unless your Compositor lacks wlroots-data-control protocol support.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>StatusBar</name>
+    <message>
+        <source>%1 is not running</source>
+        <translation type="unfinished">%1 は起動していません</translation>
+    </message>
+    <message>
+        <source>%1 is starting...</source>
+        <translation type="unfinished">%1 は起動処理中です…</translation>
+    </message>
+    <message>
+        <source>%1 will retry in a moment...</source>
+        <translation type="unfinished">%1 はまもなく再試行します…</translation>
+    </message>
+    <message>
+        <source>%1 is stopping...</source>
+        <translation type="unfinished">%1 は停止処理中です…</translation>
+    </message>
+    <message>
+        <source>%1 is waiting for clients</source>
+        <translation type="unfinished">%1 はクライアント接続を待機中</translation>
+    </message>
+    <message>
+        <source>%1 is connecting...</source>
+        <translation type="unfinished">%1 は接続処理中…</translation>
+    </message>
+    <message>
+        <source>%1 is connected as client of %2</source>
+        <translation type="unfinished">%1 は %2 にクライアントとして接続中</translation>
+    </message>
+    <message>
+        <source>%1 is disconnected</source>
+        <translation type="unfinished">%1 は切断しました</translation>
+    </message>
+    <message numerus="yes">
+        <source>%1 is connected, with %n client(s): %2</source>
+        <extracomment>Shown when in server mode and at least 1 client is connected %1 is replaced by the app name %2 will be a list of at least one client %n will be replaced by the number of clients (n is &gt;=1), it is not requried to be in the translation</extracomment>
+        <translation type="unfinished">
+            <numerusform>%1 は%n台のクライアントと接続中: %2</numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Clients:
+ %1</source>
+        <translation type="unfinished">クライアント:
+ %1</translation>
+    </message>
+    <message>
+        <source>A new version v%1 is available</source>
+        <translation type="unfinished">新しいバージョン(v%1)が利用できます</translation>
+    </message>
+    <message>
+        <source>View local fingerprint</source>
+        <translation type="unfinished">自分の指紋を表示</translation>
+    </message>
+    <message>
+        <source>Update available</source>
+        <translation type="unfinished">ソフトウェア更新あり</translation>
+    </message>
+    <message>
+        <source>%1 Encryption Enabled</source>
+        <translation type="unfinished">%1 暗号化有効</translation>
+    </message>
+    <message>
+        <source>Encryption Disabled</source>
+        <translation type="unfinished">暗号化無効</translation>
     </message>
 </context>
 <context>
@@ -1635,16 +1827,16 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation>Bluetooth を自動的に切断</translation>
     </message>
     <message>
-        <source>Disconnects from the host device when you stop using Deskflow.</source>
-        <translation type="vanished">DShare-HID の使用を停止するとホストデバイスから切断します。</translation>
+        <source>Disconnects from the host device when you stop using DShare-HID.</source>
+        <translation>DShare-HID の使用を停止するとホストデバイスから切断します。</translation>
     </message>
     <message>
         <source>Auto-connect when USB device plugged in</source>
         <translation>USB デバイス接続時に自動接続</translation>
     </message>
     <message>
-        <source>Automatically connect to the Deskflow server when the device is plugged in.</source>
-        <translation type="vanished">デバイスが接続されると自動的に DShare-HID サーバーに接続します。</translation>
+        <source>Automatically connect to the DShare-HID server when the device is plugged in.</source>
+        <translation>デバイスが接続されると自動的に DShare-HID サーバーに接続します。</translation>
     </message>
     <message>
         <source>Automatically restore screen location for the active profile</source>
@@ -1689,14 +1881,6 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     <message>
         <source>Activate</source>
         <translation>有効化</translation>
-    </message>
-    <message>
-        <source>Disconnects from the host device when you stop using DShare-HID.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Automatically connect to the DShare-HID server when the device is plugged in.</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>When enabled, the saved screen location for the active profile will be restored automatically.</source>

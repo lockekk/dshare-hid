@@ -99,7 +99,7 @@ message(STATUS "Building ${CMAKE_PROJECT_NAME}-${CMAKE_PROJECT_VERSION}")
 # Set lib versions
 set(REQUIRED_OPENSSL_VERSION 3.0)
 set(REQUIRED_LIBEI_VERSION 1.3)
-set(REQUIRED_LIBPORTAL_VERSION 0.8)
+set(REQUIRED_LIBPORTAL_VERSION 0.9.1)
 set(REQUIRED_QT_VERSION 6.7.0)
 
 if (WIN32)
@@ -172,6 +172,7 @@ include(GNUInstallDirs)
 if (WIN32)
   set(CMAKE_INSTALL_BINDIR .)
   set(CMAKE_INSTALL_LIBDIR .)
+  set(CMAKE_INSTALL_DOCDIR docs)
   set(CMAKE_INSTALL_LICENSE_DIR .)
   set(CMAKE_INSTALL_I18N_DIR translations)
 elseif(BUILD_OSX_BUNDLE)
@@ -182,7 +183,7 @@ else()
   set(CMAKE_INSTALL_I18N_DIR ${CMAKE_INSTALL_DATADIR}/${CMAKE_PROJECT_NAME}/translations)
 endif()
 
-add_subdirectory(doc)
+add_subdirectory(docs)
 
 # build translations before source, I18N unit tests fail if they are missing
 add_subdirectory(translations)

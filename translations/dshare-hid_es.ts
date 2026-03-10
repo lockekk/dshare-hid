@@ -179,108 +179,209 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
-    <name>DeskflowHidExtension</name>
+    <name>DShare-HIDHidExtension</name>
     <message>
         <source>Bridge Client Logs</source>
-        <translation>Registros del cliente puente</translation>
+        <translation type="vanished">Registros del cliente puente</translation>
     </message>
     <message>
         <source>ESP32 HID Tools</source>
-        <translation>Herramientas HID ESP32</translation>
+        <translation type="vanished">Herramientas HID ESP32</translation>
     </message>
     <message>
         <source>Ready</source>
-        <translation>Listo</translation>
+        <translation type="vanished">Listo</translation>
     </message>
     <message>
         <source>Unknown Device</source>
-        <translation>Dispositivo desconocido</translation>
+        <translation type="vanished">Dispositivo desconocido</translation>
     </message>
     <message>
         <source>Bridge client device plugged in: %1</source>
-        <translation>Dispositivo cliente puente conectado: %1</translation>
+        <translation type="vanished">Dispositivo cliente puente conectado: %1</translation>
     </message>
     <message>
         <source>Bridge client device unplugged: %1</source>
-        <translation>Dispositivo cliente puente desconectado: %1</translation>
+        <translation type="vanished">Dispositivo cliente puente desconectado: %1</translation>
     </message>
     <message>
         <source>Error: No configuration found for device: %1</source>
-        <translation>Error: No se encontró configuración para el dispositivo: %1</translation>
+        <translation type="vanished">Error: No se encontró configuración para el dispositivo: %1</translation>
     </message>
     <message>
         <source>Error: Cannot connect. Device path is empty.</source>
-        <translation>Error: No se puede conectar. La ruta del dispositivo está vacía.</translation>
+        <translation type="vanished">Error: No se puede conectar. La ruta del dispositivo está vacía.</translation>
     </message>
     <message>
         <source>Already connected via another profile</source>
-        <translation>Ya está conectado a través de otro perfil</translation>
+        <translation type="vanished">Ya está conectado a través de otro perfil</translation>
     </message>
     <message>
         <source>Activation Required</source>
-        <translation>Activación requerida</translation>
+        <translation type="vanished">Activación requerida</translation>
     </message>
     <message>
         <source>Free trial is expired. Please consider purchasing a license via 
 File -&gt; Firmware -&gt; Order.</source>
-        <translation>La prueba gratuita ha expirado. Por favor, considere comprar una licencia a través de 
+        <translation type="vanished">La prueba gratuita ha expirado. Por favor, considere comprar una licencia a través de 
 Archivo -&gt; Firmware -&gt; Pedido.</translation>
     </message>
     <message>
         <source>Starting bridge client: %1</source>
-        <translation>Iniciando cliente puente: %1</translation>
+        <translation type="vanished">Iniciando cliente puente: %1</translation>
     </message>
     <message>
         <source>Failed to start bridge client: %1</source>
-        <translation>Error al iniciar el cliente puente: %1</translation>
+        <translation type="vanished">Error al iniciar el cliente puente: %1</translation>
     </message>
     <message>
         <source>Factory firmware detected. Please update firmware.</source>
-        <translation>Firmware de fábrica detectado. Por favor, actualice el firmware.</translation>
+        <translation type="vanished">Firmware de fábrica detectado. Por favor, actualice el firmware.</translation>
     </message>
     <message>
         <source>Factory firmware detected on %1. Auto-connect disabled.</source>
-        <translation>Firmware de fábrica detectado en %1. Conexión automática desactivada.</translation>
+        <translation type="vanished">Firmware de fábrica detectado en %1. Conexión automática desactivada.</translation>
     </message>
     <message>
         <source>Handshake failed on %1. Auto-connect disabled.</source>
-        <translation>Fallo en la negociación en %1. Conexión automática desactivada.</translation>
+        <translation type="vanished">Fallo en la negociación en %1. Conexión automática desactivada.</translation>
     </message>
     <message>
         <source>Server is down. Auto-connect will resume once the server starts.</source>
-        <translation>El servidor está caído. La conexión automática se reanudará cuando el servidor se inicie.</translation>
+        <translation type="vanished">El servidor está caído. La conexión automática se reanudará cuando el servidor se inicie.</translation>
     </message>
     <message>
         <source>Locked</source>
-        <translation>Bloqueado</translation>
+        <translation type="vanished">Bloqueado</translation>
     </message>
     <message>
         <source>Locked by %1</source>
-        <translation>Bloqueado por %1</translation>
+        <translation type="vanished">Bloqueado por %1</translation>
     </message>
     <message>
         <source>Feature Unavailable</source>
-        <translation>Función no disponible</translation>
+        <translation type="vanished">Función no disponible</translation>
     </message>
     <message>
         <source>The ESP32 HID Tools module is not available in this build.</source>
-        <translation>El módulo de herramientas HID ESP32 no está disponible en esta compilación.</translation>
+        <translation type="vanished">El módulo de herramientas HID ESP32 no está disponible en esta compilación.</translation>
     </message>
     <message>
         <source>Device disconnected.</source>
-        <translation>Dispositivo desconectado.</translation>
+        <translation type="vanished">Dispositivo desconectado.</translation>
     </message>
     <message>
         <source>Connection failed. Retrying auto-connect (%1/3)...</source>
-        <translation>Fallo en la conexión. Reintentando conexión automática (%1/3)...</translation>
+        <translation type="vanished">Fallo en la conexión. Reintentando conexión automática (%1/3)...</translation>
     </message>
     <message>
         <source>Auto-connect failed. Giving up after 3 attempts.</source>
-        <translation>Fallo en la conexión automática. Desistiendo tras 3 intentos.</translation>
+        <translation type="vanished">Fallo en la conexión automática. Desistiendo tras 3 intentos.</translation>
+    </message>
+</context>
+<context>
+    <name>DeskflowHidExtension</name>
+    <message>
+        <source>Bridge Client Logs</source>
+        <translation type="unfinished">Registros del cliente puente</translation>
+    </message>
+    <message>
+        <source>ESP32 HID Tools</source>
+        <translation type="unfinished">Herramientas HID ESP32</translation>
+    </message>
+    <message>
+        <source>Ready</source>
+        <translation type="unfinished">Listo</translation>
+    </message>
+    <message>
+        <source>Feature Unavailable</source>
+        <translation type="unfinished">Función no disponible</translation>
+    </message>
+    <message>
+        <source>The ESP32 HID Tools module is not available in this build.</source>
+        <translation type="unfinished">El módulo de herramientas HID ESP32 no está disponible en esta compilación.</translation>
+    </message>
+    <message>
+        <source>Unknown Device</source>
+        <translation type="unfinished">Dispositivo desconocido</translation>
+    </message>
+    <message>
+        <source>Bridge client device plugged in: %1</source>
+        <translation type="unfinished">Dispositivo cliente puente conectado: %1</translation>
+    </message>
+    <message>
+        <source>Bridge client device unplugged: %1</source>
+        <translation type="unfinished">Dispositivo cliente puente desconectado: %1</translation>
+    </message>
+    <message>
+        <source>Error: No configuration found for device: %1</source>
+        <translation type="unfinished">Error: No se encontró configuración para el dispositivo: %1</translation>
+    </message>
+    <message>
+        <source>Error: Cannot connect. Device path is empty.</source>
+        <translation type="unfinished">Error: No se puede conectar. La ruta del dispositivo está vacía.</translation>
+    </message>
+    <message>
+        <source>Already connected via another profile</source>
+        <translation type="unfinished">Ya está conectado a través de otro perfil</translation>
+    </message>
+    <message>
+        <source>Activation Required</source>
+        <translation type="unfinished">Activación requerida</translation>
+    </message>
+    <message>
+        <source>Free trial is expired. Please consider purchasing a license via 
+File -&gt; Firmware -&gt; Order.</source>
+        <translation type="unfinished">La prueba gratuita ha expirado. Por favor, considere comprar una licencia a través de 
+Archivo -&gt; Firmware -&gt; Pedido.</translation>
+    </message>
+    <message>
+        <source>Starting bridge client: %1</source>
+        <translation type="unfinished">Iniciando cliente puente: %1</translation>
+    </message>
+    <message>
+        <source>Failed to start bridge client: %1</source>
+        <translation type="unfinished">Error al iniciar el cliente puente: %1</translation>
+    </message>
+    <message>
+        <source>Factory firmware detected. Please update firmware.</source>
+        <translation type="unfinished">Firmware de fábrica detectado. Por favor, actualice el firmware.</translation>
+    </message>
+    <message>
+        <source>Factory firmware detected on %1. Auto-connect disabled.</source>
+        <translation type="unfinished">Firmware de fábrica detectado en %1. Conexión automática desactivada.</translation>
     </message>
     <message>
         <source>Device handshake failed. Possibly not a DShare-HID firmware.</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Handshake failed on %1. Auto-connect disabled.</source>
+        <translation type="unfinished">Fallo en la negociación en %1. Conexión automática desactivada.</translation>
+    </message>
+    <message>
+        <source>Device disconnected.</source>
+        <translation type="unfinished">Dispositivo desconectado.</translation>
+    </message>
+    <message>
+        <source>Server is down. Auto-connect will resume once the server starts.</source>
+        <translation type="unfinished">El servidor está caído. La conexión automática se reanudará cuando el servidor se inicie.</translation>
+    </message>
+    <message>
+        <source>Connection failed. Retrying auto-connect (%1/3)...</source>
+        <translation type="unfinished">Fallo en la conexión. Reintentando conexión automática (%1/3)...</translation>
+    </message>
+    <message>
+        <source>Auto-connect failed. Giving up after 3 attempts.</source>
+        <translation type="unfinished">Fallo en la conexión automática. Desistiendo tras 3 intentos.</translation>
+    </message>
+    <message>
+        <source>Locked</source>
+        <translation type="unfinished">Bloqueado</translation>
+    </message>
+    <message>
+        <source>Locked by %1</source>
+        <translation type="unfinished">Bloqueado por %1</translation>
     </message>
 </context>
 <context>
@@ -491,15 +592,15 @@ Do you want to connect to the server?
     </message>
     <message>
         <source>View local fingerprint</source>
-        <translation type="unfinished">Ver huella digital local</translation>
+        <translation type="obsolete">Ver huella digital local</translation>
     </message>
     <message>
         <source>Update available</source>
-        <translation type="unfinished">Actualización disponible</translation>
+        <translation type="obsolete">Actualización disponible</translation>
     </message>
     <message>
         <source>A new version v%1 is available</source>
-        <translation type="unfinished">Ya está disponible una nueva versión v%1</translation>
+        <translation type="obsolete">Ya está disponible una nueva versión v%1</translation>
     </message>
     <message>
         <source>ESP32 HID Tools are not available in this build (submodule missing).</source>
@@ -547,11 +648,11 @@ Do you want to connect to the server?
     </message>
     <message>
         <source>%1 Encryption Enabled</source>
-        <translation type="unfinished">%1 Cifrado habilitado</translation>
+        <translation type="obsolete">%1 Cifrado habilitado</translation>
     </message>
     <message>
         <source>Encryption Disabled</source>
-        <translation type="unfinished">Cifrado deshabilitado</translation>
+        <translation type="obsolete">Cifrado deshabilitado</translation>
     </message>
     <message>
         <source>No IP Detected</source>
@@ -605,7 +706,7 @@ La dirección IP asignada ahora no es válida; es posible que deba reiniciar el 
     </message>
     <message>
         <source>%1 is starting...</source>
-        <translation type="unfinished">%1 está iniciando...</translation>
+        <translation type="obsolete">%1 está iniciando...</translation>
     </message>
     <message>
         <source>invalid certificate, generating a new one</source>
@@ -613,31 +714,31 @@ La dirección IP asignada ahora no es válida; es posible que deba reiniciar el 
     </message>
     <message>
         <source>%1 will retry in a moment...</source>
-        <translation type="unfinished">%1 lo intentará nuevamente en un momento...</translation>
+        <translation type="obsolete">%1 lo intentará nuevamente en un momento...</translation>
     </message>
     <message>
         <source>%1 is stopping...</source>
-        <translation type="unfinished">%1 se está deteniendo...</translation>
+        <translation type="obsolete">%1 se está deteniendo...</translation>
     </message>
     <message>
         <source>%1 is not running</source>
-        <translation type="unfinished">%1 no se está ejecutando</translation>
+        <translation type="obsolete">%1 no se está ejecutando</translation>
     </message>
     <message>
         <source>%1 is waiting for clients</source>
-        <translation type="unfinished">%1 está esperando clientes</translation>
+        <translation type="obsolete">%1 está esperando clientes</translation>
     </message>
     <message>
         <source>%1 is connecting...</source>
-        <translation type="unfinished">%1 se está conectando...</translation>
+        <translation type="obsolete">%1 se está conectando...</translation>
     </message>
     <message>
         <source>%1 is connected as client of %2</source>
-        <translation type="unfinished">%1 está conectado como cliente de %2</translation>
+        <translation type="obsolete">%1 está conectado como cliente de %2</translation>
     </message>
     <message>
         <source>%1 is disconnected</source>
-        <translation type="unfinished">%1 está desconectado</translation>
+        <translation type="obsolete">%1 está desconectado</translation>
     </message>
     <message>
         <source>Firmware (Unavailable)</source>
@@ -673,7 +774,7 @@ Nombres válidos:
     <message numerus="yes">
         <source>%1 is connected, with %n client(s): %2</source>
         <extracomment>Shown when in server mode and at least 1 client is connected %1 is replaced by the app name %2 will be a list of at least one client %n will be replaced by the number of clients (n is &gt;=1), it is not requried to be in the translation</extracomment>
-        <translation type="unfinished">
+        <translation type="obsolete">
             <numerusform>%1 está conectado, con un cliente: %2</numerusform>
             <numerusform>%1 está conectado, con %n clientes: %2</numerusform>
         </translation>
@@ -681,7 +782,7 @@ Nombres válidos:
     <message>
         <source>Clients:
  %1</source>
-        <translation type="unfinished">Clientes:
+        <translation type="obsolete">Clientes:
  %1</translation>
     </message>
     <message>
@@ -709,6 +810,14 @@ Nombres válidos:
     <message>
         <source>Firmware</source>
         <translation>Firmware</translation>
+    </message>
+    <message>
+        <source>%1 Connection Error</source>
+        <translation type="unfinished">%1 Error de conexión</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Failed to connect to the server &apos;%1&apos;.&lt;/p&gt;&lt;p&gt;A Client with your name is already connected to the server.&lt;/p&gt;Please ensure that you&apos;re using a unique name and that only a single instance of the client process is running.&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>current user</source>
@@ -823,27 +932,15 @@ Nombres válidos:
     </message>
     <message>
         <source>&lt;p&gt;Failed to connect to the server &apos;%1&apos;.&lt;/p&gt;</source>
-        <translation type="unfinished">&lt;p&gt;Error al conectar con el servidor &apos;%1&apos;.&lt;/p&gt;</translation>
+        <translation type="obsolete">&lt;p&gt;Error al conectar con el servidor &apos;%1&apos;.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;p&gt;A Client with your name is already connected to the server.&lt;/p&gt;Please ensure that you&apos;re using a unique name and that only a single instance of the client process is running.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Un cliente con su nombre ya está conectado al servidor.&lt;/p&gt;Asegúrese de que está usando un nombre único y de que solo se está ejecutando una instancia del proceso del cliente.&lt;/p&gt;</translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;Please try to connect to the server using the server IP address instead of the hostname. &lt;/p&gt;&lt;p&gt;If that doesn&apos;t work, please check your TLS and firewall settings.&lt;/p&gt;</source>
-        <translation type="unfinished">&lt;p&gt;Intente conectarse al servidor usando la dirección IP del servidor en lugar del nombre de host.&lt;/p&gt;&lt;p&gt;Si eso no funciona, verifique la configuración de TLS y firewall.&lt;/p&gt;</translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;Please check your TLS and firewall settings.&lt;/p&gt;</source>
-        <translation type="unfinished">&lt;p&gt;Por favor revise su configuración de TLS y firewall.&lt;/p&gt;</translation>
+        <translation type="vanished">&lt;p&gt;Un cliente con su nombre ya está conectado al servidor.&lt;/p&gt;Asegúrese de que está usando un nombre único y de que solo se está ejecutando una instancia del proceso del cliente.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>%1 Connection Error</source>
-        <translation type="unfinished">%1 Error de conexión</translation>
-    </message>
-    <message>
-        <source>Do not show this message again</source>
-        <translation type="unfinished">No volver a mostrar este mensaje</translation>
+        <translation type="obsolete">%1 Error de conexión</translation>
     </message>
     <message>
         <source>%1 - New Client</source>
@@ -883,7 +980,7 @@ Nombres válidos:
     </message>
     <message>
         <source>&lt;p&gt;Sorry, while this version of %1 does support Wayland, this build was not linked with one or more of the required libraries.&lt;/p&gt;&lt;p&gt;Please either switch to X from your login screen or use a build that uses the correct libraries.&lt;/p&gt;&lt;p&gt;If you think this is incorrect, please &lt;a href=&quot;%2&quot;&gt;report a bug&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Please check the logs for more information.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Lo sentimos, aunque esta versión de %1 es compatible con Wayland, esta compilación no se vinculó con una o más de las bibliotecas requeridas.&lt;/p&gt;&lt;p&gt;Cambie a X desde su pantalla de inicio de sesión o use una compilación que use las bibliotecas correctas.&lt;/p&gt;&lt;p&gt;Si cree que esto es incorrecto, &lt;a href=&quot;%2&quot;&gt;informe un error&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Consulte los registros para obtener más información.&lt;/p&gt;</translation>
+        <translation type="vanished">&lt;p&gt;Lo sentimos, aunque esta versión de %1 es compatible con Wayland, esta compilación no se vinculó con una o más de las bibliotecas requeridas.&lt;/p&gt;&lt;p&gt;Cambie a X desde su pantalla de inicio de sesión o use una compilación que use las bibliotecas correctas.&lt;/p&gt;&lt;p&gt;Si cree que esto es incorrecto, &lt;a href=&quot;%2&quot;&gt;informe un error&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Consulte los registros para obtener más información.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>No thanks</source>
@@ -1092,6 +1189,25 @@ Esta nueva instancia no puede iniciar otro servidor, por lo que se cerrará ahor
     </message>
 </context>
 <context>
+    <name>SearchWidget</name>
+    <message>
+        <source>Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find next</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find previous</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find...</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ServerConfigDialog</name>
     <message>
         <source>Server Configuration</source>
@@ -1226,8 +1342,8 @@ Esta nueva instancia no puede iniciar otro servidor, por lo que se cerrará ahor
         <translation type="unfinished">ms</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enables compatibility with programs that use either the Synergy or Barrier protocols:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 uses the Synergy protocol.&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap and Synergy 1 uses the Barrier protocol.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;A Deskflow client will automatically use either the Synergy or Barrier protocol depending on the server protocol.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Habilita la compatibilidad con programas que usan los protocolos Synergy o Barrier:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 usa el protocolo Synergy.&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap y Synergy 1 usan el protocolo Barrier.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Un cliente de DShare-HID usará automáticamente el Protocolo Synergy o Barrier según el protocolo del servidor.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enables compatibility with programs that use either the Synergy or Barrier protocols:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 uses the Synergy protocol.&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap and Synergy 1 uses the Barrier protocol.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;A DShare-HID client will automatically use either the Synergy or Barrier protocol depending on the server protocol.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="obsolete">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Habilita la compatibilidad con programas que usan los protocolos Synergy o Barrier:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 usa el protocolo Synergy.&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap y Synergy 1 usan el protocolo Barrier.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Un cliente de DShare-HID usará automáticamente el Protocolo Synergy o Barrier según el protocolo del servidor.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Network protocol</source>
@@ -1302,6 +1418,10 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     <message>
         <source>Failed to delete bridge client configuration file for &apos;%1&apos;.</source>
         <translation>Error al eliminar el archivo de configuración del cliente puente para &apos;%1&apos;.</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enables compatibility with programs that use either the Synergy or Barrier protocols:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 uses the Synergy protocol.&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap and Synergy 1 uses the Barrier protocol.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;A Deskflow client will automatically use either the Synergy or Barrier protocol depending on the server protocol.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1520,7 +1640,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Force a language to be used for the GUI.</source>
-        <translation type="unfinished">Fuerza el uso de un idioma para la interfaz gráfica de usuario.</translation>
+        <translation type="obsolete">Fuerza el uso de un idioma para la interfaz gráfica de usuario.</translation>
     </message>
     <message>
         <source>Enable GUI debug messages</source>
@@ -1531,8 +1651,8 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation type="unfinished">Habilitar la compatibilidad con wl-clipboard</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Requires the wl-clipboard package&lt;/p&gt;&lt;p&gt;When using wl-clipboard v2.2.1, there is a focus stealing bug that may make Deskflow harder to use. This has been fixed when using the wl-clipboard master branch, unless your Compositor lacks wlroots-data-control protocol support.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Requiere el paquete wl-clipboard&lt;/p&gt;&lt;p&gt;Al usar wl-clipboard v2.2.1, existe un error que provoca la pérdida del foco y que puede dificultar el uso de DShare-HID. Este error se ha corregido al usar la rama principal de wl-clipboard, a menos que su Compositor no sea compatible con el protocolo wlroots-data-control.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Requires the wl-clipboard package&lt;/p&gt;&lt;p&gt;When using wl-clipboard v2.2.1, there is a focus stealing bug that may make DShare-HID harder to use. This has been fixed when using the wl-clipboard master branch, unless your Compositor lacks wlroots-data-control protocol support.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="obsolete">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Requiere el paquete wl-clipboard&lt;/p&gt;&lt;p&gt;Al usar wl-clipboard v2.2.1, existe un error que provoca la pérdida del foco y que puede dificultar el uso de DShare-HID. Este error se ha corregido al usar la rama principal de wl-clipboard, a menos que su Compositor no sea compatible con el protocolo wlroots-data-control.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Automatic</source>
@@ -1561,6 +1681,79 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     <message>
         <source>&amp;Network</source>
         <translation type="unfinished">&amp;Red</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Requires the wl-clipboard package&lt;/p&gt;&lt;p&gt;When using wl-clipboard v2.2.1, there is a focus stealing bug that may make Deskflow harder to use. This has been fixed when using the wl-clipboard master branch, unless your Compositor lacks wlroots-data-control protocol support.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>StatusBar</name>
+    <message>
+        <source>%1 is not running</source>
+        <translation type="unfinished">%1 no se está ejecutando</translation>
+    </message>
+    <message>
+        <source>%1 is starting...</source>
+        <translation type="unfinished">%1 está iniciando...</translation>
+    </message>
+    <message>
+        <source>%1 will retry in a moment...</source>
+        <translation type="unfinished">%1 lo intentará nuevamente en un momento...</translation>
+    </message>
+    <message>
+        <source>%1 is stopping...</source>
+        <translation type="unfinished">%1 se está deteniendo...</translation>
+    </message>
+    <message>
+        <source>%1 is waiting for clients</source>
+        <translation type="unfinished">%1 está esperando clientes</translation>
+    </message>
+    <message>
+        <source>%1 is connecting...</source>
+        <translation type="unfinished">%1 se está conectando...</translation>
+    </message>
+    <message>
+        <source>%1 is connected as client of %2</source>
+        <translation type="unfinished">%1 está conectado como cliente de %2</translation>
+    </message>
+    <message>
+        <source>%1 is disconnected</source>
+        <translation type="unfinished">%1 está desconectado</translation>
+    </message>
+    <message numerus="yes">
+        <source>%1 is connected, with %n client(s): %2</source>
+        <extracomment>Shown when in server mode and at least 1 client is connected %1 is replaced by the app name %2 will be a list of at least one client %n will be replaced by the number of clients (n is &gt;=1), it is not requried to be in the translation</extracomment>
+        <translation type="unfinished">
+            <numerusform>%1 está conectado, con un cliente: %2</numerusform>
+            <numerusform>%1 está conectado, con %n clientes: %2</numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Clients:
+ %1</source>
+        <translation type="unfinished">Clientes:
+ %1</translation>
+    </message>
+    <message>
+        <source>A new version v%1 is available</source>
+        <translation type="unfinished">Ya está disponible una nueva versión v%1</translation>
+    </message>
+    <message>
+        <source>View local fingerprint</source>
+        <translation type="unfinished">Ver huella digital local</translation>
+    </message>
+    <message>
+        <source>Update available</source>
+        <translation type="unfinished">Actualización disponible</translation>
+    </message>
+    <message>
+        <source>%1 Encryption Enabled</source>
+        <translation type="unfinished">%1 Cifrado habilitado</translation>
+    </message>
+    <message>
+        <source>Encryption Disabled</source>
+        <translation type="unfinished">Cifrado deshabilitado</translation>
     </message>
 </context>
 <context>
@@ -1634,16 +1827,16 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation>Desconectar Bluetooth automáticamente</translation>
     </message>
     <message>
-        <source>Disconnects from the host device when you stop using Deskflow.</source>
-        <translation type="vanished">Se desconecta del dispositivo host cuando deja de usar DShare-HID.</translation>
+        <source>Disconnects from the host device when you stop using DShare-HID.</source>
+        <translation>Se desconecta del dispositivo host cuando deja de usar DShare-HID.</translation>
     </message>
     <message>
         <source>Auto-connect when USB device plugged in</source>
         <translation>Conexión automática al conectar dispositivo USB</translation>
     </message>
     <message>
-        <source>Automatically connect to the Deskflow server when the device is plugged in.</source>
-        <translation type="vanished">Conectarse automáticamente al servidor DShare-HID cuando el dispositivo está conectado.</translation>
+        <source>Automatically connect to the DShare-HID server when the device is plugged in.</source>
+        <translation>Conectarse automáticamente al servidor DShare-HID cuando el dispositivo está conectado.</translation>
     </message>
     <message>
         <source>Automatically restore screen location for the active profile</source>
@@ -1688,14 +1881,6 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     <message>
         <source>Activate</source>
         <translation>Activar</translation>
-    </message>
-    <message>
-        <source>Disconnects from the host device when you stop using DShare-HID.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Automatically connect to the DShare-HID server when the device is plugged in.</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>When enabled, the saved screen location for the active profile will be restored automatically.</source>

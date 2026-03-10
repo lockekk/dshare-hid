@@ -70,7 +70,7 @@ brew upgrade dshare-hid
 
 #### 选项 B: 手动安装
 1.  从 [Releases](https://github.com/lockekk/dshare-hid/releases) 页面下载最新的 `.dmg` 文件。
-2.  打开 `dshare-hid-1.25.0-macos-universal.dmg` 并将应用程序拖入 `Applications` 文件夹。
+2.  打开 `dshare-hid-1.26.0-macos-universal.dmg` 并将应用程序拖入 `Applications` 文件夹。
 3.  **注意**: 如果遇到“已损坏”或“无法验证”的错误提示，请在终端中运行以下命令：
     ```bash
     xattr -cr /Applications/DShare-HID.app
@@ -106,11 +106,11 @@ brew upgrade dshare-hid
 1.  从 [Releases](https://github.com/lockekk/dshare-hid/releases) 下载 `.AppImage` 文件。
 2.  赋予可执行权限:
     ```bash
-    chmod +x dshare-hid-1.25.0-linux-x86_64.AppImage
+    chmod +x dshare-hid-1.26.0-linux-x86_64.AppImage
     ```
 3.  运行:
     ```bash
-    ./dshare-hid-1.25.0-linux-x86_64.AppImage
+    ./dshare-hid-1.26.0-linux-x86_64.AppImage
     ```
 
 #### 选项 B: Flatpak
@@ -134,17 +134,17 @@ flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.f
 
 **2. 安装**
 ```bash
-flatpak install --user ./dshare-hid-1.25.0-linux-x86_64.flatpak
+flatpak install --user ./dshare-hid-1.26.0-linux-x86_64.flatpak
 ```
 
 **3. 管理应用**
 ```bash
 # 卸载
-flatpak uninstall org.lockekk.dshare-hid
+flatpak uninstall io.github.lockekk.dshare-hid
 
 # 重装 (先卸载再安装)
-flatpak uninstall org.lockekk.dshare-hid
-flatpak install --user ./dshare-hid-1.25.0-linux-x86_64.flatpak
+flatpak uninstall io.github.lockekk.dshare-hid
+flatpak install --user ./dshare-hid-1.26.0-linux-x86_64.flatpak
 ```
 
 #### 选项 C: Debian 软件包 (Ubuntu 24+)
@@ -153,7 +153,7 @@ flatpak install --user ./dshare-hid-1.25.0-linux-x86_64.flatpak
 1.  从 [Releases](https://github.com/lockekk/dshare-hid/releases) 下载 `.deb` 文件。
 2.  安装:
     ```bash
-    sudo apt install ./dshare-hid_1.25.0_ubuntu_24.04_amd64.deb
+    sudo apt install ./dshare-hid_1.26.0_ubuntu_24.04_amd64.deb
     ```
 3.  卸载:
     ```bash

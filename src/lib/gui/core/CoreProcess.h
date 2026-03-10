@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "common/Enums.h"
 #include "common/Settings.h"
 #include "gui/FileTail.h"
 #include "gui/config/IServerConfig.h"
@@ -24,34 +25,18 @@ class DaemonIpcClient;
 
 class CoreProcess : public QObject
 {
-  using ProcessMode = Settings::ProcessMode;
-  using IServerConfig = deskflow::gui::IServerConfig;
-
   Q_OBJECT
 
 public:
+  using ConnectionState = deskflow::core::ConnectionState;
+  using ProcessMode = Settings::ProcessMode;
+  using ProcessState = deskflow::core::ProcessState;
+  using IServerConfig = deskflow::gui::IServerConfig;
   enum class Error
   {
     AddressMissing,
     StartFailed,
     DuplicateServer
-  };
-  enum class ProcessState
-  {
-    Starting,
-    Started,
-    Stopping,
-    Stopped,
-    RetryPending
-  };
-  Q_ENUM(ProcessState)
-
-  enum class ConnectionState
-  {
-    Disconnected,
-    Connecting,
-    Connected,
-    Listening
   };
 
   explicit CoreProcess(const IServerConfig &serverConfig);
@@ -99,10 +84,11 @@ public:
 Q_SIGNALS:
   void error(deskflow::gui::CoreProcess::Error error);
   void logLine(const QString &line);
-  void connectionStateChanged(deskflow::gui::CoreProcess::ConnectionState state);
-  void processStateChanged(deskflow::gui::CoreProcess::ProcessState state);
+  void connectionStateChanged(deskflow::core::ConnectionState state);
+  void processStateChanged(deskflow::core::ProcessState state);
   void secureSocket(bool enabled);
   void daemonIpcClientConnectionFailed();
+  void securityLevelChanged(QString securityLevel);
 
 private Q_SLOTS:
   void onProcessFinished(int exitCode, QProcess::ExitStatus);
