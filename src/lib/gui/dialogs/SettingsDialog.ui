@@ -40,35 +40,33 @@
         <number>12</number>
        </property>
        <property name="topMargin">
-        <number>25</number>
+        <number>20</number>
        </property>
        <property name="rightMargin">
         <number>12</number>
        </property>
+       <property name="bottomMargin">
+        <number>20</number>
+       </property>
        <item>
-        <widget class="QWidget" name="widgetLanguage" native="true">
-         <property name="toolTip">
-          <string>Force a language to be used for the GUI.</string>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
-          <item>
-           <widget class="QLabel" name="lblLanguage">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Language</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="comboLanguage"/>
-          </item>
-         </layout>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QLabel" name="lblLanguage">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Language</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboLanguage"/>
+         </item>
+        </layout>
        </item>
        <item>
         <widget class="QCheckBox" name="cbAutoUpdate">
@@ -106,25 +104,25 @@
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_8">
-         <item>
-          <widget class="QLabel" name="lblTrayIconStyle">
-           <property name="text">
-            <string>Tray icon style</string>
-           </property>
-          </widget>
-         </item>
-         <item>
+        <layout class="QFormLayout" name="formLayout">
+         <item row="1" column="1">
           <widget class="QRadioButton" name="rbIconColorful">
            <property name="text">
             <string>Colorful</string>
            </property>
           </widget>
          </item>
-         <item>
+         <item row="0" column="1">
           <widget class="QRadioButton" name="rbIconMono">
            <property name="text">
             <string>Monocolor</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="lblTrayIconStyle">
+           <property name="text">
+            <string>Tray icon style</string>
            </property>
           </widget>
          </item>
@@ -157,10 +155,13 @@
         <number>12</number>
        </property>
        <property name="topMargin">
-        <number>25</number>
+        <number>20</number>
        </property>
        <property name="rightMargin">
         <number>12</number>
+       </property>
+       <property name="bottomMargin">
+        <number>20</number>
        </property>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -367,10 +368,13 @@
         <number>12</number>
        </property>
        <property name="topMargin">
-        <number>25</number>
+        <number>20</number>
        </property>
        <property name="rightMargin">
         <number>12</number>
+       </property>
+       <property name="bottomMargin">
+        <number>20</number>
        </property>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout">
@@ -664,10 +668,13 @@
         <number>12</number>
        </property>
        <property name="topMargin">
-        <number>25</number>
+        <number>20</number>
        </property>
        <property name="rightMargin">
         <number>12</number>
+       </property>
+       <property name="bottomMargin">
+        <number>20</number>
        </property>
        <item>
         <widget class="QGroupBox" name="groupService">
