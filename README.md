@@ -24,7 +24,7 @@ While traditional software KVM solutions like Deskflow work great between comput
 
 DShare-HID uses a budget-friendly (~$2.50 USD on AliExpress) **ESP32-C3 Supermini** board as a hardware bridge. It converts Deskflow events into **Bluetooth Low Energy (BLE) HID**, letting you wirelessly share your keyboard and mouse with any mobile device.
 
-<br/> <img src="doc/images/esp32-c3-supermini.png" height="120" alt="ESP32-C3 Super Mini"> <br/> <sub>Image credit: [Josselin Hefti](https://www.printables.com/model/1360390-esp32-c3-super-mini-model)</sub>
+<br/> <img src="docs/images/esp32-c3-supermini.png" height="120" alt="ESP32-C3 Super Mini"> <br/> <sub>Image credit: [Josselin Hefti](https://www.printables.com/model/1360390-esp32-c3-super-mini-model)</sub>
 
 
 
@@ -32,7 +32,7 @@ DShare-HID uses a budget-friendly (~$2.50 USD on AliExpress) **ESP32-C3 Supermin
 
 |                            Main UI                            |                               Device Configuration                               |
 | :-----------------------------------------------------------: | :------------------------------------------------------------------------------: |
-| <img src="doc/images/main_ui.png" height="300" alt="Main UI"> | <img src="doc/images/device_config.png" height="300" alt="Device Configuration"> |
+| <img src="docs/images/main_ui.png" height="300" alt="Main UI"> | <img src="docs/images/device_config.png" height="300" alt="Device Configuration"> |
 
 
 ## Key Features
@@ -170,7 +170,7 @@ For Ubuntu 24.04 and newer.
 ## First Use & Flashing Guide
 
 <div align="center">
-  <img src="doc/images/firmware_update.png" width="600" alt="Firmware Flash Tool">
+  <img src="docs/images/firmware_update.png" width="600" alt="Firmware Flash Tool">
 </div>
 
 ### 1. Prepare Hardware
