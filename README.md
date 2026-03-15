@@ -12,6 +12,10 @@
 
 DShare-HID is a high-performance, open-source project derived from [Deskflow](https://github.com/deskflow/deskflow). While sharing the core architecture, DShare-HID is an independent fork focused on sharing keyboard and mouse inputs with mobile devices including iPad, iPhone, and Android phones.
 
+<div align="center">
+  <img src="docs/images/dshare-hid-poster.png" width="800" alt="DShare-HID Poster">
+</div>
+
 
 ## Expanding the Deskflow Ecosystem: Mobile Integration
 

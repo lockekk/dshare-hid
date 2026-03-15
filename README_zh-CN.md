@@ -12,6 +12,10 @@
 
 DShare-HID 是基于 [Deskflow](https://github.com/deskflow/deskflow) 项目的独立分支版本。DShare-HID 支持 **Linux、Windows 和 macOS**，专注于与包括 iPad、iPhone 和 Android 手机在内的移动设备共享键盘和鼠标输入。
 
+<div align="center">
+  <img src="docs/images/dshare-hid-poster.png" width="800" alt="DShare-HID Poster">
+</div>
+
 ## 扩展 DShare 生态系统：移动集成
 
 传统的软件 KVM 解决方案（如 Deskflow）在计算机之间表现出色，但无法支持 iPadOS 或 Android 等移动平台。DShare-HID 通过将 Deskflow 的功能扩展到这些设备来弥补这一差距：
