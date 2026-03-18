@@ -325,11 +325,21 @@ QString Settings::settingsPath()
 
 QString Settings::tlsDir()
 {
+#if !defined(Q_OS_WIN)
+  if (!isWritable()) {
+    return QStringLiteral("%1/tls").arg(UserDir);
+  }
+#endif
   return QStringLiteral("%1/tls").arg(instance()->settingsPath());
 }
 
 QString Settings::bridgeClientTlsDir()
 {
+#if !defined(Q_OS_WIN)
+  if (!isWritable()) {
+    return QStringLiteral("%1/tls").arg(UserDir);
+  }
+#endif
   const QString bridgeFolder = QStringLiteral("bridge-clients");
   const QString currentPath = settingsPath();
 
