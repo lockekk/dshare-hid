@@ -314,7 +314,7 @@ void CoreProcess::start(std::optional<ProcessMode> processModeOption)
   }
 
   if (m_mode == Settings::CoreMode::Server && isAnotherServerRunning()) {
-    qWarning("Another deskflow server instance is already running. Attempting to force kill it...");
+    qWarning("Another DShare-HID server instance is already running. Attempting to force kill it...");
 
     QProcess killer;
 #if defined(Q_OS_WIN)
@@ -457,7 +457,7 @@ bool CoreProcess::isAnotherServerRunning() const
     return false;
   }
 
-  static const QString kServerSharedKey = QStringLiteral("deskflow-core-server");
+  static const QString kServerSharedKey = QStringLiteral("dshare-hid-core-server");
   QSharedMemory sharedMemory(kServerSharedKey);
 
   // Attempt to attach/detach first to clean up any stray segments left from crashed instances.
@@ -557,7 +557,7 @@ void CoreProcess::checkLogLine(const QString &line)
   checkSecureSocket(line);
 
   // server and client processes are not allowed to show notifications.
-  // process the log from it and show notification from deskflow instead.
+  // process the log from it and show notification from DShare-HID instead.
 #ifdef Q_OS_MACOS
   checkOSXNotification(line);
 #endif
