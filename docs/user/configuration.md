@@ -65,19 +65,23 @@ It will begin with `[client]`
 
 This section contains general options it will begin with `[core]`
 
-| Option       |   Valid Values    | Description                                                                                               |
-| :----------- | :---------------: | :-------------------------------------------------------------------------------------------------------- |
-| coreMode     | `0` or `1` or `2` | The mode to start in 0: None, 1: Client, 2: Server [default: 0]                                           |
-| display      |        int        | The XWindow display to use [default: autodetected]                                                        |
-| interface    |    IP Address     | Preferred IP to use for network communication. By default the server board casts on any available address |
-| lastVersion  |      M.m.p.t      | The version last run used for checking for updates                                                        |
-| port         |      port #       | Port to use when connecting [default: 24800                                                               |
-| preventSleep | `true` or `false` | Prevent sleep when DShare-HID is active [default: false]                                                  |
-| processMode  |    `1` or `0`     | The mode we use to start the process Service or Desktop                                                   |
-| computerName |      string       | Name used to identify the computer [default: machine's hostname]                                          |
-| useHooks     | `true` or `false` | If Windows uses hooks or not [default: true]                                                              |
-| language     |   639 language    | The language to display the GUI in [default: en]                                                          |
-| wlClipboard  | `true` or `false` | When true the wl-clipboard backend will be enabled [default: false]                                       |
+| Option             |   Valid Values    | Description                                                                                               |
+| :----------------- | :---------------: | :-------------------------------------------------------------------------------------------------------- |
+| coreMode           | `0` or `1` or `2` | The mode to start in 0: None, 1: Client, 2: Server [default: 0]                                           |
+| display            |        int        | The XWindow display to use [default: autodetected]                                                        |
+| interface          |    IP Address     | Preferred IP to use for network communication. By default the server board casts on any available address |
+| lastVersion        |      M.m.p.t      | The version last run used for checking for updates                                                        |
+| port               |      port #       | Port to use when connecting [default: 24800                                                               |
+| preventSleep       | `true` or `false` | Prevent sleep when DShare-HID is active [default: false]                                                  |
+| processMode        |    `1` or `0`     | The mode we use to start the process Service or Desktop                                                   |
+| computerName       |      string       | Name used to identify the computer [default: machine's hostname]                                          |
+| useHooks           | `true` or `false` | If Windows uses hooks or not [default: true]                                                              |
+| language           |   639 language    | The language to display the GUI in [default: en]                                                          |
+| wlClipboard        | `true` or `false` | When true the wl-clipboard backend will be enabled [default: false]                                       |
+| enableEnterCommand | `true` or `false` | Should the enter command be triggered when the screen is entered [defaut: false]                          |
+| enterCommand       |      string       | A command to run when the screen is entered.                                                              |
+| enableExitCommand  | `true` or `false` | Should the exit command be triggered when the screen is exited [defaut: false]                            |
+| exitCommand        |      string       | A command to run when the screen is exited.                                                               |
 
 ### Daemon
 

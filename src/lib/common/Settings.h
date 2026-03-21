@@ -61,6 +61,10 @@ public:
     inline static const auto Language = QStringLiteral("core/language");
     inline static const auto UseWlClipboard = QStringLiteral("core/wlClipboard");
     inline static const auto RestartOnFailure = QStringLiteral("core/restartOnFailure");
+    inline static const auto EnableEnterCommand = QStringLiteral("core/enableEnterCommand");
+    inline static const auto ScreenEnterCommand = QStringLiteral("core/enterCommand");
+    inline static const auto EnableExitCommand = QStringLiteral("core/enableExitCommand");
+    inline static const auto ScreenExitCommand = QStringLiteral("core/exitCommand");
 
     // TODO: REMOVE In 2.0
     inline static const auto ScreenName = QStringLiteral("core/screenName"); // Replaced By ComputerName
@@ -230,6 +234,10 @@ private:
     , Settings::Core::Port
     , Settings::Core::PreventSleep
     , Settings::Core::ProcessMode
+    , Settings::Core::EnableEnterCommand
+    , Settings::Core::EnableExitCommand
+    , Settings::Core::ScreenEnterCommand
+    , Settings::Core::ScreenExitCommand
     , Settings::Core::ScreenName
     , Settings::Core::ComputerName
     , Settings::Core::Display
@@ -275,6 +283,8 @@ private:
     , Settings::Gui::ShowVersionInTitle
     , Settings::Core::PreventSleep
     , Settings::Core::UseWlClipboard
+    , Settings::Core::EnableEnterCommand
+    , Settings::Core::EnableExitCommand
     , Settings::Server::ExternalConfig
     , Settings::Client::InvertScrollDirection
     , Settings::Client::InvertYScroll
