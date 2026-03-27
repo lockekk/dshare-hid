@@ -127,12 +127,12 @@ int main(int argc, char **argv)
   // Step 2: Build shared memory key based on role
   QString sharedMemKey;
   if (isClient) {
-    sharedMemKey = QString("deskflow-core-client-%1").arg(instanceName);
+    sharedMemKey = QString("dshare-hid-core-client-%1").arg(instanceName);
   } else if (isServer) {
-    sharedMemKey = "deskflow-core-server";
+    sharedMemKey = "dshare-hid-core-server";
   } else {
     // Default to old behavior if mode not detected yet
-    sharedMemKey = "deskflow-core";
+    sharedMemKey = "dshare-hid-core";
   }
 
   // Step 3: Create shared memory segment with the constructed key

@@ -1119,7 +1119,7 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
 
     // Build the command
     QStringList command;
-    command << "deskflow-core";
+    command << "dshare-hid-core";
     command << "client";
     command << "--name" << screenName;
     command << "--link" << devicePath;

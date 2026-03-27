@@ -320,7 +320,7 @@ void CoreProcess::start(std::optional<ProcessMode> processModeOption)
 #if defined(Q_OS_WIN)
     killer.start("taskkill", {"/F", "/IM", "dshare-hid-core.exe"});
 #else
-    killer.start("pkill", {"-9", "-x", "dshare-hid-core"});
+    killer.start("pkill", {"-9", "-i", "dshare-hid-core"});
 #endif
     killer.waitForFinished(3000);
 

@@ -37,9 +37,9 @@ HANDLE openProcessForKill(const PROCESSENTRY32 &entry)
   if (entry.th32ProcessID == 0)
     return nullptr;
 
-  if (_wcsicmp(entry.szExeFile, L"deskflow-client.exe") != 0 && //
-      _wcsicmp(entry.szExeFile, L"deskflow-server.exe") != 0 && //
-      _wcsicmp(entry.szExeFile, L"deskflow-core.exe") != 0) {
+  if (_wcsicmp(entry.szExeFile, L"dshare-hid-client.exe") != 0 && //
+      _wcsicmp(entry.szExeFile, L"dshare-hid-server.exe") != 0 && //
+      _wcsicmp(entry.szExeFile, L"dshare-hid-core.exe") != 0) {
     return nullptr;
   }
 
