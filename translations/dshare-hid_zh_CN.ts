@@ -177,6 +177,14 @@ p, li { white-space: pre-wrap; }
         <source>Reset to default values</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Allow the client to slow the rate it attempts to reconnect to the server when connections attempts are failing. The delay between connection attempts will  start at 1 second intervals and can be a maxium of 5 minutes between connection attempts.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use dynamic reconnection time based on connection attempts</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>DShare-HIDHidExtension</name>
@@ -1780,6 +1788,10 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     <message>
         <source>Update available</source>
         <translation type="unfinished">有可用更新</translation>
+    </message>
+    <message>
+        <source>%1 is waiting %2 seconds before the next retry</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>%1 Encryption Enabled</source>
