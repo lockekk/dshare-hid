@@ -183,6 +183,7 @@ private:
   void remoteHostChanged(const QString &newRemoteHost);
   void handleNewClientPromptRequest(const QString &clientName, bool usePeerAuth);
   void updateIpLabel(const QStringList &addresses);
+  void updateTimeoutDelay(int newDelay);
 
 #if defined(Q_OS_LINUX)
   void checkLinuxUsbPermissions();

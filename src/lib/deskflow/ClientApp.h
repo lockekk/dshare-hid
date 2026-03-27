@@ -78,6 +78,12 @@ public:
     return (ClientApp &)App::instance();
   }
 
+  /**
+   * @brief retryTime
+   * @return next retry time based on number of current retries
+   */
+  double retryTime() const;
+
 protected:
   virtual ISocketFactory *getSocketFactory() const;
 
@@ -92,4 +98,5 @@ private:
   QList<NetworkAddress> m_serverAddresses;
   size_t m_currentServerIndex = 0;
   size_t m_lastServerAddressIndex = 0;
+  uint m_retryCount = 0;
 };

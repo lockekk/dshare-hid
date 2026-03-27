@@ -386,6 +386,7 @@ void MainWindow::connectSlots()
   );
 
   connect(&m_clientConnection, &ClientConnection::requestShowError, this, &MainWindow::showClientError);
+  connect(&m_clientConnection, &ClientConnection::updateTimeoutDelay, this, &MainWindow::updateTimeoutDelay);
 
   if (Settings::value(Settings::Gui::AutoStartCore).toBool()) {
     connect(ui->btnToggleCore, &QPushButton::clicked, m_actionStopCore, &QAction::trigger, Qt::UniqueConnection);
@@ -1451,6 +1452,11 @@ void MainWindow::checkLinuxUsbPermissions()
   }
 }
 #endif
+
+void MainWindow::updateTimeoutDelay(int newDelay)
+{
+  m_statusBar->setConnectionInterval(newDelay);
+}
 
 bool MainWindow::canRunCore() const
 {
