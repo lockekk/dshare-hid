@@ -7,45 +7,28 @@ description: Skill to merge upstream master into a local branch following rebran
 This skill is used when merging changes from the official Deskflow upstream repository into the rebranded DShare-HID repository.
 
 ## Prerequisites
-1.  The user must specify:
-    *   The **upstream master** reference (e.g., `upstream/master`).
-    *   The **local branch** to merge into (e.g., `main` or `upgrading-main`).
-2.  The file `docs/trademark_rebranding_guide.md` must be available in the repository.
+1.  **User Manual Merge**: The user should manually initiate the merge from upstream master (e.g., `git merge upstream-master`).
+2.  **Conflict State**: The repository is currently in a state with merge conflicts that need to be resolved.
+3.  The file `docs/trademark_rebranding_guide.md` must be available in the repository.
 
 ## Workflow
 
-### 1. Preparation & Planning
+### 1. Conflict Resolution
 *   Read `docs/trademark_rebranding_guide.md` to understand the rebranding rules and specific file mappings.
-*   Fetch the latest changes from the upstream remote.
-*   Create an `implementation_plan.md` that outlines:
-    *   The merge operation.
-    *   Specific rebranding rules to apply during the merge and conflict resolution.
-    *   The strategy for handling `.github` files (discard all upstream changes).
-*   **PAUSE**: Request user approval of the implementation plan using `notify_user`.
+*   Resolve Git conflicts by prioritizing DShare-HID rebranding instructions.
+    *   **Scenario J**: If the merge reports a conflict in the `.github/` directory, discard the upstream changes and keep the local state (deleted/modified as per rebranding requirements).
+*   Use `git status` to ensure all conflicts are addressed.
 
-### 2. Execution (Incremental Merge Strategy)
-Due to the complexity and volume of upstream changes, an **incremental merge strategy** must be used:
-1.  **Iterate Commits**: Identify all upstream commits and merge them **one by one** on a temporary branch (e.g., `temp-incremental-merge`).
-2.  **Conflict Resolution**: For each commit, resolve conflicts by prioritizing DShare-HID rebranding.
-    *   **Translations**: Ignore conflicts in `.ts` files during the incremental loop to avoid build blocks; perform a final rebranding sweep on `.ts` files after the loop.
-3.  **Build Verification**: Run `./run_task.sh build` after **every single commit merge**.
-    *   If the build fails, fix the regression immediately before proceeding to the next commit.
-4.  **Finalize to Target Branch**: Once all commits are successfully merged and verified on the temporary branch:
-    *   Switch to the target local branch (e.g., `upgrading-main`).
-    *   Apply the final state as a **single, clean merge commit** (e.g., using `git read-tree` from the temp branch).
-5.  **Clean History**: Ensure the local branch history reflects a deliberate merge from upstream, preserving the verified work.
+### 2. Targeted Rebranding Sweep
+*   Identify all files that were modified or added as part of the current merge operation (e.g., using `git status` or `git diff --name-only --cached`).
+*   Perform a rebranding sweep **ONLY** on the files identified in the previous step.
+*   **CRITICAL**: Do NOT spread rebranding to any files that were not part of the upstream merge's changed file list.
+*   Update any re-introduced "Deskflow" strings (case-insensitive) to "DShare-HID" in those specific files, adhering to the guide's exceptions (comments, SPDX, etc.).
 
 ### 3. Verification & Cleanup
-1.  **Post-Merge Sweep**: Perform a final sweep for any re-introduced "Deskflow" strings (case-insensitive) in the source code and configuration.
-2.  **Translation Refresh**: Perform a final refresh of translation files (`.ts`), ensuring "DShare-HID" nomenclature is used in the UI and removing unsupported languages (like `ko.ts`).
-3.  **Final Build**: Run a final `./run_task.sh build` to confirm the entire project is stable.
+1.  **Build Verification**: Run `./run_task.sh build` to ensure the project compiles correctly with the merged changes.
+2.  **Finalize Merge**: Once the build is verified, finalize the merge with a commit if not already automatically done by Git.
+3.  **Cleanup**: Remove any temporary files or artifacts created during the process.
 
 ### 4. Reporting
-*   Provide a detailed report in `walkthrough.md` explaining:
-    *   What conflicts were encountered during the incremental stages.
-    *   How API regressions or visibility changes were resolved.
-    *   Verification results of the iterative build tests.
-
-### 5. Continuous Improvement
-*   Assess if the merge revealed new rebranding scenarios not covered by `doc/trademark_rebranding_guide.md`.
-*   If new scenarios exist, propose updates to the guide or update it directly if instructed.
+*   Provide a brief report of which conflicts were resolved and any targeted rebranding applied.
