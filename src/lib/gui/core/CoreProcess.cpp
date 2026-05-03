@@ -8,6 +8,7 @@
 #include "CoreProcess.h"
 
 #include "common/ExitCodes.h"
+#include "gui/ipc/CoreIpcClient.h"
 #include "gui/ipc/DaemonIpcClient.h"
 
 #if defined(Q_OS_MACOS)
@@ -22,6 +23,7 @@
 #include <QCoreApplication>
 #include <QDir>
 #include <QFile>
+#include <QMetaEnum>
 #include <QMutexLocker>
 #include <QRegularExpression>
 #include <QSharedMemory>
@@ -99,7 +101,7 @@ QString CoreProcess::wrapIpv6(const QString &address)
 // CoreProcess
 //
 
-CoreProcess::CoreProcess(const IServerConfig &serverConfig)
+CoreProcess::CoreProcess(const ServerConfig &serverConfig)
     : m_serverConfig(serverConfig),
       m_daemonIpcClient{new ipc::DaemonIpcClient(this)}
 {
@@ -113,6 +115,7 @@ CoreProcess::CoreProcess(const IServerConfig &serverConfig)
   connect(
       m_daemonIpcClient, &ipc::DaemonIpcClient::connectionFailed, this, &CoreProcess::daemonIpcClientConnectionFailed
   );
+  connect(m_daemonIpcClient, &ipc::DaemonIpcClient::logPathReceived, this, &CoreProcess::setupDaemonLogTail);
 
   connect(&m_retryTimer, &QTimer::timeout, this, [this] {
     if (m_processState == ProcessState::RetryPending) {
@@ -140,20 +143,34 @@ void CoreProcess::onProcessReadyReadStandardError()
 void CoreProcess::daemonIpcClientConnected()
 {
   applyLogLevel();
+  m_daemonIpcClient->requestLogPath();
+}
 
-  const auto logPath = requestDaemonLogPath();
-  if (logPath.isEmpty()) {
-    qWarning() << "daemon no log path";
-    return;
-  }
+void CoreProcess::checkExistingProcess()
+{
+  qInfo("checking existing core");
 
-  qDebug() << "daemon log path:" << logPath;
-  if (m_daemonFileTail) {
-    m_daemonFileTail->setWatchedFile(logPath);
-  } else {
-    m_daemonFileTail = new FileTail(logPath, this);
-    connect(m_daemonFileTail, &FileTail::newLine, this, &CoreProcess::handleLogLines);
-  }
+  auto *client = new ipc::CoreIpcClient(this);
+  connect(client, &ipc::CoreIpcClient::connected, this, [client] {
+    qInfo("existing core has matching version, leaving it running");
+    client->deleteLater();
+  });
+  connect(client, &ipc::CoreIpcClient::versionMismatch, this, [client] {
+    qInfo("existing core has mismatched version, asking it to stop");
+    client->sendStop();
+  });
+  connect(client, &ipc::CoreIpcClient::serverShutdown, this, [this, client] {
+    qInfo("existing core stopped successfully");
+    client->deleteLater();
+    setProcessState(ProcessState::RetryPending);
+    m_retryTimer.setSingleShot(true);
+    m_retryTimer.start(kRetryDelay);
+  });
+  connect(client, &ipc::CoreIpcClient::connectionFailed, this, [client] {
+    qCritical("could not contact existing core");
+    client->deleteLater();
+  });
+  client->connectToServer();
 }
 
 void CoreProcess::onProcessFinished(int exitCode, QProcess::ExitStatus)
@@ -167,10 +184,11 @@ void CoreProcess::onProcessFinished(int exitCode, QProcess::ExitStatus)
 
   if (exitCode != s_exitSuccess) {
     setProcessState(Stopped);
-    if (exitCode == s_exitDuplicate)
-      qWarning("desktop process is already running");
-    else
-      qWarning("desktop process exited with code: %d", exitCode);
+    if (exitCode == s_exitDuplicate) {
+      checkExistingProcess();
+      return;
+    }
+    qWarning("desktop process exited with code: %d", exitCode);
     return;
   }
 
@@ -191,9 +209,7 @@ void CoreProcess::applyLogLevel()
   const auto processMode = Settings::value(Settings::Core::ProcessMode).value<Settings::ProcessMode>();
   if (processMode == ProcessMode::Service) {
     qDebug() << "setting daemon log level:" << Settings::logLevelText();
-    if (!m_daemonIpcClient->sendLogLevel(Settings::logLevelText())) {
-      qWarning() << "failed to set daemon ipc log level";
-    }
+    m_daemonIpcClient->sendLogLevel(Settings::logLevelText());
   }
 }
 
@@ -228,22 +244,30 @@ void CoreProcess::startForegroundProcess(const QStringList &args)
   }
 }
 
-void CoreProcess::startProcessFromDaemon(const QStringList &args)
+void CoreProcess::startProcessFromDaemon()
 {
   if (m_processState != ProcessState::Starting) {
     qFatal("core process must be in starting state");
   }
 
-  QString commandQuoted = makeQuotedArgs(m_appPath, args);
+  const auto configFile = Settings::settingsFile();
+  qInfo("sending start to daemon (config file: %s)", qPrintable(configFile));
 
-  qInfo("running command: %s", qPrintable(commandQuoted));
+  auto sendStart = [this, configFile] {
+    m_daemonIpcClient->sendConfigFile(configFile);
+    m_daemonIpcClient->sendStartProcess();
+    setProcessState(ProcessState::Started);
+  };
 
-  if (!m_daemonIpcClient->sendStartProcess(commandQuoted, Settings::value(Settings::Daemon::Elevate).toBool())) {
-    qWarning("cannot start process, ipc command failed");
-    return;
+  if (m_daemonIpcClient->isConnected()) {
+    sendStart();
+  } else {
+    connect(
+        m_daemonIpcClient, &ipc::DaemonIpcClient::connected, this, sendStart,
+        static_cast<Qt::ConnectionType>(Qt::SingleShotConnection | Qt::QueuedConnection)
+    );
+    m_daemonIpcClient->connectToServer();
   }
-
-  setProcessState(ProcessState::Started);
 }
 
 void CoreProcess::stopForegroundProcess() const
@@ -272,12 +296,20 @@ void CoreProcess::stopProcessFromDaemon()
     qFatal("core process must be in stopping state");
   }
 
-  if (!m_daemonIpcClient->sendStopProcess()) {
-    qWarning("cannot stop process, ipc command failed");
-    return;
-  }
+  auto sendStop = [this] {
+    m_daemonIpcClient->sendStopProcess();
+    setProcessState(ProcessState::Stopped);
+  };
 
-  setProcessState(ProcessState::Stopped);
+  if (m_daemonIpcClient->isConnected()) {
+    sendStop();
+  } else {
+    connect(
+        m_daemonIpcClient, &ipc::DaemonIpcClient::connected, this, sendStop,
+        static_cast<Qt::ConnectionType>(Qt::SingleShotConnection | Qt::QueuedConnection)
+    );
+    m_daemonIpcClient->connectToServer();
+  }
 }
 
 void CoreProcess::handleLogLines(const QString &text)
@@ -294,9 +326,23 @@ void CoreProcess::handleLogLines(const QString &text)
     if (line.contains("calling TIS/TSM in non-main thread environment")) {
       continue;
     }
+
+    // the core process is not allowed to show the permission prompt
+    // (called "notification permission") and the notification log line is emitted from
+    // deep inside cocoa code in the core binary to stdout, so it can't be sent over
+    // ipc from the core to the gui and instead the gui has to parse the core output.
+    static const QString needle = "OSX Notification: ";
+    if (line.contains(needle) && line.contains('|')) {
+      const int delimiterPosition = line.indexOf('|');
+      const int start = line.indexOf(needle);
+      const QString title = line.mid(start + needle.length(), delimiterPosition - start - needle.length());
+      const QString body = line.mid(delimiterPosition + 1, line.length() - delimiterPosition);
+      if (!showOSXNotification(title, body)) {
+        qDebug("osx notification was not shown");
+      }
+    }
 #endif
 
-    checkLogLine(line);
     Q_EMIT logLine(line);
   }
 }
@@ -391,11 +437,42 @@ void CoreProcess::start(std::optional<ProcessMode> processModeOption)
     qInfo().noquote() << "log file:" << logFile;
   }
 
+  // Wired before the start calls so it catches Started from both sync (desktop) and async (service) paths.
+  connect(
+      this, &CoreProcess::processStateChanged, this,
+      [this](ProcessState state) {
+        if (state != ProcessState::Started) {
+          return;
+        }
+
+        // Delay briefly to give the core process time to start its IPC server.
+        QTimer::singleShot(kRetryDelay, this, [this] {
+          if (m_processState != ProcessState::Started) {
+            return;
+          }
+
+          m_coreIpcClient = new ipc::CoreIpcClient(this);
+          connect(m_coreIpcClient, &ipc::CoreIpcClient::commandReceived, this, &CoreProcess::onCoreIpcMessageReceived);
+          connect(m_coreIpcClient, &ipc::CoreIpcClient::connected, this, [] {
+            qDebug("connected to core ipc server");
+          });
+          connect(m_coreIpcClient, &ipc::CoreIpcClient::connectionFailed, this, [] {
+            qWarning("failed to establish core ipc connection");
+          });
+          connect(m_coreIpcClient, &ipc::CoreIpcClient::serverShutdown, this, [] {
+            qDebug("core ipc server shut down cleanly");
+          });
+
+          m_coreIpcClient->connectToServer();
+        });
+      },
+      static_cast<Qt::ConnectionType>(Qt::SingleShotConnection | Qt::QueuedConnection)
+  );
+
   if (processMode == ProcessMode::Desktop) {
     startForegroundProcess(args);
   } else if (processMode == ProcessMode::Service) {
-    args.append({QStringLiteral("--settings"), Settings::settingsFile()});
-    startProcessFromDaemon(args);
+    startProcessFromDaemon();
   }
 
   m_lastProcessMode = processMode;
@@ -409,6 +486,12 @@ void CoreProcess::stop(std::optional<ProcessMode> processModeOption)
   const auto processMode = processModeOption.value_or(currentMode);
 
   qInfo("stopping core process (%s mode)", qPrintable(processModeToString(processMode)));
+
+  if (m_coreIpcClient) {
+    m_coreIpcClient->disconnectFromServer();
+    m_coreIpcClient->deleteLater();
+    m_coreIpcClient = nullptr;
+  }
 
   if (m_processState == ProcessState::Starting) {
     qDebug("core process is starting, cancelling");
@@ -532,35 +615,45 @@ void CoreProcess::setProcessState(ProcessState state)
   Q_EMIT processStateChanged(state);
 }
 
-void CoreProcess::checkLogLine(const QString &line)
+void CoreProcess::onCoreIpcMessageReceived(const QString &command, const QString &args)
 {
-  using enum ConnectionState;
-
-  if (line.contains("connected to server") || line.contains("has connected")) {
-    m_connections++;
-    setConnectionState(Connected);
-  } else if (line.contains("started server")) {
-    m_connections = 0;
-    setConnectionState(Listening);
-  } else if (line.contains("disconnected from server") || line.contains("process exited")) {
-    m_connections = 0;
-    setConnectionState(Disconnected);
-  } else if (line.contains("connecting to")) {
-    setConnectionState(Connecting);
-  } else if (line.contains("has disconnected")) {
-    m_connections--;
-    if (m_connections < 1) {
-      setConnectionState(Listening);
+  if (command == "connectionState") {
+    const auto metaEnum = QMetaEnum::fromType<ConnectionState>();
+    bool ok = false;
+    const auto state = static_cast<ConnectionState>(metaEnum.keyToValue(args.toUtf8().constData(), &ok));
+    if (!ok) {
+      qWarning("core ipc got unknown connection state: %s", args.toUtf8().constData());
+      return;
     }
+    setConnectionState(state);
+  } else if (command == "connectedClients") {
+    const auto clients = args.isEmpty() ? QStringList() : args.split(",");
+    Q_EMIT connectedClientsChanged(clients);
+  } else if (command == "secureSocket") {
+    Q_EMIT secureSocket(true);
+    if (args != m_secureSocketVersion) {
+      m_secureSocketVersion = args;
+      Q_EMIT securityLevelChanged(args);
+    }
+  } else if (command == "unrecognisedClient") {
+    Q_EMIT unrecognisedClient(args);
+  } else if (command == "connectionRefused") {
+    const auto metaEnum = QMetaEnum::fromType<deskflow::core::ConnectionRefusal>();
+    bool ok = false;
+    const auto reason =
+        static_cast<deskflow::core::ConnectionRefusal>(metaEnum.keyToValue(args.toUtf8().constData(), &ok));
+    if (ok) {
+      Q_EMIT connectionRefused(reason);
+    } else {
+      qWarning("core ipc got unknown connection refusal: %s", args.toUtf8().constData());
+    }
+  } else if (command == "retryIn") {
+    Q_EMIT retryIn(args.toInt());
+  } else if (command == "peerFingerprint") {
+    Q_EMIT peerFingerprint(args);
+  } else if (command == "missingKeyboardLayouts") {
+    Q_EMIT missingKeyboardLayouts(args);
   }
-
-  checkSecureSocket(line);
-
-  // server and client processes are not allowed to show notifications.
-  // process the log from it and show notification from DShare-HID instead.
-#ifdef Q_OS_MACOS
-  checkOSXNotification(line);
-#endif
 }
 
 bool CoreProcess::checkSecureSocket(const QString &line)
@@ -580,46 +673,30 @@ bool CoreProcess::checkSecureSocket(const QString &line)
   return true;
 }
 
-#ifdef Q_OS_MACOS
-void CoreProcess::checkOSXNotification(const QString &line)
-{
-  static const QString needle = "OSX Notification: ";
-  if (line.contains(needle) && line.contains('|')) {
-    int delimiterPosition = line.indexOf('|');
-    int start = line.indexOf(needle);
-    QString title = line.mid(start + needle.length(), delimiterPosition - start - needle.length());
-    QString body = line.mid(delimiterPosition + 1, line.length() - delimiterPosition);
-    if (!showOSXNotification(title, body)) {
-      qDebug("osx notification was not shown");
-    }
-  }
-}
-#endif
-
 QString CoreProcess::correctedAddress(const QString &address) const
 {
   return wrapIpv6(address.simplified());
 }
 
-QString CoreProcess::requestDaemonLogPath()
+void CoreProcess::setupDaemonLogTail(const QString &logPath)
 {
-  qDebug() << "requesting daemon log path";
-  const auto logPath = m_daemonIpcClient->requestLogPath();
-  if (logPath.isEmpty()) {
-    qCritical() << "failed to get daemon log path";
-    return QString();
-  }
+  qDebug() << "daemon log path:" << logPath;
 
   if (QFileInfo logFile(logPath); !logFile.isFile()) {
     auto file = QFile(logPath);
     if (!file.open(QFile::ReadWrite)) {
       qCritical() << "daemon log path file can not be written:" << logPath;
-      return QString();
+      return;
     }
     file.write(""); // Create an empty file
   }
 
-  return logPath;
+  if (m_daemonFileTail) {
+    m_daemonFileTail->setWatchedFile(logPath);
+  } else {
+    m_daemonFileTail = new FileTail(logPath, this);
+    connect(m_daemonFileTail, &FileTail::newLine, this, &CoreProcess::handleLogLines);
+  }
 }
 
 void CoreProcess::clearSettings()
@@ -640,9 +717,7 @@ void CoreProcess::clearSettings()
 
 void CoreProcess::retryDaemon()
 {
-  if (m_daemonIpcClient->connectToServer()) {
-    qInfo("successfully reconnected to daemon");
-  }
+  m_daemonIpcClient->connectToServer();
 }
 
 } // namespace deskflow::gui

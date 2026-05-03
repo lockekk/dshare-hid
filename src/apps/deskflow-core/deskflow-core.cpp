@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2025 Chris Rizzitello <sithlord48@gmail.com>
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2016, 2025 - 2026 Symless Ltd.
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -17,6 +17,7 @@
 #include "common/Settings.h"
 #include "deskflow/ClientApp.h"
 #include "deskflow/ServerApp.h"
+#include "deskflow/ipc/CoreIpcServer.h"
 #include "platform/OpenSSLCompat.h"
 #include "platform/bridge/CdcTransport.h"
 
@@ -25,14 +26,41 @@
 #include <unistd.h>
 #endif
 
-#if SYSAPI_WIN32
+#if defined(Q_OS_WIN)
 #include "arch/win32/ArchMiscWindows.h"
-#include <QCoreApplication>
 #endif
 
+#include <QApplication>
 #include <QFileInfo>
 #include <QSharedMemory>
 #include <QTextStream>
+#include <QThread>
+#include <QtGlobal>
+
+void qtMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &message)
+{
+  const auto utf8 = message.toUtf8();
+  switch (type) {
+  case QtDebugMsg:
+    CLOG->print(context.file, context.line, CLOG_TAG_DEBUG "%s", utf8.constData());
+    break;
+  case QtInfoMsg:
+    CLOG->print(context.file, context.line, CLOG_TAG_INFO "%s", utf8.constData());
+    break;
+  case QtWarningMsg:
+    CLOG->print(context.file, context.line, CLOG_TAG_WARN "%s", utf8.constData());
+    break;
+  case QtCriticalMsg:
+    CLOG->print(context.file, context.line, CLOG_TAG_ERR "%s", utf8.constData());
+    break;
+  case QtFatalMsg:
+    CLOG->print(context.file, context.line, CLOG_TAG_CRIT "%s", utf8.constData());
+    break;
+  }
+  if (type == QtFatalMsg) {
+    abort();
+  }
+}
 
 void showHelp(const CoreArgParser &parser)
 {
@@ -45,10 +73,11 @@ int main(int argc, char **argv)
   signal(SIGPIPE, SIG_IGN);
 #endif
 
-#if SYSAPI_WIN32
-  // HACK to make sure settings gets the correct qApp path
-  QCoreApplication m(argc, argv);
-  m.deleteLater();
+#if defined(Q_OS_WIN)
+  {
+    // HACK to make sure settings gets the correct qApp path
+    QCoreApplication m(argc, argv);
+  }
 
   ArchMiscWindows::setInstanceWin32(GetModuleHandle(nullptr));
 #endif
@@ -57,6 +86,7 @@ int main(int argc, char **argv)
   arch.init();
 
   Log log;
+  qInstallMessageHandler(qtMessageHandler);
 
   // Initialize OpenSSL 3.x providers/environment (macOS and Linux)
   deskflow::platform::initializeOpenSSL();
@@ -145,7 +175,7 @@ int main(int argc, char **argv)
     sharedMemory.detach();
 
   if (!sharedMemory.create(1) && parser.singleInstanceOnly()) {
-    LOG_WARN("an instance of deskflow core is already running");
+    LOG_WARN("an instance of dshare-hid core is already running");
     return s_exitDuplicate;
   }
 
@@ -155,75 +185,93 @@ int main(int argc, char **argv)
   EventQueue events;
   const auto processName = QFileInfo(argv[0]).fileName();
 
-  if (parser.serverMode()) {
-    ServerApp app(&events, processName);
-    return app.run();
-  } else if (parser.clientMode()) {
-    // Check if this is a bridge client
-    if (isBridgeClient) {
-      // Step 6: Bridge client initialization
-      LOG_INFO("initializing bridge client with link device: %s", linkDevice.toUtf8().constData());
+  // Step 5: Bridge client transport setup (must happen before constructing the App)
+  std::shared_ptr<deskflow::bridge::CdcTransport> bridgeTransport;
+  deskflow::bridge::FirmwareConfig bridgeConfig;
+  int bridgeScreenWidth = 0;
+  int bridgeScreenHeight = 0;
+  if (isBridgeClient) {
+    LOG_INFO("initializing bridge client with link device: %s", linkDevice.toUtf8().constData());
 
-      // Create CDC transport
-      auto transport = std::make_shared<deskflow::bridge::CdcTransport>(linkDevice);
-      if (!transport->open()) {
-        LOG_ERR("failed to open CDC transport %s: %s", linkDevice.toUtf8().constData(), transport->lastError().c_str());
-        return s_exitFailed;
-      }
-
-      if (!transport->hasDeviceConfig()) {
-        LOG_ERR("CDC handshake did not provide metadata");
-        transport->close();
-        return s_exitFailed;
-      }
-
-      deskflow::bridge::FirmwareConfig config = transport->deviceConfig();
-
-      LOG_INFO(
-          "Firmware handshake: proto=%u activation_state=%s(%u) fw_bcd=%u hw_bcd=%u", config.protocolVersion,
-          config.activationStateString(), static_cast<unsigned>(config.activationState),
-          static_cast<unsigned>(config.firmwareVersionBcd), static_cast<unsigned>(config.hardwareVersionBcd)
+    bridgeTransport = std::make_shared<deskflow::bridge::CdcTransport>(linkDevice);
+    if (!bridgeTransport->open()) {
+      LOG_ERR(
+          "failed to open CDC transport %s: %s", linkDevice.toUtf8().constData(), bridgeTransport->lastError().c_str()
       );
+      return s_exitFailed;
+    }
 
-      // Get screen info from CLI arguments (provided by GUI)
-      int screenWidth = parser.screenWidth();
-      int screenHeight = parser.screenHeight();
+    if (!bridgeTransport->hasDeviceConfig()) {
+      LOG_ERR("CDC handshake did not provide metadata");
+      bridgeTransport->close();
+      return s_exitFailed;
+    }
 
-      if (screenWidth <= 0 || screenHeight <= 0) {
-        LOG_ERR(
-            "Invalid screen dimensions from CLI arguments: %dx%d (use --screen-width and --screen-height)", screenWidth,
-            screenHeight
-        );
-        transport->close();
-        return s_exitFailed;
-      }
+    bridgeConfig = bridgeTransport->deviceConfig();
 
-      LOG_INFO("Screen config from CLI: %dx%d", screenWidth, screenHeight);
+    LOG_INFO(
+        "Firmware handshake: proto=%u activation_state=%s(%u) fw_bcd=%u hw_bcd=%u", bridgeConfig.protocolVersion,
+        bridgeConfig.activationStateString(), static_cast<unsigned>(bridgeConfig.activationState),
+        static_cast<unsigned>(bridgeConfig.firmwareVersionBcd), static_cast<unsigned>(bridgeConfig.hardwareVersionBcd)
+    );
 
-      int exitCode = s_exitFailed;
-      try {
-        BridgeClientApp app(&events, processName, transport, config, screenWidth, screenHeight);
-        exitCode = app.run();
-      } catch (const DeskflowException &e) {
-        LOG_ERR("Bridge client error: %s", e.what());
-        exitCode = s_exitFailed;
-      } catch (const std::exception &e) {
-        LOG_ERR("Bridge client fatal error: %s", e.what());
-        exitCode = s_exitFailed;
-      } catch (...) {
-        LOG_ERR("Bridge client unknown fatal error");
-        exitCode = s_exitFailed;
-      }
+    bridgeScreenWidth = parser.screenWidth();
+    bridgeScreenHeight = parser.screenHeight();
 
-      transport->close();
-      LOG_INFO("BridgeClientApp finished. Exiting main with code: %d", exitCode);
-      return exitCode;
+    if (bridgeScreenWidth <= 0 || bridgeScreenHeight <= 0) {
+      LOG_ERR(
+          "Invalid screen dimensions from CLI arguments: %dx%d (use --screen-width and --screen-height)",
+          bridgeScreenWidth, bridgeScreenHeight
+      );
+      bridgeTransport->close();
+      return s_exitFailed;
+    }
+
+    LOG_INFO("Screen config from CLI: %dx%d", bridgeScreenWidth, bridgeScreenHeight);
+  }
+
+  // Step 6: Construct the appropriate App (server / client / bridge client)
+  App *coreApp = nullptr;
+  if (parser.serverMode()) {
+    coreApp = new ServerApp(&events, processName);
+  } else if (parser.clientMode()) {
+    if (isBridgeClient) {
+      coreApp = new BridgeClientApp(
+          &events, processName, bridgeTransport, bridgeConfig, bridgeScreenWidth, bridgeScreenHeight
+      );
     } else {
-      // Standard client
-      ClientApp app(&events, processName);
-      return app.run();
+      coreApp = new ClientApp(&events, processName);
     }
   }
 
-  return s_exitSuccess;
+  // Step 7: Create the QApplication, IPC server and run the App on a worker thread.
+  // The QApplication is required so that platform-specific event loops (e.g. Cocoa on macOS)
+  // are kept alive while the App logic runs in `coreThread`.
+  QApplication app(argc, argv);
+  QApplication::setApplicationName(QStringLiteral("%1 Core").arg(kAppName));
+
+  const auto ipcServer = new deskflow::core::ipc::CoreIpcServer(&app); // NOSONAR - Qt managed
+  QObject::connect(
+      ipcServer, &deskflow::core::ipc::IpcServer::stopProcessRequested, coreApp, &App::quit, Qt::DirectConnection
+  );
+  ipcServer->listen();
+
+  QThread coreThread;
+  QObject::connect(&coreThread, &QThread::finished, &app, &QApplication::quit);
+  coreApp->run(coreThread);
+
+  int exitCode = QApplication::exec();
+  coreThread.wait();
+
+  if (exitCode == s_exitSuccess) {
+    exitCode = coreApp->getExitCode();
+  }
+
+  // Bridge client cleanup: close the transport before exit
+  if (isBridgeClient && bridgeTransport) {
+    bridgeTransport->close();
+  }
+
+  LOG_DEBUG("core exited, code: %d", exitCode);
+  return exitCode;
 }

@@ -10,7 +10,7 @@
 
 #include "deskflow/ClipboardTypes.h"
 #include "deskflow/KeyTypes.h"
-#include "deskflow/languages/LanguageManager.h"
+#include "deskflow/KeyboardLayoutManager.h"
 
 class Client;
 class ClientInfo;
@@ -98,7 +98,6 @@ private:
   void secureInputNotification();
   void setServerLanguages();
   void setActiveServerLanguage(const std::string_view &language);
-  void checkMissedLanguages() const;
 
 private:
   using MessageParser = ConnectionResult (ServerProxy::*)(const uint8_t *);
@@ -124,7 +123,7 @@ private:
 
   MessageParser m_parser = &ServerProxy::parseHandshakeMessage;
   IEventQueue *m_events = nullptr;
-  std::string m_serverLanguage = "";
-  bool m_isUserNotifiedAboutLanguageSyncError = false;
-  deskflow::languages::LanguageManager m_languageManager;
+  std::string m_serverLayout = "";
+  bool m_isUserNotifiedAboutLayoutSyncError = false;
+  deskflow::KeyboardLayoutManager m_layoutManager;
 };

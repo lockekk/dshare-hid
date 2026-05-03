@@ -5,6 +5,7 @@
  */
 
 #pragma once
+#include <QObject>
 #include <QString>
 
 inline static const auto kSynergyProtocolOption = "synergy";
@@ -16,16 +17,7 @@ enum class NetworkProtocol
   Synergy,
   Barrier
 };
-
-static int networkProtocolToInt(const NetworkProtocol proto)
-{
-  return static_cast<int>(proto);
-}
-
-static NetworkProtocol networkProtocolFromInt(const int value)
-{
-  return static_cast<NetworkProtocol>(value);
-}
+Q_DECLARE_METATYPE(NetworkProtocol);
 
 static QString networkProtocolToOption(const NetworkProtocol proto)
 {

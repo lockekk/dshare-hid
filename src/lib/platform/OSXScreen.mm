@@ -10,11 +10,13 @@
 
 #include "arch/Arch.h"
 #include "arch/ArchException.h"
+#include "base/Event.h"
 #include "base/EventQueue.h"
 #include "base/IEventQueue.h"
 #include "base/Log.h"
 #include "base/TMethodJob.h"
 #include "client/Client.h"
+#include "common/ExitCodes.h"
 #include "common/Settings.h"
 #include "deskflow/ClientApp.h"
 #include "deskflow/Clipboard.h"
@@ -34,6 +36,7 @@
 #include <AppKit/NSEvent.h>
 #include <AvailabilityMacros.h>
 #include <IOKit/hidsystem/event_status_driver.h>
+#include <dispatch/dispatch.h>
 #include <libproc.h>
 #include <mach-o/dyld.h>
 #include <math.h>
@@ -87,6 +90,7 @@ OSXScreen::OSXScreen(IEventQueue *events, bool isPrimary, bool enableLangSync)
       m_screensaverNotify(false),
       m_ownClipboard(false),
       m_clipboardTimer(nullptr),
+      m_axTimer(nullptr),
       m_hiddenWindow(nullptr),
       m_userInputWindow(nullptr),
       m_switchEventHandlerRef(0),
@@ -658,6 +662,9 @@ void OSXScreen::enable()
   m_clipboardTimer = m_events->newTimer(1.0, nullptr);
   m_events->addHandler(EventTypes::Timer, m_clipboardTimer, [this](const auto &) { checkClipboards(); });
 
+  m_axTimer = m_events->newTimer(1.0, nullptr);
+  m_events->addHandler(EventTypes::Timer, m_axTimer, [this](const auto &) { checkAXPermissions(); });
+
   if (m_isPrimary) {
     // FIXME -- start watching jump zones
 
@@ -686,7 +693,20 @@ void OSXScreen::enable()
   if (m_eventTapPort) {
     m_eventTapRLSR = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, m_eventTapPort, 0);
     if (m_eventTapRLSR) {
-      CFRunLoopAddSource(CFRunLoopGetCurrent(), m_eventTapRLSR, kCFRunLoopDefaultMode);
+      // Run the event tap on a dedicated thread with its own CFRunLoop so it fires
+      // independently of whatever event loop the calling thread runs (e.g. QCoreApplication).
+      // Use a semaphore to ensure m_eventTapRunLoop is set before enable() returns.
+      auto sem = dispatch_semaphore_create(0);
+      m_eventTapThread = std::thread([this, sem]() {
+        m_eventTapRunLoop = CFRunLoopGetCurrent();
+        CFRunLoopAddSource(m_eventTapRunLoop, m_eventTapRLSR, kCFRunLoopDefaultMode);
+        dispatch_semaphore_signal(sem);
+        CFRunLoopRun();
+        CFRunLoopRemoveSource(CFRunLoopGetCurrent(), m_eventTapRLSR, kCFRunLoopDefaultMode);
+        m_eventTapRunLoop = nullptr;
+      });
+      dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
+      dispatch_release(sem);
     } else {
       LOG_ERR("failed to create a CFRunLoopSourceRef for the quartz event tap");
     }
@@ -701,8 +721,14 @@ void OSXScreen::disable()
 
   // FIXME -- stop watching jump zones, stop capturing input
 
+  if (m_eventTapRunLoop) {
+    CFRunLoopStop(m_eventTapRunLoop);
+  }
+  if (m_eventTapThread.joinable()) {
+    m_eventTapThread.join();
+  }
+
   if (m_eventTapRLSR) {
-    CFRunLoopRemoveSource(CFRunLoopGetCurrent(), m_eventTapRLSR, kCFRunLoopDefaultMode);
     CFRelease(m_eventTapRLSR);
     m_eventTapRLSR = nullptr;
   }
@@ -714,11 +740,16 @@ void OSXScreen::disable()
   }
   // FIXME -- allow system to enter power saving mode
 
-  // uninstall clipboard timer
   if (m_clipboardTimer != nullptr) {
     m_events->removeHandler(EventTypes::Timer, m_clipboardTimer);
     m_events->deleteTimer(m_clipboardTimer);
     m_clipboardTimer = nullptr;
+  }
+
+  if (m_axTimer != nullptr) {
+    m_events->removeHandler(EventTypes::Timer, m_axTimer);
+    m_events->deleteTimer(m_axTimer);
+    m_axTimer = nullptr;
   }
 
   m_isOnScreen = m_isPrimary;
@@ -1471,6 +1502,18 @@ void OSXScreen::handleConfirmSleep(const Event &event)
   }
 }
 
+bool OSXScreen::checkAXPermissions()
+{
+  if (AXIsProcessTrusted()) {
+    return true;
+  }
+  LOG_CRIT("process is not trusted anymore, quitting");
+  disable();
+  App &app = App::instance();
+  app.getEvents()->addEvent(Event(EventTypes::Quit, nullptr, new ExitEventData(s_exitFailed)));
+  return false;
+}
+
 #pragma mark -
 
 //
@@ -1659,9 +1702,11 @@ CGEventRef OSXScreen::handleCGInputEvent(CGEventTapProxy proxy, CGEventType type
     screen->onKey(event);
     break;
   case kCGEventTapDisabledByTimeout:
-    // Re-enable our event-tap
-    CGEventTapEnable(screen->m_eventTapPort, true);
-    LOG_INFO("quartz event tap was disabled by timeout, re-enabling");
+    // Re-enable our event-tap if we still have accessibility permissions
+    if (screen->checkAXPermissions()) {
+      CGEventTapEnable(screen->m_eventTapPort, true);
+      LOG_INFO("quartz event tap was disabled by timeout, re-enabling");
+    }
     break;
   case kCGEventTapDisabledByUserInput:
     LOG_ERR("quartz event tap was disabled by user input");

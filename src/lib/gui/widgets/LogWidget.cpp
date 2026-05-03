@@ -10,6 +10,7 @@
 #include <gui/Logger.h>
 
 #include <QPlainTextEdit>
+#include <QScrollBar>
 #include <QVBoxLayout>
 #include <QScrollBar>
 

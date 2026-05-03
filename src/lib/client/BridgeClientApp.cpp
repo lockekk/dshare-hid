@@ -76,6 +76,6 @@ void BridgeClientApp::handleClientFailed(const Event &e)
 
 void BridgeClientApp::handleClientDisconnected()
 {
-  LOG_IPC("Server disconnected. Exiting for restart.");
+  LOG_INFO("Server disconnected. Exiting for restart.");
   throw ExitAppException(s_exitSuccess);
 }

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 if(WIN32)
-  set(extra_libs version)
+  set(extra_libs platform version)
 endif()
 
 create_test(
@@ -46,10 +46,10 @@ create_test(
 )
 
 create_test(
-  NAME LanguageManagerTests
+  NAME KeyboardLayoutManagerTests
   DEPENDS app
   LIBS arch base ${extra_libs}
-  SOURCE LanguageManagerTests.cpp
+  SOURCE KeyboardLayoutManagerTests.cpp
   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/deskflow"
 )
 

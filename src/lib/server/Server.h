@@ -9,8 +9,8 @@
 #pragma once
 
 #include "base/Event.h"
-#include "base/NetworkProtocol.h"
 #include "base/Stopwatch.h"
+#include "common/NetworkProtocol.h"
 #include "deskflow/Clipboard.h"
 #include "deskflow/ClipboardTypes.h"
 #include "deskflow/KeyTypes.h"
@@ -197,6 +197,7 @@ public:
   Set the \c list to the names of the currently connected clients.
   */
   void getClients(std::vector<std::string> &list) const;
+  void sendConnectedClientsIpc() const;
 
   //@}
 

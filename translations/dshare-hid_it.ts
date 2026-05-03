@@ -128,7 +128,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Switch to </source>
-        <translation>Passa a </translation>
+        <translation type="vanished">Passa a </translation>
     </message>
 </context>
 <context>
@@ -689,6 +689,18 @@ Vuoi connetterti al server?
 A bound IP is now invalid, you may need to restart the server.</source>
         <translation type="unfinished">
 L&apos;indirizzo IP associato non è più valido, potrebbe essere necessario riavviare il server.</translation>
+    </message>
+    <message>
+        <source>Missing Keyboard Layouts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Keyboard layout support requires matching layouts on all computers. The following layouts from the other computer are not installed on this computer:&lt;/p&gt;&lt;p&gt;&lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Please install them to enable support for these layouts.&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Don&apos;t show this again</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>&amp;File</source>

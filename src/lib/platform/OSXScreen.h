@@ -21,6 +21,7 @@
 #include <bitset>
 #include <map>
 #include <memory>
+#include <thread>
 #include <vector>
 
 extern "C"
@@ -156,6 +157,8 @@ private:
 
   void handleConfirmSleep(const Event &event);
 
+  bool checkAXPermissions();
+
   // global hotkey operating mode
   static bool isGlobalHotKeyOperatingModeAvailable();
   static void setGlobalHotKeysEnabled(bool enabled);
@@ -260,6 +263,8 @@ private:
   bool m_ownClipboard;
   EventQueueTimer *m_clipboardTimer;
 
+  EventQueueTimer *m_axTimer;
+
   // window object that gets user input events when the server
   // has focus.
   WindowRef m_hiddenWindow;
@@ -292,6 +297,8 @@ private:
   // Quartz input event support
   CFMachPortRef m_eventTapPort;
   CFRunLoopSourceRef m_eventTapRLSR;
+  std::thread m_eventTapThread;
+  CFRunLoopRef m_eventTapRunLoop = nullptr;
 
   // for double click coalescing.
   double m_lastClickTime;

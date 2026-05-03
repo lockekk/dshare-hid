@@ -72,7 +72,7 @@ public:
   };
   struct Daemon
   {
-    inline static const auto Command = QStringLiteral("daemon/command");
+    inline static const auto ConfigFile = QStringLiteral("daemon/configFile");
     inline static const auto Elevate = QStringLiteral("daemon/elevate");
     inline static const auto LogFile = QStringLiteral("daemon/logFile");
     inline static const auto LogLevel = QStringLiteral("daemon/logLevel");
@@ -91,6 +91,7 @@ public:
     inline static const auto ShownFirstConnectedMessage = QStringLiteral("gui/shownFirstConnectedMessage");
     inline static const auto ShownServerFirstStartMessage = QStringLiteral("gui/shownServerFirstStartMessage");
     inline static const auto ShowVersionInTitle = QStringLiteral("gui/showVersionInTitle");
+    inline static const auto IgnoreMissingKeyboardLayouts = QStringLiteral("gui/ignoreMissingKeyboardLayouts");
   };
   struct Log
   {
@@ -110,6 +111,7 @@ public:
   {
     inline static const auto ExternalConfig = QStringLiteral("server/externalConfig");
     inline static const auto ExternalConfigFile = QStringLiteral("server/externalConfigFile");
+    inline static const auto Protocol = QStringLiteral("server/protocol");
   };
   struct Bridge
   {
@@ -246,7 +248,7 @@ private:
     , Settings::Core::UseHooks
     , Settings::Core::UseWlClipboard
     , Settings::Core::Language
-    , Settings::Daemon::Command
+    , Settings::Daemon::ConfigFile
     , Settings::Daemon::Elevate
     , Settings::Daemon::LogFile
     , Settings::Daemon::LogLevel
@@ -266,12 +268,14 @@ private:
     , Settings::Gui::ShownFirstConnectedMessage
     , Settings::Gui::ShownServerFirstStartMessage
     , Settings::Gui::ShowVersionInTitle
+    , Settings::Gui::IgnoreMissingKeyboardLayouts
     , Settings::Security::Certificate
     , Settings::Security::CheckPeers
     , Settings::Security::KeySize
     , Settings::Security::TlsEnabled
     , Settings::Server::ExternalConfig
     , Settings::Server::ExternalConfigFile
+    , Settings::Server::Protocol
     , Settings::Bridge::ActiveProfileOrientation
     , Settings::Bridge::AutoConnect
   };
@@ -283,6 +287,7 @@ private:
     , Settings::Gui::ShownFirstConnectedMessage
     , Settings::Gui::ShownServerFirstStartMessage
     , Settings::Gui::ShowVersionInTitle
+    , Settings::Gui::IgnoreMissingKeyboardLayouts
     , Settings::Core::PreventSleep
     , Settings::Core::UseWlClipboard
     , Settings::Core::EnableEnterCommand

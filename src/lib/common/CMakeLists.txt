@@ -15,6 +15,7 @@ add_library(common STATIC
   ExitCodes.h
   I18N.h
   I18N.cpp
+  NetworkProtocol.h
   PlatformInfo.h
   Settings.h
   Settings.cpp
@@ -26,3 +27,9 @@ add_library(common STATIC
 )
 
 target_link_libraries(common PUBLIC Qt6::Core)
+
+target_include_directories(common
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/lib>
+    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src/lib>
+)

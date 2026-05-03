@@ -6,6 +6,7 @@
 
 #include "Settings.h"
 
+#include "NetworkProtocol.h"
 #include "UrlConstants.h"
 #include "base/Log.h"
 
@@ -106,6 +107,8 @@ void Settings::cleanSettings()
 {
   const QStringList keys = m_settings->allKeys();
   for (const QString &key : keys) {
+    if (key.startsWith(QStringLiteral("internalConfig/protocol")))
+      m_settings->remove(key);
     if (key.startsWith(QStringLiteral("internalConfig")))
       continue;
     if (!m_validKeys.contains(key))
@@ -258,6 +261,9 @@ QVariant Settings::defaultValue(const QString &key)
   if (key == Bridge::ActiveProfileOrientation) {
     return QStringLiteral("landscape");
   }
+
+  if (key == Server::Protocol)
+    return QVariant::fromValue(NetworkProtocol::Barrier);
 
   return QVariant();
 }

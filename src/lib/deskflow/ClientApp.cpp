@@ -17,6 +17,7 @@
 #include "common/Settings.h"
 #include "deskflow/Screen.h"
 #include "deskflow/ScreenException.h"
+#include "deskflow/ipc/CoreIpc.h"
 #include "net/NetworkAddress.h"
 #include "net/SocketException.h"
 #include "net/SocketMultiplexer.h"
@@ -36,10 +37,7 @@
 #include "platform/EiScreen.h"
 #endif
 
-#if WINAPI_CARBON
-#include "base/TMethodJob.h"
-#include "mt/Thread.h"
-#include "platform/OSXCocoaApp.h"
+#if defined(Q_OS_MAC)
 #include "platform/OSXScreen.h"
 #endif
 
@@ -168,10 +166,8 @@ void ClientApp::handleClientRestart(const Event &, EventQueueTimer *timer)
 
 void ClientApp::scheduleClientRestart(double retryTime)
 {
-  if (Settings::value(Settings::Client::DynamicConnectionRetry).toBool())
-    LOG_IPC("retry in %.0f seconds", retryTime);
-  else
-    LOG_DEBUG("retry in %.0f seconds", retryTime);
+  LOG_DEBUG("retry in %.0f seconds", retryTime);
+  ipcSendToClient("retryIn", QString::number(retryTime, 'f', 0));
   // install a timer and handler to retry later
   EventQueueTimer *timer = getEvents()->newOneShotTimer(retryTime, nullptr);
   getEvents()->addHandler(EventTypes::Timer, timer, [this, timer](const auto &e) { handleClientRestart(e, timer); });
@@ -179,7 +175,8 @@ void ClientApp::scheduleClientRestart(double retryTime)
 
 void ClientApp::handleClientConnected()
 {
-  LOG_IPC("connected to server");
+  LOG_DEBUG("connected to server");
+  ipcSendConnectionState(deskflow::core::ConnectionState::Connected);
   // Reset server index on successful connection
   m_currentServerIndex = 0;
   m_lastServerAddressIndex = 0;
@@ -232,7 +229,8 @@ void ClientApp::handleClientRefused(const Event &e)
 void ClientApp::handleClientDisconnected()
 {
   m_retryCount = 0;
-  LOG_IPC("disconnected from server");
+  LOG_DEBUG("disconnected from server");
+  ipcSendConnectionState(deskflow::core::ConnectionState::Disconnected);
   if (!m_suspended) {
     scheduleClientRestart(retryTime());
   }
@@ -344,30 +342,14 @@ int ClientApp::mainLoop()
   // run event loop.  if startClient() failed we're supposed to retry
   // later.  the timer installed by startClient() will take care of
   // that.
-
-#if WINAPI_CARBON
-
-  Thread thread(new TMethodJob<ClientApp>(this, &ClientApp::runEventsLoop, nullptr));
-
-  // wait until carbon loop is ready
-  if (m_clientScreen) {
-    OSXScreen *screen = dynamic_cast<OSXScreen *>(m_clientScreen->getPlatformScreen());
-    if (screen) {
-      screen->waitForCarbonLoop();
-    }
-  }
-
-  runCocoaApp();
-#else
-  getEvents()->loop();
-#endif
+  int exitCode = getEvents()->loop();
 
   // close down
   LOG_DEBUG("stopping client");
   stopClient();
   LOG_NOTE("stopped client");
 
-  return s_exitSuccess;
+  return exitCode;
 }
 
 int ClientApp::start()

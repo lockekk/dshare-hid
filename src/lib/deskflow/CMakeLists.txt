@@ -77,13 +77,23 @@ add_library(${lib_name} STATIC ${PLATFORM_CODE}
   ServerApp.h
   StreamChunker.cpp
   StreamChunker.h
-  languages/LanguageManager.cpp
-  languages/LanguageManager.h
+  KeyboardLayoutManager.cpp
+  KeyboardLayoutManager.h
+  ipc/IpcServer.cpp
+  ipc/IpcServer.h
   ipc/DaemonIpcServer.cpp
   ipc/DaemonIpcServer.h
+  ipc/CoreIpc.cpp
+  ipc/CoreIpc.h
+  ipc/CoreIpcServer.cpp
+  ipc/CoreIpcServer.h
 )
 
 target_link_libraries(${lib_name} PUBLIC common Qt6::Core Qt6::Network)
+
+if(WIN32)
+  target_link_libraries(${lib_name} PRIVATE platform)
+endif()
 
 if(UNIX)
   target_link_libraries(

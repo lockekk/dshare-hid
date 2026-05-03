@@ -12,6 +12,7 @@
 #include "base/IEventQueue.h"
 #include "base/Log.h"
 #include "common/Settings.h"
+#include "deskflow/ipc/CoreIpc.h"
 #include "mt/Lock.h"
 #include "net/FingerprintDatabase.h"
 #include "net/TCPSocket.h"
@@ -90,8 +91,15 @@ void SecureSocket::connect(const NetworkAddress &addr)
 ISocketMultiplexerJob *SecureSocket::newJob()
 {
   // after TCP connection is established, SecureSocket will pick up
-  // connected event and do secureConnect
+  // connected event and do secureConnect. However, we must ensure
+  // that the multiplexer has a job to actually detect that connection.
   if (isConnected() && !m_secureReady) {
+    if (m_ssl && m_ssl->m_ssl) {
+      // we are in the middle of a secure handshake
+      return new TSocketMultiplexerMethodJob<SecureSocket>(
+          this, &SecureSocket::serviceConnect, getSocket(), isReadable(), isWritable()
+      );
+    }
     return nullptr;
   }
 
@@ -421,13 +429,12 @@ int SecureSocket::secureAccept(int socket)
   checkResult(r, retry);
 
   if (isFatal()) {
-    // tell user and sleep so the socket isn't hammered.
+    // Never block here; this thread services every connected socket.
+    // Historically a 1s sleep let any failed handshake DoS all clients.
     LOG_ERR("failed to accept secure socket");
-    LOG_WARN("client connection may not be secure");
     m_secureReady = false;
-    Arch::sleep(1);
     retry = 0;
-    return -1; // Failed, error out
+    return -1; // Fail
   }
 
   // If not fatal and no retry, state is good
@@ -448,13 +455,12 @@ int SecureSocket::secureAccept(int socket)
   if (retry > 0) {
     LOG_DEBUG2("retry accepting secure socket");
     m_secureReady = false;
-    Arch::sleep(s_retryDelay);
     return 0;
   }
 
   // no good state exists here
   LOG_ERR("unexpected state attempting to accept connection");
-  return -1;
+  return -1; // Fail
 }
 
 int SecureSocket::secureConnect(int socket)
@@ -493,7 +499,6 @@ int SecureSocket::secureConnect(int socket)
   if (retry > 0) {
     LOG_DEBUG2("retry connect secure socket");
     m_secureReady = false;
-    Arch::sleep(s_retryDelay);
     return 0;
   }
 
@@ -554,14 +559,14 @@ void SecureSocket::checkResult(int status, int &retry)
     break;
 
   case SSL_ERROR_WANT_READ:
+    setReadable(true);
     retry++;
     LOG_DEBUG2("want to read, error=%d, attempt=%d", errorCode, retry);
     break;
 
   case SSL_ERROR_WANT_WRITE:
     // Need to make sure the socket is known to be writable so the impending
-    // select action actually triggers on a write. This isn't necessary for
-    // m_readable because the socket logic is always readable
+    // poll action actually triggers on a write.
     setWritable(true);
     retry++;
     LOG_DEBUG2("want to write, error=%d, attempt=%d", errorCode, retry);
@@ -645,8 +650,9 @@ bool SecureSocket::verifyCertFingerprint(const QString &FingerprintDatabasePath)
   if (!sha256.isValid())
     return false;
 
-  // Gui Must Parse this line, DO NOT CHANGE
-  LOG_IPC("peer fingerprint: %s", qPrintable(deskflow::formatSSLFingerprint(sha256.data, false)));
+  const auto fingerprint = deskflow::formatSSLFingerprint(sha256.data, false);
+  LOG_DEBUG("peer fingerprint: %s", qPrintable(fingerprint));
+  ipcSendToClient("peerFingerprint", fingerprint);
 
   // Auto-trust if it matches our own certificate
   const auto ourCertPath = Settings::value(Settings::Security::Certificate).toString();
@@ -723,6 +729,10 @@ ISocketMultiplexerJob *SecureSocket::serviceConnect(ISocketMultiplexerJob *const
 {
   Lock lock(&getMutex());
 
+  // reset flags so checkResult can set them based on what SSL needs
+  setReadable(false);
+  setWritable(false);
+
   int status = 0;
 #ifdef SYSAPI_WIN32
   status = secureConnect(static_cast<int>(getSocket()->m_socket));
@@ -737,11 +747,18 @@ ISocketMultiplexerJob *SecureSocket::serviceConnect(ISocketMultiplexerJob *const
 
   // If status > 0, success
   if (status > 0) {
+    setReadable(true);
+    setWritable(true);
     sendEvent(EventTypes::DataSocketSecureConnected);
     return newJob();
   }
 
-  // Retry case
+  // Retry case. Ensure we poll for what we need.
+  // If checkResult didn't set anything, default to what we were doing.
+  if (!isReadable() && !isWritable()) {
+    setWritable(true);
+  }
+
   return new TSocketMultiplexerMethodJob<SecureSocket>(
       this, &SecureSocket::serviceConnect, getSocket(), isReadable(), isWritable()
   );
@@ -750,6 +767,10 @@ ISocketMultiplexerJob *SecureSocket::serviceConnect(ISocketMultiplexerJob *const
 ISocketMultiplexerJob *SecureSocket::serviceAccept(ISocketMultiplexerJob *const, bool, bool, bool)
 {
   Lock lock(&getMutex());
+
+  // reset flags so checkResult can set them based on what SSL needs
+  setReadable(false);
+  setWritable(false);
 
   int status = 0;
 #ifdef SYSAPI_WIN32
@@ -765,11 +786,17 @@ ISocketMultiplexerJob *SecureSocket::serviceAccept(ISocketMultiplexerJob *const,
 
   // If status > 0, success
   if (status > 0) {
+    setReadable(true);
+    setWritable(true);
     sendEvent(EventTypes::ClientListenerAccepted);
     return newJob();
   }
 
-  // Retry case
+  // Retry case. Ensure we poll for what we need.
+  if (!isReadable() && !isWritable()) {
+    setReadable(true);
+  }
+
   return new TSocketMultiplexerMethodJob<SecureSocket>(
       this, &SecureSocket::serviceAccept, getSocket(), isReadable(), isWritable()
   );

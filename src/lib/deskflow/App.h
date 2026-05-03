@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2026 Deskflow Developers
- * SPDX-FileCopyrightText: (C) 2012 - 2025 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2026 Symless Ltd.
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -10,6 +10,7 @@
 
 #include "base/EventQueue.h"
 #include "base/Log.h"
+#include "common/ExitCodes.h"
 #include "deskflow/IApp.h"
 #include "net/SocketMultiplexer.h"
 
@@ -18,6 +19,9 @@
 #elif SYSAPI_UNIX
 #include "deskflow/unix/AppUtilUnix.h"
 #endif
+
+#include <QObject>
+#include <QThread>
 
 #include <memory>
 #include <stdexcept>
@@ -30,7 +34,7 @@ class FileLogOutputter;
 class IEventQueue;
 class SocketMultiplexer;
 
-class App : public IApp
+class App : public QObject, private IApp
 {
 public:
   class XNoEiSupport : public std::runtime_error
@@ -72,7 +76,8 @@ public:
     return m_appUtil;
   }
 
-  int run();
+  void run(QThread &coreThread);
+  void quit();
   void setupFileLogging();
   void loggingFilterWarning() const;
   void initApp() override;
@@ -104,8 +109,26 @@ public:
 
   virtual void handleScreenError() const;
 
+  void updateExitCode(int errorCode)
+  {
+    m_exitCode = errorCode;
+  }
+
+  int getExitCode() const
+  {
+    return m_exitCode;
+  }
+
 protected:
   void runEventsLoop(const void *);
+
+  struct LoopErrorCode
+  {
+    int m_errorCode;
+    LoopErrorCode(int errorCode) : m_errorCode(errorCode)
+    {
+    }
+  };
 
 private:
   void (*m_bye)(int);
@@ -115,6 +138,7 @@ private:
   ARCH_APP_UTIL m_appUtil;
   std::unique_ptr<SocketMultiplexer> m_socketMultiplexer;
   QString m_pname;
+  int m_exitCode = s_exitSuccess;
 };
 
 #if !defined(WINAPI_LIBEI) && WINAPI_XWINDOWS

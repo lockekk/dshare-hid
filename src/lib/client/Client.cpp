@@ -11,8 +11,8 @@
 #include "arch/Arch.h"
 #include "base/IEventQueue.h"
 #include "base/Log.h"
-#include "base/NetworkProtocol.h"
 #include "client/ServerProxy.h"
+#include "common/NetworkProtocol.h"
 #include "common/Settings.h"
 #include "deskflow/Clipboard.h"
 #include "deskflow/IPlatformScreen.h"
@@ -21,10 +21,13 @@
 #include "deskflow/ProtocolUtil.h"
 #include "deskflow/Screen.h"
 #include "deskflow/StreamChunker.h"
+#include "deskflow/ipc/CoreIpc.h"
 #include "net/IDataSocket.h"
 #include "net/ISocketFactory.h"
 #include "net/SecureSocket.h"
 #include "net/TCPSocket.h"
+
+#include <QMetaEnum>
 
 #include <cstdlib>
 #include <cstring>
@@ -92,10 +95,11 @@ void Client::connect(size_t addressIndex)
     // m_serverAddress will be null if the hostname address is not reolved
     if (m_serverAddress.getAddress() != nullptr) {
       // to help users troubleshoot, show server host name (issue: 60)
-      LOG_IPC(
+      LOG_DEBUG(
           "connecting to '%s': %s:%i", m_serverAddress.getHostname().c_str(),
           ARCH->addrToString(m_serverAddress.getAddress()).c_str(), m_serverAddress.getPort()
       );
+      ipcSendConnectionState(deskflow::core::ConnectionState::Connecting);
     }
 
     // create the socket
@@ -131,8 +135,11 @@ void Client::disconnect(const char *msg)
   }
 }
 
-void Client::refuseConnection(const char *msg)
+void Client::refuseConnection(deskflow::core::ConnectionRefusal reason, const char *msg)
 {
+  const auto metaEnum = QMetaEnum::fromType<deskflow::core::ConnectionRefusal>();
+  ipcSendToClient("connectionRefused", metaEnum.valueToKey(static_cast<int>(reason)));
+
   cleanup();
 
   if (msg) {

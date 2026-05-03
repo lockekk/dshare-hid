@@ -18,6 +18,7 @@
 #include "deskflow/ProtocolTypes.h"
 #include "deskflow/ProtocolUtil.h"
 #include "deskflow/StreamChunker.h"
+#include "deskflow/ipc/CoreIpc.h"
 #include "io/IStream.h"
 
 #include <cstring>
@@ -124,6 +125,7 @@ void ServerProxy::handleData()
 ServerProxy::ConnectionResult ServerProxy::parseHandshakeMessage(const uint8_t *code)
 {
   using enum ConnectionResult;
+  using enum deskflow::core::ConnectionRefusal;
 
   if (memcmp(code, kMsgQInfo, 4) == 0) {
     queryInfo();
@@ -138,7 +140,12 @@ ServerProxy::ConnectionResult ServerProxy::parseHandshakeMessage(const uint8_t *
 
     // handshake is complete
     m_parser = &ServerProxy::parseMessage;
-    checkMissedLanguages();
+
+    if (const auto missedKeyboardLayouts = m_layoutManager.getMissedLayouts(); !missedKeyboardLayouts.empty()) {
+      LOG_WARN("server layouts missing on this computer: %s", missedKeyboardLayouts.c_str());
+      ipcSendToClient("missingKeyboardLayouts", QString::fromStdString(missedKeyboardLayouts));
+    }
+
     m_client->handshakeComplete();
   }
 
@@ -168,25 +175,25 @@ ServerProxy::ConnectionResult ServerProxy::parseHandshakeMessage(const uint8_t *
     int32_t minor;
     ProtocolUtil::readf(m_stream, kMsgEIncompatible + 4, &major, &minor);
     LOG_ERR("server has incompatible version %d.%d", major, minor);
-    m_client->refuseConnection("server has incompatible version");
+    m_client->refuseConnection(IncompatibleVersion, "server has incompatible version");
     return Disconnect;
   }
 
   else if (memcmp(code, kMsgEBusy, 4) == 0) {
     LOG_ERR("server already has a connected client with name \"%s\"", m_client->getName().c_str());
-    m_client->refuseConnection("server already has a connected client with our name");
+    m_client->refuseConnection(AlreadyConnected, "server already has a connected client with our name");
     return Disconnect;
   }
 
   else if (memcmp(code, kMsgEUnknown, 4) == 0) {
     LOG_ERR("server refused client with name \"%s\"", m_client->getName().c_str());
-    m_client->refuseConnection("server refused client with our name");
+    m_client->refuseConnection(UnknownClient, "server refused client with our name");
     return Disconnect;
   }
 
   else if (memcmp(code, kMsgEBad, 4) == 0) {
     LOG_ERR("server disconnected due to a protocol error");
-    m_client->refuseConnection("server reported a protocol error");
+    m_client->refuseConnection(ProtocolError, "server reported a protocol error");
     return Disconnect;
   } else if (memcmp(code, kMsgDLanguageSynchronisation, 4) == 0) {
     setServerLanguages();
@@ -498,8 +505,8 @@ void ServerProxy::enter()
   m_dxMouse = 0;
   m_dyMouse = 0;
   m_seqNum = seqNum;
-  m_serverLanguage = "";
-  m_isUserNotifiedAboutLanguageSyncError = false;
+  m_serverLayout = "";
+  m_isUserNotifiedAboutLayoutSyncError = false;
 
   // forward
   m_client->enter(x, y, seqNum, static_cast<KeyModifierMask>(mask), false);
@@ -818,40 +825,28 @@ void ServerProxy::secureInputNotification()
 
 void ServerProxy::setServerLanguages()
 {
-  std::string serverLanguages;
-  ProtocolUtil::readf(m_stream, kMsgDLanguageSynchronisation + 4, &serverLanguages);
-  m_languageManager.setRemoteLanguages(serverLanguages);
+  std::string serverLayout;
+  ProtocolUtil::readf(m_stream, kMsgDLanguageSynchronisation + 4, &serverLayout);
+  m_layoutManager.setRemoteLayouts(serverLayout);
 }
 
 void ServerProxy::setActiveServerLanguage(const std::string_view &language)
 {
   if (!language.empty() && (language.size() > 0)) {
-    if (m_serverLanguage != language) {
-      m_isUserNotifiedAboutLanguageSyncError = false;
-      m_serverLanguage = language;
+    if (m_serverLayout != language) {
+      m_isUserNotifiedAboutLayoutSyncError = false;
+      m_serverLayout = language;
     }
 
-    if (!m_languageManager.isLanguageInstalled(m_serverLanguage)) {
-      if (!m_isUserNotifiedAboutLanguageSyncError) {
-        LOG_WARN("current server language is not installed on client");
-        m_isUserNotifiedAboutLanguageSyncError = true;
+    if (!m_layoutManager.isLayoutInstalled(m_serverLayout)) {
+      if (!m_isUserNotifiedAboutLayoutSyncError) {
+        LOG_WARN("current server layout is not installed on client");
+        m_isUserNotifiedAboutLayoutSyncError = true;
       }
     } else {
-      m_isUserNotifiedAboutLanguageSyncError = false;
+      m_isUserNotifiedAboutLayoutSyncError = false;
     }
   } else {
-    LOG_DEBUG1("active server language is empty");
-  }
-}
-
-void ServerProxy::checkMissedLanguages() const
-{
-  auto missedLanguages = m_languageManager.getMissedLanguages();
-  if (!missedLanguages.empty()) {
-    LOG(
-        (CLOG_WARN "You need to install these languages on this computer and restart "
-                   "Deskflow to enable support for multiple languages: %s",
-         missedLanguages.c_str())
-    );
+    LOG_DEBUG1("active server layout is empty");
   }
 }
