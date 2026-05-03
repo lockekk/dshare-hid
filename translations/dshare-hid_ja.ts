@@ -2186,6 +2186,12 @@ Duplicate: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Firmware flashed successfully.
+
+The device will boot into a 7-day free trial automatically. After the trial expires, use the Activation tab to activate with a license key.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Failed to find upgrade firmware in the latest release.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2195,15 +2201,15 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Free trial for 7 days</source>
-        <translation>7日間無料トライアル</translation>
+        <translation type="vanished">7日間無料トライアル</translation>
     </message>
     <message>
         <source>I am ok with free trial and want to buy full license</source>
-        <translation>無料トライアルで問題ありませんが、完全なライセンスを購入したいです</translation>
+        <translation type="vanished">無料トライアルで問題ありませんが、完全なライセンスを購入したいです</translation>
     </message>
     <message>
         <source>Skip trial and buy Full licensed version</source>
-        <translation>トライアルをスキップして完全版を購入</translation>
+        <translation type="vanished">トライアルをスキップして完全版を購入</translation>
     </message>
     <message>
         <source>Already licensed, but want bump profiles</source>
@@ -2215,7 +2221,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Request 7-Day Free Trial</source>
-        <translation>7日間無料トライアルをリクエスト</translation>
+        <translation type="vanished">7日間無料トライアルをリクエスト</translation>
     </message>
     <message>
         <source>Purchase Full License</source>
@@ -2251,7 +2257,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Device Secret:</source>
-        <translation>デバイスシークレット:</translation>
+        <translation type="vanished">デバイスシークレット:</translation>
     </message>
     <message>
         <source>Serial Number:</source>
@@ -2327,11 +2333,11 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Attempting to fetch PDEK...</source>
-        <translation>PDEK を取得中...</translation>
+        <translation type="vanished">PDEK を取得中...</translation>
     </message>
     <message>
         <source>PDEK fetched successfully.</source>
-        <translation>PDEK の取得に成功しました。</translation>
+        <translation type="vanished">PDEK の取得に成功しました。</translation>
     </message>
     <message>
         <source>Device Info: %1</source>
@@ -2343,15 +2349,15 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Device is already running with factory firmware. Device Info has been fetched.</source>
-        <translation>デバイスは既に工場ファームウェアで動作しています。デバイス情報は取得済みです。</translation>
+        <translation type="vanished">デバイスは既に工場ファームウェアで動作しています。デバイス情報は取得済みです。</translation>
     </message>
     <message>
         <source>Failed to fetch PDEK from factory mode device.</source>
-        <translation>工場モードのデバイスから PDEK の取得に失敗しました。</translation>
+        <translation type="vanished">工場モードのデバイスから PDEK の取得に失敗しました。</translation>
     </message>
     <message>
         <source>Device is already running with factory firmware, but failed to fetch PDEK.</source>
-        <translation>デバイスは工場ファームウェアで動作していますが、PDEK の取得に失敗しました。</translation>
+        <translation type="vanished">デバイスは工場ファームウェアで動作していますが、PDEK の取得に失敗しました。</translation>
     </message>
     <message>
         <source>Device is running Application Firmware.</source>
@@ -2437,57 +2443,57 @@ Duplicate: %1</source>
         <source>Factory firmware flashed successfully.
 
 Next step: You need to flash the per-device firmware to use the device. Please switch to the &apos;Order&apos; tab to request it.</source>
-        <translation>工場ファームウェアの書き込みに成功しました。
+        <translation type="vanished">工場ファームウェアの書き込みに成功しました。
 
 次のステップ: デバイスを使用するにはデバイスごとのファームウェアを書き込む必要があります。「注文」タブに切り替えてリクエストしてください。</translation>
     </message>
     <message>
         <source>Device Info copied to clipboard.</source>
-        <translation>デバイス情報がクリップボードにコピーされました。</translation>
+        <translation type="vanished">デバイス情報がクリップボードにコピーされました。</translation>
     </message>
     <message>
         <source>Checking device info on %1...</source>
-        <translation>%1 のデバイス情報を確認中...</translation>
+        <translation type="vanished">%1 のデバイス情報を確認中...</translation>
     </message>
     <message>
         <source>Device is in Factory Mode. Fetching PDEK...</source>
-        <translation>デバイスは工場モードです。PDEK を取得中...</translation>
+        <translation type="vanished">デバイスは工場モードです。PDEK を取得中...</translation>
     </message>
     <message>
         <source>Failed to fetch PDEK.</source>
-        <translation>PDEK の取得に失敗しました。</translation>
+        <translation type="vanished">PDEK の取得に失敗しました。</translation>
     </message>
     <message>
         <source>Failed to fetch Device Info.</source>
-        <translation>デバイス情報の取得に失敗しました。</translation>
+        <translation type="vanished">デバイス情報の取得に失敗しました。</translation>
     </message>
     <message>
         <source>Device is not in Factory Mode (Mode: %1).</source>
-        <translation>デバイスは工場モードではありません (モード: %1)。</translation>
+        <translation type="vanished">デバイスは工場モードではありません (モード: %1)。</translation>
     </message>
     <message>
         <source>Device must be in Factory Mode to copy Device Info.</source>
-        <translation>デバイス情報をコピーするには工場モードである必要があります。</translation>
+        <translation type="vanished">デバイス情報をコピーするには工場モードである必要があります。</translation>
     </message>
     <message>
         <source>Handshake complete but no config received.</source>
-        <translation>ハンドシェイク完了、設定を受信していません。</translation>
+        <translation type="vanished">ハンドシェイク完了、設定を受信していません。</translation>
     </message>
     <message>
         <source>Device handshake incomplete.</source>
-        <translation>デバイスハンドシェイク未完了。</translation>
+        <translation type="vanished">デバイスハンドシェイク未完了。</translation>
     </message>
     <message>
         <source>Failed to open device or handshake failed.</source>
-        <translation>デバイスを開けないかハンドシェイクに失敗しました。</translation>
+        <translation type="vanished">デバイスを開けないかハンドシェイクに失敗しました。</translation>
     </message>
     <message>
         <source>Connection Error</source>
-        <translation>接続エラー</translation>
+        <translation type="vanished">接続エラー</translation>
     </message>
     <message>
         <source>Failed to connect to device.</source>
-        <translation>デバイスへの接続に失敗しました。</translation>
+        <translation type="vanished">デバイスへの接続に失敗しました。</translation>
     </message>
     <message>
         <source>Checking for upgrades...</source>
@@ -2582,10 +2588,6 @@ Next step: You need to flash the per-device firmware to use the device. Please s
         <translation>状態: %1</translation>
     </message>
     <message>
-        <source>Skip Trial and Purchase Full License</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Selected factory firmware: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2610,14 +2612,6 @@ Next step: You need to flash the per-device firmware to use the device. Please s
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Device Info copied to clipboard:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Device Info fetched and copied to clipboard:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Please flash per-device firmware firstly.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2635,7 +2629,7 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Device State Refreshed. Serial: %1, Mode: Factory, Secret: %2</source>
-        <translation>状態更新。シリアル: %1, モード: 工場, シークレット: %2</translation>
+        <translation type="vanished">状態更新。シリアル: %1, モード: 工場, シークレット: %2</translation>
     </message>
     <message>
         <source>Device State Refreshed. Serial: %1, State: %2, Profiles: %3</source>
@@ -2699,11 +2693,11 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Missing Secret</source>
-        <translation>シークレットがありません</translation>
+        <translation type="vanished">シークレットがありません</translation>
     </message>
     <message>
         <source>Device Secret (PDEK) is required for this option. Please ensure the device is in Factory Mode and the secret has been fetched correctly.</source>
-        <translation>このオプションにはデバイスシークレット (PDEK) が必要です。工場モードであることを確認してください。</translation>
+        <translation type="vanished">このオプションにはデバイスシークレット (PDEK) が必要です。工場モードであることを確認してください。</translation>
     </message>
     <message>
         <source>Free</source>
@@ -2762,6 +2756,10 @@ Next step: You need to flash the per-device firmware to use the device. Please s
         <translation>状態: %1, %2 プロファイル</translation>
     </message>
     <message>
+        <source>Device State Refreshed. Serial: %1, Mode: Factory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Failed to refresh state: %1</source>
         <translation>状態の更新に失敗しました: %1</translation>
     </message>
@@ -2795,7 +2793,7 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Copy Device Secret</source>
-        <translation>デバイスシークレットをコピー</translation>
+        <translation type="vanished">デバイスシークレットをコピー</translation>
     </message>
     <message>
         <source>Waiting for user to reconnect device...</source>

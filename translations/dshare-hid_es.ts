@@ -2175,15 +2175,15 @@ Duplicado: %1</translation>
     </message>
     <message>
         <source>Free trial for 7 days</source>
-        <translation>Prueba gratuita de 7 días</translation>
+        <translation type="vanished">Prueba gratuita de 7 días</translation>
     </message>
     <message>
         <source>I am ok with free trial and want to buy full license</source>
-        <translation>Estoy de acuerdo con la prueba gratuita y quiero comprar la licencia completa</translation>
+        <translation type="vanished">Estoy de acuerdo con la prueba gratuita y quiero comprar la licencia completa</translation>
     </message>
     <message>
         <source>Skip trial and buy Full licensed version</source>
-        <translation>Omitir prueba y comprar versión con licencia completa</translation>
+        <translation type="vanished">Omitir prueba y comprar versión con licencia completa</translation>
     </message>
     <message>
         <source>Already licensed, but want bump profiles</source>
@@ -2195,7 +2195,7 @@ Duplicado: %1</translation>
     </message>
     <message>
         <source>Request 7-Day Free Trial</source>
-        <translation>Solicitar prueba gratuita de 7 días</translation>
+        <translation type="vanished">Solicitar prueba gratuita de 7 días</translation>
     </message>
     <message>
         <source>Purchase Full License</source>
@@ -2231,7 +2231,7 @@ Duplicado: %1</translation>
     </message>
     <message>
         <source>Device Secret:</source>
-        <translation>Secreto del dispositivo:</translation>
+        <translation type="vanished">Secreto del dispositivo:</translation>
     </message>
     <message>
         <source>Serial Number:</source>
@@ -2299,11 +2299,11 @@ Duplicado: %1</translation>
     </message>
     <message>
         <source>Attempting to fetch PDEK...</source>
-        <translation>Intentando obtener PDEK...</translation>
+        <translation type="vanished">Intentando obtener PDEK...</translation>
     </message>
     <message>
         <source>PDEK fetched successfully.</source>
-        <translation>PDEK obtenido con éxito.</translation>
+        <translation type="vanished">PDEK obtenido con éxito.</translation>
     </message>
     <message>
         <source>Device Info: %1</source>
@@ -2315,15 +2315,15 @@ Duplicado: %1</translation>
     </message>
     <message>
         <source>Device is already running with factory firmware. Device Info has been fetched.</source>
-        <translation>El dispositivo ya está funcionando con firmware de fábrica. Se ha obtenido la información del dispositivo.</translation>
+        <translation type="vanished">El dispositivo ya está funcionando con firmware de fábrica. Se ha obtenido la información del dispositivo.</translation>
     </message>
     <message>
         <source>Failed to fetch PDEK from factory mode device.</source>
-        <translation>Error al obtener PDEK del dispositivo en modo fábrica.</translation>
+        <translation type="vanished">Error al obtener PDEK del dispositivo en modo fábrica.</translation>
     </message>
     <message>
         <source>Device is already running with factory firmware, but failed to fetch PDEK.</source>
-        <translation>El dispositivo ya está funcionando con firmware de fábrica, pero no se pudo obtener el PDEK.</translation>
+        <translation type="vanished">El dispositivo ya está funcionando con firmware de fábrica, pero no se pudo obtener el PDEK.</translation>
     </message>
     <message>
         <source>Device is running Application Firmware.</source>
@@ -2402,6 +2402,12 @@ Duplicado: %1</translation>
         <translation>¡Éxito en el flasheo!</translation>
     </message>
     <message>
+        <source>Firmware flashed successfully.
+
+The device will boot into a 7-day free trial automatically. After the trial expires, use the Activation tab to activate with a license key.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Success</source>
         <translation>Éxito</translation>
     </message>
@@ -2441,21 +2447,17 @@ Duplicado: %1</translation>
         <source>Factory firmware flashed successfully.
 
 Next step: You need to flash the per-device firmware to use the device. Please switch to the &apos;Order&apos; tab to request it.</source>
-        <translation>Firmware de fábrica flasheado con éxito.
+        <translation type="vanished">Firmware de fábrica flasheado con éxito.
 
 Siguiente paso: Debe flashear el firmware por dispositivo para usar el dispositivo. Por favor, cambie a la pestaña &apos;Pedido&apos; para solicitarlo.</translation>
     </message>
     <message>
         <source>Device Info copied to clipboard.</source>
-        <translation>Información del dispositivo copiada al portapapeles.</translation>
+        <translation type="vanished">Información del dispositivo copiada al portapapeles.</translation>
     </message>
     <message>
         <source>Checking device info on %1...</source>
-        <translation>Comprobando información del dispositivo en %1...</translation>
-    </message>
-    <message>
-        <source>Skip Trial and Purchase Full License</source>
-        <translation type="unfinished"></translation>
+        <translation type="vanished">Comprobando información del dispositivo en %1...</translation>
     </message>
     <message>
         <source>Selected factory firmware: %1</source>
@@ -2471,43 +2473,43 @@ Siguiente paso: Debe flashear el firmware por dispositivo para usar el dispositi
     </message>
     <message>
         <source>Device is in Factory Mode. Fetching PDEK...</source>
-        <translation>El dispositivo está en modo fábrica. Obteniendo PDEK...</translation>
+        <translation type="vanished">El dispositivo está en modo fábrica. Obteniendo PDEK...</translation>
     </message>
     <message>
         <source>Failed to fetch PDEK.</source>
-        <translation>Fallo al obtener PDEK.</translation>
+        <translation type="vanished">Fallo al obtener PDEK.</translation>
     </message>
     <message>
         <source>Failed to fetch Device Info.</source>
-        <translation>Fallo al obtener información del dispositivo.</translation>
+        <translation type="vanished">Fallo al obtener información del dispositivo.</translation>
     </message>
     <message>
         <source>Device is not in Factory Mode (Mode: %1).</source>
-        <translation>El dispositivo no está en modo fábrica (Modo: %1).</translation>
+        <translation type="vanished">El dispositivo no está en modo fábrica (Modo: %1).</translation>
     </message>
     <message>
         <source>Device must be in Factory Mode to copy Device Info.</source>
-        <translation>El dispositivo debe estar en modo fábrica para copiar la información del dispositivo.</translation>
+        <translation type="vanished">El dispositivo debe estar en modo fábrica para copiar la información del dispositivo.</translation>
     </message>
     <message>
         <source>Handshake complete but no config received.</source>
-        <translation>Negociación completada pero no se recibió ninguna configuración.</translation>
+        <translation type="vanished">Negociación completada pero no se recibió ninguna configuración.</translation>
     </message>
     <message>
         <source>Device handshake incomplete.</source>
-        <translation>Negociación del dispositivo incompleta.</translation>
+        <translation type="vanished">Negociación del dispositivo incompleta.</translation>
     </message>
     <message>
         <source>Failed to open device or handshake failed.</source>
-        <translation>Error al abrir el dispositivo o fallo en la negociación.</translation>
+        <translation type="vanished">Error al abrir el dispositivo o fallo en la negociación.</translation>
     </message>
     <message>
         <source>Connection Error</source>
-        <translation>Error de conexión</translation>
+        <translation type="vanished">Error de conexión</translation>
     </message>
     <message>
         <source>Failed to connect to device.</source>
-        <translation>Error al conectar con el dispositivo.</translation>
+        <translation type="vanished">Error al conectar con el dispositivo.</translation>
     </message>
     <message>
         <source>Checking for upgrades...</source>
@@ -2618,14 +2620,6 @@ Siguiente paso: Debe flashear el firmware por dispositivo para usar el dispositi
         <translation>Estado: %1</translation>
     </message>
     <message>
-        <source>Device Info copied to clipboard:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Device Info fetched and copied to clipboard:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Download complete. Starting flash...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2635,7 +2629,7 @@ Siguiente paso: Debe flashear el firmware por dispositivo para usar el dispositi
     </message>
     <message>
         <source>Device State Refreshed. Serial: %1, Mode: Factory, Secret: %2</source>
-        <translation>Estado del dispositivo actualizado. Serie: %1, Modo: Fábrica, Secreto: %2</translation>
+        <translation type="vanished">Estado del dispositivo actualizado. Serie: %1, Modo: Fábrica, Secreto: %2</translation>
     </message>
     <message>
         <source>Device State Refreshed. Serial: %1, State: %2, Profiles: %3</source>
@@ -2707,11 +2701,11 @@ Siguiente paso: Debe flashear el firmware por dispositivo para usar el dispositi
     </message>
     <message>
         <source>Missing Secret</source>
-        <translation>Falta el secreto</translation>
+        <translation type="vanished">Falta el secreto</translation>
     </message>
     <message>
         <source>Device Secret (PDEK) is required for this option. Please ensure the device is in Factory Mode and the secret has been fetched correctly.</source>
-        <translation>El secreto del dispositivo (PDEK) es necesario para esta opción. Asegúrese de que esté en modo fábrica.</translation>
+        <translation type="vanished">El secreto del dispositivo (PDEK) es necesario para esta opción. Asegúrese de que esté en modo fábrica.</translation>
     </message>
     <message>
         <source>Free</source>
@@ -2770,6 +2764,10 @@ Siguiente paso: Debe flashear el firmware por dispositivo para usar el dispositi
         <translation>Estado: %1, %2 Perfiles</translation>
     </message>
     <message>
+        <source>Device State Refreshed. Serial: %1, Mode: Factory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Failed to refresh state: %1</source>
         <translation>Error al actualizar el estado: %1</translation>
     </message>
@@ -2795,7 +2793,7 @@ Siguiente paso: Debe flashear el firmware por dispositivo para usar el dispositi
     </message>
     <message>
         <source>Copy Device Secret</source>
-        <translation>Copiar secreto del dispositivo</translation>
+        <translation type="vanished">Copiar secreto del dispositivo</translation>
     </message>
     <message>
         <source>Waiting for user to reconnect device...</source>

@@ -125,9 +125,6 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
   factoryLayout->addWidget(onlineFactoryGroup);
   factoryLayout->addWidget(manualFactoryGroup);
 
-  m_copyInfoBtn = new QPushButton(tr("Copy Device Secret"));
-  factoryLayout->addWidget(m_copyInfoBtn);
-
   factoryLayout->addStretch();
 
   m_tabWidget->addTab(factoryTab, tr("Factory Mode"));
@@ -245,13 +242,9 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
   // Options
   auto *optionsGroup = new QGroupBox(tr("Order Options"));
   auto *optionsLayout = new QVBoxLayout(optionsGroup);
-  m_orderOption1 = new QRadioButton(tr("Request 7-Day Free Trial"));
   m_orderOption2 = new QRadioButton(tr("Purchase Full License"));
-  m_orderOption3 = new QRadioButton(tr("Skip Trial and Purchase Full License"));
   m_orderOption4 = new QRadioButton(tr("Upgrade Profile Capacity"));
-  optionsLayout->addWidget(m_orderOption1);
   optionsLayout->addWidget(m_orderOption2);
-  optionsLayout->addWidget(m_orderOption3);
   optionsLayout->addWidget(m_orderOption4);
 
   // Payments Group
@@ -305,8 +298,6 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
 
   auto *deviceInfoGroup = new QGroupBox(tr("Device Information"));
   auto *deviceInfoLayout = new QGridLayout(deviceInfoGroup);
-  m_orderDeviceSecret = new QLineEdit();
-  m_orderDeviceSecret->setReadOnly(true);
   m_orderSerialLabel = new QLabel(tr("-"));
   m_orderSerialLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
   m_orderTotalProfiles = new QComboBox();
@@ -314,12 +305,10 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
   m_orderTotalProfiles->addItem("4", 4);
   m_orderTotalProfiles->addItem("6", 6);
 
-  deviceInfoLayout->addWidget(new QLabel(tr("Device Secret:")), 0, 0);
-  deviceInfoLayout->addWidget(m_orderDeviceSecret, 0, 1);
-  deviceInfoLayout->addWidget(new QLabel(tr("Serial Number:")), 1, 0);
-  deviceInfoLayout->addWidget(m_orderSerialLabel, 1, 1);
-  deviceInfoLayout->addWidget(new QLabel(tr("Total Profiles:")), 2, 0);
-  deviceInfoLayout->addWidget(m_orderTotalProfiles, 2, 1);
+  deviceInfoLayout->addWidget(new QLabel(tr("Serial Number:")), 0, 0);
+  deviceInfoLayout->addWidget(m_orderSerialLabel, 0, 1);
+  deviceInfoLayout->addWidget(new QLabel(tr("Total Profiles:")), 1, 0);
+  deviceInfoLayout->addWidget(m_orderTotalProfiles, 1, 1);
 
   m_btnCopyOrder = new QPushButton(tr("Copy content"));
   m_btnEmailOrder = new QPushButton(tr("Email"));
@@ -367,7 +356,6 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
   connect(m_factoryBrowseBtn, &QPushButton::clicked, this, &Esp32HidToolsWidget::onBrowseFactory);
   connect(m_factoryFlashBtn, &QPushButton::clicked, this, &Esp32HidToolsWidget::onFlashFactory);
   connect(m_downloadFlashBtn, &QPushButton::clicked, this, &Esp32HidToolsWidget::onDownloadAndFlashFactory);
-  connect(m_copyInfoBtn, &QPushButton::clicked, this, &Esp32HidToolsWidget::onCopyInfo);
 
   connect(m_upgradeBrowseBtn, &QPushButton::clicked, this, &Esp32HidToolsWidget::onBrowseUpgrade);
   connect(m_checkUpgradeBtn, &QPushButton::clicked, this, &Esp32HidToolsWidget::onCheckUpgrade);
@@ -382,9 +370,7 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
   connect(m_refreshPortsBtn, &QPushButton::clicked, this, &Esp32HidToolsWidget::refreshPorts);
   connect(m_portCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &Esp32HidToolsWidget::onPortChanged);
 
-  connect(m_orderOption1, &QRadioButton::toggled, this, &Esp32HidToolsWidget::updatePaymentDetails);
   connect(m_orderOption2, &QRadioButton::toggled, this, &Esp32HidToolsWidget::updatePaymentDetails);
-  connect(m_orderOption3, &QRadioButton::toggled, this, &Esp32HidToolsWidget::updatePaymentDetails);
   connect(m_orderOption4, &QRadioButton::toggled, this, &Esp32HidToolsWidget::updatePaymentDetails);
   connect(
       m_orderTotalProfiles, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
@@ -568,7 +554,6 @@ void Esp32HidToolsWidget::setControlsEnabled(bool enabled)
   m_checkUpgradeBtn->setEnabled(enabled);
   m_refreshPortsBtn->setEnabled(enabled);
   m_portCombo->setEnabled(enabled);
-  m_copyInfoBtn->setEnabled(enabled);
   m_factoryPathEdit->setEnabled(enabled);
   m_upgradePathEdit->setEnabled(enabled);
 }
@@ -660,32 +645,10 @@ void Esp32HidToolsWidget::onFlashFactory()
         if (config.firmwareMode == deskflow::bridge::FirmwareMode::Factory) {
           QMetaObject::invokeMethod(this, [this]() {
             log(tr("Device is already running with factory firmware."));
-            log(tr("Attempting to fetch PDEK..."));
-          });
-
-          // Attempt to fetch PDEK using the new tool command
-          std::string pdekInfo;
-          // IMPORTANT: Close the local handle before asking the tool to open it again!
-          cdc.close();
-          FlashResult res = copy_pdek(port.c_str(), pdekInfo, log_cb);
-
-          QMetaObject::invokeMethod(this, [this, res, pdekInfo]() {
-            if (res == FlashResult::OK) {
-              log(tr("PDEK fetched successfully."));
-              log(tr("Device Info: %1").arg(QString::fromStdString(pdekInfo)));
-              m_copyInfoBtn->setEnabled(true);
-              m_copyInfoBtn->setProperty("deviceInfo", QString::fromStdString(pdekInfo));
-              showWideMessageBox(
-                  QMessageBox::Information, tr("Info"),
-                  tr("Device is already running with factory firmware. Device Info has been fetched.")
-              );
-            } else {
-              log(tr("Failed to fetch PDEK from factory mode device."));
-              showWideMessageBox(
-                  QMessageBox::Warning, tr("Info"),
-                  tr("Device is already running with factory firmware, but failed to fetch PDEK.")
-              );
-            }
+            showWideMessageBox(
+                QMessageBox::Information, tr("Info"),
+                tr("Device is already running with factory firmware.")
+            );
           });
           return;
         } else {
@@ -722,9 +685,6 @@ void Esp32HidToolsWidget::onFlashFactory()
       if (res == FlashResult::OK) {
         log(tr("Factory Flash Success!"));
         log(tr("Device Info: %1").arg(QString::fromStdString(info)));
-        m_copyInfoBtn->setEnabled(true);
-        m_copyInfoBtn->setProperty("deviceInfo", QString::fromStdString(info));
-
         showFactoryFlashSuccess();
       } else {
         log(tr("Flash failed, %1").arg(QString::fromStdString(flashResultToString(res))));
@@ -847,8 +807,6 @@ void Esp32HidToolsWidget::onDownloadAndFlashFactory()
           if (res == FlashResult::OK) {
             log(tr("Flash Success!"));
             log(tr("Device Info: %1").arg(QString::fromStdString(info)));
-            m_copyInfoBtn->setEnabled(true);
-            m_copyInfoBtn->setProperty("deviceInfo", QString::fromStdString(info));
             showFactoryFlashSuccess();
           } else {
             QString errorMsg = QString::fromStdString(flashResultToString(res));
@@ -914,74 +872,11 @@ bool Esp32HidToolsWidget::confirmFactoryFlash(const QString &filename)
 
 void Esp32HidToolsWidget::showFactoryFlashSuccess()
 {
-  QString msg = tr("Factory firmware flashed successfully.\n\n"
-                   "Next step: You need to flash the per-device firmware to use the device. "
-                   "Please switch to the 'Order' tab to request it.");
+  QString msg = tr("Firmware flashed successfully.\n\n"
+                   "The device will boot into a 7-day free trial automatically. "
+                   "After the trial expires, use the Activation tab to activate with a license key.");
 
   showWideMessageBox(QMessageBox::Information, tr("Success"), msg);
-  m_copyInfoBtn->setFocus();
-}
-
-void Esp32HidToolsWidget::onCopyInfo()
-{
-  QString info = m_copyInfoBtn->property("deviceInfo").toString();
-  if (!info.isEmpty()) {
-    QApplication::clipboard()->setText(info);
-    log(tr("Device Info copied to clipboard:"));
-    log(info);
-    return;
-  }
-
-  // Info not in property, try to fetch it
-  QString portName = m_portCombo->currentData().toString();
-  if (portName.isEmpty()) {
-    portName = m_portCombo->currentText();
-    if (portName.isEmpty() || portName == tr("No devices found")) {
-      showWideMessageBox(QMessageBox::Warning, tr("Error"), tr("Please select a valid serial port."));
-      return;
-    }
-  }
-
-  std::string port = portName.toStdString();
-  log(tr("Checking device info on %1...").arg(portName));
-
-  // 1. Handshake to check mode
-  deskflow::bridge::CdcTransport cdc(portName);
-  if (cdc.open(true)) {
-    if (cdc.hasDeviceConfig()) {
-      const auto &config = cdc.deviceConfig();
-      if (config.firmwareMode == deskflow::bridge::FirmwareMode::Factory) {
-        log(tr("Device is in Factory Mode. Fetching PDEK..."));
-        cdc.close(); // Close to allow tool to access
-
-        std::string pdekInfo;
-        auto log_cb = [this](const std::string &msg) { log(QString::fromStdString(msg)); };
-
-        FlashResult res = copy_pdek(port, pdekInfo, log_cb);
-        if (res == FlashResult::OK) {
-          m_copyInfoBtn->setProperty("deviceInfo", QString::fromStdString(pdekInfo));
-          QApplication::clipboard()->setText(QString::fromStdString(pdekInfo));
-          log(tr("Device Info fetched and copied to clipboard:"));
-          log(QString::fromStdString(pdekInfo));
-          showWideMessageBox(QMessageBox::Information, tr("Success"), tr("Device Info copied to clipboard."));
-        } else {
-          log(tr("Failed to fetch PDEK."));
-          showWideMessageBox(QMessageBox::Critical, tr("Error"), tr("Failed to fetch Device Info."));
-        }
-      } else {
-        log(tr("Device is not in Factory Mode (Mode: %1).").arg((int)config.firmwareMode));
-        showWideMessageBox(
-            QMessageBox::Warning, tr("Wrong Mode"), tr("Device must be in Factory Mode to copy Device Info.")
-        );
-      }
-    } else {
-      log(tr("Handshake complete but no config received."));
-      showWideMessageBox(QMessageBox::Warning, tr("Error"), tr("Device handshake incomplete."));
-    }
-  } else {
-    log(tr("Failed to open device or handshake failed."));
-    showWideMessageBox(QMessageBox::Warning, tr("Connection Error"), tr("Failed to connect to device."));
-  }
 }
 
 // Check Upgrade
@@ -1338,7 +1233,6 @@ void Esp32HidToolsWidget::updateText()
   m_factoryBrowseBtn->setText(tr("Browse..."));
   m_factoryFlashBtn->setText(tr("Flash"));
   m_downloadFlashBtn->setText(tr("Flash"));
-  m_copyInfoBtn->setText(tr("Copy Device Secret"));
 
   m_checkUpgradeBtn->setText(tr("Check for Updates"));
   m_flashOnlineBtn->setText(tr("Flash"));
@@ -1350,9 +1244,7 @@ void Esp32HidToolsWidget::updateText()
   m_lineActivationKey->setPlaceholderText(tr("Paste Activation Key Here"));
   m_btnActivate->setText(tr("Activate"));
 
-  m_orderOption1->setText(tr("Free trial for 7 days"));
-  m_orderOption2->setText(tr("I am ok with free trial and want to buy full license"));
-  m_orderOption3->setText(tr("Skip trial and buy Full licensed version"));
+  m_orderOption2->setText(tr("Purchase Full License"));
   m_orderOption4->setText(tr("Already licensed, but want bump profiles"));
 
   m_chkManualPayment->setText(tr("I will arrange payment via email"));
@@ -1399,21 +1291,18 @@ void deskflow::gui::Esp32HidToolsWidget::refreshDeviceState()
   log(tr("Refreshing device state..."));
   m_lineSerial->clear();
   m_orderSerialLabel->setText(tr("-"));
-  m_orderDeviceSecret->clear();
   m_labelActivationState->setText(tr("State: Checking..."));
   setControlsEnabled(false); // Disable while checking
 
   auto task = [this, portName]() {
     deskflow::bridge::CdcTransport cdc(portName);
     std::string serial;
-    std::string pdek;
     // Use permissive open for status check (Factory FW might not support auth)
     bool openSuccess = cdc.open(true);
 
     struct State
     {
       QString serial;
-      QString pdek;
       QString activationState;
       deskflow::bridge::ActivationState stateEnum;
       bool isActivated;
@@ -1435,19 +1324,6 @@ void deskflow::gui::Esp32HidToolsWidget::refreshDeviceState()
       result.isFactoryMode = (config.firmwareMode == deskflow::bridge::FirmwareMode::Factory);
       result.totalProfiles = config.totalProfiles;
       result.success = true;
-
-      if (result.isFactoryMode) {
-        // Automatically attempt to fetch PDEK if in factory mode
-        cdc.close(); // Close to allow tool to access
-        std::string pdekInfo;
-        auto log_cb = [this](const std::string &msg) {
-          QMetaObject::invokeMethod(this, [this, msg]() { log(QString::fromStdString(msg)); });
-        };
-        FlashResult res = copy_pdek(portName.toStdString(), pdekInfo, log_cb);
-        if (res == FlashResult::OK) {
-          result.pdek = QString::fromStdString(pdekInfo);
-        }
-      }
     } else {
       result.success = false;
       result.error = QString::fromStdString(cdc.lastError());
@@ -1461,25 +1337,16 @@ void deskflow::gui::Esp32HidToolsWidget::refreshDeviceState()
         m_labelActivationState->setText(
             tr("State: %1, %2 Profiles").arg(result.activationState).arg(result.totalProfiles)
         );
-        m_orderDeviceSecret->setText(result.pdek);
 
         // Update Order Options
-        bool hasSecret = !result.pdek.isEmpty();
         bool isLicensed = result.isActivated;
-        bool canBuyFull = !isLicensed && !hasSecret;
 
-        m_orderOption1->setEnabled(hasSecret);
-        m_orderOption3->setEnabled(hasSecret);
-        m_orderOption2->setEnabled(canBuyFull);
+        m_orderOption2->setEnabled(!isLicensed);
         m_orderOption4->setEnabled(isLicensed && result.totalProfiles == 2);
 
         // Check the first valid (enabled) option
-        if (m_orderOption1->isEnabled()) {
-          m_orderOption1->setChecked(true);
-        } else if (m_orderOption2->isEnabled()) {
+        if (m_orderOption2->isEnabled()) {
           m_orderOption2->setChecked(true);
-        } else if (m_orderOption3->isEnabled()) {
-          m_orderOption3->setChecked(true);
         } else if (m_orderOption4->isEnabled()) {
           m_orderOption4->setChecked(true);
         }
@@ -1504,8 +1371,7 @@ void deskflow::gui::Esp32HidToolsWidget::refreshDeviceState()
         if (result.isFactoryMode) {
           m_labelActivationState->setText(tr("State: Factory Mode (Cannot Activate)"));
           m_groupActivationInput->setVisible(false);
-          log(tr("Device State Refreshed. Serial: %1, Mode: Factory, Secret: %2")
-                  .arg(result.serial, result.pdek.isEmpty() ? "Unknown" : "Fetched"));
+          log(tr("Device State Refreshed. Serial: %1, Mode: Factory").arg(result.serial));
         } else {
           // Conditional UI: Hide activation input if already activated
           // Conditional UI: Hide activation input if already activated AND has more than 2 profiles
@@ -1532,9 +1398,7 @@ void deskflow::gui::Esp32HidToolsWidget::refreshDeviceState()
           );
         }
         // Reset Order Options
-        m_orderOption1->setEnabled(false);
         m_orderOption2->setEnabled(false);
-        m_orderOption3->setEnabled(false);
         m_orderOption4->setEnabled(false);
         m_orderTotalProfiles->setEnabled(false);
       }
@@ -1615,7 +1479,6 @@ QString deskflow::gui::Esp32HidToolsWidget::composeOrderContent(QString &outPref
   }
 
   QString serial = m_orderSerialLabel->text();
-  QString secret = m_orderDeviceSecret->text();
   int totalProfiles = m_orderTotalProfiles->currentData().toInt();
 
   if (serial == tr("-") || serial.isEmpty()) {
@@ -1628,23 +1491,11 @@ QString deskflow::gui::Esp32HidToolsWidget::composeOrderContent(QString &outPref
   outOption = -1;
   QString content;
 
-  if (m_orderOption1->isChecked()) {
-    outOption = 1;
-    outPrefix = "free_trial_";
-    content = QString("Name: %1\nEmail: %2\nSerial: %3\nDevice Secret: %4\nRequest: Free trial for 7 days\n")
-                  .arg(name, email, serial, secret);
-  } else if (m_orderOption2->isChecked()) {
+  if (m_orderOption2->isChecked()) {
     outOption = 2;
     outPrefix = "full_license_";
-    content =
-        QString("Name: %1\nEmail: %2\nSerial: %3\nTotal Profiles: %4\nRequest: Buy full license (Trial upgrade)\n")
-            .arg(name, email, serial, QString::number(totalProfiles));
-  } else if (m_orderOption3->isChecked()) {
-    outOption = 3;
-    outPrefix = "full_license_";
-    content = QString("Name: %1\nEmail: %2\nSerial: %3\nDevice Secret: %4\nTotal Profiles: %5\nRequest: Skip trial "
-                      "and buy full license\n")
-                  .arg(name, email, serial, secret, QString::number(totalProfiles));
+    content = QString("Name: %1\nEmail: %2\nSerial: %3\nTotal Profiles: %4\nRequest: Purchase full license\n")
+                  .arg(name, email, serial, QString::number(totalProfiles));
   } else if (m_orderOption4->isChecked()) {
     outOption = 4;
     outPrefix = "profile_";
@@ -1681,16 +1532,6 @@ QString deskflow::gui::Esp32HidToolsWidget::composeOrderContent(QString &outPref
 
   content.append(QString("Reference No: %1\n").arg(m_paymentRefNo->text()));
 
-  // Validate Secret for options 1 and 3
-  if ((outOption == 1 || outOption == 3) && secret.isEmpty()) {
-    QMessageBox::critical(
-        this, tr("Missing Secret"),
-        tr("Device Secret (PDEK) is required for this option. Please ensure the device is in Factory Mode and the "
-           "secret has been fetched correctly.")
-    );
-    return QString();
-  }
-
   return content;
 }
 
@@ -1699,10 +1540,7 @@ deskflow::gui::OrderPrice deskflow::gui::Esp32HidToolsWidget::calculateOrderPric
   double price = 0.0;
   QString priceDesc;
 
-  if (option == 1) { // Free Trial
-    price = 0.0;
-    priceDesc = "Free Trial";
-  } else if (option == 2 || option == 3) { // Full License
+  if (option == 2) { // Full License
     price += m_prices.license;
 
     if (totalProfiles == 4) {
@@ -1755,12 +1593,8 @@ deskflow::gui::OrderPrice deskflow::gui::Esp32HidToolsWidget::calculateOrderPric
 void deskflow::gui::Esp32HidToolsWidget::updatePaymentDetails()
 {
   int option = -1;
-  if (m_orderOption1->isChecked())
-    option = 1;
-  else if (m_orderOption2->isChecked())
+  if (m_orderOption2->isChecked())
     option = 2;
-  else if (m_orderOption3->isChecked())
-    option = 3;
   else if (m_orderOption4->isChecked())
     option = 4;
 
@@ -1792,12 +1626,8 @@ void deskflow::gui::Esp32HidToolsWidget::updatePaymentReference()
 void deskflow::gui::Esp32HidToolsWidget::onPayNowClicked()
 {
   int option = -1;
-  if (m_orderOption1->isChecked())
-    option = 1;
-  else if (m_orderOption2->isChecked())
+  if (m_orderOption2->isChecked())
     option = 2;
-  else if (m_orderOption3->isChecked())
-    option = 3;
   else if (m_orderOption4->isChecked())
     option = 4;
 
@@ -1917,19 +1747,15 @@ void deskflow::gui::Esp32HidToolsWidget::onPortChanged(int index)
   LOG_INFO("Port selection changed to: %s", qPrintable(portName));
 
   // Reset UI metadata
-  m_copyInfoBtn->setProperty("deviceInfo", QVariant());
   m_lblCurrentVersion->setText(tr("Current Version: Unknown"));
   m_lblLatestVersion->setText(tr("Latest Version: Unknown"));
   m_flashOnlineBtn->setEnabled(false);
   m_lineSerial->clear();
   m_orderSerialLabel->setText(tr("-"));
-  m_orderDeviceSecret->clear();
   m_labelActivationState->setText(tr("State: Unknown"));
 
   // Reset Order Options
-  m_orderOption1->setEnabled(false);
   m_orderOption2->setEnabled(false);
-  m_orderOption3->setEnabled(false);
   m_orderOption4->setEnabled(false);
   m_orderTotalProfiles->setEnabled(false);
 

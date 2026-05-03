@@ -2204,6 +2204,12 @@ Duplicate: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Firmware flashed successfully.
+
+The device will boot into a 7-day free trial automatically. After the trial expires, use the Activation tab to activate with a license key.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Failed to find upgrade firmware in the latest release.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2213,15 +2219,15 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Free trial for 7 days</source>
-        <translation>Бесплатная пробная версия на 7 дней</translation>
+        <translation type="vanished">Бесплатная пробная версия на 7 дней</translation>
     </message>
     <message>
         <source>I am ok with free trial and want to buy full license</source>
-        <translation>Я согласен с пробной версией и хочу купить полную лицензию</translation>
+        <translation type="vanished">Я согласен с пробной версией и хочу купить полную лицензию</translation>
     </message>
     <message>
         <source>Skip trial and buy Full licensed version</source>
-        <translation>Пропустить пробную версию и купить полную лицензию</translation>
+        <translation type="vanished">Пропустить пробную версию и купить полную лицензию</translation>
     </message>
     <message>
         <source>Already licensed, but want bump profiles</source>
@@ -2233,7 +2239,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Request 7-Day Free Trial</source>
-        <translation>Запросить 7-дневную бесплатную пробную версию</translation>
+        <translation type="vanished">Запросить 7-дневную бесплатную пробную версию</translation>
     </message>
     <message>
         <source>Purchase Full License</source>
@@ -2269,7 +2275,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Device Secret:</source>
-        <translation>Секрет устройства:</translation>
+        <translation type="vanished">Секрет устройства:</translation>
     </message>
     <message>
         <source>Serial Number:</source>
@@ -2345,11 +2351,11 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Attempting to fetch PDEK...</source>
-        <translation>Попытка получить PDEK...</translation>
+        <translation type="vanished">Попытка получить PDEK...</translation>
     </message>
     <message>
         <source>PDEK fetched successfully.</source>
-        <translation>PDEK успешно получен.</translation>
+        <translation type="vanished">PDEK успешно получен.</translation>
     </message>
     <message>
         <source>Device Info: %1</source>
@@ -2361,15 +2367,15 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Device is already running with factory firmware. Device Info has been fetched.</source>
-        <translation>Устройство уже работает с заводской прошивкой. Информация об устройстве получена.</translation>
+        <translation type="vanished">Устройство уже работает с заводской прошивкой. Информация об устройстве получена.</translation>
     </message>
     <message>
         <source>Failed to fetch PDEK from factory mode device.</source>
-        <translation>Не удалось получить PDEK с устройства в заводском режиме.</translation>
+        <translation type="vanished">Не удалось получить PDEK с устройства в заводском режиме.</translation>
     </message>
     <message>
         <source>Device is already running with factory firmware, but failed to fetch PDEK.</source>
-        <translation>Устройство уже работает с заводской прошивкой, но не удалось получить PDEK.</translation>
+        <translation type="vanished">Устройство уже работает с заводской прошивкой, но не удалось получить PDEK.</translation>
     </message>
     <message>
         <source>Device is running Application Firmware.</source>
@@ -2455,57 +2461,57 @@ Duplicate: %1</source>
         <source>Factory firmware flashed successfully.
 
 Next step: You need to flash the per-device firmware to use the device. Please switch to the &apos;Order&apos; tab to request it.</source>
-        <translation>Заводская прошивка успешно прошита.
+        <translation type="vanished">Заводская прошивка успешно прошита.
 
 Следующий шаг: Вам необходимо прошить прошивку для конкретного устройства, чтобы использовать его. Пожалуйста, переключитесь на вкладку &apos;Заказ&apos; для запроса.</translation>
     </message>
     <message>
         <source>Device Info copied to clipboard.</source>
-        <translation>Информация об устройстве скопирована в буфер обмена.</translation>
+        <translation type="vanished">Информация об устройстве скопирована в буфер обмена.</translation>
     </message>
     <message>
         <source>Checking device info on %1...</source>
-        <translation>Проверка информации об устройстве на %1...</translation>
+        <translation type="vanished">Проверка информации об устройстве на %1...</translation>
     </message>
     <message>
         <source>Device is in Factory Mode. Fetching PDEK...</source>
-        <translation>Устройство в заводском режиме. Получение PDEK...</translation>
+        <translation type="vanished">Устройство в заводском режиме. Получение PDEK...</translation>
     </message>
     <message>
         <source>Failed to fetch PDEK.</source>
-        <translation>Не удалось получить PDEK.</translation>
+        <translation type="vanished">Не удалось получить PDEK.</translation>
     </message>
     <message>
         <source>Failed to fetch Device Info.</source>
-        <translation>Не удалось получить информацию об устройстве.</translation>
+        <translation type="vanished">Не удалось получить информацию об устройстве.</translation>
     </message>
     <message>
         <source>Device is not in Factory Mode (Mode: %1).</source>
-        <translation>Устройство не в заводском режиме (Режим: %1).</translation>
+        <translation type="vanished">Устройство не в заводском режиме (Режим: %1).</translation>
     </message>
     <message>
         <source>Device must be in Factory Mode to copy Device Info.</source>
-        <translation>Устройство должно быть в заводском режиме для копирования информации об устройстве.</translation>
+        <translation type="vanished">Устройство должно быть в заводском режиме для копирования информации об устройстве.</translation>
     </message>
     <message>
         <source>Handshake complete but no config received.</source>
-        <translation>Рукопожатие завершено, но конфигурация не получена.</translation>
+        <translation type="vanished">Рукопожатие завершено, но конфигурация не получена.</translation>
     </message>
     <message>
         <source>Device handshake incomplete.</source>
-        <translation>Рукопожатие устройства не завершено.</translation>
+        <translation type="vanished">Рукопожатие устройства не завершено.</translation>
     </message>
     <message>
         <source>Failed to open device or handshake failed.</source>
-        <translation>Не удалось открыть устройство или рукопожатие не удалось.</translation>
+        <translation type="vanished">Не удалось открыть устройство или рукопожатие не удалось.</translation>
     </message>
     <message>
         <source>Connection Error</source>
-        <translation>Ошибка подключения</translation>
+        <translation type="vanished">Ошибка подключения</translation>
     </message>
     <message>
         <source>Failed to connect to device.</source>
-        <translation>Не удалось подключиться к устройству.</translation>
+        <translation type="vanished">Не удалось подключиться к устройству.</translation>
     </message>
     <message>
         <source>Checking for upgrades...</source>
@@ -2600,10 +2606,6 @@ Next step: You need to flash the per-device firmware to use the device. Please s
         <translation>Состояние: %1</translation>
     </message>
     <message>
-        <source>Skip Trial and Purchase Full License</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Selected factory firmware: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2628,14 +2630,6 @@ Next step: You need to flash the per-device firmware to use the device. Please s
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Device Info copied to clipboard:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Device Info fetched and copied to clipboard:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Please flash per-device firmware firstly.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2653,7 +2647,7 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Device State Refreshed. Serial: %1, Mode: Factory, Secret: %2</source>
-        <translation>Состояние устройства обновлено. Серийный номер: %1, Режим: Заводской, Секрет: %2</translation>
+        <translation type="vanished">Состояние устройства обновлено. Серийный номер: %1, Режим: Заводской, Секрет: %2</translation>
     </message>
     <message>
         <source>Device State Refreshed. Serial: %1, State: %2, Profiles: %3</source>
@@ -2717,11 +2711,11 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Missing Secret</source>
-        <translation>Отсутствует секрет</translation>
+        <translation type="vanished">Отсутствует секрет</translation>
     </message>
     <message>
         <source>Device Secret (PDEK) is required for this option. Please ensure the device is in Factory Mode and the secret has been fetched correctly.</source>
-        <translation>Для этой опции требуется секрет устройства (PDEK). Пожалуйста, убедитесь, что устройство находится в заводском режиме и секрет был получен правильно.</translation>
+        <translation type="vanished">Для этой опции требуется секрет устройства (PDEK). Пожалуйста, убедитесь, что устройство находится в заводском режиме и секрет был получен правильно.</translation>
     </message>
     <message>
         <source>Free</source>
@@ -2780,6 +2774,10 @@ Next step: You need to flash the per-device firmware to use the device. Please s
         <translation>Состояние: %1, %2 профилей</translation>
     </message>
     <message>
+        <source>Device State Refreshed. Serial: %1, Mode: Factory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Failed to refresh state: %1</source>
         <translation>Не удалось обновить состояние: %1</translation>
     </message>
@@ -2813,7 +2811,7 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Copy Device Secret</source>
-        <translation>Копировать секрет устройства</translation>
+        <translation type="vanished">Копировать секрет устройства</translation>
     </message>
     <message>
         <source>Waiting for user to reconnect device...</source>

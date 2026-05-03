@@ -2192,6 +2192,12 @@ Duplicate: %1</source>
         <translation>即将刷写: &lt;b&gt;%1&lt;/b&gt;&lt;br&gt;&lt;br&gt;此操作将永久地将您的设备转换为 DShare-HID。此过程不可逆转，且会排除非 DShare-HID 固件。&lt;br&gt;&lt;br&gt;是否继续？</translation>
     </message>
     <message>
+        <source>Firmware flashed successfully.
+
+The device will boot into a 7-day free trial automatically. After the trial expires, use the Activation tab to activate with a license key.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Failed to find upgrade firmware in the latest release.</source>
         <translation>在最新发布版本中未找到升级固件。</translation>
     </message>
@@ -2201,15 +2207,15 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Free trial for 7 days</source>
-        <translation>7 天免费试用</translation>
+        <translation type="vanished">7 天免费试用</translation>
     </message>
     <message>
         <source>I am ok with free trial and want to buy full license</source>
-        <translation>我接受免费试用，并想购买完整许可</translation>
+        <translation type="vanished">我接受免费试用，并想购买完整许可</translation>
     </message>
     <message>
         <source>Skip trial and buy Full licensed version</source>
-        <translation>跳过试用并购买完整许可版本</translation>
+        <translation type="vanished">跳过试用并购买完整许可版本</translation>
     </message>
     <message>
         <source>Already licensed, but want bump profiles</source>
@@ -2221,7 +2227,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Request 7-Day Free Trial</source>
-        <translation>申请 7 天免费试用</translation>
+        <translation type="vanished">申请 7 天免费试用</translation>
     </message>
     <message>
         <source>Purchase Full License</source>
@@ -2257,7 +2263,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Device Secret:</source>
-        <translation>设备密钥：</translation>
+        <translation type="vanished">设备密钥：</translation>
     </message>
     <message>
         <source>Serial Number:</source>
@@ -2333,11 +2339,11 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Attempting to fetch PDEK...</source>
-        <translation>尝试获取 PDEK...</translation>
+        <translation type="vanished">尝试获取 PDEK...</translation>
     </message>
     <message>
         <source>PDEK fetched successfully.</source>
-        <translation>成功获取 PDEK。</translation>
+        <translation type="vanished">成功获取 PDEK。</translation>
     </message>
     <message>
         <source>Device Info: %1</source>
@@ -2349,15 +2355,15 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Device is already running with factory firmware. Device Info has been fetched.</source>
-        <translation>设备已在运行工厂固件。设备信息已获取。</translation>
+        <translation type="vanished">设备已在运行工厂固件。设备信息已获取。</translation>
     </message>
     <message>
         <source>Failed to fetch PDEK from factory mode device.</source>
-        <translation>从工厂模式设备获取 PDEK 失败。</translation>
+        <translation type="vanished">从工厂模式设备获取 PDEK 失败。</translation>
     </message>
     <message>
         <source>Device is already running with factory firmware, but failed to fetch PDEK.</source>
-        <translation>设备已在运行工厂固件，但获取 PDEK 失败。</translation>
+        <translation type="vanished">设备已在运行工厂固件，但获取 PDEK 失败。</translation>
     </message>
     <message>
         <source>Device is running Application Firmware.</source>
@@ -2443,57 +2449,57 @@ Duplicate: %1</source>
         <source>Factory firmware flashed successfully.
 
 Next step: You need to flash the per-device firmware to use the device. Please switch to the &apos;Order&apos; tab to request it.</source>
-        <translation>工厂固件烧录成功。
+        <translation type="vanished">工厂固件烧录成功。
 
 下一步：您需要烧录每设备特定的固件才能使用该设备。请切换到“订购”选项卡进行申请。</translation>
     </message>
     <message>
         <source>Device Info copied to clipboard.</source>
-        <translation>设备信息已复制到剪贴板。</translation>
+        <translation type="vanished">设备信息已复制到剪贴板。</translation>
     </message>
     <message>
         <source>Checking device info on %1...</source>
-        <translation>正在检查 %1 上的设备信息...</translation>
+        <translation type="vanished">正在检查 %1 上的设备信息...</translation>
     </message>
     <message>
         <source>Device is in Factory Mode. Fetching PDEK...</source>
-        <translation>设备处于工厂模式。正在获取 PDEK...</translation>
+        <translation type="vanished">设备处于工厂模式。正在获取 PDEK...</translation>
     </message>
     <message>
         <source>Failed to fetch PDEK.</source>
-        <translation>获取 PDEK 失败。</translation>
+        <translation type="vanished">获取 PDEK 失败。</translation>
     </message>
     <message>
         <source>Failed to fetch Device Info.</source>
-        <translation>获取设备信息失败。</translation>
+        <translation type="vanished">获取设备信息失败。</translation>
     </message>
     <message>
         <source>Device is not in Factory Mode (Mode: %1).</source>
-        <translation>设备未处于工厂模式（模式：%1）。</translation>
+        <translation type="vanished">设备未处于工厂模式（模式：%1）。</translation>
     </message>
     <message>
         <source>Device must be in Factory Mode to copy Device Info.</source>
-        <translation>设备必须处于工厂模式才能复制设备信息。</translation>
+        <translation type="vanished">设备必须处于工厂模式才能复制设备信息。</translation>
     </message>
     <message>
         <source>Handshake complete but no config received.</source>
-        <translation>握手完成但未收到配置。</translation>
+        <translation type="vanished">握手完成但未收到配置。</translation>
     </message>
     <message>
         <source>Device handshake incomplete.</source>
-        <translation>设备握手未完成。</translation>
+        <translation type="vanished">设备握手未完成。</translation>
     </message>
     <message>
         <source>Failed to open device or handshake failed.</source>
-        <translation>打开设备失败或握手失败。</translation>
+        <translation type="vanished">打开设备失败或握手失败。</translation>
     </message>
     <message>
         <source>Connection Error</source>
-        <translation>连接错误</translation>
+        <translation type="vanished">连接错误</translation>
     </message>
     <message>
         <source>Failed to connect to device.</source>
-        <translation>连接设备失败。</translation>
+        <translation type="vanished">连接设备失败。</translation>
     </message>
     <message>
         <source>Checking for upgrades...</source>
@@ -2589,7 +2595,7 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Skip Trial and Purchase Full License</source>
-        <translation>跳过试用并购买完整许可</translation>
+        <translation type="vanished">跳过试用并购买完整许可</translation>
     </message>
     <message>
         <source>Selected factory firmware: %1</source>
@@ -2617,11 +2623,11 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Device Info copied to clipboard:</source>
-        <translation>设备信息已复制到剪贴板:</translation>
+        <translation type="vanished">设备信息已复制到剪贴板:</translation>
     </message>
     <message>
         <source>Device Info fetched and copied to clipboard:</source>
-        <translation>已获取设备信息并复制到剪贴板:</translation>
+        <translation type="vanished">已获取设备信息并复制到剪贴板:</translation>
     </message>
     <message>
         <source>Please flash per-device firmware firstly.</source>
@@ -2641,7 +2647,7 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Device State Refreshed. Serial: %1, Mode: Factory, Secret: %2</source>
-        <translation>设备状态已刷新。序列号：%1，模式：工厂，密钥：%2</translation>
+        <translation type="vanished">设备状态已刷新。序列号：%1，模式：工厂，密钥：%2</translation>
     </message>
     <message>
         <source>Device State Refreshed. Serial: %1, State: %2, Profiles: %3</source>
@@ -2705,11 +2711,11 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Missing Secret</source>
-        <translation>缺少密钥</translation>
+        <translation type="vanished">缺少密钥</translation>
     </message>
     <message>
         <source>Device Secret (PDEK) is required for this option. Please ensure the device is in Factory Mode and the secret has been fetched correctly.</source>
-        <translation>此选项需要设备密钥 (PDEK)。请确保设备处于工厂模式且已正确获取密钥。</translation>
+        <translation type="vanished">此选项需要设备密钥 (PDEK)。请确保设备处于工厂模式且已正确获取密钥。</translation>
     </message>
     <message>
         <source>Free</source>
@@ -2768,6 +2774,10 @@ Next step: You need to flash the per-device firmware to use the device. Please s
         <translation>状态: %1, %2个配置</translation>
     </message>
     <message>
+        <source>Device State Refreshed. Serial: %1, Mode: Factory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Failed to refresh state: %1</source>
         <translation>刷新状态失败：%1</translation>
     </message>
@@ -2801,7 +2811,7 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Copy Device Secret</source>
-        <translation>复制设备密钥</translation>
+        <translation type="vanished">复制设备密钥</translation>
     </message>
     <message>
         <source>Waiting for user to reconnect device...</source>
