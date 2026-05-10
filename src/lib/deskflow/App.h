@@ -46,7 +46,7 @@ public:
     }
   };
 
-  App(IEventQueue *events, const QString &processName);
+  explicit App(IEventQueue *events, const QString &processName);
   App(App const &) = delete;
   App(App &&) = delete;
   ~App() override;
@@ -77,7 +77,7 @@ public:
   }
 
   void run(QThread &coreThread);
-  void quit();
+  void quit() const;
   void setupFileLogging();
   void loggingFilterWarning() const;
   void initApp() override;
@@ -125,7 +125,7 @@ protected:
   struct LoopErrorCode
   {
     int m_errorCode;
-    LoopErrorCode(int errorCode) : m_errorCode(errorCode)
+    explicit LoopErrorCode(int errorCode) : m_errorCode(errorCode)
     {
     }
   };
