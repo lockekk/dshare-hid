@@ -24,9 +24,9 @@ public:
 class ExitEventData : public EventData
 {
 public:
-  ExitEventData(int exitCode) : m_exitCode(exitCode) {};
-  virtual ~ExitEventData() = default;
-  int exitCode()
+  explicit ExitEventData(int exitCode) : m_exitCode(exitCode) {};
+  ~ExitEventData() override = default;
+  int exitCode() const
   {
     return m_exitCode;
   }

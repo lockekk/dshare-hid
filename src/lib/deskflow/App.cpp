@@ -168,7 +168,7 @@ void App::handleScreenError() const
   getEvents()->addEvent(Event(EventTypes::Quit));
 }
 
-void App::quit()
+void App::quit() const
 {
   LOG_INFO("quitting");
   getEvents()->addEvent(Event(EventTypes::Quit));
