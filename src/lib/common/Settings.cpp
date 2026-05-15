@@ -316,7 +316,7 @@ bool Settings::isPortableMode()
 
 QString Settings::settingsFile()
 {
-  return instance()->m_settings->fileName();
+  return QFileInfo(instance()->m_settings->fileName()).absoluteFilePath();
 }
 
 QString Settings::settingsPath()
@@ -377,14 +377,14 @@ QString Settings::tlsTrustedServersDb()
   auto currentPath = instance()->settingsPath();
   const bool bridgeClient = instance()->m_bridgeClientMode || currentPath.contains("bridge-clients");
   if (bridgeClient) {
-    return QStringLiteral("%1/trusted-servers").arg(bridgeClientTlsDir());
+    return QFileInfo(QStringLiteral("%1/trusted-servers").arg(bridgeClientTlsDir())).absoluteFilePath();
   }
-  return QStringLiteral("%1/trusted-servers").arg(instance()->tlsDir());
+  return QFileInfo(QStringLiteral("%1/trusted-servers").arg(instance()->tlsDir())).absoluteFilePath();
 }
 
 QString Settings::tlsTrustedClientsDb()
 {
-  return QStringLiteral("%1/trusted-clients").arg(instance()->tlsDir());
+  return QFileInfo(QStringLiteral("%1/trusted-clients").arg(instance()->tlsDir())).absoluteFilePath();
 }
 
 void Settings::setValue(const QString &key, const QVariant &value)
@@ -426,5 +426,5 @@ QString Settings::portableSettingsFile()
 {
   static const auto filename =
       QStringLiteral("%1/settings/%2.conf").arg(QCoreApplication::applicationDirPath(), kAppName);
-  return filename;
+  return QFileInfo(filename).absoluteFilePath();
 }

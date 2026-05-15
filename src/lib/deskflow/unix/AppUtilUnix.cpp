@@ -8,6 +8,7 @@
 #include "deskflow/unix/AppUtilUnix.h"
 
 #include "base/Log.h"
+#include "common/PlatformInfo.h"
 
 #if WINAPI_XWINDOWS
 #include "deskflow/unix/X11LayoutsParser.h"
@@ -51,11 +52,19 @@ static void getMacKeyboardLayouts(void *ctx)
   AutoCFDictionary dict(
       CFDictionaryCreate(nullptr, (const void **)keys, (const void **)values, 1, nullptr, nullptr), CFRelease
   );
-  AutoCFArray kbds(TISCreateInputSourceList(dict.get(), false), CFRelease);
+  AutoCFArray kbds(nullptr, CFRelease);
+  {
+    std::lock_guard<std::mutex> lock(g_tisMutex);
+    kbds = AutoCFArray(TISCreateInputSourceList(dict.get(), false), CFRelease);
+  }
 
   for (CFIndex i = 0; i < CFArrayGetCount(kbds.get()); ++i) {
     TISInputSourceRef keyboardLayout = (TISInputSourceRef)CFArrayGetValueAtIndex(kbds.get(), i);
-    auto layoutLanguages = (CFArrayRef)TISGetInputSourceProperty(keyboardLayout, kTISPropertyInputSourceLanguages);
+    CFArrayRef layoutLanguages = nullptr;
+    {
+      std::lock_guard<std::mutex> lock(g_tisMutex);
+      layoutLanguages = (CFArrayRef)TISGetInputSourceProperty(keyboardLayout, kTISPropertyInputSourceLanguages);
+    }
     char temporaryCString[128] = {0};
     for (CFIndex index = 0; index < CFArrayGetCount(layoutLanguages) && layoutLanguages; index++) {
       auto languageCode = (CFStringRef)CFArrayGetValueAtIndex(layoutLanguages, index);
@@ -98,9 +107,13 @@ std::vector<std::string> AppUtilUnix::getKeyboardLayoutList()
   return layoutLangCodes;
 }
 
+// TODO: read the layout for x and wayland via xkbcommon
 std::string AppUtilUnix::getCurrentLanguageCode()
 {
   std::string result = "";
+  if (deskflow::platform::isWayland())
+    return result;
+
 #if WINAPI_XWINDOWS
 
   auto display = XOpenDisplay(nullptr);
@@ -149,9 +162,15 @@ std::string AppUtilUnix::getCurrentLanguageCode()
 
   result = X11LayoutsParser::convertLayoutToISO(m_evdev, result);
 
-#elif WINAPI_CARBON
-  auto layoutLanguages =
-      (CFArrayRef)TISGetInputSourceProperty(TISCopyCurrentKeyboardInputSource(), kTISPropertyInputSourceLanguages);
+#elif defined(Q_OS_MAC)
+  AutoTISInputSourceRef source(nullptr, CFRelease);
+  CFArrayRef layoutLanguages = nullptr;
+  {
+    std::lock_guard<std::mutex> lock(g_tisMutex);
+    source = AutoTISInputSourceRef(TISCopyCurrentKeyboardInputSource(), CFRelease);
+    if (source)
+      layoutLanguages = (CFArrayRef)TISGetInputSourceProperty(source.get(), kTISPropertyInputSourceLanguages);
+  }
   char temporaryCString[128] = {0};
   for (CFIndex index = 0; index < CFArrayGetCount(layoutLanguages) && layoutLanguages; index++) {
     auto languageCode = (CFStringRef)CFArrayGetValueAtIndex(layoutLanguages, index);
