@@ -50,11 +50,30 @@ if [ ! -f "${BUILD_X86_64}/lib/libssl.dylib" ]; then
     make install_sw
 fi
 
+# 4.5 Make install names relocatable.
+# OpenSSL's --prefix bakes an absolute path into each dylib's LC_ID_DYLIB and
+# into libssl's reference to libcrypto. That breaks the moment the checkout is
+# moved (macdeployqt / install_name fixups then point at a path that no longer
+# exists). Rewrite them to @rpath so the libs work from any location; the lipo
+# below then carries @rpath into the universal slices automatically.
+echo "Rewriting install names to @rpath..."
+for ARCH_DIR in "${BUILD_ARM64}" "${BUILD_X86_64}"; do
+    install_name_tool -id "@rpath/libssl.3.dylib"    "${ARCH_DIR}/lib/libssl.3.dylib"
+    install_name_tool -id "@rpath/libcrypto.3.dylib" "${ARCH_DIR}/lib/libcrypto.3.dylib"
+    install_name_tool -change "${ARCH_DIR}/lib/libcrypto.3.dylib" "@rpath/libcrypto.3.dylib" \
+        "${ARCH_DIR}/lib/libssl.3.dylib"
+    # Re-apply an ad-hoc signature; install_name_tool invalidates the existing one.
+    codesign -f -s - "${ARCH_DIR}/lib/libcrypto.3.dylib" "${ARCH_DIR}/lib/libssl.3.dylib"
+done
+
 # 5. Create Universal Libraries (Lipo)
 echo "Creating Universal Libraries..."
 # Merge dylibs
 lipo -create "${BUILD_ARM64}/lib/libssl.3.dylib" "${BUILD_X86_64}/lib/libssl.3.dylib" -output "${OUTPUT_DIR}/lib/libssl.3.dylib"
 lipo -create "${BUILD_ARM64}/lib/libcrypto.3.dylib" "${BUILD_X86_64}/lib/libcrypto.3.dylib" -output "${OUTPUT_DIR}/lib/libcrypto.3.dylib"
+
+# lipo strips signatures; re-apply ad-hoc ones so the slices load on arm64.
+codesign -f -s - "${OUTPUT_DIR}/lib/libcrypto.3.dylib" "${OUTPUT_DIR}/lib/libssl.3.dylib"
 
 # Create symlinks for versionless dylibs (optional but good for linking)
 ln -sf libssl.3.dylib "${OUTPUT_DIR}/lib/libssl.dylib"
