@@ -90,10 +90,15 @@ std::vector<std::string> AppUtilUnix::getKeyboardLayoutList()
   std::vector<std::string> layoutLangCodes;
 
 #if WINAPI_XWINDOWS
-  // Check /usr/local first used on bsd and some systems
-  m_evdev = "/usr/local/share/X11/xkb/rules/evdev.xml";
-  if (!std::filesystem::exists(m_evdev))
-    m_evdev = "/usr/share/X11/xkb/rules/evdev.xml";
+  // Search candidate xkb evdev.xml locations across distros (upstream 958c3f5a2e).
+  static const std::vector<std::string> evdev_candidates = {
+      "/usr/share/X11/xkb/rules/evdev.xml",       // Linux
+      "/usr/local/share/X11/xkb/rules/evdev.xml", // FreeBSD, DragonFlyBSD
+      "/usr/X11R7/lib/X11/xkb/rules/evdev.xml",   // NetBSD
+      "/usr/X11R6/share/X11/xkb/rules/evdev.xml", // OpenBSD
+  };
+  for (auto it = evdev_candidates.begin(); it != evdev_candidates.end() && !std::filesystem::exists(m_evdev = *it); ++it)
+    ;
   layoutLangCodes = X11LayoutsParser::getX11LanguageList(m_evdev);
 
 #elif WINAPI_CARBON

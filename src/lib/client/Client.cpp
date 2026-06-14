@@ -669,22 +669,19 @@ void Client::handleResume()
 
 void Client::bindNetworkInterface(IDataSocket *socket) const
 {
-  try {
-    if (Settings::isBridgeClientMode()) {
-      LOG_VERBOSE("bridge client mode detected; skipping network interface binding");
-      return;
-    }
-
-    if (const auto address = Settings::value(Settings::Core::Interface).toString(); !address.isEmpty()) {
-      LOG_VERBOSE("bind to network interface: %s", qPrintable(address));
-
-      NetworkAddress bindAddress(address.toStdString());
-      bindAddress.resolve();
-
-      socket->bind(bindAddress);
-    }
-  } catch (BaseException &e) {
-    LOG_WARN("%s", e.what());
-    LOG_WARN("operating system will select network interface automatically");
+  if (Settings::isBridgeClientMode()) {
+    LOG_VERBOSE("bridge client mode detected; skipping network interface binding");
+    return;
   }
+
+  const auto address = Settings::value(Settings::Core::Interface).toString();
+  if (address.isEmpty())
+    return;
+
+  LOG_VERBOSE("bind to network interface: %s", qPrintable(address));
+
+  NetworkAddress bindAddress(address.toStdString());
+  bindAddress.resolve();
+
+  socket->bind(bindAddress);
 }
