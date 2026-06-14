@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers.
- * SPDX-FileCopyrightText: (C) 2012 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -133,10 +133,10 @@ Server::Server(ServerConfig &config, PrimaryClient *primaryClient, deskflow::Scr
   // Determine if scroll lock is already set. If so, lock the cursor to the
   // primary screen (unless the user has disabled lock to screen in config)
   if (!m_disableLockToScreen && (m_primaryClient->getToggleMask() & KeyModifierScrollLock)) {
-    LOG_NOTE("scroll lock is on, locking cursor to screen");
+    LOG_INFO("scroll lock is on, locking cursor to screen");
     m_lockedToScreen = true;
   } else if (m_defaultLockToScreenState) {
-    LOG_NOTE("default screen lock is on, locking cursor to screen");
+    LOG_INFO("default screen lock is on, locking cursor to screen");
     m_lockedToScreen = true;
   }
 }
@@ -353,7 +353,7 @@ bool Server::isLockedToScreen() const
   // locked if we say we're locked
   if (isLockedToScreenServer()) {
     if (!m_defaultLockToScreenState) {
-      LOG_NOTE("cursor is locked to screen, check scroll lock key");
+      LOG_INFO("cursor is locked to screen, check scroll lock key");
     }
     return true;
   }
@@ -571,7 +571,7 @@ BaseClientProxy *Server::getNeighbor(const BaseClientProxy *src, Direction dir, 
   // get source screen name
   std::string srcName = getName(src);
   assert(!srcName.empty());
-  LOG_DEBUG2("find neighbor on %s of \"%s\"", Config::dirName(dir), srcName.c_str());
+  LOG_VERBOSE("find neighbor on %s of \"%s\"", Config::dirName(dir), srcName.c_str());
 
   // convert position to fraction
   float t = mapToFraction(src, dir, x, y);
@@ -586,20 +586,20 @@ BaseClientProxy *Server::getNeighbor(const BaseClientProxy *src, Direction dir, 
     // progress in this direction.  since we haven't found a
     // connected neighbor we return nullptr.
     if (dstName.empty()) {
-      LOG_DEBUG2("no neighbor on %s of \"%s\"", Config::dirName(dir), srcName.c_str());
+      LOG_VERBOSE("no neighbor on %s of \"%s\"", Config::dirName(dir), srcName.c_str());
       return nullptr;
     }
 
     // look up neighbor cell.  if the screen is connected and
     // ready then we can stop.
     if (ClientList::const_iterator index = m_clients.find(dstName); index != m_clients.end()) {
-      LOG_DEBUG2("\"%s\" is on %s of \"%s\" at %f", dstName.c_str(), Config::dirName(dir), srcName.c_str(), t);
+      LOG_VERBOSE("\"%s\" is on %s of \"%s\" at %f", dstName.c_str(), Config::dirName(dir), srcName.c_str(), t);
       mapToPixel(index->second, dir, tTmp, x, y);
       return index->second;
     }
 
     // skip over unconnected screen
-    LOG_DEBUG2("ignored \"%s\" on %s of \"%s\"", dstName.c_str(), Config::dirName(dir), srcName.c_str());
+    LOG_VERBOSE("ignored \"%s\" on %s of \"%s\"", dstName.c_str(), Config::dirName(dir), srcName.c_str());
     srcName = dstName;
 
     // use position on skipped screen
@@ -643,7 +643,7 @@ BaseClientProxy *Server::mapToNeighbor(BaseClientProxy *src, Direction srcSide, 
       if (x >= 0) {
         break;
       }
-      LOG_DEBUG2("skipping over screen %s", getName(dst).c_str());
+      LOG_VERBOSE("skipping over screen %s", getName(dst).c_str());
       dst = getNeighbor(lastGoodScreen, srcSide, x, y);
     }
     assert(lastGoodScreen != nullptr);
@@ -659,7 +659,7 @@ BaseClientProxy *Server::mapToNeighbor(BaseClientProxy *src, Direction srcSide, 
       if (x < dw) {
         break;
       }
-      LOG_DEBUG2("skipping over screen %s", getName(dst).c_str());
+      LOG_VERBOSE("skipping over screen %s", getName(dst).c_str());
       dst = getNeighbor(lastGoodScreen, srcSide, x, y);
     }
     assert(lastGoodScreen != nullptr);
@@ -675,7 +675,7 @@ BaseClientProxy *Server::mapToNeighbor(BaseClientProxy *src, Direction srcSide, 
       if (y >= 0) {
         break;
       }
-      LOG_DEBUG2("skipping over screen %s", getName(dst).c_str());
+      LOG_VERBOSE("skipping over screen %s", getName(dst).c_str());
       dst = getNeighbor(lastGoodScreen, srcSide, x, y);
     }
     assert(lastGoodScreen != nullptr);
@@ -691,7 +691,7 @@ BaseClientProxy *Server::mapToNeighbor(BaseClientProxy *src, Direction srcSide, 
       if (y < dh) {
         break;
       }
-      LOG_DEBUG2("skipping over screen %s", getName(dst).c_str());
+      LOG_VERBOSE("skipping over screen %s", getName(dst).c_str());
       dst = getNeighbor(lastGoodScreen, srcSide, x, y);
     }
     assert(lastGoodScreen != nullptr);
@@ -766,13 +766,13 @@ bool Server::isSwitchOkay(
     BaseClientProxy *newScreen, Direction dir, int32_t x, int32_t y, int32_t xActive, int32_t yActive
 )
 {
-  LOG_DEBUG1("try to leave \"%s\" on %s", getName(m_active).c_str(), Config::dirName(dir));
+  LOG_VERBOSE("try to leave \"%s\" on %s", getName(m_active).c_str(), Config::dirName(dir));
 
   // is there a neighbor?
   if (newScreen == nullptr) {
     // there's no neighbor.  we don't want to switch and we don't
     // want to try to switch later.
-    LOG_DEBUG1("no neighbor %s", Config::dirName(dir));
+    LOG_VERBOSE("no neighbor %s", Config::dirName(dir));
     stopSwitch();
     return false;
   }
@@ -829,7 +829,7 @@ bool Server::isSwitchOkay(
     // see if we're in a locked corner
     if ((getCorner(m_active, xActive, yActive, size) & corners) != 0) {
       // yep, no switching
-      LOG_DEBUG1("locked in corner");
+      LOG_VERBOSE("locked in corner");
       preventSwitch = true;
       stopSwitch();
     }
@@ -837,7 +837,7 @@ bool Server::isSwitchOkay(
 
   // ignore if mouse is locked to screen and don't try to switch later
   if (!preventSwitch && isLockedToScreen()) {
-    LOG_DEBUG1("locked to screen");
+    LOG_VERBOSE("locked to screen");
     preventSwitch = true;
     stopSwitch();
   }
@@ -847,7 +847,7 @@ bool Server::isSwitchOkay(
       !preventSwitch && ((this->m_switchNeedsShift && ((mods & KeyModifierShift) != KeyModifierShift)) ||
                          (this->m_switchNeedsControl && ((mods & KeyModifierControl) != KeyModifierControl)) ||
                          (this->m_switchNeedsAlt && ((mods & KeyModifierAlt) != KeyModifierAlt)))) {
-    LOG_DEBUG1("need modifiers to switch");
+    LOG_VERBOSE("need modifiers to switch");
     preventSwitch = true;
     stopSwitch();
   }
@@ -876,7 +876,7 @@ void Server::startSwitchTwoTap()
   m_switchTwoTapEngaged = true;
   m_switchTwoTapArmed = false;
   m_switchTwoTapTimer.reset();
-  LOG_DEBUG1("waiting for second tap");
+  LOG_VERBOSE("waiting for second tap");
 }
 
 void Server::armSwitchTwoTap(int32_t x, int32_t y)
@@ -951,7 +951,7 @@ void Server::startSwitchWait(int32_t x, int32_t y)
   m_switchWaitX = x;
   m_switchWaitY = y;
   m_switchWaitTimer = m_events->newOneShotTimer(m_switchWaitDelay, this);
-  LOG_DEBUG1("waiting to switch");
+  LOG_VERBOSE("waiting to switch");
 }
 
 void Server::stopSwitchWait()
@@ -1034,7 +1034,7 @@ void Server::stopRelativeMoves()
     m_yDelta = 0;
     m_xDelta2 = 0;
     m_yDelta2 = 0;
-    LOG_DEBUG2("synchronize move on %s by %d,%d", getName(m_active).c_str(), m_x, m_y);
+    LOG_VERBOSE("synchronize move on %s by %d,%d", getName(m_active).c_str(), m_x, m_y);
     m_active->mouseMove(m_x, m_y);
   }
 }
@@ -1112,12 +1112,12 @@ void Server::processOptions()
     } else if (id == kOptionClipboardSharing) {
       m_enableClipboard = value;
       if (!m_enableClipboard) {
-        LOG_NOTE("clipboard sharing is disabled");
+        LOG_INFO("clipboard sharing is disabled");
       }
     } else if (id == kOptionClipboardSharingSize) {
       if (value <= 0) {
         m_maximumClipboardSize = 0;
-        LOG_NOTE(
+        LOG_INFO(
             "clipboard sharing is disabled because the "
             "maximum shared clipboard size is set to 0"
         );
@@ -1130,7 +1130,7 @@ void Server::processOptions()
     stopRelativeMoves();
   }
   m_relativeMoves = newRelativeMoves;
-  m_protocol = Settings::value(Settings::Server::Protocol).value<NetworkProtocol>();
+  m_protocol = Settings::networkProtocol();
 }
 
 void Server::handleShapeChanged(BaseClientProxy *client)
@@ -1281,7 +1281,7 @@ void Server::handleSwitchWaitTimeout()
 {
   // ignore if mouse is locked to screen
   if (isLockedToScreen()) {
-    LOG_DEBUG1("locked to screen");
+    LOG_VERBOSE("locked to screen");
     stopSwitch();
     return;
   }
@@ -1308,7 +1308,7 @@ void Server::handleClientDisconnected(BaseClientProxy *client)
 void Server::handleClientCloseTimeout(BaseClientProxy *client)
 {
   // client took too long to disconnect.  just dump it.
-  LOG_NOTE("forced disconnection of client \"%s\"", getName(client).c_str());
+  LOG_INFO("forced disconnection of client \"%s\"", getName(client).c_str());
   removeOldClient(client);
 
   delete client;
@@ -1320,7 +1320,7 @@ void Server::handleSwitchToScreenEvent(const Event &event)
 
   ClientList::const_iterator index = m_clients.find(info->m_screen);
   if (index == m_clients.end()) {
-    LOG_DEBUG1("screen \"%s\" not active", info->m_screen.c_str());
+    LOG_VERBOSE("screen \"%s\" not active", info->m_screen.c_str());
   } else {
     jumpToScreen(index->second);
   }
@@ -1335,7 +1335,7 @@ void Server::handleSwitchInDirectionEvent(const Event &event)
   int32_t y = m_y;
   BaseClientProxy *newScreen = getNeighbor(m_active, info->m_direction, x, y);
   if (newScreen == nullptr) {
-    LOG_DEBUG1("no neighbor %s", Config::dirName(info->m_direction));
+    LOG_VERBOSE("no neighbor %s", Config::dirName(info->m_direction));
   } else {
     jumpToScreen(newScreen);
   }
@@ -1432,7 +1432,7 @@ void Server::handleLockCursorToScreenEvent(const Event &event)
   // enter new state
   if (newState != m_lockedToScreen) {
     m_lockedToScreen = newState;
-    LOG_NOTE("cursor %s current screen", m_lockedToScreen ? "locked to" : "unlocked from");
+    LOG_INFO("cursor %s current screen", m_lockedToScreen ? "locked to" : "unlocked from");
 
     m_primaryClient->reconfigure(getActivePrimarySides());
     if (!isLockedToScreenServer()) {
@@ -1459,7 +1459,7 @@ void Server::onClipboardChanged(const BaseClientProxy *sender, ClipboardID id, u
 
   std::string data = clipboard.m_clipboard.marshall();
   if (data.size() > m_maximumClipboardSize * 1024) {
-    LOG_NOTE(
+    LOG_INFO(
         "not updating clipboard because it's over the size limit (%i KB) configured by the server",
         m_maximumClipboardSize
     );
@@ -1546,7 +1546,7 @@ void Server::onScreensaver(bool activated)
 
 void Server::onKeyDown(KeyID id, KeyModifierMask mask, KeyButton button, const std::string &lang, const char *screens)
 {
-  LOG_DEBUG1("onKeyDown id=%d mask=0x%04x button=0x%04x lang=%s", id, mask, button, lang.c_str());
+  LOG_VERBOSE("onKeyDown id=%d mask=0x%04x button=0x%04x lang=%s", id, mask, button, lang.c_str());
   assert(m_active != nullptr);
 
   // relay
@@ -1569,7 +1569,7 @@ void Server::onKeyDown(KeyID id, KeyModifierMask mask, KeyButton button, const s
 
 void Server::onKeyUp(KeyID id, KeyModifierMask mask, KeyButton button, const char *screens)
 {
-  LOG_DEBUG1("onKeyUp id=%d mask=0x%04x button=0x%04x", id, mask, button);
+  LOG_VERBOSE("onKeyUp id=%d mask=0x%04x button=0x%04x", id, mask, button);
   assert(m_active != nullptr);
 
   // relay
@@ -1593,7 +1593,7 @@ void Server::onKeyUp(KeyID id, KeyModifierMask mask, KeyButton button, const cha
 void Server::onKeyRepeat(KeyID id, KeyModifierMask mask, int32_t count, KeyButton button, const std::string &lang)
 {
   LOG(
-      (CLOG_DEBUG1 "onKeyRepeat id=%d mask=0x%04x count=%d button=0x%04x lang=\"%s\"", id, mask, count, button,
+      (CLOG_VERBOSE "onKeyRepeat id=%d mask=0x%04x count=%d button=0x%04x lang=\"%s\"", id, mask, count, button,
        lang.c_str())
   );
   assert(m_active != nullptr);
@@ -1604,7 +1604,7 @@ void Server::onKeyRepeat(KeyID id, KeyModifierMask mask, int32_t count, KeyButto
 
 void Server::onMouseDown(ButtonID id)
 {
-  LOG_DEBUG1("onMouseDown id=%d", id);
+  LOG_VERBOSE("onMouseDown id=%d", id);
   assert(m_active != nullptr);
 
   // relay
@@ -1613,7 +1613,7 @@ void Server::onMouseDown(ButtonID id)
 
 void Server::onMouseUp(ButtonID id)
 {
-  LOG_DEBUG1("onMouseUp id=%d", id);
+  LOG_VERBOSE("onMouseUp id=%d", id);
   assert(m_active != nullptr);
 
   // relay
@@ -1622,7 +1622,7 @@ void Server::onMouseUp(ButtonID id)
 
 bool Server::onMouseMovePrimary(int32_t x, int32_t y)
 {
-  LOG_DEBUG2("onMouseMovePrimary %d,%d", x, y);
+  LOG_VERBOSE("onMouseMovePrimary %d,%d", x, y);
 
   // mouse move on primary (server's) screen
   if (m_active != m_primaryClient) {
@@ -1719,7 +1719,7 @@ bool Server::onMouseMovePrimary(int32_t x, int32_t y)
 
 void Server::onMouseMoveSecondary(int32_t dx, int32_t dy)
 {
-  LOG_DEBUG2("mouse move on secondary: %+d,%+d", dx, dy);
+  LOG_VERBOSE("mouse move on secondary: %+d,%+d", dx, dy);
 
   // TODO: move this to client side and use a qt setting or cli arg instead of env var.
   const static auto adjustEnv = "DESKFLOW_MOUSE_ADJUSTMENT";
@@ -1728,7 +1728,7 @@ void Server::onMouseMoveSecondary(int32_t dx, int32_t dy)
       double multiplier = std::stod(envVal);
       dx = static_cast<int32_t>(std::round(dx * multiplier));
       dy = static_cast<int32_t>(std::round(dy * multiplier));
-      LOG_DEBUG2("adjusted mouse x %.2f: %+d,%+d", multiplier, dx, dy);
+      LOG_VERBOSE("adjusted mouse x %.2f: %+d,%+d", multiplier, dx, dy);
     } catch (const std::exception &e) {
       LOG_ERR("invalid %s value: %s", adjustEnv, e.what());
     }
@@ -1748,7 +1748,7 @@ void Server::onMouseMoveSecondary(int32_t dx, int32_t dy)
   // program on the secondary screen to warp the mouse on us, so we
   // have no idea where it really is.
   if (m_relativeMoves && isLockedToScreenServer()) {
-    LOG_DEBUG2("relative move on %s by %d,%d", getName(m_active).c_str(), dx, dy);
+    LOG_VERBOSE("relative move on %s by %d,%d", getName(m_active).c_str(), dx, dy);
     m_active->mouseRelativeMove(dx, dy);
     return;
   }
@@ -1868,22 +1868,22 @@ void Server::onMouseMoveSecondary(int32_t dx, int32_t dy)
     m_y = yOld + dy;
     if (m_x < ax) {
       m_x = ax;
-      LOG_DEBUG2("clamp to left of \"%s\"", getName(m_active).c_str());
+      LOG_VERBOSE("clamp to left of \"%s\"", getName(m_active).c_str());
     } else if (m_x > ax + aw - 1) {
       m_x = ax + aw - 1;
-      LOG_DEBUG2("clamp to right of \"%s\"", getName(m_active).c_str());
+      LOG_VERBOSE("clamp to right of \"%s\"", getName(m_active).c_str());
     }
     if (m_y < ay) {
       m_y = ay;
-      LOG_DEBUG2("clamp to top of \"%s\"", getName(m_active).c_str());
+      LOG_VERBOSE("clamp to top of \"%s\"", getName(m_active).c_str());
     } else if (m_y > ay + ah - 1) {
       m_y = ay + ah - 1;
-      LOG_DEBUG2("clamp to bottom of \"%s\"", getName(m_active).c_str());
+      LOG_VERBOSE("clamp to bottom of \"%s\"", getName(m_active).c_str());
     }
 
     // warp cursor if it moved.
     if (m_x != xOld || m_y != yOld) {
-      LOG_DEBUG2("move on %s to %d,%d", getName(m_active).c_str(), m_x, m_y);
+      LOG_VERBOSE("move on %s to %d,%d", getName(m_active).c_str(), m_x, m_y);
       m_active->mouseMove(m_x, m_y);
     }
   }
@@ -1891,7 +1891,7 @@ void Server::onMouseMoveSecondary(int32_t dx, int32_t dy)
 
 void Server::onMouseWheel(int32_t xDelta, int32_t yDelta)
 {
-  LOG_DEBUG1("onMouseWheel %+d,%+d", xDelta, yDelta);
+  LOG_VERBOSE("onMouseWheel %+d,%+d", xDelta, yDelta);
   assert(m_active != nullptr);
 
   // relay
@@ -1966,7 +1966,7 @@ void Server::closeClient(BaseClientProxy *client, const char *msg)
   // note that this method also works on clients that are not in
   // the m_clients list.  adoptClient() may call us with such a
   // client.
-  LOG_NOTE("disconnecting client \"%s\"", getName(client).c_str());
+  LOG_INFO("disconnecting client \"%s\"", getName(client).c_str());
 
   // send message
   // FIXME -- avoid type cast (kinda hard, though)

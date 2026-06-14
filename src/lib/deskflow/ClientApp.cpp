@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2025 - 2026 Deskflow Developers
- * SPDX-FileCopyrightText: (C) 2012 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -87,7 +87,7 @@ void ClientApp::parseArgs()
       bye(s_exitFailed);
     }
 
-    LOG_NOTE("configured %zu server address(es)", static_cast<size_t>(m_serverAddresses.size()));
+    LOG_INFO("configured %zu server address(es)", static_cast<size_t>(m_serverAddresses.size()));
   }
 }
 
@@ -286,7 +286,7 @@ bool ClientApp::startClient()
           clientScreen
       );
       m_clientScreen = clientScreen;
-      LOG_NOTE("started client");
+      LOG_INFO("started client");
     }
 
     m_client->setServerAddress(getCurrentServerAddress());
@@ -347,7 +347,7 @@ int ClientApp::mainLoop()
   // close down
   LOG_DEBUG("stopping client");
   stopClient();
-  LOG_NOTE("stopped client");
+  LOG_INFO("stopped client");
 
   return exitCode;
 }
@@ -391,7 +391,7 @@ void ClientApp::startNode()
 {
   // start the client.  if this return false then we've failed and
   // we shouldn't retry.
-  LOG_DEBUG1("starting client");
+  LOG_VERBOSE("starting client");
   if (!startClient()) {
     bye(s_exitFailed);
   }

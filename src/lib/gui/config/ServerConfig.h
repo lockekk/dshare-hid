@@ -1,13 +1,14 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2012 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2025 - 2026 Chris Rizzitello <sithlord48@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2012 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2008 Volker Lanz <vl@fidra.de>
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
 
 #pragma once
 
-#include "common/NetworkProtocol.h"
+#include "common/Constants.h"
 #include "gui/Hotkey.h"
 #include "gui/config/ScreenConfig.h"
 #include "gui/config/ScreenList.h"
@@ -15,21 +16,11 @@
 #include <QList>
 #include <QPoint>
 
-const auto kDefaultColumns = 5;
-const auto kDefaultRows = 3;
-
 class QTextStream;
 class QSettings;
 class QString;
 class QFile;
 class ServerConfigDialog;
-
-namespace deskflow::gui {
-
-// The default protocol was decided by a community vote.
-const auto kDefaultProtocol = NetworkProtocol::Barrier;
-
-} // namespace deskflow::gui
 
 class ServerConfig : public ScreenConfig
 {
@@ -37,7 +28,7 @@ class ServerConfig : public ScreenConfig
   friend QTextStream &operator<<(QTextStream &outStream, const ServerConfig &config);
 
 public:
-  explicit ServerConfig(int columns = kDefaultColumns, int rows = kDefaultRows);
+  explicit ServerConfig(int columns = kServerGridWidth, int rows = kServerGridHeight);
   ~ServerConfig() = default;
 
   bool operator==(const ServerConfig &sc) const;
@@ -50,25 +41,9 @@ public:
   //
   // New methods
   //
-  int numColumns() const
-  {
-    return m_Columns;
-  }
-  int numRows() const
-  {
-    return m_Rows;
-  }
-  bool hasHeartbeat() const
-  {
-    return m_HasHeartbeat;
-  }
   int heartbeat() const
   {
     return m_Heartbeat;
-  }
-  NetworkProtocol protocol() const
-  {
-    return m_Protocol;
   }
   bool relativeMouseMoves() const
   {
@@ -78,17 +53,9 @@ public:
   {
     return m_Win32KeepForeground;
   }
-  bool hasSwitchDelay() const
-  {
-    return m_HasSwitchDelay;
-  }
   int switchDelay() const
   {
     return m_SwitchDelay;
-  }
-  bool hasSwitchDoubleTap() const
-  {
-    return m_HasSwitchDoubleTap;
   }
   int switchDoubleTap() const
   {
@@ -160,25 +127,9 @@ private:
   {
     m_Screens.append(screen);
   }
-  void setNumColumns(int n)
-  {
-    m_Columns = n;
-  }
-  void setNumRows(int n)
-  {
-    m_Rows = n;
-  }
-  void haveHeartbeat(bool on)
-  {
-    m_HasHeartbeat = on;
-  }
   void setHeartbeat(int val)
   {
     m_Heartbeat = val;
-  }
-  void setProtocol(NetworkProtocol val)
-  {
-    m_Protocol = val;
   }
   void setRelativeMouseMoves(bool on)
   {
@@ -188,17 +139,9 @@ private:
   {
     m_Win32KeepForeground = on;
   }
-  void haveSwitchDelay(bool on)
-  {
-    m_HasSwitchDelay = on;
-  }
   void setSwitchDelay(int val)
   {
     m_SwitchDelay = val;
-  }
-  void haveSwitchDoubleTap(bool on)
-  {
-    m_HasSwitchDoubleTap = on;
   }
   void setSwitchDoubleTap(int val)
   {
@@ -240,14 +183,10 @@ private:
   bool fixNoServer(const QString &name, int &index);
 
 private:
-  bool m_HasHeartbeat = false;
   int m_Heartbeat = 0;
-  NetworkProtocol m_Protocol = deskflow::gui::kDefaultProtocol;
   bool m_RelativeMouseMoves = false;
   bool m_Win32KeepForeground = false;
-  bool m_HasSwitchDelay = false;
   int m_SwitchDelay = 0;
-  bool m_HasSwitchDoubleTap = false;
   int m_SwitchDoubleTap = 0;
   int m_SwitchCornerSize = 0;
   bool m_DefaultLockToScreenState = false;
@@ -258,8 +197,8 @@ private:
   HotkeyList m_Hotkeys;
 
   ScreenList m_Screens;
-  int m_Columns;
-  int m_Rows;
+  int m_columns;
+  int m_rows;
   size_t m_ClipboardSharingSize = defaultClipboardSharingSize();
 };
 

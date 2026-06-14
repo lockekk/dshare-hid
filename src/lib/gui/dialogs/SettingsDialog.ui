@@ -25,6 +25,9 @@
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>2</number>
+     </property>
      <widget class="QWidget" name="tabGeneral">
       <attribute name="title">
        <string>&amp;General</string>
@@ -300,50 +303,19 @@
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="comboLogLevel">
-           <item>
-            <property name="text">
-             <string>Fatal</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Error</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Warning</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Note</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Info</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Debug</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Debug1</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Debug2</string>
-            </property>
-           </item>
-          </widget>
+          <widget class="QComboBox" name="comboLogLevel"/>
          </item>
         </layout>
+       </item>
+       <item>
+        <widget class="QLabel" name="lblDebugWarning">
+         <property name="text">
+          <string>Using a log level higher than Info may affect performance.</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QGroupBox" name="groupLogToFile">
@@ -449,16 +421,6 @@
         <widget class="QCheckBox" name="cbGuiDebug">
          <property name="text">
           <string>Enable GUI debug messages</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="lblDebugWarning">
-         <property name="text">
-          <string>Using a Debug log level may affect performance. Only use a Debug level if you are attempting to debug an issue or are gathering logs to submit with a bug report.</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
          </property>
         </widget>
        </item>

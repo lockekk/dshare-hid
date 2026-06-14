@@ -1,6 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2012 - 2025 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2025 Synergy App Ltd
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
 
@@ -9,10 +9,10 @@
 #include "arch/Arch.h"
 #include "arch/win32/XArchWindows.h"
 #include "base/Log.h"
-#include "base/LogLevel.h"
 #include "base/LogOutputters.h"
 #include "base/TMethodJob.h"
 #include "common/Constants.h"
+#include "common/LogLevel.h"
 #include "deskflow/App.h"
 #include "mt/Thread.h"
 #include "platform/MSWindowsHandle.h"
@@ -43,10 +43,14 @@ HANDLE openProcessForKill(const PROCESSENTRY32 &entry)
     return nullptr;
   }
 
-  HANDLE handle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, entry.th32ProcessID);
+  const DWORD desiredAccess = PROCESS_TERMINATE | PROCESS_QUERY_LIMITED_INFORMATION | SYNCHRONIZE;
+  HANDLE handle = OpenProcess(desiredAccess, FALSE, entry.th32ProcessID);
   if (handle == nullptr) {
-    LOG_ERR("could not open process handle for kill");
-    throw std::runtime_error(windowsErrorToString(GetLastError()));
+    LOG_WARN(
+        "could not open process handle for kill, pid=%u, error=%s", entry.th32ProcessID,
+        windowsErrorToString(GetLastError()).c_str()
+    );
+    return nullptr;
   }
 
   // only shut down if not current process (daemon is now the same unified binary).
@@ -116,10 +120,12 @@ MSWindowsWatchdog::duplicateProcessToken(HANDLE process, LPSECURITY_ATTRIBUTES s
   );
 
   if (!duplicateRet) {
+    CloseHandle(sourceToken);
     LOG_ERR("could not duplicate token %i", sourceToken);
     throw std::runtime_error(windowsErrorToString(GetLastError()));
   }
 
+  CloseHandle(sourceToken);
   LOG_DEBUG("duplicated, new token: %i", newToken);
   return newToken;
 }
@@ -137,13 +143,22 @@ MSWindowsWatchdog::getUserToken(LPSECURITY_ATTRIBUTES security, bool elevatedTok
     if (!m_session.isProcessInSession(L"winlogon.exe", &process)) {
       throw std::runtime_error("cannot get user token without winlogon.exe");
     }
+    if (process == nullptr) {
+      throw std::runtime_error("found winlogon.exe but failed to open process handle");
+    }
 
     try {
-      return duplicateProcessToken(process, security);
-    } catch (std::runtime_error &e) {
+      HANDLE token = duplicateProcessToken(process, security);
+      if (process != nullptr) {
+        CloseHandle(process);
+      }
+      return token;
+    } catch (...) {
       LOG_ERR("failed to duplicate user token from winlogon.exe");
-      CloseHandle(process);
-      throw e;
+      if (process != nullptr) {
+        CloseHandle(process);
+      }
+      throw;
     }
   } else {
     LOG_DEBUG("getting non-elevated token");
@@ -159,7 +174,7 @@ void MSWindowsWatchdog::mainLoop(const void *)
 
   LOG_DEBUG("starting watchdog main loop");
   while (m_running) {
-    LOG_DEBUG2("locking process state mutex in watchdog main loop");
+    LOG_VERBOSE("locking process state mutex in watchdog main loop");
     std::unique_lock lock(m_processStateMutex);
 
     if (m_processState == Running && !m_command.empty() && !m_foreground && m_session.hasChanged()) {
@@ -170,11 +185,11 @@ void MSWindowsWatchdog::mainLoop(const void *)
 
     switch (m_processState) {
     case Idle:
-      LOG_DEBUG2("watchdog process state idle");
+      LOG_VERBOSE("watchdog process state idle");
       break;
 
     case StartScheduled: {
-      LOG_DEBUG2("watchdog process start scheduled");
+      LOG_VERBOSE("watchdog process start scheduled");
       if (m_nextStartTime.has_value() && m_nextStartTime.value() <= Arch::time()) {
         LOG_DEBUG("start time reached, queueing process start");
         m_processState = StartPending;
@@ -195,7 +210,7 @@ void MSWindowsWatchdog::mainLoop(const void *)
     } break;
 
     case Running: {
-      LOG_DEBUG2("watchdog process in running state");
+      LOG_VERBOSE("watchdog process in running state");
       if (!isProcessRunning()) {
         LOG_WARN("detected application not running, pid=%d", m_process->info().dwProcessId);
         m_processState = StartPending;
@@ -215,11 +230,11 @@ void MSWindowsWatchdog::mainLoop(const void *)
     } break;
     }
 
-    LOG_DEBUG2("unlocking process state mutex in watchdog main loop");
+    LOG_VERBOSE("unlocking process state mutex in watchdog main loop");
     lock.unlock();
 
     // Sleep for only 100ms rather than 1 second so that the service can shut down faster.
-    LOG_DEBUG2("watchdog main loop sleeping");
+    LOG_VERBOSE("watchdog main loop sleeping");
     Arch::sleep(0.1);
   }
 
@@ -298,7 +313,7 @@ void MSWindowsWatchdog::startProcess()
     }
 
     LOG_DEBUG("started core process from watchdog");
-    LOG_DEBUG2(
+    LOG_VERBOSE(
         "process info, session=%i, elevated=%s, command: %s", //
         m_session.getActiveSessionId(), m_elevateProcess ? "yes" : "no", m_command.c_str()
     );
@@ -307,7 +322,7 @@ void MSWindowsWatchdog::startProcess()
 
 void MSWindowsWatchdog::setProcessConfig(const std::string_view &command, bool elevate)
 {
-  LOG_DEBUG1("locking process state mutex for watchdog config change");
+  LOG_VERBOSE("locking process state mutex for watchdog config change");
   std::scoped_lock lock{m_processStateMutex};
 
   LOG_DEBUG("setting watchdog process config");
@@ -355,7 +370,7 @@ void MSWindowsWatchdog::outputLoop(const void *)
 
     // The file log outputter adds its own newlines, so trim the decoded string to avoid double newlines.
     const auto trimmed = decoded.trimmed();
-    m_fileLogOutputter.write(LogLevel::Print, trimmed);
+    m_fileLogOutputter.write(LogLevel::Level::Print, trimmed);
 
     if (m_foreground) {
       // Doesn't add it's own newlines, so use the original ones from the process output.
@@ -371,8 +386,8 @@ void MSWindowsWatchdog::shutdownExistingProcesses()
   const auto kAllProcesses = 0;
 
   // first we need to take a snapshot of the running processes
-  HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, kAllProcesses);
-  if (snapshot == INVALID_HANDLE_VALUE) {
+  MSWindowsHandle snapshot(CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, kAllProcesses));
+  if (snapshot.get() == INVALID_HANDLE_VALUE) {
     LOG_ERR("could not get process snapshot");
     throw std::runtime_error(windowsErrorToString(GetLastError()));
   }
@@ -382,7 +397,7 @@ void MSWindowsWatchdog::shutdownExistingProcesses()
 
   // get the first process, and if we can't do that then it's
   // unlikely we can go any further
-  BOOL gotEntry = Process32First(snapshot, &entry);
+  BOOL gotEntry = Process32First(snapshot.get(), &entry);
   if (!gotEntry) {
     LOG_ERR("could not get first process entry");
     throw std::runtime_error(windowsErrorToString(GetLastError()));
@@ -398,7 +413,7 @@ void MSWindowsWatchdog::shutdownExistingProcesses()
     }
 
     // now move on to the next entry (if we're not at the end)
-    gotEntry = Process32Next(snapshot, &entry);
+    gotEntry = Process32Next(snapshot.get(), &entry);
     if (!gotEntry) {
 
       DWORD err = GetLastError();
@@ -410,8 +425,6 @@ void MSWindowsWatchdog::shutdownExistingProcesses()
       }
     }
   }
-
-  CloseHandle(snapshot);
 }
 
 MSWindowsWatchdog::ProcessState MSWindowsWatchdog::handleStartError(const std::string_view &message)
@@ -501,7 +514,7 @@ void MSWindowsWatchdog::initSasFunc()
 
 void MSWindowsWatchdog::sasLoop(const void *) // NOSONAR - Thread entry point signature
 {
-  LOG_DEBUG2("watchdog creating sas event");
+  LOG_VERBOSE("watchdog creating sas event");
 
   if (m_sendSasFunc == nullptr) {
     throw std::runtime_error("SendSAS function not initialized");
@@ -509,7 +522,7 @@ void MSWindowsWatchdog::sasLoop(const void *) // NOSONAR - Thread entry point si
 
   while (m_running) {
     if (m_processState != ProcessState::Running) {
-      LOG_DEBUG2("watchdog not running, skipping SendSAS");
+      LOG_VERBOSE("watchdog not running, skipping SendSAS");
       Arch::sleep(1);
       continue;
     }

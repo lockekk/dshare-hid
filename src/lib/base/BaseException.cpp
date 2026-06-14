@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2025 - 2026 Deskflow Developers
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -31,8 +31,8 @@ const char *BaseException::what() const throw()
     return what;
   }
 
-  m_what = getWhat();
-  return qPrintable(m_what);
+  m_what = getWhat().toLocal8Bit();
+  return m_what.constData();
 }
 
 QString BaseException::format(const char * /*id*/, const char *fmt, ...) const noexcept

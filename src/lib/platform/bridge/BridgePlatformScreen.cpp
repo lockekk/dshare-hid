@@ -8,6 +8,7 @@
 #include "base/Event.h"
 #include "base/EventTypes.h"
 #include "base/Log.h"
+#include "common/LogLevel.h"
 #include "common/Settings.h"
 
 #include <algorithm>
@@ -185,7 +186,7 @@ void BridgePlatformScreen::fakeMouseButton(ButtonID id, bool press)
 
 void BridgePlatformScreen::fakeMouseMove(int32_t x, int32_t y)
 {
-  LOG_DEBUG2("BridgeScreen: mouse move to %d,%d", x, y);
+  LOG_VERBOSE("BridgeScreen: mouse move to %d,%d", x, y);
 
   int32_t dx = x - m_cursorX;
   int32_t dy = y - m_cursorY;
@@ -198,7 +199,7 @@ void BridgePlatformScreen::fakeMouseMove(int32_t x, int32_t y)
 
 void BridgePlatformScreen::fakeMouseRelativeMove(int32_t dx, int32_t dy) const
 {
-  LOG_DEBUG2("BridgeScreen: mouse relative move %d,%d", dx, dy);
+  LOG_VERBOSE("BridgeScreen: mouse relative move %d,%d", dx, dy);
 
   if (dx == 0 && dy == 0) {
     return;
@@ -563,7 +564,7 @@ void BridgePlatformScreen::handleSystemEvent(const Event &event)
 
 bool BridgePlatformScreen::sendEvent(HidEventType type, const std::vector<uint8_t> &payload) const
 {
-  if (CLOG->getFilter() >= LogLevel::Debug) {
+  if (CLOG->getFilter() >= LogLevel::Level::Debug) {
     std::string payloadHex = hexDump(payload.data(), payload.size(), 48);
     if (!payloadHex.empty()) {
       LOG_DEBUG(
@@ -971,7 +972,7 @@ uint8_t BridgePlatformScreen::convertKeyID(KeyID id) const
   case 0xEF54:
     return 0x51;
   default:
-    LOG_DEBUG2("BridgeScreen: unmapped KeyID 0x%04x", id);
+    LOG_VERBOSE("BridgeScreen: unmapped KeyID 0x%04x", id);
     return 0;
   }
 }
@@ -1125,7 +1126,7 @@ uint8_t BridgePlatformScreen::convertKeyButton(KeyButton button) const
   case 111: // macOS F13 (Help/Insert on some, or just F13)
     return 0x65;
   default:
-    LOG_DEBUG2("BridgeScreen: unmapped button code %u", button);
+    LOG_VERBOSE("BridgeScreen: unmapped button code %u", button);
     return 0;
   }
 #else
@@ -1282,7 +1283,7 @@ uint8_t BridgePlatformScreen::convertKeyButton(KeyButton button) const
   case 135: // Linux Menu
     return 0x65;
   default:
-    LOG_DEBUG2("BridgeScreen: unmapped button code %u", button);
+    LOG_VERBOSE("BridgeScreen: unmapped button code %u", button);
     return 0;
   }
 #endif

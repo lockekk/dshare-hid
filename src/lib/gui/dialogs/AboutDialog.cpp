@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2024 Chris Rizzitello <sithlord48@gmail.com>
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2008 Volker Lanz <vl@fidra.de>
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -10,6 +10,7 @@
 #include "ui_AboutDialog.h"
 
 #include "common/Constants.h"
+#include "common/Settings.h"
 #include "common/VersionInfo.h"
 
 #include <QClipboard>
@@ -63,6 +64,9 @@ void AboutDialog::copyVersionText() const
 {
   QString infoString = QStringLiteral("%1: %2 (%3)\nQt: %4\nSystem: %5")
                            .arg(kAppName, kVersion, kVersionGitSha, qVersion(), QSysInfo::prettyProductName());
+  if (Settings::isPortableMode()) {
+    infoString.append(QStringLiteral("\nPortable Mode"));
+  }
 #ifdef Q_OS_LINUX
   infoString.append(QStringLiteral("\nSession: %1 (%2)")
                         .arg(qEnvironmentVariable("XDG_CURRENT_DESKTOP"), qEnvironmentVariable("XDG_SESSION_TYPE")));

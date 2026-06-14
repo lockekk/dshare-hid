@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2025 - 2026 Deskflow Developers
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -10,6 +10,8 @@
 
 #include "base/BaseException.h"
 #include "io/IOException.h"
+
+#include <QByteArray>
 
 /**
  * @brief SocketException generic socket exception
@@ -81,11 +83,11 @@ public:
   {
     if (m_state == kFirst) {
       m_state = kFormat;
-      m_formatted = getWhat();
+      m_formatted = getWhat().toLocal8Bit();
       m_state = kDone;
     }
     if (m_state == kDone) {
-      return qPrintable(m_formatted);
+      return m_formatted.constData();
     } else {
       return IOCloseException::what();
     }
@@ -102,7 +104,7 @@ private:
     kDone
   };
   mutable EState m_state;
-  mutable QString m_formatted;
+  mutable QByteArray m_formatted;
 };
 
 /**
@@ -125,11 +127,11 @@ public:
   {
     if (m_state == kFirst) {
       m_state = kFormat;
-      m_formatted = getWhat();
+      m_formatted = getWhat().toLocal8Bit();
       m_state = kDone;
     }
     if (m_state == kDone) {
-      return qPrintable(m_formatted);
+      return m_formatted.constData();
     } else {
       return SocketException::what();
     }
@@ -143,7 +145,7 @@ private:
     kDone
   };
   mutable EState m_state;
-  mutable QString m_formatted;
+  mutable QByteArray m_formatted;
 };
 
 /**

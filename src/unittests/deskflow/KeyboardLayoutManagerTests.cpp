@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2025 Chris Rizzitello <sithlord48@gmail.com>
- * SPDX-FileCopyrightText: (C) 2014 - 2024 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2014 - 2024 Synergy App Ltd
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
 
@@ -11,7 +11,7 @@
 
 void KeyboardLayoutManagerTests::initTestCase()
 {
-  m_log.setFilter(LogLevel::Debug2);
+  m_log.setFilter(LogLevel::Level::Verbose);
 }
 
 void KeyboardLayoutManagerTests::remoteLayouts()

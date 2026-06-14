@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2025 - 2026 Deskflow Developers
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -11,6 +11,7 @@
 #include <stdexcept>
 #include <string>
 
+#include <QByteArray>
 #include <QString>
 
 //! Exception base class
@@ -45,5 +46,5 @@ protected:
   virtual QString format(const char *id, const char *defaultFormat, ...) const noexcept;
 
 private:
-  mutable QString m_what;
+  mutable QByteArray m_what;
 };

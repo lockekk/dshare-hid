@@ -1,6 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2012 - 2026 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2026 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -58,7 +58,7 @@ App::~App()
 
 void App::run(QThread &coreThread)
 {
-  LOG_NOTE("starting core");
+  LOG_INFO("starting core");
 
   // Important: Move the daemon app to the daemon thread before creating any more Qt objects
   // owned by the daemon app, as they will be created on the daemon thread.
@@ -127,7 +127,7 @@ void App::setupFileLogging()
     const auto file = Settings::value(Settings::Log::File).toString();
     m_fileLog = new FileLogOutputter(file); // NOSONAR - Adopted by `Log`
     CLOG->insert(m_fileLog);
-    LOG_DEBUG1("logging to file (%s) enabled", qPrintable(file));
+    LOG_VERBOSE("logging to file (%s) enabled", qPrintable(file));
   }
 }
 
@@ -136,7 +136,7 @@ void App::loggingFilterWarning() const
   if ((CLOG->getFilter() > CLOG->getConsoleMaxLevel()) && (Settings::value(Settings::Log::ToFile).toBool())) {
     LOG_WARN(
         "log messages above %s are NOT sent to console (use file logging)",
-        CLOG->getFilterName(CLOG->getConsoleMaxLevel())
+        qPrintable(LogLevel::toOption(CLOG->getConsoleMaxLevel()))
     );
   }
 }

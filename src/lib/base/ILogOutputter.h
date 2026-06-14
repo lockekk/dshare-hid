@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2025 - 2026 Deskflow Developers
+ * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -9,7 +9,7 @@
 #pragma once
 
 #include "base/Log.h"
-#include "base/LogLevel.h"
+#include "common/LogLevel.h"
 
 //! Outputter interface
 /*!
@@ -46,7 +46,7 @@ public:
   message to all outputters in the outputter chain, otherwise
   it continues.  Most implementations should return true.
   */
-  virtual bool write(LogLevel level, const QString &message) = 0;
+  virtual bool write(LogLevel::Level level, const QString &message) = 0;
 
   //@}
 };

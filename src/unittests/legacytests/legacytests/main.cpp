@@ -1,6 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2012 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2011 Nick Bolton
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -32,7 +32,7 @@ int main(int argc, char **argv)
   arch.init();
 
   Log log;
-  log.setFilter(LogLevel::Debug2);
+  log.setFilter(LogLevel::Level::Verbose);
 
   ::testing::GTEST_FLAG(throw_on_failure) = true;
   testing::InitGoogleTest(&argc, argv);

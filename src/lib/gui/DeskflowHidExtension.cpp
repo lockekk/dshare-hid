@@ -330,7 +330,7 @@ void DeskflowHidExtension::applyProfileScreenBonding(const QString &configPath, 
 void DeskflowHidExtension::updateBondedScreenLocations(const ServerConfig &config)
 {
   const auto &screens = config.screens();
-  const int cols = config.numColumns();
+  const int cols = Settings::value(Settings::Server::GridWidth).toInt();
   const QString serverName = config.getServerName();
 
   int serverIndex = -1;

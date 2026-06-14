@@ -2,7 +2,7 @@
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
  * SPDX-FileCopyrightText: (C) 2024 - 2026 Chris Rizzitello <sithord48@gmail.com>
- * SPDX-FileCopyrightText: (C) 2012 - 2024 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2024 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2008 Volker Lanz <vl@fidra.de>
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -645,14 +645,20 @@ void MainWindow::updateModeControls()
   const auto mode = m_coreProcess.mode();
   const bool isServer = mode == Settings::CoreMode::Server;
   const bool isClient = mode == Settings::CoreMode::Client;
+
   ui->serverOptions->setVisible(isServer);
-  ui->lblIpAddresses->setVisible(isServer);
   ui->clientOptions->setVisible(isClient);
   ui->lblNoMode->setVisible(!isServer && !isClient);
   toggleCanRunCore(canRunCore());
 
-  if (isServer) {
+  ui->lblIpAddresses->setVisible(
+      (isClient && !Settings::value(Settings::Core::Interface).toString().isEmpty()) || isServer
+  );
+
+  if (ui->lblIpAddresses->isVisible())
     updateNetworkInfo();
+
+  if (isServer) {
     m_networkMonitor->startMonitoring();
   } else {
     m_networkMonitor->stopMonitoring();
@@ -708,7 +714,15 @@ void MainWindow::updateSecurityIcon(bool visible)
 
 void MainWindow::updateNetworkInfo()
 {
-  updateIpLabel(NetworkMonitor::validAddresses());
+  const auto mode = m_coreProcess.mode();
+  if (mode == CoreMode::None) {
+    return;
+  }
+
+  if (mode == CoreMode::Server)
+    updateIpLabel(NetworkMonitor::validAddresses());
+  else
+    updateIpLabel({Settings::value(Settings::Core::Interface).toString()});
 }
 
 void MainWindow::serverConnectionConfigureClient(const QString &clientName)
@@ -1384,7 +1398,8 @@ void MainWindow::remoteHostChanged(const QString &newRemoteHost)
 
 void MainWindow::updateIpLabel(const QStringList &addresses)
 {
-  if (m_coreProcess.mode() != CoreMode::Server) {
+  const auto mode = m_coreProcess.mode();
+  if (mode == CoreMode::None) {
     return;
   }
 
@@ -1401,7 +1416,6 @@ void MainWindow::updateIpLabel(const QStringList &addresses)
   QString labelText = fixedIP ? tr("Using IP: ") : tr("Suggested IP: ");
   QString toolTipText = tr("<p>If connecting via the hostname fails, try %1</p>");
 
-  // Get all available IPs for tooltip
   const bool filterIpList = (serverStarted || fixedIP);
   const QRegularExpression ipListFilter(filterIpList ? QStringLiteral("(%1)").arg(m_serverStartIPs.join("|")) : "");
   const QStringList ipList = addresses.filter(ipListFilter);
@@ -1426,7 +1440,7 @@ void MainWindow::updateIpLabel(const QStringList &addresses)
   }
 
   ui->lblIpAddresses->setText(labelText);
-  ui->lblIpAddresses->setToolTip(toolTipText);
+  ui->lblIpAddresses->setToolTip(mode == CoreMode::Server ? toolTipText : QString());
 }
 
 #if defined(Q_OS_LINUX)

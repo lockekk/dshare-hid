@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2025 - 2026 Deskflow Developers
- * SPDX-FileCopyrightText: (C) 2012 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -90,7 +90,7 @@ void ServerApp::reloadConfig()
     if (m_server != nullptr) {
       m_server->setConfig(*m_config);
     }
-    LOG_NOTE("reloaded configuration");
+    LOG_INFO("reloaded configuration");
   }
 }
 
@@ -262,7 +262,7 @@ void ServerApp::retryHandler()
     break;
 
   case Initializing:
-    LOG_DEBUG1("retry server initialization");
+    LOG_VERBOSE("retry server initialization");
     m_serverState = Uninitialized;
     if (!initServer()) {
       getEvents()->addEvent(Event(EventTypes::Quit));
@@ -270,12 +270,12 @@ void ServerApp::retryHandler()
     break;
 
   case InitializingToStart:
-    LOG_DEBUG1("retry server initialization");
+    LOG_VERBOSE("retry server initialization");
     m_serverState = Uninitialized;
     if (!initServer()) {
       getEvents()->addEvent(Event(EventTypes::Quit));
     } else if (m_serverState == Initialized) {
-      LOG_DEBUG1("starting server");
+      LOG_VERBOSE("starting server");
       if (!startServer()) {
         getEvents()->addEvent(Event(EventTypes::Quit));
       }
@@ -283,7 +283,7 @@ void ServerApp::retryHandler()
     break;
 
   case Starting:
-    LOG_DEBUG1("retry starting server");
+    LOG_VERBOSE("retry starting server");
     m_serverState = Initialized;
     if (!startServer()) {
       getEvents()->addEvent(Event(EventTypes::Quit));
@@ -419,7 +419,7 @@ deskflow::Screen *ServerApp::createScreen()
 
 PrimaryClient *ServerApp::openPrimaryClient(const std::string &name, deskflow::Screen *screen)
 {
-  LOG_DEBUG1("creating primary screen");
+  LOG_VERBOSE("creating primary screen");
   return new PrimaryClient(name, screen);
 }
 
@@ -549,14 +549,14 @@ int ServerApp::mainLoop()
   getEvents()->removeHandler(EventTypes::ServerAppForceReconnect, getEvents()->getSystemTarget());
   getEvents()->removeHandler(EventTypes::ServerAppReloadConfig, getEvents()->getSystemTarget());
   cleanupServer();
-  LOG_NOTE("stopped server");
+  LOG_INFO("stopped server");
 
   return exitCode;
 }
 
 void ServerApp::resetServer()
 {
-  LOG_DEBUG1("resetting server");
+  LOG_VERBOSE("resetting server");
 
   // bridge client change: Force a clean process restart to ensure all state is fully reset.
   exit(s_exitSuccess);
@@ -592,7 +592,7 @@ void ServerApp::startNode()
 {
   // start the server.  if this return false then we've failed and
   // we shouldn't retry.
-  LOG_DEBUG1("starting server");
+  LOG_VERBOSE("starting server");
   if (!startServer()) {
     bye(s_exitFailed);
   }

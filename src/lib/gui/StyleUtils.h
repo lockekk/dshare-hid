@@ -1,6 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2024 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2024 Synergy App Ltd
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
 
@@ -8,6 +8,7 @@
 
 #include <QDir>
 #include <QFileInfoList>
+#include <QFontDatabase>
 #include <QIcon>
 #include <QPalette>
 #include <QStyleHints>
@@ -51,3 +52,18 @@ inline void updateIconTheme()
   QIcon::setFallbackSearchPaths({QStringLiteral(":/icons")});
 }
 } // namespace deskflow::gui
+
+inline QFont fixedFont()
+{
+#if defined(Q_OS_WIN)
+  QFont f({"Hack", "Liberation Mono", "Monospace", "Andale Mono"});
+  f.setStyleHint(QFont::Monospace);
+#else
+  QFont f = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+#endif
+
+#if defined(Q_OS_MAC)
+  f.setPointSize(12);
+#endif
+  return f;
+}

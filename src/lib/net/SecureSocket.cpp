@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
- * SPDX-FileCopyrightText: (C) 2015 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2015 - 2016 Synergy App Ltd
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
 
@@ -235,7 +235,7 @@ int SecureSocket::secureRead(void *buffer, int size, int &read)
   std::scoped_lock ssl_lock{ssl_mutex_};
 
   if (m_ssl->m_ssl != nullptr) {
-    LOG_DEBUG2("reading secure socket");
+    LOG_VERBOSE("reading secure socket");
     read = SSL_read(m_ssl->m_ssl, buffer, size);
 
     static int retry;
@@ -262,7 +262,7 @@ int SecureSocket::secureWrite(const void *buffer, int size, int &wrote)
   std::scoped_lock ssl_lock{ssl_mutex_};
 
   if (m_ssl->m_ssl != nullptr) {
-    LOG_DEBUG2("writing secure socket: %p", this);
+    LOG_VERBOSE("writing secure socket: %p", this);
 
     wrote = SSL_write(m_ssl->m_ssl, buffer, size);
 
@@ -421,7 +421,7 @@ int SecureSocket::secureAccept(int socket)
   // set connection socket to SSL state
   SSL_set_fd(m_ssl->m_ssl, socket);
 
-  LOG_DEBUG2("accepting secure socket");
+  LOG_VERBOSE("accepting secure socket");
   int r = SSL_accept(m_ssl->m_ssl);
 
   static int retry;
@@ -453,7 +453,7 @@ int SecureSocket::secureAccept(int socket)
 
   // If not fatal and retry is set, not ready, and return retry
   if (retry > 0) {
-    LOG_DEBUG2("retry accepting secure socket");
+    LOG_VERBOSE("retry accepting secure socket");
     m_secureReady = false;
     return 0;
   }
@@ -478,11 +478,8 @@ int SecureSocket::secureConnect(int socket)
   // attach the socket descriptor
   SSL_set_fd(m_ssl->m_ssl, socket);
 
-  LOG_DEBUG2("connecting secure socket");
+  LOG_VERBOSE("connecting secure socket");
 
-  // enable hostname verification.
-  const auto name = Settings::value(Settings::Core::ComputerName).toString().toStdString();
-  SSL_set1_host(m_ssl->m_ssl, name.c_str());
   int r = SSL_connect(m_ssl->m_ssl);
 
   static int retry;
@@ -497,7 +494,7 @@ int SecureSocket::secureConnect(int socket)
 
   // If we should retry, not ready and return 0
   if (retry > 0) {
-    LOG_DEBUG2("retry connect secure socket");
+    LOG_VERBOSE("retry connect secure socket");
     m_secureReady = false;
     return 0;
   }
@@ -516,7 +513,7 @@ int SecureSocket::secureConnect(int socket)
     disconnect();
     return -1; // Fingerprint failed, error
   }
-  LOG_DEBUG2("connected secure socket");
+  LOG_VERBOSE("connected secure socket");
   SslLogger::logSecureCipherInfo(m_ssl->m_ssl);
   SslLogger::logSecureConnectInfo(m_ssl->m_ssl);
   return 1;
@@ -561,7 +558,7 @@ void SecureSocket::checkResult(int status, int &retry)
   case SSL_ERROR_WANT_READ:
     setReadable(true);
     retry++;
-    LOG_DEBUG2("want to read, error=%d, attempt=%d", errorCode, retry);
+    LOG_VERBOSE("want to read, error=%d, attempt=%d", errorCode, retry);
     break;
 
   case SSL_ERROR_WANT_WRITE:
@@ -569,17 +566,17 @@ void SecureSocket::checkResult(int status, int &retry)
     // poll action actually triggers on a write.
     setWritable(true);
     retry++;
-    LOG_DEBUG2("want to write, error=%d, attempt=%d", errorCode, retry);
+    LOG_VERBOSE("want to write, error=%d, attempt=%d", errorCode, retry);
     break;
 
   case SSL_ERROR_WANT_CONNECT:
     retry++;
-    LOG_DEBUG2("want to connect, error=%d, attempt=%d", errorCode, retry);
+    LOG_VERBOSE("want to connect, error=%d, attempt=%d", errorCode, retry);
     break;
 
   case SSL_ERROR_WANT_ACCEPT:
     retry++;
-    LOG_DEBUG2("want to accept, error=%d, attempt=%d", errorCode, retry);
+    LOG_VERBOSE("want to accept, error=%d, attempt=%d", errorCode, retry);
     break;
 
   case SSL_ERROR_SYSCALL:

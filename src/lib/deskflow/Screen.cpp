@@ -1,6 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2003 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -289,21 +289,21 @@ void Screen::setOptions(const OptionsList &options)
       } else {
         m_halfDuplex &= ~KeyModifierCapsLock;
       }
-      LOG_DEBUG1("half-duplex caps-lock %s", ((m_halfDuplex & KeyModifierCapsLock) != 0) ? "on" : "off");
+      LOG_VERBOSE("half-duplex caps-lock %s", ((m_halfDuplex & KeyModifierCapsLock) != 0) ? "on" : "off");
     } else if (options[i] == kOptionHalfDuplexNumLock) {
       if (options[i + 1] != 0) {
         m_halfDuplex |= KeyModifierNumLock;
       } else {
         m_halfDuplex &= ~KeyModifierNumLock;
       }
-      LOG_DEBUG1("half-duplex num-lock %s", ((m_halfDuplex & KeyModifierNumLock) != 0) ? "on" : "off");
+      LOG_VERBOSE("half-duplex num-lock %s", ((m_halfDuplex & KeyModifierNumLock) != 0) ? "on" : "off");
     } else if (options[i] == kOptionHalfDuplexScrollLock) {
       if (options[i + 1] != 0) {
         m_halfDuplex |= KeyModifierScrollLock;
       } else {
         m_halfDuplex &= ~KeyModifierScrollLock;
       }
-      LOG_DEBUG1("half-duplex scroll-lock %s", ((m_halfDuplex & KeyModifierScrollLock) != 0) ? "on" : "off");
+      LOG_VERBOSE("half-duplex scroll-lock %s", ((m_halfDuplex & KeyModifierScrollLock) != 0) ? "on" : "off");
     }
   }
 
