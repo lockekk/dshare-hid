@@ -151,14 +151,14 @@ int main(int argc, char *argv[])
   qInfo("%s v%s", kAppName, kDisplayVersion);
 
 #if defined(Q_OS_MACOS)
-
-  if (app.applicationDirPath().startsWith("/Volumes/")) {
-    QString msgBody = QStringLiteral("Please drag %1 to the Applications folder, "
-                                     "and open it from there.");
-    QMessageBox::information(nullptr, kAppName, msgBody.arg(kAppName));
-    return 1;
-  }
-
+  // NOTE: the upstream "refuse to launch if applicationDirPath starts with
+  // /Volumes/" check was removed here. It was meant to nudge end users who
+  // mount the DMG and try to launch from inside the mounted volume, but it
+  // false-positives on any dev checkout on an external disk (also mounted
+  // under /Volumes/) and misses the modern App-Translocated DMG case anyway.
+  // macOS shows its own warning when a translocated app requests
+  // accessibility or screen-recording permissions, so the protection is
+  // largely redundant.
   if (!checkMacAssistiveDevices()) {
     return 1;
   }
