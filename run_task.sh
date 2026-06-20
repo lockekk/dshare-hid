@@ -311,7 +311,7 @@ while true; do
     echo "           Deskflow Interactive Build             "
     echo "=================================================="
     echo "  1) Build (Compile Only)"
-    echo "  2) Configure Pristine (Clean & Reconfigure)"
+    echo "  2) Configure Pristine (Dev ONLY: Clean & Reconfigure)"
     echo "  3) Launch"
     echo "  4) Configure Release (Clean & Config with Production Keys)"
     echo "  5) Build Deploy (Flatpak/DMG Release)"

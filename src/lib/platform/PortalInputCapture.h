@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
- * SPDX-FileCopyrightText: (C) 2024 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2025 - 2026 Deskflow Developers
+ * SPDX-FileCopyrightText: (C) 2024 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2022 Red Hat, Inc.
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -14,6 +14,11 @@
 #include <glib.h>
 #include <libportal/inputcapture.h>
 #include <libportal/portal.h>
+
+#include <cstdint>
+#include <map>
+#include <utility>
+#include <vector>
 
 namespace deskflow {
 
@@ -35,6 +40,8 @@ private:
   void glibThread(const void *);
   gboolean timeoutHandler() const;
   gboolean initSession();
+  void setupSession(XdpInputCaptureSession *session);
+  void handleStart(GObject *object, GAsyncResult *res);
   void handleInitSession(GObject *object, GAsyncResult *res);
   void handleSetPointerBarriers(const GObject *object, GAsyncResult *res);
   void handleSessionClosed(XdpSession *session);
@@ -81,8 +88,51 @@ private:
     ZonesChanged
   };
 
+  enum class BarrierSide : uint8_t
+  {
+    Left,
+    Right,
+    Top,
+    Bottom
+  };
+
+  struct BarrierInfo
+  {
+    guint id = 0;
+    BarrierSide side = BarrierSide::Left;
+    gint x = 0;
+    gint y = 0;
+    guint width = 0;
+    guint height = 0;
+    gint x1 = 0;
+    gint y1 = 0;
+    gint x2 = 0;
+    gint y2 = 0;
+  };
+
+  struct Bounds
+  {
+    gint left = 0;
+    gint top = 0;
+    gint right = 0;
+    gint bottom = 0;
+  };
+
+  static const char *barrierSideName(BarrierSide side);
+  static int
+  scaleCoordinateBetweenRanges(double value, int sourceMin, int sourceMax, int destinationMin, int destinationMax);
+  bool getPortalBounds(Bounds &bounds) const;
+  bool getClosestReleaseBarrier(
+      double x, double y, int screenLeft, int screenTop, int screenRight, int screenBottom, const Bounds &portalBounds,
+      BarrierInfo &barrier
+  ) const;
+  std::pair<int, int> mapPortalActivationToScreenPosition(guint barrierId, double rawX, double rawY) const;
+  std::pair<double, double> mapPortalReleasePosition(double x, double y) const;
+  void addBarrier(guint id, BarrierSide side, gint zoneX, gint zoneY, guint zoneWidth, guint zoneHeight);
+
   EiScreen *m_screen = nullptr;
   IEventQueue *m_events = nullptr;
+  int m_portalVersion = 0;
 
   Thread *m_glibThread;
   GMainLoop *m_glibMainLoop = nullptr;
@@ -103,6 +153,7 @@ private:
   std::uint32_t m_activationId = 0;
 
   std::vector<XdpInputCapturePointerBarrier *> m_barriers;
+  std::vector<BarrierInfo> m_barrierInfo;
 };
 
 } // namespace deskflow

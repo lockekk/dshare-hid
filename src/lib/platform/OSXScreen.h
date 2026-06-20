@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2004 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -21,6 +21,7 @@
 #include <bitset>
 #include <map>
 #include <memory>
+#include <thread>
 #include <vector>
 
 extern "C"
@@ -156,6 +157,8 @@ private:
 
   void handleConfirmSleep(const Event &event);
 
+  bool checkAXPermissions();
+
   // global hotkey operating mode
   static bool isGlobalHotKeyOperatingModeAvailable();
   static void setGlobalHotKeysEnabled(bool enabled);
@@ -260,6 +263,8 @@ private:
   bool m_ownClipboard;
   EventQueueTimer *m_clipboardTimer;
 
+  EventQueueTimer *m_axTimer;
+
   // window object that gets user input events when the server
   // has focus.
   WindowRef m_hiddenWindow;
@@ -292,6 +297,8 @@ private:
   // Quartz input event support
   CFMachPortRef m_eventTapPort;
   CFRunLoopSourceRef m_eventTapRLSR;
+  std::thread m_eventTapThread;
+  CFRunLoopRef m_eventTapRunLoop = nullptr;
 
   // for double click coalescing.
   double m_lastClickTime;

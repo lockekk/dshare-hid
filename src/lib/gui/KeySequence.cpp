@@ -1,6 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2008 Volker Lanz <vl@fidra.de>
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -62,6 +62,7 @@ static const struct
     {Qt::Key_Launch0, "AppUser1"},
     {Qt::Key_Launch1, "AppUser2"},
     {Qt::Key_Select, "Select"},
+    {Qt::Key_Plus, "Plus"},
     {Qt::Key_Comma, "Comma"},
     {Qt::Key_Semicolon, "Semicolon"},
 

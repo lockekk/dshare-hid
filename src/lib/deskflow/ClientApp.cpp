@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2025 - 2026 Deskflow Developers
- * SPDX-FileCopyrightText: (C) 2012 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -17,6 +17,7 @@
 #include "common/Settings.h"
 #include "deskflow/Screen.h"
 #include "deskflow/ScreenException.h"
+#include "deskflow/ipc/CoreIpc.h"
 #include "net/NetworkAddress.h"
 #include "net/SocketException.h"
 #include "net/SocketMultiplexer.h"
@@ -36,16 +37,11 @@
 #include "platform/EiScreen.h"
 #endif
 
-#if WINAPI_CARBON
-#include "base/TMethodJob.h"
-#include "mt/Thread.h"
-#include "platform/OSXCocoaApp.h"
+#if defined(Q_OS_MAC)
 #include "platform/OSXScreen.h"
 #endif
 
 #include <memory>
-
-constexpr static auto s_retryTime = 1.0;
 
 ClientApp::ClientApp(IEventQueue *events, const QString &processName) : App(events, processName)
 {
@@ -91,7 +87,7 @@ void ClientApp::parseArgs()
       bye(s_exitFailed);
     }
 
-    LOG_NOTE("configured %zu server address(es)", static_cast<size_t>(m_serverAddresses.size()));
+    LOG_INFO("configured %zu server address(es)", static_cast<size_t>(m_serverAddresses.size()));
   }
 }
 
@@ -170,15 +166,17 @@ void ClientApp::handleClientRestart(const Event &, EventQueueTimer *timer)
 
 void ClientApp::scheduleClientRestart(double retryTime)
 {
-  // install a timer and handler to retry later
   LOG_DEBUG("retry in %.0f seconds", retryTime);
+  ipcSendToClient("retryIn", QString::number(retryTime, 'f', 0));
+  // install a timer and handler to retry later
   EventQueueTimer *timer = getEvents()->newOneShotTimer(retryTime, nullptr);
   getEvents()->addHandler(EventTypes::Timer, timer, [this, timer](const auto &e) { handleClientRestart(e, timer); });
 }
 
 void ClientApp::handleClientConnected()
 {
-  LOG_IPC("connected to server");
+  LOG_DEBUG("connected to server");
+  ipcSendConnectionState(deskflow::core::ConnectionState::Connected);
   // Reset server index on successful connection
   m_currentServerIndex = 0;
   m_lastServerAddressIndex = 0;
@@ -190,9 +188,9 @@ void ClientApp::handleClientFailed(const Event &e)
     // Try next resolved address for current hostname
     std::unique_ptr<Client::FailInfo> info(static_cast<Client::FailInfo *>(e.getData()));
 
-    LOG_WARN("failed to connect to server=%s, trying next resolved address", info->m_what.c_str());
+    LOG_WARN("failed to connect to server=%s, trying next resolved address", qPrintable(info->m_what));
     if (!m_suspended) {
-      scheduleClientRestart(s_retryTime);
+      scheduleClientRestart(retryTime());
     }
   } else {
     // All resolved addresses exhausted, try next server in list
@@ -204,9 +202,9 @@ void ClientApp::handleClientFailed(const Event &e)
       handleClientRefused(e);
     } else {
       std::unique_ptr<Client::FailInfo> info(static_cast<Client::FailInfo *>(e.getData()));
-      LOG_WARN("failed to connect to server=%s, trying next server in list", info->m_what.c_str());
+      LOG_WARN("failed to connect to server=%s, trying next server in list", qPrintable(info->m_what));
       if (!m_suspended) {
-        scheduleClientRestart(s_retryTime);
+        scheduleClientRestart(retryTime());
       }
     }
   }
@@ -217,21 +215,24 @@ void ClientApp::handleClientRefused(const Event &e)
   std::unique_ptr<Client::FailInfo> info(static_cast<Client::FailInfo *>(e.getData()));
 
   if (!info->m_retry) {
-    LOG_ERR("failed to connect to server: %s", info->m_what.c_str());
+    LOG_ERR("failed to connect to server: %s", qPrintable(info->m_what));
     getEvents()->addEvent(Event(EventTypes::Quit));
   } else {
-    LOG_WARN("failed to connect to server: %s", info->m_what.c_str());
+    LOG_WARN("failed to connect to server: %s", qPrintable(info->m_what));
     if (!m_suspended) {
-      scheduleClientRestart(s_retryTime);
+      scheduleClientRestart(retryTime());
+      m_retryCount++;
     }
   }
 }
 
 void ClientApp::handleClientDisconnected()
 {
-  LOG_IPC("disconnected from server");
+  m_retryCount = 0;
+  LOG_DEBUG("disconnected from server");
+  ipcSendConnectionState(deskflow::core::ConnectionState::Disconnected);
   if (!m_suspended) {
-    scheduleClientRestart(s_retryTime);
+    scheduleClientRestart(retryTime());
   }
 }
 
@@ -276,7 +277,6 @@ void ClientApp::closeClient(Client *client)
 
 bool ClientApp::startClient()
 {
-  double retryTime;
   deskflow::Screen *clientScreen = nullptr;
   try {
     if (m_clientScreen == nullptr) {
@@ -286,7 +286,7 @@ bool ClientApp::startClient()
           clientScreen
       );
       m_clientScreen = clientScreen;
-      LOG_NOTE("started client");
+      LOG_INFO("started client");
     }
 
     m_client->setServerAddress(getCurrentServerAddress());
@@ -299,13 +299,13 @@ bool ClientApp::startClient()
       m_clientScreen = nullptr;
     }
     closeClientScreen(clientScreen);
-    retryTime = e.getRetryTime();
   } catch (ScreenOpenFailureException &e) {
     LOG_CRIT("failed to start client: %s", e.what());
     if (m_clientScreen == clientScreen) {
       m_clientScreen = nullptr;
     }
     closeClientScreen(clientScreen);
+    m_retryCount = 0;
     return false;
   } catch (BaseException &e) {
     LOG_CRIT("failed to start client: %s", e.what());
@@ -313,10 +313,11 @@ bool ClientApp::startClient()
       m_clientScreen = nullptr;
     }
     closeClientScreen(clientScreen);
+    m_retryCount = 0;
     return false;
   }
 
-  scheduleClientRestart(retryTime);
+  scheduleClientRestart(retryTime());
   return true;
 }
 
@@ -326,6 +327,7 @@ void ClientApp::stopClient()
   closeClientScreen(m_clientScreen);
   m_client = nullptr;
   m_clientScreen = nullptr;
+  m_retryCount = 0;
 }
 
 int ClientApp::mainLoop()
@@ -340,30 +342,14 @@ int ClientApp::mainLoop()
   // run event loop.  if startClient() failed we're supposed to retry
   // later.  the timer installed by startClient() will take care of
   // that.
-
-#if WINAPI_CARBON
-
-  Thread thread(new TMethodJob<ClientApp>(this, &ClientApp::runEventsLoop, nullptr));
-
-  // wait until carbon loop is ready
-  if (m_clientScreen) {
-    OSXScreen *screen = dynamic_cast<OSXScreen *>(m_clientScreen->getPlatformScreen());
-    if (screen) {
-      screen->waitForCarbonLoop();
-    }
-  }
-
-  runCocoaApp();
-#else
-  getEvents()->loop();
-#endif
+  int exitCode = getEvents()->loop();
 
   // close down
   LOG_DEBUG("stopping client");
   stopClient();
-  LOG_NOTE("stopped client");
+  LOG_INFO("stopped client");
 
-  return s_exitSuccess;
+  return exitCode;
 }
 
 int ClientApp::start()
@@ -405,7 +391,7 @@ void ClientApp::startNode()
 {
   // start the client.  if this return false then we've failed and
   // we shouldn't retry.
-  LOG_DEBUG1("starting client");
+  LOG_VERBOSE("starting client");
   if (!startClient()) {
     bye(s_exitFailed);
   }
@@ -414,4 +400,21 @@ void ClientApp::startNode()
 ISocketFactory *ClientApp::getSocketFactory() const
 {
   return new TCPSocketFactory(getEvents(), getSocketMultiplexer());
+}
+
+double ClientApp::retryTime() const
+{
+  if (!Settings::value(Settings::Client::DynamicConnectionRetry).toBool() || m_retryCount < 300) // 5 minutes
+    return 1;
+  if (m_retryCount < 360) // 5 minutes
+    return 5;
+  if (m_retryCount < 390) // 5 minutes
+    return 10;
+  if (m_retryCount < 410) // 10 minutes
+    return 30;
+  if (m_retryCount < 420) // 10 minutes
+    return 60;
+  if (m_retryCount < 430) // 20 minutes
+    return 120;
+  return 300;
 }

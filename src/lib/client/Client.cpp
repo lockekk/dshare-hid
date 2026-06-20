@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
- * SPDX-FileCopyrightText: (C) 2012 - 2016, 2026 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2025 - 2026 Deskflow Developers
+ * SPDX-FileCopyrightText: (C) 2012 - 2016, 2026 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -11,8 +11,8 @@
 #include "arch/Arch.h"
 #include "base/IEventQueue.h"
 #include "base/Log.h"
-#include "base/NetworkProtocol.h"
 #include "client/ServerProxy.h"
+#include "common/NetworkProtocol.h"
 #include "common/Settings.h"
 #include "deskflow/Clipboard.h"
 #include "deskflow/IPlatformScreen.h"
@@ -21,10 +21,13 @@
 #include "deskflow/ProtocolUtil.h"
 #include "deskflow/Screen.h"
 #include "deskflow/StreamChunker.h"
+#include "deskflow/ipc/CoreIpc.h"
 #include "net/IDataSocket.h"
 #include "net/ISocketFactory.h"
 #include "net/SecureSocket.h"
 #include "net/TCPSocket.h"
+
+#include <QMetaEnum>
 
 #include <cstdlib>
 #include <cstring>
@@ -92,10 +95,11 @@ void Client::connect(size_t addressIndex)
     // m_serverAddress will be null if the hostname address is not reolved
     if (m_serverAddress.getAddress() != nullptr) {
       // to help users troubleshoot, show server host name (issue: 60)
-      LOG_IPC(
+      LOG_DEBUG(
           "connecting to '%s': %s:%i", m_serverAddress.getHostname().c_str(),
           ARCH->addrToString(m_serverAddress.getAddress()).c_str(), m_serverAddress.getPort()
       );
+      ipcSendConnectionState(deskflow::core::ConnectionState::Connecting);
     }
 
     // create the socket
@@ -106,7 +110,7 @@ void Client::connect(size_t addressIndex)
     m_stream = new PacketStreamFilter(m_events, socket, true);
 
     // connect
-    LOG_DEBUG1("connecting to server");
+    LOG_VERBOSE("connecting to server");
     setupConnecting();
     setupTimer();
     socket->connect(m_serverAddress);
@@ -114,7 +118,7 @@ void Client::connect(size_t addressIndex)
     cleanupTimer();
     cleanupConnecting();
     cleanupStream();
-    LOG_DEBUG1("connection failed");
+    LOG_VERBOSE("connection failed");
     sendConnectionFailedEvent(e.what());
     return;
   }
@@ -131,8 +135,11 @@ void Client::disconnect(const char *msg)
   }
 }
 
-void Client::refuseConnection(const char *msg)
+void Client::refuseConnection(deskflow::core::ConnectionRefusal reason, const char *msg)
 {
+  const auto metaEnum = QMetaEnum::fromType<deskflow::core::ConnectionRefusal>();
+  ipcSendToClient("connectionRefused", metaEnum.valueToKey(static_cast<int>(reason)));
+
   cleanup();
 
   if (msg) {
@@ -147,6 +154,9 @@ void Client::handshakeComplete()
 {
   m_ready = true;
   m_screen->enable();
+  if (m_relativeMouseMoves && !m_hasRelativeRestorePosition) {
+    saveRelativeRestorePosition();
+  }
   sendEvent(EventTypes::ClientConnected);
 }
 
@@ -188,12 +198,20 @@ void Client::getCursorPos(int32_t &x, int32_t &y) const
 void Client::enter(int32_t xAbs, int32_t yAbs, uint32_t, KeyModifierMask mask, bool)
 {
   m_active = true;
+  if (m_relativeMouseMoves && m_hasRelativeRestorePosition) {
+    xAbs = m_relativeRestoreX;
+    yAbs = m_relativeRestoreY;
+    LOG_VERBOSE("using relative restore position: %d,%d", xAbs, yAbs);
+  }
   m_screen->mouseMove(xAbs, yAbs);
   m_screen->enter(mask);
 }
 
 bool Client::leave()
 {
+  if (m_relativeMouseMoves) {
+    saveRelativeRestorePosition();
+  }
   m_active = false;
 
   m_screen->leave();
@@ -276,6 +294,8 @@ void Client::screensaver(bool activate)
 
 void Client::resetOptions()
 {
+  m_relativeMouseMoves = false;
+  m_hasRelativeRestorePosition = false;
   m_screen->resetOptions();
 }
 
@@ -287,7 +307,7 @@ void Client::setOptions(const OptionsList &options)
       index++;
       if (index != options.end()) {
         if (!*index) {
-          LOG_NOTE("clipboard sharing disabled by server");
+          LOG_INFO("clipboard sharing disabled by server");
         }
         m_enableClipboard = *index;
       }
@@ -296,15 +316,30 @@ void Client::setOptions(const OptionsList &options)
       if (index != options.end()) {
         m_maximumClipboardSize = *index;
       }
+    } else if (id == kOptionRelativeMouseMoves) {
+      index++;
+      if (index != options.end()) {
+        m_relativeMouseMoves = (*index != 0);
+        if (m_relativeMouseMoves && m_ready && !m_hasRelativeRestorePosition) {
+          saveRelativeRestorePosition();
+        }
+      }
     }
   }
 
   if (m_enableClipboard && !m_maximumClipboardSize) {
     m_enableClipboard = false;
-    LOG_NOTE("clipboard sharing is disabled because the server set the maximum clipboard size to 0");
+    LOG_INFO("clipboard sharing is disabled because the server set the maximum clipboard size to 0");
   }
 
   m_screen->setOptions(options);
+}
+
+void Client::saveRelativeRestorePosition()
+{
+  m_screen->getCursorPos(m_relativeRestoreX, m_relativeRestoreY);
+  m_hasRelativeRestorePosition = true;
+  LOG_VERBOSE("saved relative restore position: %d,%d", m_relativeRestoreX, m_relativeRestoreY);
 }
 
 std::string Client::getName() const
@@ -334,7 +369,7 @@ void Client::sendClipboard(ClipboardID id)
     std::string data = clipboard.marshall();
     if (data.size() >= m_maximumClipboardSize * 1024) {
       LOG(
-          (CLOG_NOTE "skipping clipboard transfer because the clipboard"
+          (CLOG_INFO "skipping clipboard transfer because the clipboard"
                      " contents exceeds the %i MB size limit set by the server",
            m_maximumClipboardSize / 1024)
       );
@@ -486,7 +521,7 @@ void Client::cleanupStream()
 
 void Client::handleConnected()
 {
-  LOG_DEBUG1("connected, waiting for hello");
+  LOG_VERBOSE("connected, waiting for hello");
   cleanupConnecting();
   setupConnection();
 
@@ -505,7 +540,7 @@ void Client::handleConnectionFailed(const Event &event)
   cleanupTimer();
   cleanupConnecting();
   cleanupStream();
-  LOG_DEBUG1("connection failed");
+  LOG_VERBOSE("connection failed");
   sendConnectionFailedEvent(info->m_what.c_str());
   delete info;
 }
@@ -516,7 +551,7 @@ void Client::handleConnectTimeout()
   cleanupConnecting();
   cleanupConnection();
   cleanupStream();
-  LOG_DEBUG1("connection timed out");
+  LOG_VERBOSE("connection timed out");
   sendConnectionFailedEvent("Timed out");
 }
 
@@ -534,7 +569,7 @@ void Client::handleDisconnected()
   cleanupTimer();
   cleanupScreen();
   cleanupConnection();
-  LOG_DEBUG1("disconnected");
+  LOG_VERBOSE("disconnected");
   sendEvent(EventTypes::ClientDisconnected);
 }
 
@@ -634,22 +669,19 @@ void Client::handleResume()
 
 void Client::bindNetworkInterface(IDataSocket *socket) const
 {
-  try {
-    if (Settings::isBridgeClientMode()) {
-      LOG_DEBUG1("bridge client mode detected; skipping network interface binding");
-      return;
-    }
-
-    if (const auto address = Settings::value(Settings::Core::Interface).toString(); !address.isEmpty()) {
-      LOG_DEBUG1("bind to network interface: %s", qPrintable(address));
-
-      NetworkAddress bindAddress(address.toStdString());
-      bindAddress.resolve();
-
-      socket->bind(bindAddress);
-    }
-  } catch (BaseException &e) {
-    LOG_WARN("%s", e.what());
-    LOG_WARN("operating system will select network interface automatically");
+  if (Settings::isBridgeClientMode()) {
+    LOG_VERBOSE("bridge client mode detected; skipping network interface binding");
+    return;
   }
+
+  const auto address = Settings::value(Settings::Core::Interface).toString();
+  if (address.isEmpty())
+    return;
+
+  LOG_VERBOSE("bind to network interface: %s", qPrintable(address));
+
+  NetworkAddress bindAddress(address.toStdString());
+  bindAddress.resolve();
+
+  socket->bind(bindAddress);
 }

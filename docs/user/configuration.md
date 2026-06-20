@@ -50,34 +50,39 @@ option=value
 This section contains options used when in client mode. 
 It will begin with `[client]`
 
-| Option          |    Valid Values    | Description                                                                                        |
-| :-------------- | :----------------: | :------------------------------------------------------------------------------------------------- |
-| binary          |      Filename      | The filename of the binary to call for client mode. This binary exists in the same path as the GUI |
-| languageSync    | `true` or `false`  | Sync to server language [default: true]                                                            |
-| remoteHost      | `IP` or `hostname` | The remote host(s) to connect to. Use a comma separated list when you want to try several hosts    |
-| yScrollScale    | Double 0.1 - 10.0  | Vertical mouse scrolling will be scaled by this amount on the client [default: 1.0]                |
-| xScrollScale    | Double 0.1 - 10.0  | Horizontal mouse scrolling will be scaled by this amount on the client [default: 1.0]              |
-| invertYScroll   | `true` or `false`  | Invert vertical scroll on this client [default: false]                                             |
-| invertXScroll   | `true` or `false`  | Invert horizontal scroll on this client [default: false]                                           |
-| xdpRestoreToken |        UUID        | Restore token provided by XDG portals                                                              |
+| Option                    |    Valid Values    | Description                                                                                        |
+|:--------------------------|:------------------:|:---------------------------------------------------------------------------------------------------|
+| binary                    |      Filename      | The filename of the binary to call for client mode. This binary exists in the same path as the GUI |
+| dynamicConnectionInterval | `true` or `false`  | Use dynamic connection retry times based on number of previously failed attempts [default: false]  |
+| languageSync              | `true` or `false`  | Sync to server language [default: true]                                                            |
+| remoteHost                | `IP` or `hostname` | The remote host(s) to connect to. Use a comma separated list when you want to try several hosts    |
+| yScrollScale              | Double 0.1 - 10.0  | Vertical mouse scrolling will be scaled by this amount on the client [default: 1.0]                |
+| xScrollScale              | Double 0.1 - 10.0  | Horizontal mouse scrolling will be scaled by this amount on the client [default: 1.0]              |
+| invertYScroll             | `true` or `false`  | Invert vertical scroll on this client [default: false]                                             |
+| invertXScroll             | `true` or `false`  | Invert horizontal scroll on this client [default: false]                                           |
+| xdpRestoreToken           |        UUID        | Restore token provided by XDG portals                                                              |
 
 ### Core
 
 This section contains general options it will begin with `[core]`
 
-| Option       |   Valid Values    | Description                                                                                               |
-| :----------- | :---------------: | :-------------------------------------------------------------------------------------------------------- |
-| coreMode     | `0` or `1` or `2` | The mode to start in 0: None, 1: Client, 2: Server [default: 0]                                           |
-| display      |        int        | The XWindow display to use [default: autodetected]                                                        |
-| interface    |    IP Address     | Preferred IP to use for network communication. By default the server board casts on any available address |
-| lastVersion  |      M.m.p.t      | The version last run used for checking for updates                                                        |
-| port         |      port #       | Port to use when connecting [default: 24800                                                               |
-| preventSleep | `true` or `false` | Prevent sleep when DShare-HID is active [default: false]                                                  |
-| processMode  |    `1` or `0`     | The mode we use to start the process Service or Desktop                                                   |
-| computerName |      string       | Name used to identify the computer [default: machine's hostname]                                          |
-| useHooks     | `true` or `false` | If Windows uses hooks or not [default: true]                                                              |
-| language     |   639 language    | The language to display the GUI in [default: en]                                                          |
-| wlClipboard  | `true` or `false` | When true the wl-clipboard backend will be enabled [default: false]                                       |
+| Option             |   Valid Values    | Description                                                                                               |
+| :----------------- | :---------------: | :-------------------------------------------------------------------------------------------------------- |
+| coreMode           | `0` or `1` or `2` | The mode to start in 0: None, 1: Client, 2: Server [default: 0]                                           |
+| display            |        int        | The XWindow display to use [default: autodetected]                                                        |
+| interface          |    IP Address     | Preferred IP to use for network communication. By default the server board casts on any available address |
+| lastVersion        |      M.m.p.t      | The version last run used for checking for updates                                                        |
+| port               |      port #       | Port to use when connecting [default: 24800                                                               |
+| preventSleep       | `true` or `false` | Prevent sleep when DShare-HID is active [default: false]                                                  |
+| processMode        |    `1` or `0`     | The mode we use to start the process Service or Desktop                                                   |
+| computerName       |      string       | Name used to identify the computer [default: machine's hostname]                                          |
+| useHooks           | `true` or `false` | If Windows uses hooks or not [default: true]                                                              |
+| language           |   639 language    | The language to display the GUI in [default: en]                                                          |
+| wlClipboard        | `true` or `false` | When true the wl-clipboard backend will be enabled [default: false]                                       |
+| enableEnterCommand | `true` or `false` | Should the enter command be triggered when the screen is entered [defaut: false]                          |
+| enterCommand       |      string       | A command to run when the screen is entered.                                                              |
+| enableExitCommand  | `true` or `false` | Should the exit command be triggered when the screen is exited [defaut: false]                            |
+| exitCommand        |      string       | A command to run when the screen is exited.                                                               |
 
 ### Daemon
 
@@ -136,10 +141,17 @@ This section contains options used by the application security it will begin wit
 
 This section contains options used when in server mode it will begin with `[server]`
 
-| Option             |   Valid Values    | Description                                                                                                       |
-| :----------------- | :---------------: | :---------------------------------------------------------------------------------------------------------------- |
-| externalConfig     | `true` or `false` | When true use the external config path                                                                            |
-| externalConfigFile |     Filepath      | Path the server config file if it does not exist the GUI will it generated based on the `internalConfig` section. |
+|Option              |    Valid Values   |Description|
+|:-------------------|:-----------------:|:-----------|
+| enableHeartbeat    | `true` or `false` | Send a heartbeat to connected clients; this has been replaced by internal keep alive (default: false)|
+| enableSwitchDelay  | `true` or `false` | Switching will be delayed by the set value (default: false)|
+| enableSwitchDoubleTap  | `true` or `false` | Enables the doubletap to switch method (default: false)|
+| externalConfig     | `true` or `false` | When true use the external config path |
+| externalConfigFile | Filepath          | Path the server config file if it does not exist the GUI will it generated based on the `internalConfig` section.|
+| gridHeight         | int               | Height of the server's intenal grid used for the computer layout (default: 3)|
+| gridWidth          | int               | Width of the server's intenal grid used for the computer layout (default: 5) |
+| protocol           | `barrier` or `synergy` | The protocol to use when saying hello to clients. Can be set to barrier or synergy. If not set barrier is used as the default |
+| xdpRestoreToken   | UUID               | Restore token provided by XDG portals |
 
 ### InternalConfig
 
@@ -152,9 +164,6 @@ clipboardSharing=true
 clipboardSharingSize=@Variant(\0\0\0\x84\0\0\0\0\0\0<\0)
 defaultLockToScreenState=false
 disableLockToScreen=false
-hasHeartbeat=false
-hasSwitchDelay=false
-hasSwitchDoubleTap=false
 heartbeat=5000
 hotkeys\1\actions\1\activeOnRelease=false
 hotkeys\1\actions\1\hasScreens=true
@@ -170,9 +179,6 @@ hotkeys\1\actions\size=1
 hotkeys\1\keys\1\key=83
 hotkeys\1\keys\size=1
 hotkeys\size=1
-numColumns=5
-numRows=3
-protocol=1
 relativeMouseMoves=false
 screens\1\name=
 screens\10\aliasArray\size=0
@@ -385,7 +391,6 @@ Note that links do not have to be symmetrical; for instance, here the edge betwe
 
 ```
 section: options
-	protocol = barrier
 	heartbeat = 5000
 	switchDelay = 500
 end
@@ -395,7 +400,6 @@ end
 
 | Options              |                                Value Values                                | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | :------------------- | :------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| protocol             |                             barrier or synergy                             | The protocol to use when saying hello to clients. Can be set to barrier or synergy. If not set barrier is used as the default                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | heartbeat            |                                integer (N)                                 | The server will expect each client to send a message no less than every `N` milliseconds. If no message arrives from a client within `3N` seconds the server forces that client to disconnect. If DShare-HID fails to detect clients disconnecting while the server is sleeping or vice versa, try using this option.                                                                                                                                                                                                                                                                            |
 | switchCorners        | none top-left top-right bottom-left bottom-right left right top bottom all | DShare-HID won't switch screens when the mouse reaches the edge of the screen if it's in a listed corner. The size of all corners is given by the `switchCornerSize` option. The first name in the list is one of the above names and defines the initial set of corners. Subsequent names are prefixed with + or - to add the corner to or remove the corner from the set, respectively. For example: `all -left +top-left` starts will all corners, removes the left corners (top and bottom) then adds the top-left back in, resulting in the top-left, bottom-left and bottom-right corners. |
 | switchCornerSize     |                                integer (N)                                 | Sets the size of all corners in pixels. The cursor must be within `N` pixels of the corner to be considered to be in the corner.                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |

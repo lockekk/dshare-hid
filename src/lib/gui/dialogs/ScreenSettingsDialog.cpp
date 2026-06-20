@@ -1,6 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2012 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2008 Volker Lanz <vl@fidra.de>
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -48,6 +48,7 @@ ScreenSettingsDialog::ScreenSettingsDialog(QWidget *parent, Screen *screen, cons
   ui->comboAlt->setCurrentIndex(m_screen->modifier(static_cast<int>(Alt)));
   ui->comboMeta->setCurrentIndex(m_screen->modifier(static_cast<int>(Meta)));
   ui->comboSuper->setCurrentIndex(m_screen->modifier(static_cast<int>(Super)));
+  ui->comboAltGr->setCurrentIndex(m_screen->modifier(static_cast<int>(AltGr)));
 
   ui->chkDeadTopLeft->setChecked(m_screen->switchCorner(static_cast<int>(TopLeft)));
   ui->chkDeadTopRight->setChecked(m_screen->switchCorner(static_cast<int>(TopRight)));
@@ -102,6 +103,7 @@ void ScreenSettingsDialog::accept()
   m_screen->setModifier(Alt, ui->comboAlt->currentIndex());
   m_screen->setModifier(Meta, ui->comboMeta->currentIndex());
   m_screen->setModifier(Super, ui->comboSuper->currentIndex());
+  m_screen->setModifier(AltGr, ui->comboAltGr->currentIndex());
 
   m_screen->setSwitchCorner(TopLeft, ui->chkDeadTopLeft->isChecked());
   m_screen->setSwitchCorner(TopRight, ui->chkDeadTopRight->isChecked());

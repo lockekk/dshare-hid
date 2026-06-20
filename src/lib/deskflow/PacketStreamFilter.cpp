@@ -1,6 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2004 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -164,7 +164,16 @@ void PacketStreamFilter::filterEvent(const Event &event)
     std::scoped_lock lock{m_mutex};
     m_inputShutdown = true;
     if (m_size != 0) {
-      return;
+      if (m_buffer.getSize() >= m_size) {
+        // we have a complete packet, so we can process it before
+        // shutting down.
+        return;
+      }
+      // we have a partial packet, but the stream has shut down.
+      // we'll never get the rest of the packet, so we should
+      // signal an error and then shut down.
+      m_events->addEvent(Event(EventTypes::StreamInputFormatError, getEventTarget()));
+      m_size = 0;
     }
   }
 

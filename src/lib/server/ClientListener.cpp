@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2004 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -46,7 +46,7 @@ ClientListener::ClientListener(
     m_socketFactory.reset();
     throw;
   }
-  LOG_DEBUG1("listening for clients");
+  LOG_VERBOSE("listening for clients");
 }
 
 ClientListener::~ClientListener()
@@ -82,14 +82,14 @@ void ClientListener::start()
   });
 
   // bind listen address
-  LOG_DEBUG1("binding listen socket");
+  LOG_VERBOSE("binding listen socket");
   m_listen->bind(m_address);
 }
 
 void ClientListener::stop()
 {
   using enum EventTypes;
-  LOG_DEBUG1("stop listening for clients");
+  LOG_VERBOSE("stop listening for clients");
 
   // discard already connected clients
   for (auto index = m_newClients.begin(); index != m_newClients.end(); ++index) {
@@ -155,7 +155,7 @@ void ClientListener::handleClientConnecting()
 
 void ClientListener::handleClientAccepted(IDataSocket *socket)
 {
-  LOG_NOTE("accepted client connection");
+  LOG_INFO("accepted client connection");
 
   // filter socket messages, including a packetizing filter
   deskflow::IStream *stream = new PacketStreamFilter(m_events, socket, false);

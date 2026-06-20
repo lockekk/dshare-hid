@@ -1,6 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2025 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2025 Synergy App Ltd
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
 
@@ -37,6 +37,10 @@ public:
   }
 
   static void shutdown(HANDLE handle, DWORD pid, int timeout = kDefaultShutdownTimeout);
+
+  /// Launch @p command as a detached process under the active console user's token, so the
+  /// child does not inherit the caller's (SYSTEM) privileges.
+  static bool startDetachedAsSessionUser(const std::wstring &command);
 
 private:
   void setStartupInfo(STARTUPINFO &si);

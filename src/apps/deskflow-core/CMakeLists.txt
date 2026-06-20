@@ -38,6 +38,7 @@ target_link_libraries(
   platform
   server
   app
+  Qt6::Widgets
   ${libs})
 
 install(
@@ -53,6 +54,7 @@ if(BUILD_OSX_BUNDLE)
   )
 elseif (WIN32)
   install(RUNTIME_DEPENDENCY_SET coreDeps
+    ${WIN32_RUNTIME_DEPENDENCY_SET_ARGS}
     PRE_EXCLUDE_REGEXES ${WIN32_PRE_EXCLUDE_REGEXES}
     POST_EXCLUDE_REGEXES ${WIN32_POST_EXCLUDE_REGEXES}
     RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}

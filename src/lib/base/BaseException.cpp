@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2025 - 2026 Deskflow Developers
+ * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -20,7 +20,7 @@ BaseException::BaseException() : std::runtime_error("")
   // do nothing
 }
 
-BaseException::BaseException(const std::string &msg) : std::runtime_error(msg)
+BaseException::BaseException(const QString &msg) : std::runtime_error(msg.toStdString())
 {
   // do nothing
 }
@@ -31,21 +31,21 @@ const char *BaseException::what() const throw()
     return what;
   }
 
-  m_what = getWhat();
-  return m_what.c_str();
+  m_what = getWhat().toLocal8Bit();
+  return m_what.constData();
 }
 
-std::string BaseException::format(const char * /*id*/, const char *fmt, ...) const noexcept
+QString BaseException::format(const char * /*id*/, const char *fmt, ...) const noexcept
 {
   // FIXME -- lookup message string using id as an index.  set
   // fmt to that string if it exists.
 
   // format
-  std::string result;
+  QString result;
   va_list args;
   va_start(args, fmt);
   try {
-    result = deskflow::string::vformat(fmt, args);
+    result = QString::fromStdString(deskflow::string::vformat(fmt, args));
   } catch (...) {
     // ignore
     result.clear();

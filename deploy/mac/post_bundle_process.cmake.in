@@ -48,6 +48,12 @@ if (NOT "${OPENSSL_ROOT_DIR}" STREQUAL "")
     execute_process(COMMAND install_name_tool -id "@executable_path/../Frameworks/libcrypto.3.dylib" "${APP_PATH}/Contents/Frameworks/libcrypto.3.dylib")
 
     # Fix Dependency (libssl depends on libcrypto)
+    # The libs are built with @rpath install names (see build_universal_openssl.sh),
+    # so this single rewrite is location-independent and is the path that matches
+    # current builds. The absolute-path variants below are kept as harmless
+    # fallbacks for libs produced before that change.
+    execute_process(COMMAND install_name_tool -change "@rpath/libcrypto.3.dylib" "@executable_path/../Frameworks/libcrypto.3.dylib" "${APP_PATH}/Contents/Frameworks/libssl.3.dylib")
+
     # Note: Lipo merged libs point to their original build paths (arm64/lib/libcrypto.3.dylib or x86_64/lib/... )
     # We must fix BOTH potential paths to the unified bundle path.
 
@@ -59,8 +65,11 @@ if (NOT "${OPENSSL_ROOT_DIR}" STREQUAL "")
     string(REPLACE "/universal" "/arm64" OPENSSL_ARM_DIR "${OPENSSL_ROOT_DIR}")
     execute_process(COMMAND install_name_tool -change "${OPENSSL_ARM_DIR}/lib/libcrypto.3.dylib" "@executable_path/../Frameworks/libcrypto.3.dylib" "${APP_PATH}/Contents/Frameworks/libssl.3.dylib")
 
-    # Fix Main Executable (it might link against universal, x86, or arm path depending on how cmake found it)
-    # We try all three to be safe.
+    # Fix Main Executable. Current builds use @rpath; the absolute universal/x86/arm
+    # variants below are kept as fallbacks for older builds.
+    execute_process(COMMAND install_name_tool -change "@rpath/libssl.3.dylib" "@executable_path/../Frameworks/libssl.3.dylib" "${APP_PATH}/Contents/MacOS/@CMAKE_PROJECT_PROPER_NAME@")
+    execute_process(COMMAND install_name_tool -change "@rpath/libcrypto.3.dylib" "@executable_path/../Frameworks/libcrypto.3.dylib" "${APP_PATH}/Contents/MacOS/@CMAKE_PROJECT_PROPER_NAME@")
+
     execute_process(COMMAND install_name_tool -change "${OPENSSL_ROOT_DIR}/lib/libssl.3.dylib" "@executable_path/../Frameworks/libssl.3.dylib" "${APP_PATH}/Contents/MacOS/@CMAKE_PROJECT_PROPER_NAME@")
     execute_process(COMMAND install_name_tool -change "${OPENSSL_ROOT_DIR}/lib/libcrypto.3.dylib" "@executable_path/../Frameworks/libcrypto.3.dylib" "${APP_PATH}/Contents/MacOS/@CMAKE_PROJECT_PROPER_NAME@")
 
@@ -74,6 +83,10 @@ if (NOT "${OPENSSL_ROOT_DIR}" STREQUAL "")
     set(CORE_EXE "${APP_PATH}/Contents/MacOS/dshare-hid-core")
     if (EXISTS "${CORE_EXE}")
         message(STATUS "Fixing up references for dshare-hid-core...")
+        # @rpath (current builds)
+        execute_process(COMMAND install_name_tool -change "@rpath/libssl.3.dylib" "@executable_path/../Frameworks/libssl.3.dylib" "${CORE_EXE}")
+        execute_process(COMMAND install_name_tool -change "@rpath/libcrypto.3.dylib" "@executable_path/../Frameworks/libcrypto.3.dylib" "${CORE_EXE}")
+
         # Universal paths
         execute_process(COMMAND install_name_tool -change "${OPENSSL_ROOT_DIR}/lib/libssl.3.dylib" "@executable_path/../Frameworks/libssl.3.dylib" "${CORE_EXE}")
         execute_process(COMMAND install_name_tool -change "${OPENSSL_ROOT_DIR}/lib/libcrypto.3.dylib" "@executable_path/../Frameworks/libcrypto.3.dylib" "${CORE_EXE}")

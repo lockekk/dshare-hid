@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2025 - 2026 Deskflow Developers
+ * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2004 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -181,6 +181,10 @@ void MSWindowsDesks::leave(HKL keyLayout)
 void MSWindowsDesks::resetOptions()
 {
   m_leaveForegroundOption = false;
+  m_relativeMouseMoves = false;
+  for (auto &entry : m_desks) {
+    entry.second->m_hasRelativeRestorePosition = false;
+  }
 }
 
 void MSWindowsDesks::setOptions(const OptionsList &options)
@@ -188,7 +192,9 @@ void MSWindowsDesks::setOptions(const OptionsList &options)
   for (uint32_t i = 0, n = (uint32_t)options.size(); i < n; i += 2) {
     if (options[i] == kOptionWin32KeepForeground) {
       m_leaveForegroundOption = (options[i + 1] != 0);
-      LOG_DEBUG1("%s the foreground window", m_leaveForegroundOption ? "don\'t grab" : "grab");
+      LOG_VERBOSE("%s the foreground window", m_leaveForegroundOption ? "don\'t grab" : "grab");
+    } else if (options[i] == kOptionRelativeMouseMoves) {
+      m_relativeMouseMoves = (options[i + 1] != 0);
     }
   }
 }
@@ -307,6 +313,39 @@ void MSWindowsDesks::fakeMouseRelativeMove(int32_t dx, int32_t dy) const
 void MSWindowsDesks::fakeMouseWheel(int32_t xDelta, int32_t yDelta) const
 {
   sendMessage(DESKFLOW_MSG_FAKE_WHEEL, xDelta, yDelta);
+}
+
+void MSWindowsDesks::saveRelativeRestorePosition(Desk *desk) const
+{
+  POINT pos{0, 0};
+  if (!GetCursorPos(&pos)) {
+    LOG_DEBUG(
+        "could not save relative restore position on desk \"%ls\", error: %lu", desk->m_name.c_str(), GetLastError()
+    );
+    return;
+  }
+
+  desk->m_relativeRestoreX = pos.x;
+  desk->m_relativeRestoreY = pos.y;
+  desk->m_hasRelativeRestorePosition = true;
+  LOG_VERBOSE(
+      "saved relative restore position on desk \"%ls\": %+d,%+d", desk->m_name.c_str(), desk->m_relativeRestoreX,
+      desk->m_relativeRestoreY
+  );
+}
+
+bool MSWindowsDesks::restoreRelativeCursorPosition(Desk *desk) const
+{
+  if (!desk->m_hasRelativeRestorePosition) {
+    return false;
+  }
+
+  LOG_VERBOSE(
+      "restoring relative cursor position on desk \"%ls\": %+d,%+d", desk->m_name.c_str(), desk->m_relativeRestoreX,
+      desk->m_relativeRestoreY
+  );
+  deskMouseMove(desk->m_relativeRestoreX, desk->m_relativeRestoreY);
+  return true;
 }
 
 void MSWindowsDesks::sendMessage(UINT msg, WPARAM wParam, LPARAM lParam) const
@@ -470,20 +509,20 @@ void setCursorVisibility(bool visible)
   int attempts = 0;
   while (attempts++ < max) {
     const auto displayCounter = ShowCursor(visible ? TRUE : FALSE);
-    LOG_DEBUG1("cursor display counter: %d", displayCounter);
+    LOG_VERBOSE("cursor display counter: %d", displayCounter);
 
     if (visible) {
       if (displayCounter < 0) {
-        LOG_DEBUG1("cursor still hidden, retrying, attempt: %d", attempts);
+        LOG_VERBOSE("cursor still hidden, retrying, attempt: %d", attempts);
       } else {
-        LOG_DEBUG1("cursor is now visible, attempts: %d", attempts);
+        LOG_VERBOSE("cursor is now visible, attempts: %d", attempts);
         return;
       }
     } else {
       if (displayCounter >= 0) {
-        LOG_DEBUG1("cursor still visible, retrying, attempt: %d", attempts);
+        LOG_VERBOSE("cursor still visible, retrying, attempt: %d", attempts);
       } else {
-        LOG_DEBUG1("cursor is now hidden, attempts: %d", attempts);
+        LOG_VERBOSE("cursor is now hidden, attempts: %d", attempts);
         return;
       }
     }
@@ -496,6 +535,9 @@ void MSWindowsDesks::deskEnter(Desk *desk)
 {
   if (!m_isPrimary) {
     ReleaseCapture();
+    if (m_relativeMouseMoves) {
+      restoreRelativeCursorPosition(desk);
+    }
   }
 
   setCursorVisibility(true);
@@ -519,6 +561,10 @@ void MSWindowsDesks::deskEnter(Desk *desk)
 
 void MSWindowsDesks::deskLeave(Desk *desk, HKL keyLayout)
 {
+  if (!m_isPrimary && m_relativeMouseMoves) {
+    saveRelativeRestorePosition(desk);
+  }
+
   setCursorVisibility(false);
 
   if (m_isPrimary) {
@@ -594,7 +640,7 @@ void MSWindowsDesks::deskLeave(Desk *desk, HKL keyLayout)
     // would be better but 10 ms doesn't seem to be quite long enough, as we get noticeable flicker.
     // this is largely a balance and out of our control, since windows can be unpredictable...
     // maybe another approach would be to repeatedly check the cursor visibility until it is hidden.
-    LOG_DEBUG1("centering cursor on leave: %+d,%+d", m_xCenter, m_yCenter);
+    LOG_VERBOSE("centering cursor on leave: %+d,%+d", m_xCenter, m_yCenter);
     ARCH->sleep(0.03);
     deskMouseMove(m_xCenter, m_yCenter);
   }
@@ -811,7 +857,7 @@ void MSWindowsDesks::checkDesk()
     LOG_DEBUG("switched to desk \"%ls\"", name.c_str());
     bool syncKeys = false;
     if (isDeskAccessible(desk)) {
-      LOG_DEBUG("desktop is accessible - syncing keyboard state after desk switch");
+      LOG_DEBUG("desktop is accessible, syncing keyboard state after desk switch");
       syncKeys = true;
     } else {
       LOG_DEBUG("desktop is inaccessible");

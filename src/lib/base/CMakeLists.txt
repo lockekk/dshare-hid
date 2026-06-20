@@ -25,8 +25,6 @@ add_library(base STATIC
   LogOutputters.h
   Log.cpp
   Log.h
-  LogLevel.h
-  NetworkProtocol.h
   PriorityQueue.h
   SimpleEventQueueBuffer.cpp
   SimpleEventQueueBuffer.h

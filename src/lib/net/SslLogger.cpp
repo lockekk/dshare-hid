@@ -1,6 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2015 - 2022 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2015 - 2022 Synergy App Ltd
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
 
@@ -9,6 +9,7 @@
 #include <sstream>
 
 #include <base/Log.h>
+#include <deskflow/ipc/CoreIpc.h>
 #include <openssl/err.h>
 #include <openssl/ssl.h>
 
@@ -26,7 +27,7 @@ void showCipherStackDesc(STACK_OF(SSL_CIPHER) * stack)
       msg[pos] = '\0';
     }
 
-    LOG_DEBUG1("%s", msg);
+    LOG_VERBOSE("%s", msg);
   }
 }
 
@@ -35,29 +36,22 @@ void logLocalSecureCipherInfo(const SSL *ssl)
   auto sStack = SSL_get_ciphers(ssl);
 
   if (sStack) {
-    LOG_DEBUG1("available local ciphers:");
+    LOG_VERBOSE("available local ciphers:");
     showCipherStackDesc(sStack);
   } else {
-    LOG_DEBUG1("local cipher list not available");
+    LOG_VERBOSE("local cipher list not available");
   }
 }
 
 void logRemoteSecureCipherInfo(const SSL *ssl)
 {
-#if OPENSSL_VERSION_NUMBER < 0x10100000L || defined(LIBRESSL_VERSION_NUMBER)
-  // ssl->session->ciphers is not forward compatable,
-  // In future release of OpenSSL, it's not visible,
-  // however, LibreSSL still uses this.
-  auto cStack = ssl->session->ciphers;
-#else
-  // Use SSL_get_client_ciphers() for newer versions of OpenSSL.
   auto cStack = SSL_get_client_ciphers(ssl);
-#endif
+
   if (cStack) {
-    LOG_DEBUG1("available remote ciphers:");
+    LOG_VERBOSE("available remote ciphers:");
     showCipherStackDesc(cStack);
   } else {
-    LOG_DEBUG1("remote cipher list not available");
+    LOG_VERBOSE("remote cipher list not available");
   }
 }
 
@@ -65,18 +59,18 @@ void logRemoteSecureCipherInfo(const SSL *ssl)
 
 void SslLogger::logSecureLibInfo()
 {
-  if (CLOG->getFilter() >= LogLevel::Debug) {
+  if (CLOG->getFilter() >= LogLevel::Level::Debug) {
     LOG_DEBUG("openssl version: %s", SSLeay_version(SSLEAY_VERSION));
-    LOG_DEBUG1("openssl flags: %s", SSLeay_version(SSLEAY_CFLAGS));
-    LOG_DEBUG1("openssl built on: %s", SSLeay_version(SSLEAY_BUILT_ON));
-    LOG_DEBUG1("openssl platform: %s", SSLeay_version(SSLEAY_PLATFORM));
-    LOG_DEBUG1("openssl dir: %s", SSLeay_version(SSLEAY_DIR));
+    LOG_VERBOSE("openssl flags: %s", SSLeay_version(SSLEAY_CFLAGS));
+    LOG_VERBOSE("openssl built on: %s", SSLeay_version(SSLEAY_BUILT_ON));
+    LOG_VERBOSE("openssl platform: %s", SSLeay_version(SSLEAY_PLATFORM));
+    LOG_VERBOSE("openssl dir: %s", SSLeay_version(SSLEAY_DIR));
   }
 }
 
 void SslLogger::logSecureCipherInfo(const SSL *ssl)
 {
-  if (ssl && CLOG->getFilter() >= LogLevel::Debug1) {
+  if (ssl && CLOG->getFilter() >= LogLevel::Level::Verbose) {
     logLocalSecureCipherInfo(ssl);
     logRemoteSecureCipherInfo(ssl);
   }
@@ -105,13 +99,12 @@ void SslLogger::logSecureConnectInfo(const SSL *ssl)
           std::istream_iterator<std::string>{iss}, std::istream_iterator<std::string>{}
       };
       if (parts.size() > 2) {
-        // log the section containing the protocol version
-        LOG_INFO("network encryption protocol: %s", parts[1].c_str());
+        LOG_DEBUG("network encryption protocol: %s", parts[1].c_str());
+        ipcSendToClient("secureSocket", parts[1].c_str());
       } else {
-        // log the error in spliting then display the whole description rather
-        // then nothing
         LOG_ERR("could not split cipher for protocol");
-        LOG_INFO("network encryption protocol: %s", msg);
+        LOG_DEBUG("network encryption protocol: %s", msg);
+        ipcSendToClient("secureSocket", msg);
       }
     } else {
       LOG_ERR("could not get secure socket cipher");
@@ -144,19 +137,19 @@ void SslLogger::logErrorByCode(int code, int retry)
     break;
 
   case SSL_ERROR_WANT_READ:
-    LOG_DEBUG2("want to read, error=%d, attempt=%d", code, retry);
+    LOG_VERBOSE("want to read, error=%d, attempt=%d", code, retry);
     break;
 
   case SSL_ERROR_WANT_WRITE:
-    LOG_DEBUG2("want to write, error=%d, attempt=%d", code, retry);
+    LOG_VERBOSE("want to write, error=%d, attempt=%d", code, retry);
     break;
 
   case SSL_ERROR_WANT_CONNECT:
-    LOG_DEBUG2("want to connect, error=%d, attempt=%d", code, retry);
+    LOG_VERBOSE("want to connect, error=%d, attempt=%d", code, retry);
     break;
 
   case SSL_ERROR_WANT_ACCEPT:
-    LOG_DEBUG2("want to accept, error=%d, attempt=%d", code, retry);
+    LOG_VERBOSE("want to accept, error=%d, attempt=%d", code, retry);
     break;
 
   case SSL_ERROR_SYSCALL:

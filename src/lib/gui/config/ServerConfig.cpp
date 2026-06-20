@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2025 Chris Rizzitello <sithlord48@gmail.com>
- * SPDX-FileCopyrightText: (C) 2012 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2025 - 2026 Chris Rizzitello <sithlord48@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2012 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2008 Volker Lanz <vl@fidra.de>
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -12,7 +12,6 @@
 #include "common/Settings.h"
 
 #include <QAbstractButton>
-#include <QMessageBox>
 #include <QPushButton>
 
 using enum ScreenConfig::Modifier;
@@ -34,7 +33,7 @@ static const struct
 
 const int serverDefaultIndex = 7;
 
-ServerConfig::ServerConfig(int columns, int rows) : m_Screens(columns), m_Columns(columns), m_Rows(rows)
+ServerConfig::ServerConfig(int columns, int rows) : m_Screens(columns), m_columns(columns), m_rows(rows)
 {
   recall();
 }
@@ -54,16 +53,10 @@ bool ServerConfig::save(const QString &fileName) const
 bool ServerConfig::operator==(const ServerConfig &sc) const
 {
   return m_Screens == sc.m_Screens &&                                   //
-         m_Columns == sc.m_Columns &&                                   //
-         m_Rows == sc.m_Rows &&                                         //
-         m_HasHeartbeat == sc.m_HasHeartbeat &&                         //
          m_Heartbeat == sc.m_Heartbeat &&                               //
-         m_Protocol == sc.m_Protocol &&                                 //
          m_RelativeMouseMoves == sc.m_RelativeMouseMoves &&             //
          m_Win32KeepForeground == sc.m_Win32KeepForeground &&           //
-         m_HasSwitchDelay == sc.m_HasSwitchDelay &&                     //
          m_SwitchDelay == sc.m_SwitchDelay &&                           //
-         m_HasSwitchDoubleTap == sc.m_HasSwitchDoubleTap &&             //
          m_SwitchDoubleTap == sc.m_SwitchDoubleTap &&                   //
          m_SwitchCornerSize == sc.m_SwitchCornerSize &&                 //
          m_SwitchCorners == sc.m_SwitchCorners &&                       //
@@ -92,7 +85,7 @@ void ServerConfig::setupScreens()
 
   // There must always be screen objects for each cell in the screens QList.
   // Unused screens are identified by having an empty name.
-  for (int i = 0; i < numColumns() * numRows(); i++)
+  for (int i = 0; i < m_columns * m_rows; i++)
     addScreen(Screen());
 }
 
@@ -103,17 +96,10 @@ void ServerConfig::commit()
   settings().beginGroup("internalConfig");
   settings().remove("");
 
-  settings().setValue("numColumns", numColumns());
-  settings().setValue("numRows", numRows());
-
-  settings().setValue("hasHeartbeat", hasHeartbeat());
   settings().setValue("heartbeat", heartbeat());
-  settings().setValue("protocol", static_cast<int>(protocol()));
   settings().setValue("relativeMouseMoves", relativeMouseMoves());
   settings().setValue("win32KeepForeground", win32KeepForeground());
-  settings().setValue("hasSwitchDelay", hasSwitchDelay());
   settings().setValue("switchDelay", switchDelay());
-  settings().setValue("hasSwitchDoubleTap", hasSwitchDoubleTap());
   settings().setValue("switchDoubleTap", switchDoubleTap());
   settings().setValue("switchCornerSize", switchCornerSize());
   settings().setValue("defaultLockToScreenState", defaultLockToScreenState());
@@ -151,21 +137,17 @@ void ServerConfig::recall()
 
   settings().beginGroup("internalConfig");
 
-  setNumColumns(settings().value("numColumns", 5).toInt());
-  setNumRows(settings().value("numRows", 3).toInt());
+  m_columns = Settings::value(Settings::Server::GridWidth).toInt();
+  m_rows = Settings::value(Settings::Server::GridHeight).toInt();
 
   // we need to know the number of columns and rows before we can set up
   // ourselves
   setupScreens();
 
-  haveHeartbeat(settings().value("hasHeartbeat", false).toBool());
   setHeartbeat(settings().value("heartbeat", 5000).toInt());
-  setProtocol(networkProtocolFromInt(settings().value("protocol", networkProtocolToInt(protocol())).toInt()));
   setRelativeMouseMoves(settings().value("relativeMouseMoves", false).toBool());
   setWin32KeepForeground(settings().value("win32KeepForeground", false).toBool());
-  haveSwitchDelay(settings().value("hasSwitchDelay", false).toBool());
   setSwitchDelay(settings().value("switchDelay", 250).toInt());
-  haveSwitchDoubleTap(settings().value("hasSwitchDoubleTap", false).toBool());
   setSwitchDoubleTap(settings().value("switchDoubleTap", 250).toInt());
   setSwitchCornerSize(settings().value("switchCornerSize").toInt());
   setDefaultLockToScreenState(settings().value("defaultLockToScreenState", false).toBool());
@@ -207,10 +189,10 @@ int ServerConfig::adjacentScreenIndex(int idx, int deltaColumn, int deltaRow) co
 
   // if we're at the left or right end of the table, don't find results going
   // further left or right
-  if ((deltaColumn > 0 && (idx + 1) % numColumns() == 0) || (deltaColumn < 0 && idx % numColumns() == 0))
+  if ((deltaColumn > 0 && (idx + 1) % m_columns == 0) || (deltaColumn < 0 && idx % m_columns == 0))
     return -1;
 
-  int arrayPos = idx + deltaColumn + deltaRow * numColumns();
+  int arrayPos = idx + deltaColumn + deltaRow * m_columns;
 
   if (arrayPos >= screens().size() || arrayPos < 0)
     return -1;
@@ -256,12 +238,8 @@ QTextStream &operator<<(QTextStream &outStream, const ServerConfig &config)
 
   outStream << "section: options" << Qt::endl;
 
-  if (config.hasHeartbeat())
+  if (Settings::value(Settings::Server::EnableHeatbeat).toBool())
     outStream << "\t" << "heartbeat = " << config.heartbeat() << Qt::endl;
-
-  if (config.protocol() == NetworkProtocol::Unknown)
-    qFatal("unrecognized protocol when writing config");
-  outStream << "\t" << "protocol = " << networkProtocolToOption(config.protocol()) << Qt::endl;
 
   outStream << "\t"
             << "relativeMouseMoves = " << (config.relativeMouseMoves() ? "true" : "false") << Qt::endl;
@@ -276,11 +254,11 @@ QTextStream &operator<<(QTextStream &outStream, const ServerConfig &config)
   outStream << "\t"
             << "clipboardSharingSize = " << config.clipboardSharingSize() << Qt::endl;
 
-  if (config.hasSwitchDelay())
+  if (Settings::value(Settings::Server::EnableSwitchDelay).toBool())
     outStream << "\t"
               << "switchDelay = " << config.switchDelay() << Qt::endl;
 
-  if (config.hasSwitchDoubleTap())
+  if (Settings::value(Settings::Server::EnableSwitchDoubleTap).toBool())
     outStream << "\t"
               << "switchDoubleTap = " << config.switchDoubleTap() << Qt::endl;
 
@@ -480,22 +458,22 @@ int ServerConfig::moveScreenRelativeToServer(const QString &screenName, const QP
     return -1;
   }
 
-  int sx = serverIndex % m_Columns;
-  int sy = serverIndex / m_Columns;
+  int sx = serverIndex % m_columns;
+  int sy = serverIndex / m_columns;
 
   int tx = sx + relativePos.x();
   int ty = sy + relativePos.y();
 
-  if (tx < 0 || tx >= m_Columns || ty < 0 || ty >= m_Rows) {
+  if (tx < 0 || tx >= m_columns || ty < 0 || ty >= m_rows) {
     qWarning() << "[Bonding] Target position out of bounds for moveScreenRelativeToServer:"
                << "Server(" << sx << "," << sy << ")"
                << "+ Offset(" << relativePos.x() << "," << relativePos.y() << ")"
                << "= Target(" << tx << "," << ty << ")"
-               << "Grid(" << m_Columns << "x" << m_Rows << ")";
+               << "Grid(" << m_columns << "x" << m_rows << ")";
     return -1;
   }
 
-  int targetIndex = tx + ty * m_Columns;
+  int targetIndex = tx + ty * m_columns;
   if (targetIndex == index) {
     qInfo() << "[Bonding] Screen" << screenName << "is already at the correct relative position (" << relativePos.x()
             << "," << relativePos.y() << "). No move needed.";

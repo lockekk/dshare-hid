@@ -1,6 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2004 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -19,6 +19,20 @@ class EventData
 public:
   EventData() = default;
   virtual ~EventData() = default;
+};
+
+class ExitEventData : public EventData
+{
+public:
+  explicit ExitEventData(int exitCode) : m_exitCode(exitCode) {};
+  ~ExitEventData() override = default;
+  int exitCode() const
+  {
+    return m_exitCode;
+  }
+
+private:
+  int m_exitCode;
 };
 
 //! Event
@@ -77,7 +91,6 @@ public:
     switch (event.getType()) {
       using enum EventTypes;
     case Unknown:
-    case Quit:
     case System:
     case Timer:
       break;

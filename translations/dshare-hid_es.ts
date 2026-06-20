@@ -128,7 +128,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Switch to </source>
-        <translation type="unfinished">Cambiar a </translation>
+        <translation type="obsolete">Cambiar a </translation>
     </message>
 </context>
 <context>
@@ -175,6 +175,14 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Reset to default values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Allow the client to slow the rate it attempts to reconnect to the server when connections attempts are failing. The delay between connection attempts will  start at 1 second intervals and can be a maxium of 5 minutes between connection attempts.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use dynamic reconnection time based on connection attempts</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -687,6 +695,18 @@ Do you want to connect to the server?
 A bound IP is now invalid, you may need to restart the server.</source>
         <translation type="unfinished">
 La dirección IP asignada ahora no es válida; es posible que deba reiniciar el servidor.</translation>
+    </message>
+    <message>
+        <source>Missing Keyboard Layouts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Keyboard layout support requires matching layouts on all computers. The following layouts from the other computer are not installed on this computer:&lt;/p&gt;&lt;p&gt;&lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Please install them to enable support for these layouts.&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Don&apos;t show this again</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -1452,7 +1472,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Hide the window when the app starts</source>
-        <translation type="unfinished">Ocultar la ventana cuando se inicia la aplicación</translation>
+        <translation type="obsolete">Ocultar la ventana cuando se inicia la aplicación</translation>
     </message>
     <message>
         <source>Prevent this computer from going to sleep</source>
@@ -1460,7 +1480,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Leave app running in notification area when the window is closed</source>
-        <translation type="unfinished">Dejar la aplicación ejecutándose en el área de notificación cuando la ventana esté cerrada</translation>
+        <translation type="obsolete">Dejar la aplicación ejecutándose en el área de notificación cuando la ventana esté cerrada</translation>
     </message>
     <message>
         <source>Tray icon style</source>
@@ -1686,6 +1706,38 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Requires the wl-clipboard package&lt;/p&gt;&lt;p&gt;When using wl-clipboard v2.2.1, there is a focus stealing bug that may make Deskflow harder to use. This has been fixed when using the wl-clipboard master branch, unless your Compositor lacks wlroots-data-control protocol support.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>&amp;Window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>When the application starts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show the main window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Send to background</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>When the main window is closed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run command on enter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run command on exit</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>StatusBar</name>
@@ -1746,6 +1798,10 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     <message>
         <source>Update available</source>
         <translation type="unfinished">Actualización disponible</translation>
+    </message>
+    <message>
+        <source>%1 is waiting %2 seconds before the next retry</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>%1 Encryption Enabled</source>

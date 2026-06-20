@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -246,5 +246,5 @@ private:
   // pointer to (singleton) screen.  this is only needed by
   // ioErrorHandler().
   static XWindowsScreen *s_screen;
-  XDGPowerManager m_powerManager;
+  [[no_unique_address]] XDGPowerManager m_powerManager;
 };

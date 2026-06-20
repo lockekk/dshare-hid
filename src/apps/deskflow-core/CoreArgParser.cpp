@@ -9,6 +9,7 @@
 
 #include "common/Constants.h"
 #include "common/ExitCodes.h"
+#include "common/LogLevel.h"
 #include "common/Settings.h"
 #include "common/VersionInfo.h"
 #include "deskflow/ProtocolTypes.h"
@@ -66,7 +67,14 @@ void CoreArgParser::parse()
   }
 
   if (m_parser.isSet(CoreArgs::logLevelOption)) {
-    Settings::setValue(Settings::Log::Level, Settings::logLevelToInt(m_parser.value(CoreArgs::logLevelOption)));
+    // Settings::Log::Level is now stored as a string ("FATAL"/"ERROR"/"WARNING"/
+    // "INFO"/"DEBUG"/"VERBOSE") per upstream's LogLevel class refactor.
+    // upgradeSettings() rejects anything not in that option list, so we must
+    // round-trip through LogLevel::fromOption (which lowercases + validates
+    // + falls back to Info) and write the canonical option string back.
+    Settings::setValue(
+        Settings::Log::Level, LogLevel::toOption(LogLevel::fromOption(m_parser.value(CoreArgs::logLevelOption)))
+    );
   }
 
   if (m_parser.isSet(CoreArgs::logFileOption)) {

@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2025 - 2026 Chris Rizzitello <sithlord48@gmail.com>
- * SPDX-FileCopyrightText: (C) 2016 - 2025 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2016 - 2025 Synergy App Ltd
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
 
@@ -12,6 +12,7 @@
 #include <QDir>
 
 #include "common/Constants.h"
+#include "common/NetworkProtocol.h"
 #include "common/QSettingsProxy.h"
 
 class Settings : public QObject
@@ -39,6 +40,7 @@ public:
   struct Client
   {
     inline static const auto InvertScrollDirection = QStringLiteral("client/invertScrollDirection");
+    inline static const auto DynamicConnectionRetry = QStringLiteral("client/dynamicConnectionInterval");
     inline static const auto InvertYScroll = QStringLiteral("client/invertYScroll");
     inline static const auto InvertXScroll = QStringLiteral("client/invertXScroll");
     inline static const auto YScrollScale = QStringLiteral("client/yScrollScale");
@@ -61,13 +63,17 @@ public:
     inline static const auto Language = QStringLiteral("core/language");
     inline static const auto UseWlClipboard = QStringLiteral("core/wlClipboard");
     inline static const auto RestartOnFailure = QStringLiteral("core/restartOnFailure");
+    inline static const auto EnableEnterCommand = QStringLiteral("core/enableEnterCommand");
+    inline static const auto ScreenEnterCommand = QStringLiteral("core/enterCommand");
+    inline static const auto EnableExitCommand = QStringLiteral("core/enableExitCommand");
+    inline static const auto ScreenExitCommand = QStringLiteral("core/exitCommand");
 
     // TODO: REMOVE In 2.0
     inline static const auto ScreenName = QStringLiteral("core/screenName"); // Replaced By ComputerName
   };
   struct Daemon
   {
-    inline static const auto Command = QStringLiteral("daemon/command");
+    inline static const auto ConfigFile = QStringLiteral("daemon/configFile");
     inline static const auto Elevate = QStringLiteral("daemon/elevate");
     inline static const auto LogFile = QStringLiteral("daemon/logFile");
     inline static const auto LogLevel = QStringLiteral("daemon/logLevel");
@@ -86,6 +92,7 @@ public:
     inline static const auto ShownFirstConnectedMessage = QStringLiteral("gui/shownFirstConnectedMessage");
     inline static const auto ShownServerFirstStartMessage = QStringLiteral("gui/shownServerFirstStartMessage");
     inline static const auto ShowVersionInTitle = QStringLiteral("gui/showVersionInTitle");
+    inline static const auto IgnoreMissingKeyboardLayouts = QStringLiteral("gui/ignoreMissingKeyboardLayouts");
   };
   struct Log
   {
@@ -103,8 +110,15 @@ public:
   };
   struct Server
   {
+    inline static const auto EnableHeatbeat = QStringLiteral("server/enableHeatbeat");
+    inline static const auto EnableSwitchDelay = QStringLiteral("server/enableSwitchDelay");
+    inline static const auto EnableSwitchDoubleTap = QStringLiteral("server/enableSwitchDoubleTap");
     inline static const auto ExternalConfig = QStringLiteral("server/externalConfig");
     inline static const auto ExternalConfigFile = QStringLiteral("server/externalConfigFile");
+    inline static const auto GridHeight = QStringLiteral("server/gridHeight");
+    inline static const auto GridWidth = QStringLiteral("server/gridWidth");
+    inline static const auto Protocol = QStringLiteral("server/protocol");
+    inline static const auto XdpRestoreToken = QStringLiteral("server/xdpRestoreToken");
   };
   struct Bridge
   {
@@ -159,6 +173,7 @@ public:
   static QString tlsTrustedClientsDb();
   static QString logLevelText();
   static QSettingsProxy &proxy();
+  static NetworkProtocol networkProtocol();
   static void save(bool emitSaving = true);
   static QStringList validKeys();
   static int logLevelToInt(const QString &level);
@@ -204,19 +219,9 @@ private:
   bool m_bridgeClientMode = false;
 
   // clang-format off
-  inline static const QStringList m_logLevels = {
-      QStringLiteral("FATAL")
-    , QStringLiteral("ERROR")
-    , QStringLiteral("WARNING")
-    , QStringLiteral("NOTE")
-    , QStringLiteral("INFO")
-    , QStringLiteral("DEBUG")
-    , QStringLiteral("DEBUG1")
-    , QStringLiteral("DEBUG2")
-  };
-
   inline static const QStringList m_validKeys = {
       Settings::Client::InvertScrollDirection
+    , Settings::Client::DynamicConnectionRetry
     , Settings::Client::InvertYScroll
     , Settings::Client::InvertXScroll
     , Settings::Client::LanguageSync
@@ -230,13 +235,17 @@ private:
     , Settings::Core::Port
     , Settings::Core::PreventSleep
     , Settings::Core::ProcessMode
+    , Settings::Core::EnableEnterCommand
+    , Settings::Core::EnableExitCommand
+    , Settings::Core::ScreenEnterCommand
+    , Settings::Core::ScreenExitCommand
     , Settings::Core::ScreenName
     , Settings::Core::ComputerName
     , Settings::Core::Display
     , Settings::Core::UseHooks
     , Settings::Core::UseWlClipboard
     , Settings::Core::Language
-    , Settings::Daemon::Command
+    , Settings::Daemon::ConfigFile
     , Settings::Daemon::Elevate
     , Settings::Daemon::LogFile
     , Settings::Daemon::LogLevel
@@ -256,12 +265,20 @@ private:
     , Settings::Gui::ShownFirstConnectedMessage
     , Settings::Gui::ShownServerFirstStartMessage
     , Settings::Gui::ShowVersionInTitle
+    , Settings::Gui::IgnoreMissingKeyboardLayouts
     , Settings::Security::Certificate
     , Settings::Security::CheckPeers
     , Settings::Security::KeySize
     , Settings::Security::TlsEnabled
+    , Settings::Server::EnableHeatbeat
+    , Settings::Server::EnableSwitchDelay
+    , Settings::Server::EnableSwitchDoubleTap
     , Settings::Server::ExternalConfig
     , Settings::Server::ExternalConfigFile
+    , Settings::Server::GridHeight
+    , Settings::Server::GridWidth
+    , Settings::Server::Protocol
+    , Settings::Server::XdpRestoreToken
     , Settings::Bridge::ActiveProfileOrientation
     , Settings::Bridge::AutoConnect
   };
@@ -273,8 +290,12 @@ private:
     , Settings::Gui::ShownFirstConnectedMessage
     , Settings::Gui::ShownServerFirstStartMessage
     , Settings::Gui::ShowVersionInTitle
+    , Settings::Gui::IgnoreMissingKeyboardLayouts
     , Settings::Core::PreventSleep
     , Settings::Core::UseWlClipboard
+    , Settings::Core::EnableEnterCommand
+    , Settings::Core::EnableExitCommand
+    , Settings::Client::DynamicConnectionRetry
     , Settings::Server::ExternalConfig
     , Settings::Client::InvertScrollDirection
     , Settings::Client::InvertYScroll
@@ -282,6 +303,9 @@ private:
     , Settings::Log::ToFile
     , Settings::Log::GuiDebug
     , Settings::Bridge::AutoConnect
+    , Settings::Server::EnableHeatbeat
+    , Settings::Server::EnableSwitchDelay
+    , Settings::Server::EnableSwitchDoubleTap
   };
 
   // When checking the default values this list contains the ones that default to true.
@@ -303,6 +327,15 @@ private:
   inline static const QMap<QString, QString> m_upgradedMap = {
     /*             OLD KEY                        NEW KEY          */
     {QStringLiteral("core/screenName"), Settings::Core::ComputerName}
+  };
+  // Contains settings removed from server-configuration file
+  inline static const QStringList m_oldServerConfigKeys = {
+      QStringLiteral("internalConfig/hasHeartbeat")
+    , QStringLiteral("internalConfig/hasSwitchDelay")
+    , QStringLiteral("internalConfig/hasSwitchDoubleTap")
+    , QStringLiteral("internalConfig/protocol")
+    , QStringLiteral("internalConfig/numColumns")
+    , QStringLiteral("internalConfig/numRows")
   };
   // clang-format on
 };

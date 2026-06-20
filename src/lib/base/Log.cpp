@@ -1,14 +1,15 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2026 Deskflow Developers
+ * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
 
 #include "base/Log.h"
-#include "base/LogLevel.h"
 #include "base/LogOutputters.h"
 #include "common/Constants.h"
+#include "common/LogLevel.h"
 
 #include <cstdarg>
 #include <cstdint>
@@ -23,12 +24,6 @@
 
 const int kPriorityPrefixLength = 3;
 
-// names of priorities
-static const char *g_priority[] = {"FATAL", "ERROR", "WARNING", "NOTE", "INFO", "DEBUG", "DEBUG1", "DEBUG2"};
-
-// number of priorities
-static const int g_numPriority = 8;
-
 // if NDEBUG (not debug) is not specified, i.e. you're building in debug,
 // then set default log level to DEBUG, otherwise the max level is INFO.
 //
@@ -36,14 +31,14 @@ static const int g_numPriority = 8;
 // for visual studio, then NDEBUG will be set (even if your VS solution
 // config is Debug).
 #ifndef NDEBUG
-static const LogLevel g_defaultMaxPriority = LogLevel::Debug;
+static const auto g_defaultMaxPriority = LogLevel::Level::Debug;
 #else
-static const LogLevel g_defaultMaxPriority = LogLevel::Info;
+static const auto g_defaultMaxPriority = LogLevel::Level::Info;
 #endif
 
 namespace {
 
-LogLevel getPriority(const char *&fmt)
+LogLevel::Level getPriority(const char *&fmt)
 {
   if (strnlen(fmt, SIZE_MAX) < kPriorityPrefixLength) {
     throw std::invalid_argument("invalid format string, too short");
@@ -53,28 +48,23 @@ LogLevel getPriority(const char *&fmt)
     throw std::invalid_argument("invalid format string, missing priority");
   }
 
-  return static_cast<LogLevel>(fmt[2] - '0');
+  return static_cast<LogLevel::Level>(fmt[2] - '0');
 }
 
-std::vector<char> makeMessage(const char *filename, int lineNumber, const char *message, LogLevel priority)
+std::vector<char> makeMessage(const char *filename, int lineNumber, const char *message, LogLevel::Level priority)
 {
 
   // base size includes null terminator, colon, space, etc.
   const int baseSize = 10;
 
-  const int priorityMaxSize = 10;
   const auto currentPriority = static_cast<int>(priority);
 
   auto timeStr = QDateTime::currentDateTime().toString(Qt::ISODateWithMs).toStdString();
 
-  auto sectionName = "IPC";
-  if (priority != LogLevel::IPC) {
-    sectionName = g_priority[currentPriority];
-  }
+  auto sectionName = LogLevel::toOption(priority).toStdString();
 
-  size_t priorityLength = strnlen(sectionName, priorityMaxSize);
   size_t messageLength = strnlen(message, SIZE_MAX);
-  size_t bufferSize = baseSize + timeStr.length() + priorityLength + messageLength;
+  size_t bufferSize = baseSize + timeStr.length() + sectionName.length() + messageLength;
 
   const auto filenameSet = filename != nullptr && filename[0] != '\0';
   if (filenameSet) {
@@ -85,20 +75,22 @@ std::vector<char> makeMessage(const char *filename, int lineNumber, const char *
     std::vector<char> buffer(bufferSize);
 #if HAVE_FORMAT
     std::format_to_n(
-        buffer.data(), bufferSize, "[{}] {}: {}\n\t{}:{}", timeStr.c_str(), sectionName, message, filename, lineNumber
+        buffer.data(), bufferSize, "[{}] {}: {}\n\t{}:{}", timeStr.c_str(), sectionName.c_str(), message, filename,
+        lineNumber
     );
 #else
     snprintf(
-        buffer.data(), bufferSize, "[%s] %s: %s\n\t%s:%d", timeStr.c_str(), sectionName, message, filename, lineNumber
+        buffer.data(), bufferSize, "[%s] %s: %s\n\t%s:%d", timeStr.c_str(), sectionName.c_str(), message, filename,
+        lineNumber
     );
 #endif
     return buffer;
   } else {
     std::vector<char> buffer(bufferSize);
 #if HAVE_FORMAT
-    std::format_to_n(buffer.data(), bufferSize, "[{}] {}: {}", timeStr.c_str(), sectionName, message);
+    std::format_to_n(buffer.data(), bufferSize, "[{}] {}: {}", timeStr.c_str(), sectionName.c_str(), message);
 #else
-    snprintf(buffer.data(), bufferSize, "[%s] %s: %s", timeStr.c_str(), sectionName, message);
+    snprintf(buffer.data(), bufferSize, "[%s] %s: %s", timeStr.c_str(), sectionName.c_str(), message);
 #endif
     return buffer;
   }
@@ -148,26 +140,12 @@ Log *Log::getInstance()
   return s_log;
 }
 
-const char *Log::getFilterName() const
-{
-  return getFilterName(getFilter());
-}
-
-const char *Log::getFilterName(LogLevel level) const
-{
-  const auto levelIndex = static_cast<int>(level);
-  if (levelIndex < 0) {
-    return "Message";
-  }
-  return g_priority[levelIndex];
-}
-
 void Log::print(const char *file, int line, const char *fmt, ...)
 {
   const int initBufferSize = 1024;
   const int bufferResizeScale = 2;
 
-  LogLevel priority = getPriority(fmt);
+  const auto priority = getPriority(fmt);
   fmt += kPriorityPrefixLength;
 
   if (priority > getFilter()) {
@@ -191,7 +169,7 @@ void Log::print(const char *file, int line, const char *fmt, ...)
     }
   }
 
-  if (priority == LogLevel::Print) {
+  if (priority == LogLevel::Level::Print) {
     output(priority, buffer.data());
   } else {
     auto message = makeMessage(file, line, buffer.data(), priority);
@@ -235,31 +213,24 @@ bool Log::setFilter(const QString &maxPriority)
   if (maxPriority.isEmpty()) {
     return false;
   }
-
-  for (int i = 0; i < g_numPriority; ++i) {
-    if (maxPriority == QString(g_priority[i])) {
-      setFilter(static_cast<LogLevel>(i));
-      return true;
-    }
-  }
-  return false;
+  setFilter(LogLevel::fromOption(maxPriority));
+  return true;
 }
 
-void Log::setFilter(LogLevel maxPriority)
+void Log::setFilter(LogLevel::Level maxPriority)
 {
   std::scoped_lock lock{m_mutex};
   m_maxPriority = maxPriority;
 }
 
-LogLevel Log::getFilter() const
+LogLevel::Level Log::getFilter() const
 {
   std::scoped_lock lock{m_mutex};
   return m_maxPriority;
 }
 
-void Log::output(LogLevel priority, const char *msg)
+void Log::output(LogLevel::Level priority, const char *msg)
 {
-  assert(static_cast<int>(priority) >= -2 && static_cast<int>(priority) < g_numPriority);
   assert(msg != nullptr);
   if (!msg)
     return;

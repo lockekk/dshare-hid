@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
- * SPDX-FileCopyrightText: (C) 2010 - 2018, 2024 - 2025 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2010 - 2018, 2024 - 2025 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2002 - 2007 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -43,4 +43,14 @@ enum class ConnectionState
   Listening
 };
 Q_ENUM_NS(ConnectionState)
+
+enum class ConnectionRefusal
+{
+  IncompatibleVersion,
+  AlreadyConnected,
+  UnknownClient,
+  ProtocolError
+};
+Q_ENUM_NS(ConnectionRefusal)
+
 } // namespace deskflow::core

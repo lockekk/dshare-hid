@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -224,6 +224,12 @@ public:
   messages into one packet (false).  Returns the previous state.
   */
   virtual bool setNoDelayOnSocket(ArchSocket, bool noDelay) = 0;
+
+  //! Turn keep-alive on or off on socket
+  /*!
+  Set socket to use keep-alive (true) or not (false).
+  */
+  virtual void setKeepAliveOnSocket(ArchSocket, bool keepAlive) = 0;
 
   //! Turn address reuse on or off on socket
   /*!

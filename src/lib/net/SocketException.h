@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2025 - 2026 Deskflow Developers
+ * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -10,6 +10,8 @@
 
 #include "base/BaseException.h"
 #include "io/IOException.h"
+
+#include <QByteArray>
 
 /**
  * @brief SocketException generic socket exception
@@ -53,7 +55,7 @@ public:
 
 protected:
   // BaseException overrides
-  std::string getWhat() const throw() override;
+  QString getWhat() const throw() override;
 
 private:
   SocketError m_error;
@@ -71,7 +73,7 @@ public:
   {
     // do nothing
   }
-  explicit SocketIOCloseException(const std::string &msg) : IOCloseException(msg), m_state(kFirst)
+  explicit SocketIOCloseException(const QString &msg) : IOCloseException(msg), m_state(kFirst)
   {
     // do nothing
   }
@@ -81,18 +83,18 @@ public:
   {
     if (m_state == kFirst) {
       m_state = kFormat;
-      m_formatted = getWhat();
+      m_formatted = getWhat().toLocal8Bit();
       m_state = kDone;
     }
     if (m_state == kDone) {
-      return m_formatted.c_str();
+      return m_formatted.constData();
     } else {
       return IOCloseException::what();
     }
   }
 
 protected:
-  std::string getWhat() const throw() override;
+  QString getWhat() const throw() override;
 
 private:
   enum EState
@@ -102,7 +104,7 @@ private:
     kDone
   };
   mutable EState m_state;
-  mutable std::string m_formatted;
+  mutable QByteArray m_formatted;
 };
 
 /**
@@ -115,7 +117,7 @@ public:
   {
     // do nothing
   }
-  explicit SocketWithWhatException(const std::string &msg) : SocketException(msg), m_state(kFirst)
+  explicit SocketWithWhatException(const QString &msg) : SocketException(msg), m_state(kFirst)
   {
     // do nothing
   }
@@ -125,11 +127,11 @@ public:
   {
     if (m_state == kFirst) {
       m_state = kFormat;
-      m_formatted = getWhat();
+      m_formatted = getWhat().toLocal8Bit();
       m_state = kDone;
     }
     if (m_state == kDone) {
-      return m_formatted.c_str();
+      return m_formatted.constData();
     } else {
       return SocketException::what();
     }
@@ -143,7 +145,7 @@ private:
     kDone
   };
   mutable EState m_state;
-  mutable std::string m_formatted;
+  mutable QByteArray m_formatted;
 };
 
 /**
@@ -154,7 +156,7 @@ class SocketBindException : public SocketWithWhatException
   using SocketWithWhatException::SocketWithWhatException;
 
 protected:
-  std::string getWhat() const throw() override;
+  QString getWhat() const throw() override;
 };
 
 /**
@@ -166,7 +168,7 @@ class SocketAddressInUseException : public SocketWithWhatException
   using SocketWithWhatException::SocketWithWhatException;
 
 protected:
-  std::string getWhat() const throw() override;
+  QString getWhat() const throw() override;
 };
 
 /**
@@ -177,7 +179,7 @@ class SocketConnectException : public SocketWithWhatException
   using SocketWithWhatException::SocketWithWhatException;
 
 protected:
-  std::string getWhat() const throw() override;
+  QString getWhat() const throw() override;
 };
 
 /**
@@ -188,5 +190,5 @@ class SocketCreateException : public SocketWithWhatException
   using SocketWithWhatException::SocketWithWhatException;
 
 protected:
-  std::string getWhat() const throw() override;
+  QString getWhat() const throw() override;
 };

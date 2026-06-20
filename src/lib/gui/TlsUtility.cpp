@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
- * SPDX-FileCopyrightText: (C) 2024 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2024 Synergy App Ltd
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
 
@@ -117,7 +117,7 @@ bool generateCertificate()
   try {
     deskflow::generatePemSelfSignedCert(certPath, keyLength);
   } catch (const std::exception &e) {
-    qCritical() << "failed to generate self-signed pem cert: " << e.what();
+    qCritical() << "failed to generate self-signed pem cert:" << e.what();
     return false;
   }
   qDebug("tls certificate generated");

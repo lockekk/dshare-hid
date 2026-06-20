@@ -1,6 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2003 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -10,7 +10,36 @@
 #include "base/Log.h"
 #include "deskflow/IPlatformScreen.h"
 
+#include <QProcess>
+
+#ifdef Q_OS_WIN
+#include "arch/win32/ArchMiscWindows.h"
+#include "platform/MSWindowsProcess.h"
+#endif
+
 namespace deskflow {
+
+namespace {
+
+bool runScreenCommand(const QString &commandLine)
+{
+#ifdef Q_OS_WIN
+  using deskflow::platform::MSWindowsProcess;
+  if (ArchMiscWindows::isProcessElevated()) {
+    LOG_DEBUG("current process is elevated, starting detached process as session user");
+    return MSWindowsProcess::startDetachedAsSessionUser(commandLine.toStdWString());
+  }
+#endif
+
+  auto args = QProcess::splitCommand(commandLine);
+  if (args.isEmpty()) {
+    return false;
+  }
+  const auto program = args.takeFirst();
+  return QProcess::startDetached(program, args);
+}
+
+} // namespace
 
 //
 // Screen
@@ -119,6 +148,13 @@ void Screen::enter(KeyModifierMask toggleMask)
   } else {
     enterSecondary(toggleMask);
   }
+
+  if (Settings::value(Settings::Core::EnableEnterCommand).toBool()) {
+    const auto commandLine = Settings::value(Settings::Core::ScreenEnterCommand).toString();
+    LOG_DEBUG("running screen enter command: %s", qPrintable(commandLine));
+    if (!runScreenCommand(commandLine))
+      LOG_ERR("failed to run screen enter command");
+  }
 }
 
 bool Screen::leave()
@@ -140,6 +176,12 @@ bool Screen::leave()
   }
 
   m_screen->leave();
+  if (Settings::value(Settings::Core::EnableExitCommand).toBool()) {
+    const auto commandLine = Settings::value(Settings::Core::ScreenExitCommand).toString();
+    LOG_DEBUG("running screen exit command: %s", qPrintable(commandLine));
+    if (!runScreenCommand(commandLine))
+      LOG_ERR("failed to run screen exit command");
+  }
 
   // make sure our idea of clipboard ownership is correct
   m_screen->checkClipboards();
@@ -247,21 +289,21 @@ void Screen::setOptions(const OptionsList &options)
       } else {
         m_halfDuplex &= ~KeyModifierCapsLock;
       }
-      LOG_DEBUG1("half-duplex caps-lock %s", ((m_halfDuplex & KeyModifierCapsLock) != 0) ? "on" : "off");
+      LOG_VERBOSE("half-duplex caps-lock %s", ((m_halfDuplex & KeyModifierCapsLock) != 0) ? "on" : "off");
     } else if (options[i] == kOptionHalfDuplexNumLock) {
       if (options[i + 1] != 0) {
         m_halfDuplex |= KeyModifierNumLock;
       } else {
         m_halfDuplex &= ~KeyModifierNumLock;
       }
-      LOG_DEBUG1("half-duplex num-lock %s", ((m_halfDuplex & KeyModifierNumLock) != 0) ? "on" : "off");
+      LOG_VERBOSE("half-duplex num-lock %s", ((m_halfDuplex & KeyModifierNumLock) != 0) ? "on" : "off");
     } else if (options[i] == kOptionHalfDuplexScrollLock) {
       if (options[i + 1] != 0) {
         m_halfDuplex |= KeyModifierScrollLock;
       } else {
         m_halfDuplex &= ~KeyModifierScrollLock;
       }
-      LOG_DEBUG1("half-duplex scroll-lock %s", ((m_halfDuplex & KeyModifierScrollLock) != 0) ? "on" : "off");
+      LOG_VERBOSE("half-duplex scroll-lock %s", ((m_halfDuplex & KeyModifierScrollLock) != 0) ? "on" : "off");
     }
   }
 

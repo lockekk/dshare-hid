@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2025 Chris Rizzitello <sithlord48@gmail.com>
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2008 Volker Lanz <vl@fidra.de>
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -51,7 +51,7 @@ ActionDialog::ActionDialog(QWidget *parent, const ServerConfig &config, Hotkey &
 
     ui->listScreens->addItem(newListItem);
 
-    ui->comboSwitchToScreen->addItem(tr("Switch to %1").arg(screen.name()));
+    ui->comboSwitchToScreen->addItem(tr("Switch to %1").arg(screen.name()), screen.name());
     if (screen.name() == m_action.switchScreenName())
       ui->comboSwitchToScreen->setCurrentIndex(ui->comboSwitchToScreen->count() - 1);
   }
@@ -92,7 +92,7 @@ void ActionDialog::accept()
 
   m_action.setHaveScreens(screenCount);
 
-  m_action.setSwitchScreenName(ui->comboSwitchToScreen->currentText().remove(tr("Switch to ")));
+  m_action.setSwitchScreenName(ui->comboSwitchToScreen->currentData().toString());
   m_action.setSwitchDirection(ui->comboSwitchInDirection->currentIndex());
   m_action.setLockCursorMode(ui->comboLockCursorToScreen->currentIndex());
   m_action.setActiveOnRelease(ui->comboTriggerOn->currentIndex());

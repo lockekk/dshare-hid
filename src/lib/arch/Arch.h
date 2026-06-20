@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -31,10 +31,7 @@
 #include "arch/win32/ArchLogWindows.h"
 #include "arch/win32/ArchMultithreadWindows.h"
 #include "arch/win32/ArchNetworkWinsock.h"
-
-#elif SYSAPI_UNIX
-
-#include "arch/ArchDaemonNone.h"
+#else
 #include "arch/unix/ArchLogUnix.h"
 #include "arch/unix/ArchMultithreadPosix.h"
 #include "arch/unix/ArchNetworkBSD.h"
@@ -57,7 +54,11 @@ to each method to those implementations.  Clients should use the
 exactly one of these objects before attempting to call any method,
 typically at the beginning of \c main().
 */
+#if defined(Q_OS_WIN)
 class Arch : public ARCH_DAEMON, public ARCH_LOG, public ARCH_MULTITHREAD, public ARCH_NETWORK
+#else
+class Arch : public ARCH_LOG, public ARCH_MULTITHREAD, public ARCH_NETWORK
+#endif
 {
 public:
   Arch();

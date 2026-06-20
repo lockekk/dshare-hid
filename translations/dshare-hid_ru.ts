@@ -130,7 +130,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Switch to </source>
-        <translation>Переключиться на </translation>
+        <translation type="vanished">Переключиться на </translation>
     </message>
 </context>
 <context>
@@ -177,6 +177,14 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Reset to default values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Allow the client to slow the rate it attempts to reconnect to the server when connections attempts are failing. The delay between connection attempts will  start at 1 second intervals and can be a maxium of 5 minutes between connection attempts.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use dynamic reconnection time based on connection attempts</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -820,6 +828,18 @@ Valid names:
     </message>
     <message>
         <source>&lt;p&gt;Failed to connect to the server &apos;%1&apos;.&lt;/p&gt;&lt;p&gt;A Client with your name is already connected to the server.&lt;/p&gt;Please ensure that you&apos;re using a unique name and that only a single instance of the client process is running.&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Missing Keyboard Layouts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Keyboard layout support requires matching layouts on all computers. The following layouts from the other computer are not installed on this computer:&lt;/p&gt;&lt;p&gt;&lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Please install them to enable support for these layouts.&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Don&apos;t show this again</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1477,7 +1497,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Hide the window when the app starts</source>
-        <translation>Скрывать окно при запуске программы</translation>
+        <translation type="vanished">Скрывать окно при запуске программы</translation>
     </message>
     <message>
         <source>Prevent this computer from going to sleep</source>
@@ -1485,7 +1505,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Leave app running in notification area when the window is closed</source>
-        <translation>Переместить приложение в трей, при его закрытии</translation>
+        <translation type="vanished">Переместить приложение в трей, при его закрытии</translation>
     </message>
     <message>
         <source>Tray icon style</source>
@@ -1703,6 +1723,38 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Requires the wl-clipboard package&lt;/p&gt;&lt;p&gt;When using wl-clipboard v2.2.1, there is a focus stealing bug that may make Deskflow harder to use. This has been fixed when using the wl-clipboard master branch, unless your Compositor lacks wlroots-data-control protocol support.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>&amp;Window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>When the application starts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show the main window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Send to background</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>When the main window is closed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run command on enter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run command on exit</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>StatusBar</name>
@@ -1764,6 +1816,10 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     <message>
         <source>Update available</source>
         <translation type="unfinished">Доступно обновление</translation>
+    </message>
+    <message>
+        <source>%1 is waiting %2 seconds before the next retry</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>%1 Encryption Enabled</source>

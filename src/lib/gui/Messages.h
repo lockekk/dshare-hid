@@ -1,6 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2024 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2024 Synergy App Ltd
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
 
@@ -21,11 +21,11 @@ void raiseCriticalDialog();
 
 void showFirstServerStartMessage(QWidget *parent);
 
-void showFirstConnectedMessage(QWidget *parent, bool closeToTray, bool enableService, bool isServer);
+void showFirstConnectedMessage(QWidget *parent);
 
 void showCloseReminder(QWidget *parent);
 
-bool showNewClientPrompt(QWidget *parent, const QString &clientName, bool serverRequiresPeerAuth = false);
+bool showNewClientPrompt(QWidget *parent, const QString &clientName);
 
 bool showClearSettings(QWidget *parent);
 

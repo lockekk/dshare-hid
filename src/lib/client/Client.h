@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
- * SPDX-FileCopyrightText: (C) 2012 - 2016, 2026 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2025 - 2026 Deskflow Developers
+ * SPDX-FileCopyrightText: (C) 2012 - 2016, 2026 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -11,6 +11,7 @@
 #include "deskflow/IClient.h"
 
 #include "base/EventTypes.h"
+#include "common/Enums.h"
 #include "deskflow/IClipboard.h"
 #include "net/NetworkAddress.h"
 
@@ -46,7 +47,7 @@ public:
       // do nothing
     }
     bool m_retry = false;
-    std::string m_what;
+    QString m_what;
   };
 
 public:
@@ -88,7 +89,7 @@ public:
   Disconnects from the server with an optional error message.
   Unlike disconnect this function doesn't try to use other ip addresses
   */
-  void refuseConnection(const char *msg);
+  void refuseConnection(deskflow::core::ConnectionRefusal reason, const char *msg);
 
   //! Notify of handshake complete
   /*!
@@ -102,13 +103,13 @@ public:
 
   //! Test if connected
   /*!
-  Returns true iff the client is successfully connected to the server.
+  Returns true if the client is successfully connected to the server.
   */
   bool isConnected() const;
 
   //! Test if connecting
   /*!
-  Returns true iff the client is currently attempting to connect to
+  Returns true if the client is currently attempting to connect to
   the server.
   */
   bool isConnecting() const;
@@ -154,6 +155,7 @@ public:
   std::string getName() const override;
 
 private:
+  void saveRelativeRestorePosition();
   void sendClipboard(ClipboardID);
   void sendEvent(deskflow::EventTypes);
   void sendConnectionFailedEvent(const char *msg);
@@ -199,6 +201,10 @@ private:
   IEventQueue *m_events = nullptr;
   bool m_useSecureNetwork = false;
   bool m_enableClipboard = true;
+  bool m_relativeMouseMoves = false;
+  bool m_hasRelativeRestorePosition = false;
+  int32_t m_relativeRestoreX = 0;
+  int32_t m_relativeRestoreY = 0;
   size_t m_maximumClipboardSize = INT_MAX;
   size_t m_resolvedAddressesCount = 0;
 };

@@ -1,6 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2024 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2024 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2022 Red Hat, Inc.
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -77,7 +77,7 @@ void EiEventQueueBuffer::waitForEvent(double msTimeout)
       while ((result = read(m_pipeRead, buf, sizeof(buf)) > 0)) {
         total += result;
       }
-      LOG_DEBUG2("event queue read result: %d (total drained: %zd)", result, total);
+      LOG_VERBOSE("event queue read result: %d (total drained: %zd)", result, total);
     }
   }
   Thread::testCancel();
@@ -120,7 +120,7 @@ bool EiEventQueueBuffer::addEvent(uint32_t dataID)
 
   // tickle the pipe so our read thread wakes up
   auto result = write(m_pipeWrite, "!", 1);
-  LOG_DEBUG2("event queue write result: %d", result);
+  LOG_VERBOSE("event queue write result: %d", result);
 
   return true;
 }

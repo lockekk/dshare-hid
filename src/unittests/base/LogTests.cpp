@@ -1,18 +1,18 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2025 Chris Rizzitello <sithlord48@gmail.com>
- * SPDX-FileCopyrightText: (C) 2024 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2024 Synergy App Ltd
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
 
 #include "LogTests.h"
-
+#include <clocale>
 #include <iostream>
 #include <sstream>
 
 #define LEVEL_PRINT "%z\057"
 #define LEVEL_ERR "%z\061"
-#define LEVEL_INFO "%z\064"
+#define LEVEL_INFO "%z\063"
 
 QString sanitizeBuffer(const std::stringstream &in)
 {
@@ -24,7 +24,8 @@ QString sanitizeBuffer(const std::stringstream &in)
 
 void LogTests::initTestCase()
 {
-  m_log.setFilter(LogLevel::Debug1);
+  std::setlocale(LC_NUMERIC, "C");
+  m_log.setFilter(LogLevel::Level::Debug);
 }
 
 void LogTests::printWithErrorValidOutput()
@@ -85,7 +86,7 @@ void LogTests::printLevelToHigh()
   std::stringstream buffer;
   std::streambuf *old = std::cout.rdbuf(buffer.rdbuf());
 
-  m_log.print(CLOG_DEBUG2 "test message");
+  m_log.print(CLOG_VERBOSE "test message");
 
   auto string = sanitizeBuffer(buffer);
   std::cout.rdbuf(old);

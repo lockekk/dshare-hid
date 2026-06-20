@@ -1,6 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -417,6 +417,17 @@ bool ArchNetworkBSD::setNoDelayOnSocket(ArchSocket s, bool noDelay)
   }
 
   return (oflag != 0);
+}
+
+void ArchNetworkBSD::setKeepAliveOnSocket(ArchSocket s, bool keepAlive)
+{
+  if (!s) {
+    throwError(EINVAL);
+  }
+  int opt = keepAlive;
+  if (setsockopt(s->m_fd, SOL_SOCKET, SO_KEEPALIVE, reinterpret_cast<const optval_t *>(&opt), sizeof(opt)) == -1) {
+    throwError(errno);
+  }
 }
 
 bool ArchNetworkBSD::setReuseAddrOnSocket(ArchSocket s, bool reuse)

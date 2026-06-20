@@ -14,6 +14,7 @@
 #include <openssl/x509.h>
 #include <openssl/x509v3.h>
 
+#include <QFile>
 #include <algorithm>
 #include <filesystem>
 #include <stdexcept>
@@ -68,7 +69,7 @@ void generatePemSelfSignedCert(const QString &path, int keyLength)
 
   auto *privateKey = EVP_RSA_gen(keyLength);
   if (!privateKey) {
-    throw std::runtime_error("could not allocate private key for certificate");
+    throw std::runtime_error("failed to generate a " + std::to_string(keyLength) + "bit key for certificate");
   }
   auto privateKeyFree = finally([privateKey]() { EVP_PKEY_free(privateKey); });
 
@@ -85,17 +86,24 @@ void generatePemSelfSignedCert(const QString &path, int keyLength)
      throw std::runtime_error("failed to set public key on certificate");
   }
 
-  auto *name = X509_get_subject_name(cert);
+  auto *name = X509_NAME_new();
+  if (!name) {
+    throw std::runtime_error("could not allocate subject name");
+  }
   X509_NAME_add_entry_by_txt(name, "CN", MBSTRING_ASC, reinterpret_cast<const unsigned char *>("Deskflow"), -1, -1, 0);
+  X509_set_subject_name(cert, name);
   X509_set_issuer_name(cert, name);
+  X509_NAME_free(name);
 
   if (!X509_sign(cert, privateKey, EVP_sha256())) {
-      throw std::runtime_error("failed to sign certificate");
+    throw std::runtime_error("failed to sign certificate");
   }
 
-  const std::filesystem::path fsPath = path.toStdString();
-#ifdef SYSAPI_WIN32
-  auto fp = _wfopen(fsPath.native().c_str(), L"wb");
+  const QFile file(path);
+  const std::filesystem::path fsPath = file.filesystemFileName();
+
+#if defined(Q_OS_WIN)
+  auto fp = _wfopen(fsPath.native().c_str(), L"w");
 #else
   auto fp = std::fopen(fsPath.native().c_str(), "wb");
 #endif

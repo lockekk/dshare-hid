@@ -1,6 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -125,18 +125,18 @@ void *Thread::threadFunc(void *vjob)
   void *result = nullptr;
   try {
     // go
-    LOG_DEBUG1("thread 0x%08x entry", id);
+    LOG_VERBOSE("thread 0x%08x entry", id);
     job->run();
-    LOG_DEBUG1("thread 0x%08x exit", id);
+    LOG_VERBOSE("thread 0x%08x exit", id);
   } catch (ThreadCancelException &) {
     // client called cancel()
-    LOG_DEBUG1("caught cancel on thread 0x%08x", id);
+    LOG_VERBOSE("caught cancel on thread 0x%08x", id);
     delete job;
     throw;
   } catch (ThreadExitException &e) {
     // client called exit()
     result = e.m_result;
-    LOG_DEBUG1("caught exit on thread 0x%08x, result %p", id, result);
+    LOG_VERBOSE("caught exit on thread 0x%08x, result %p", id, result);
   } catch (BaseException &e) {
     LOG_ERR("exception on thread 0x%08x: %s", id, e.what());
     delete job;

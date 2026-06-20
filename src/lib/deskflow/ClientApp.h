@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
- * SPDX-FileCopyrightText: (C) 2012 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -78,6 +78,12 @@ public:
     return (ClientApp &)App::instance();
   }
 
+  /**
+   * @brief retryTime
+   * @return next retry time based on number of current retries
+   */
+  double retryTime() const;
+
 protected:
   virtual ISocketFactory *getSocketFactory() const;
 
@@ -92,4 +98,5 @@ private:
   QList<NetworkAddress> m_serverAddresses;
   size_t m_currentServerIndex = 0;
   size_t m_lastServerAddressIndex = 0;
+  uint m_retryCount = 0;
 };

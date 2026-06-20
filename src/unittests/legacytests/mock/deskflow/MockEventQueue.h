@@ -1,6 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2011 Nick Bolton
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -14,7 +14,7 @@
 class MockEventQueue : public IEventQueue
 {
 public:
-  MOCK_METHOD(void, loop, (), (override));
+  MOCK_METHOD(int, loop, (), (override));
   MOCK_METHOD(EventQueueTimer *, newOneShotTimer, (double, void *), (override));
   MOCK_METHOD(EventQueueTimer *, newTimer, (double, void *), (override));
   MOCK_METHOD(bool, getEvent, (Event &, double), (override));

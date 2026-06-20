@@ -5,11 +5,13 @@
  */
 
 #include "FingerprintPreview.h"
+#include "common/PlatformInfo.h"
 
 #include <QFont>
 #include <QHBoxLayout>
 #include <QLabel>
 
+#include <gui/StyleUtils.h>
 #include <net/SecureUtils.h>
 
 FingerprintPreview::FingerprintPreview(
@@ -25,7 +27,10 @@ FingerprintPreview::FingerprintPreview(
       fingerprint.type == QCryptographicHash::Sha256 ? sha256Layout(fingerprint, titleText, hashMode) : emptyLayout()
   );
   adjustSize();
-  setFixedSize(size());
+  int artPadding = 48;
+  if (deskflow::platform::isMac())
+    artPadding = 32;
+  setFixedSize(m_lblArt->width() + artPadding, height());
 }
 
 void FingerprintPreview::toggleMode(bool hashMode)
@@ -59,27 +64,19 @@ QLayout *FingerprintPreview::sha256Layout(const Fingerprint &fingerprint, const 
   m_lblHash->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
   m_lblHash->setTextInteractionFlags(Qt::TextSelectableByMouse);
   m_lblHash->setVisible(hashMode);
+  m_lblHash->setFont(fixedFont());
 
   m_lblArt = new QLabel(deskflow::generateFingerprintArt(fingerprint.data), this);
   m_lblArt->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
   m_lblArt->setTextInteractionFlags(Qt::TextSelectableByMouse);
   m_lblArt->setVisible(!hashMode);
-
-  f = font();
-  f.setFamilies({"Hack", "Liberation Mono", "Monospace", "Andale Mono"});
-  f.setStyleHint(QFont::Monospace);
-  m_lblArt->setFont(f);
-
-  auto innersha256Layout = new QHBoxLayout();
-  innersha256Layout->setContentsMargins(0, 0, 0, 0);
-  innersha256Layout->addWidget(m_lblHash);
-  innersha256Layout->addWidget(m_lblArt);
+  m_lblArt->setFont(fixedFont());
 
   auto sha256Layout = new QVBoxLayout();
   sha256Layout->setContentsMargins(0, 0, 0, 0);
   sha256Layout->addWidget(labelTitle);
-  sha256Layout->addLayout(innersha256Layout);
-  sha256Layout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Preferred, QSizePolicy::Expanding));
+  sha256Layout->addWidget(m_lblHash);
+  sha256Layout->addWidget(m_lblArt);
 
   auto frameSha256 = new QFrame(this);
   frameSha256->setFrameShape(QFrame::StyledPanel);

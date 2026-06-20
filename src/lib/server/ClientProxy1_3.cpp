@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2006 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -33,7 +33,7 @@ ClientProxy1_3::~ClientProxy1_3()
 
 void ClientProxy1_3::mouseWheel(int32_t xDelta, int32_t yDelta)
 {
-  LOG_DEBUG2("send mouse wheel to \"%s\" %+d,%+d", getName().c_str(), xDelta, yDelta);
+  LOG_VERBOSE("send mouse wheel to \"%s\" %+d,%+d", getName().c_str(), xDelta, yDelta);
   ProtocolUtil::writef(getStream(), kMsgDMouseWheel, xDelta, yDelta);
 }
 

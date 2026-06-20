@@ -56,9 +56,11 @@ using namespace deskflow::gui;
 
 QString logLevelNameFromIndex(int index)
 {
-  static const QStringList kLogLevels = {QStringLiteral("FATAL"),  QStringLiteral("ERROR"), QStringLiteral("WARNING"),
-                                         QStringLiteral("NOTE"),   QStringLiteral("INFO"),  QStringLiteral("DEBUG"),
-                                         QStringLiteral("DEBUG1"), QStringLiteral("DEBUG2")};
+  // Tracks upstream's LogLevel::m_levelOptions (FATAL=0, ERROR=1, WARNING=2,
+  // INFO=3, DEBUG=4, VERBOSE=5). Only reached for legacy numeric values in
+  // Settings::Log::Level; new writes are option strings.
+  static const QStringList kLogLevels = {QStringLiteral("FATAL"), QStringLiteral("ERROR"), QStringLiteral("WARNING"),
+                                         QStringLiteral("INFO"),  QStringLiteral("DEBUG"), QStringLiteral("VERBOSE")};
 
   if (index < 0 || index >= kLogLevels.size()) {
     return QStringLiteral("INFO");
@@ -330,7 +332,7 @@ void DeskflowHidExtension::applyProfileScreenBonding(const QString &configPath, 
 void DeskflowHidExtension::updateBondedScreenLocations(const ServerConfig &config)
 {
   const auto &screens = config.screens();
-  const int cols = config.numColumns();
+  const int cols = Settings::value(Settings::Server::GridWidth).toInt();
   const QString serverName = config.getServerName();
 
   int serverIndex = -1;
@@ -1119,7 +1121,7 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
 
     // Build the command
     QStringList command;
-    command << "deskflow-core";
+    command << "dshare-hid-core";
     command << "client";
     command << "--name" << screenName;
     command << "--link" << devicePath;

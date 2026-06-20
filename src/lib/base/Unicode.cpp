@@ -1,6 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -29,28 +29,6 @@ inline static uint16_t decode16(const uint8_t *n, bool byteSwapped)
     c.n8[1] = n[1];
   }
   return c.n16;
-}
-
-inline static uint32_t decode32(const uint8_t *n, bool byteSwapped)
-{
-  union x32
-  {
-    uint8_t n8[4];
-    uint32_t n32;
-  };
-  x32 c;
-  if (byteSwapped) {
-    c.n8[0] = n[3];
-    c.n8[1] = n[2];
-    c.n8[2] = n[1];
-    c.n8[3] = n[0];
-  } else {
-    c.n8[0] = n[0];
-    c.n8[1] = n[1];
-    c.n8[2] = n[2];
-    c.n8[3] = n[3];
-  }
-  return c.n32;
 }
 
 inline static void resetError(bool *errors)
@@ -357,34 +335,35 @@ uint32_t Unicode::fromUTF8(const uint8_t *&data, uint32_t &n)
       truncated = true;
       size = 5;
     }
-    // fall through
+    [[fallthrough]];
 
   case 5:
     if ((data[4] & 0xc0) != 0x80) {
       truncated = true;
       size = 4;
     }
-    // fall through
+    [[fallthrough]];
 
   case 4:
     if ((data[3] & 0xc0) != 0x80) {
       truncated = true;
       size = 3;
     }
-    // fall through
+    [[fallthrough]];
 
   case 3:
     if ((data[2] & 0xc0) != 0x80) {
       truncated = true;
       size = 2;
     }
-    // fall through
+    [[fallthrough]];
 
   case 2:
     if ((data[1] & 0xc0) != 0x80) {
       truncated = true;
       size = 1;
     }
+    [[fallthrough]];
 
   default:
     break;

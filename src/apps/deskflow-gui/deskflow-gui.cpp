@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2024 Chris Rizzitello <sithord48@gmail.com>
- * SPDX-FileCopyrightText: (C) 2012 - 2024 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2024 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2008 Volker Lanz <vl@fidra.de>
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -151,14 +151,14 @@ int main(int argc, char *argv[])
   qInfo("%s v%s", kAppName, kDisplayVersion);
 
 #if defined(Q_OS_MACOS)
-
-  if (app.applicationDirPath().startsWith("/Volumes/")) {
-    QString msgBody = QStringLiteral("Please drag %1 to the Applications folder, "
-                                     "and open it from there.");
-    QMessageBox::information(nullptr, kAppName, msgBody.arg(kAppName));
-    return 1;
-  }
-
+  // NOTE: the upstream "refuse to launch if applicationDirPath starts with
+  // /Volumes/" check was removed here. It was meant to nudge end users who
+  // mount the DMG and try to launch from inside the mounted volume, but it
+  // false-positives on any dev checkout on an external disk (also mounted
+  // under /Volumes/) and misses the modern App-Translocated DMG case anyway.
+  // macOS shows its own warning when a translocated app requests
+  // accessibility or screen-recording permissions, so the protection is
+  // largely redundant.
   if (!checkMacAssistiveDevices()) {
     return 1;
   }

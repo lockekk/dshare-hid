@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2004 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -190,14 +190,14 @@ void ClientProxyUnknown::initProxy(const std::string &name, int major, int minor
 
 void ClientProxyUnknown::handleData()
 {
-  LOG_DEBUG1("parsing hello reply");
+  LOG_VERBOSE("parsing hello reply");
 
   std::string name("<unknown>");
 
   try {
     // limit the maximum length of the hello
     if (uint32_t n = m_stream->getSize(); n > kMaxHelloLength) {
-      LOG_DEBUG1("hello reply too long");
+      LOG_VERBOSE("hello reply too long");
       throw BadClientException();
     }
 
@@ -232,7 +232,7 @@ void ClientProxyUnknown::handleData()
     }
 
     // the proxy is created and now proxy now owns the stream
-    LOG_DEBUG1("created proxy for client \"%s\" version %d.%d", name.c_str(), major, minor);
+    LOG_VERBOSE("created proxy for client \"%s\" version %d.%d", name.c_str(), major, minor);
     m_stream = nullptr;
 
     // wait until the proxy signals that it's ready or has disconnected
@@ -255,18 +255,18 @@ void ClientProxyUnknown::handleData()
 
 void ClientProxyUnknown::handleWriteError()
 {
-  LOG_NOTE("error communicating with new client");
+  LOG_INFO("error communicating with new client");
   sendFailure();
 }
 
 void ClientProxyUnknown::handleTimeout()
 {
-  LOG_NOTE("new client is unresponsive");
+  LOG_INFO("new client is unresponsive");
   sendFailure();
 }
 
 void ClientProxyUnknown::handleDisconnect()
 {
-  LOG_NOTE("new client disconnected");
+  LOG_INFO("new client disconnected");
   sendFailure();
 }

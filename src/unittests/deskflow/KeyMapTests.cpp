@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2025 Chris Rizzitello <sithlord48@gmail.com>
- * SPDX-FileCopyrightText: (C) 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2016 Synergy App Ltd
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
 #include "KeyMapTests.h"
@@ -181,6 +181,24 @@ void KeyMapTests::mapkey()
   desiredMask = KeyModifierControl;
   result = keyMap.mapKey(strokes, kKeySetModifiers, 1, activeModifiers, currentState, desiredMask, false, "en");
   QVERIFY(result == nullptr);
+}
+
+void KeyMapTests::parseModifiers_plusKey_keepsPlusAsKey()
+{
+  std::string keystroke = "Control+Shift++";
+  KeyModifierMask mask = 0;
+
+  QVERIFY(KeyMap::parseModifiers(keystroke, mask));
+  QCOMPARE(mask, static_cast<KeyModifierMask>(KeyModifierControl | KeyModifierShift));
+  QCOMPARE(keystroke, std::string("+"));
+}
+
+void KeyMapTests::parseKey_plusSymbol_parsesAsAsciiKey()
+{
+  KeyID key = kKeyNone;
+
+  QVERIFY(KeyMap::parseKey("+", key));
+  QCOMPARE(key, static_cast<KeyID>('+'));
 }
 
 QTEST_MAIN(KeyMapTests)

@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2025 - 2026 Deskflow Developers
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2004 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -10,11 +10,13 @@
 
 #include "arch/Arch.h"
 #include "arch/ArchException.h"
+#include "base/Event.h"
 #include "base/EventQueue.h"
 #include "base/IEventQueue.h"
 #include "base/Log.h"
 #include "base/TMethodJob.h"
 #include "client/Client.h"
+#include "common/ExitCodes.h"
 #include "common/Settings.h"
 #include "deskflow/ClientApp.h"
 #include "deskflow/Clipboard.h"
@@ -34,6 +36,7 @@
 #include <AppKit/NSEvent.h>
 #include <AvailabilityMacros.h>
 #include <IOKit/hidsystem/event_status_driver.h>
+#include <dispatch/dispatch.h>
 #include <libproc.h>
 #include <mach-o/dyld.h>
 #include <math.h>
@@ -87,6 +90,7 @@ OSXScreen::OSXScreen(IEventQueue *events, bool isPrimary, bool enableLangSync)
       m_screensaverNotify(false),
       m_ownClipboard(false),
       m_clipboardTimer(nullptr),
+      m_axTimer(nullptr),
       m_hiddenWindow(nullptr),
       m_userInputWindow(nullptr),
       m_switchEventHandlerRef(0),
@@ -258,6 +262,14 @@ uint32_t OSXScreen::activeSides()
 
 void OSXScreen::warpCursor(int32_t x, int32_t y)
 {
+  if (m_eventTapRunLoop && CFRunLoopGetCurrent() != m_eventTapRunLoop) {
+    CFRunLoopPerformBlock(m_eventTapRunLoop, kCFRunLoopDefaultMode, ^{
+      warpCursor(x, y);
+    });
+    CFRunLoopWakeUp(m_eventTapRunLoop);
+    return;
+  }
+
   // move cursor without generating events
   CGPoint pos;
   pos.x = x;
@@ -528,7 +540,7 @@ void OSXScreen::fakeMouseButton(ButtonID id, bool press)
 
   EMouseButtonState state = press ? kMouseButtonDown : kMouseButtonUp;
 
-  LOG_DEBUG1("faking mouse button id: %d press: %s", index, press ? "pressed" : "released");
+  LOG_VERBOSE("faking mouse button id: %d press: %s", index, press ? "pressed" : "released");
 
   MouseButtonEventMapType thisButtonMap = MouseButtonEventMap[index];
   CGEventType type = thisButtonMap[state];
@@ -658,6 +670,9 @@ void OSXScreen::enable()
   m_clipboardTimer = m_events->newTimer(1.0, nullptr);
   m_events->addHandler(EventTypes::Timer, m_clipboardTimer, [this](const auto &) { checkClipboards(); });
 
+  m_axTimer = m_events->newTimer(1.0, nullptr);
+  m_events->addHandler(EventTypes::Timer, m_axTimer, [this](const auto &) { checkAXPermissions(); });
+
   if (m_isPrimary) {
     // FIXME -- start watching jump zones
 
@@ -686,7 +701,20 @@ void OSXScreen::enable()
   if (m_eventTapPort) {
     m_eventTapRLSR = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, m_eventTapPort, 0);
     if (m_eventTapRLSR) {
-      CFRunLoopAddSource(CFRunLoopGetCurrent(), m_eventTapRLSR, kCFRunLoopDefaultMode);
+      // Run the event tap on a dedicated thread with its own CFRunLoop so it fires
+      // independently of whatever event loop the calling thread runs (e.g. QCoreApplication).
+      // Use a semaphore to ensure m_eventTapRunLoop is set before enable() returns.
+      auto sem = dispatch_semaphore_create(0);
+      m_eventTapThread = std::thread([this, sem]() {
+        m_eventTapRunLoop = CFRunLoopGetCurrent();
+        CFRunLoopAddSource(m_eventTapRunLoop, m_eventTapRLSR, kCFRunLoopDefaultMode);
+        dispatch_semaphore_signal(sem);
+        CFRunLoopRun();
+        CFRunLoopRemoveSource(CFRunLoopGetCurrent(), m_eventTapRLSR, kCFRunLoopDefaultMode);
+        m_eventTapRunLoop = nullptr;
+      });
+      dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
+      dispatch_release(sem);
     } else {
       LOG_ERR("failed to create a CFRunLoopSourceRef for the quartz event tap");
     }
@@ -701,8 +729,14 @@ void OSXScreen::disable()
 
   // FIXME -- stop watching jump zones, stop capturing input
 
+  if (m_eventTapRunLoop) {
+    CFRunLoopStop(m_eventTapRunLoop);
+  }
+  if (m_eventTapThread.joinable()) {
+    m_eventTapThread.join();
+  }
+
   if (m_eventTapRLSR) {
-    CFRunLoopRemoveSource(CFRunLoopGetCurrent(), m_eventTapRLSR, kCFRunLoopDefaultMode);
     CFRelease(m_eventTapRLSR);
     m_eventTapRLSR = nullptr;
   }
@@ -714,11 +748,16 @@ void OSXScreen::disable()
   }
   // FIXME -- allow system to enter power saving mode
 
-  // uninstall clipboard timer
   if (m_clipboardTimer != nullptr) {
     m_events->removeHandler(EventTypes::Timer, m_clipboardTimer);
     m_events->deleteTimer(m_clipboardTimer);
     m_clipboardTimer = nullptr;
+  }
+
+  if (m_axTimer != nullptr) {
+    m_events->removeHandler(EventTypes::Timer, m_axTimer);
+    m_events->deleteTimer(m_axTimer);
+    m_axTimer = nullptr;
   }
 
   m_isOnScreen = m_isPrimary;
@@ -759,6 +798,8 @@ void OSXScreen::leave()
 
   if (m_isPrimary) {
     avoidHesitatingCursor();
+    LOG_VERBOSE("centering cursor on leave: %+d, %+d", m_xCenter, m_yCenter);
+    warpCursor(m_xCenter, m_yCenter);
   }
 
   // now off screen
@@ -776,7 +817,7 @@ bool OSXScreen::setClipboard(ClipboardID, const IClipboard *src)
 
 void OSXScreen::checkClipboards()
 {
-  LOG_DEBUG2("checking clipboard");
+  LOG_VERBOSE("checking clipboard");
   if (m_pasteboard.synchronize()) {
     LOG_DEBUG("clipboard changed");
     sendClipboardEvent(EventTypes::ClipboardGrabbed, kClipboardClipboard);
@@ -894,19 +935,19 @@ void OSXScreen::handleSystemEvent(const Event &event)
     SendEventToEventTarget(*carbonEvent, nullptr);
     switch (GetEventKind(*carbonEvent)) {
     case kEventWindowActivated:
-      LOG_DEBUG1("window activated");
+      LOG_VERBOSE("window activated");
       break;
 
     case kEventWindowDeactivated:
-      LOG_DEBUG1("window deactivated");
+      LOG_VERBOSE("window deactivated");
       break;
 
     case kEventWindowFocusAcquired:
-      LOG_DEBUG1("focus acquired");
+      LOG_VERBOSE("focus acquired");
       break;
 
     case kEventWindowFocusRelinquish:
-      LOG_DEBUG1("focus released");
+      LOG_VERBOSE("focus released");
       break;
     }
     break;
@@ -928,7 +969,7 @@ bool OSXScreen::onMouseMove()
   CGFloat mx = pos.x;
   CGFloat my = pos.y;
 
-  LOG_DEBUG2("mouse move %+f,%+f", mx, my);
+  LOG_VERBOSE("mouse move %+f,%+f", mx, my);
 
   CGFloat x = mx - m_xCursor;
   CGFloat y = my - m_yCursor;
@@ -987,13 +1028,13 @@ bool OSXScreen::onMouseButton(bool pressed, uint16_t macButton)
   ButtonID button = mapMacButtonToDeskflow(macButton);
 
   if (pressed) {
-    LOG_DEBUG1("event: button press button=%d", button);
+    LOG_VERBOSE("event: button press button=%d", button);
     if (button != kButtonNone) {
       KeyModifierMask mask = m_keyState->getActiveModifiers();
       sendEvent(EventTypes::PrimaryScreenButtonDown, ButtonInfo::alloc(button, mask));
     }
   } else {
-    LOG_DEBUG1("event: button release button=%d", button);
+    LOG_VERBOSE("event: button release button=%d", button);
     if (button != kButtonNone) {
       KeyModifierMask mask = m_keyState->getActiveModifiers();
       sendEvent(EventTypes::PrimaryScreenButtonUp, ButtonInfo::alloc(button, mask));
@@ -1005,7 +1046,7 @@ bool OSXScreen::onMouseButton(bool pressed, uint16_t macButton)
 
 bool OSXScreen::onMouseWheel(int32_t xDelta, int32_t yDelta) const
 {
-  LOG_DEBUG1("event: button wheel delta=%+d,%+d", xDelta, yDelta);
+  LOG_VERBOSE("event: button wheel delta=%+d,%+d", xDelta, yDelta);
   sendEvent(EventTypes::PrimaryScreenWheel, WheelInfo::alloc(xDelta, yDelta));
   return true;
 }
@@ -1023,10 +1064,10 @@ void OSXScreen::displayReconfigurationCallback(
                                      kCGDisplayDisabledFlag | kCGDisplayMirrorFlag | kCGDisplayUnMirrorFlag |
                                      kCGDisplayDesktopShapeChangedFlag;
 
-  LOG_DEBUG1("event: display was reconfigured: %x %x %x", flags, mask, flags & mask);
+  LOG_VERBOSE("event: display was reconfigured: %x %x %x", flags, mask, flags & mask);
 
   if (flags & mask) { /* Something actually did change */
-    LOG_DEBUG1("event: screen changed shape; refreshing dimensions");
+    LOG_VERBOSE("event: screen changed shape; refreshing dimensions");
     if (!screen->updateScreenShape(displayID, flags)) {
       LOG_ERR("failed to update screen shape during display reconfiguration");
     }
@@ -1040,7 +1081,7 @@ bool OSXScreen::onKey(CGEventRef event)
   // get the key and active modifiers
   uint32_t virtualKey = CGEventGetIntegerValueField(event, kCGKeyboardEventKeycode);
   CGEventFlags macMask = CGEventGetFlags(event);
-  LOG_DEBUG1("event: Key event kind: %d, keycode=%d", eventKind, virtualKey);
+  LOG_VERBOSE("event: Key event kind: %d, keycode=%d", eventKind, virtualKey);
 
   // Special handling to track state of modifiers
   if (eventKind == kCGEventFlagsChanged) {
@@ -1150,7 +1191,7 @@ void OSXScreen::onMediaKey(CGEventRef event)
     return;
   }
 
-  LOG_DEBUG2("Media key event: keyID=0x%02x, %s, repeat=%s", keyID, (down ? "down" : "up"), (isRepeat ? "yes" : "no"));
+  LOG_VERBOSE("Media key event: keyID=0x%02x, %s, repeat=%s", keyID, (down ? "down" : "up"), (isRepeat ? "yes" : "no"));
 
   KeyButton button = 0;
   KeyModifierMask mask = m_keyState->getActiveModifiers();
@@ -1471,6 +1512,18 @@ void OSXScreen::handleConfirmSleep(const Event &event)
   }
 }
 
+bool OSXScreen::checkAXPermissions()
+{
+  if (AXIsProcessTrusted()) {
+    return true;
+  }
+  LOG_CRIT("process is not trusted anymore, quitting");
+  disable();
+  App &app = App::instance();
+  app.getEvents()->addEvent(Event(EventTypes::Quit, nullptr, new ExitEventData(s_exitFailed)));
+  return false;
+}
+
 #pragma mark -
 
 //
@@ -1659,9 +1712,11 @@ CGEventRef OSXScreen::handleCGInputEvent(CGEventTapProxy proxy, CGEventType type
     screen->onKey(event);
     break;
   case kCGEventTapDisabledByTimeout:
-    // Re-enable our event-tap
-    CGEventTapEnable(screen->m_eventTapPort, true);
-    LOG_INFO("quartz event tap was disabled by timeout, re-enabling");
+    // Re-enable our event-tap if we still have accessibility permissions
+    if (screen->checkAXPermissions()) {
+      CGEventTapEnable(screen->m_eventTapPort, true);
+      LOG_INFO("quartz event tap was disabled by timeout, re-enabling");
+    }
     break;
   case kCGEventTapDisabledByUserInput:
     LOG_ERR("quartz event tap was disabled by user input");
@@ -1671,16 +1726,16 @@ CGEventRef OSXScreen::handleCGInputEvent(CGEventTapProxy proxy, CGEventType type
   default:
     if (type == NX_SYSDEFINED) {
       if (isMediaKeyEvent(event)) {
-        LOG_DEBUG2("detected media key event");
+        LOG_VERBOSE("detected media key event");
         screen->onMediaKey(event);
       } else {
-        LOG_DEBUG2("ignoring unknown system defined event");
+        LOG_VERBOSE("ignoring unknown system defined event");
         return event;
       }
       break;
     }
 
-    LOG_DEBUG2("unknown quartz event type: 0x%02x", type);
+    LOG_VERBOSE("unknown quartz event type: 0x%02x", type);
   }
 
   if (screen->m_isOnScreen) {

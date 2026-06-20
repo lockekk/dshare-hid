@@ -1,6 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2016 Synergy App Ltd
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
 
@@ -61,6 +61,12 @@ static KeyID convertNXKeyTypeToKeyID(uint32_t const type)
     break;
   case NX_KEYTYPE_SOUND_DOWN:
     id = kKeyAudioDown;
+    break;
+  case NX_KEYTYPE_BRIGHTNESS_UP:
+    id = kKeyBrightnessUp;
+    break;
+  case NX_KEYTYPE_BRIGHTNESS_DOWN:
+    id = kKeyBrightnessDown;
     break;
   case NX_KEYTYPE_MUTE:
     id = kKeyAudioMute;

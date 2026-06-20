@@ -1,6 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2004 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -67,7 +67,7 @@ bool OSXClipboard::synchronize()
     return false;
 
   PasteboardSyncFlags flags = PasteboardSynchronize(m_pboard);
-  LOG_DEBUG2("flags: %x", flags);
+  LOG_VERBOSE("flags: %x", flags);
 
   if (flags & kPasteboardModified) {
     return true;

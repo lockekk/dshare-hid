@@ -1,6 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2012 - 2022, 2025 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2022, 2025 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2003 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -191,7 +191,7 @@ const KeyID MSWindowsKeyState::s_virtualKey[] = {
     /* 0x0a2 */ {kKeyControl_L},        // VK_LCONTROL
     /* 0x0a3 */ {kKeyControl_R},        // VK_RCONTROL
     /* 0x0a4 */ {kKeyAlt_L},            // VK_LMENU
-    /* 0x0a5 */ {kKeyAlt_R},            // VK_RMENU
+    /* 0x0a5 */ {kKeyAltGr},            // VK_RMENU
     /* 0x0a6 */ {kKeyNone},             // VK_BROWSER_BACK
     /* 0x0a7 */ {kKeyNone},             // VK_BROWSER_FORWARD
     /* 0x0a8 */ {kKeyNone},             // VK_BROWSER_REFRESH
@@ -448,7 +448,7 @@ const KeyID MSWindowsKeyState::s_virtualKey[] = {
     /* 0x1a2 */ {kKeyControl_L},    // VK_LCONTROL
     /* 0x1a3 */ {kKeyControl_R},    // VK_RCONTROL
     /* 0x1a4 */ {kKeyAlt_L},        // VK_LMENU
-    /* 0x1a5 */ {kKeyAlt_R},        // VK_RMENU
+    /* 0x1a5 */ {kKeyAltGr},        // VK_RMENU
     /* 0x1a6 */ {kKeyWWWBack},      // VK_BROWSER_BACK
     /* 0x1a7 */ {kKeyWWWForward},   // VK_BROWSER_FORWARD
     /* 0x1a8 */ {kKeyWWWRefresh},   // VK_BROWSER_REFRESH
@@ -834,7 +834,7 @@ int32_t MSWindowsKeyState::pollActiveGroup() const
   // get group
   GroupMap::const_iterator i = m_groupMap.find(hkl);
   if (i == m_groupMap.end()) {
-    LOG_DEBUG1("can't find keyboard layout %08x", hkl);
+    LOG_VERBOSE("can't find keyboard layout %08x", hkl);
     return 0;
   }
 
@@ -1075,7 +1075,7 @@ void MSWindowsKeyState::getKeyMap(deskflow::KeyMap &keyMap)
           static const Modifier modifiers[] = {
               {VK_SHIFT, VK_SHIFT, 0x80u, KeyModifierShift},
               {VK_CAPITAL, VK_CAPITAL, 0x01u, KeyModifierCapsLock},
-              {VK_CONTROL, VK_MENU, 0x80u, KeyModifierControl | KeyModifierAlt}
+              {VK_CONTROL, VK_MENU, 0x80u, KeyModifierAltGr}
           };
           static const size_t s_numModifiers = sizeof(modifiers) / sizeof(modifiers[0]);
           static const size_t s_numCombinations = 1 << s_numModifiers;
@@ -1165,14 +1165,14 @@ void MSWindowsKeyState::fakeKey(const Keystroke &keystroke)
   switch (keystroke.m_type) {
   case Keystroke::KeyType::Button: {
     LOG(
-        (CLOG_DEBUG1 "  %03x (%08x) %s", keystroke.m_data.m_button.m_button, keystroke.m_data.m_button.m_client,
+        (CLOG_VERBOSE "  %03x (%08x) %s", keystroke.m_data.m_button.m_button, keystroke.m_data.m_button.m_client,
          keystroke.m_data.m_button.m_press ? "down" : "up")
     );
     KeyButton scanCode = keystroke.m_data.m_button.m_button;
 
     // windows doesn't send key ups for key repeats
     if (keystroke.m_data.m_button.m_repeat && !keystroke.m_data.m_button.m_press) {
-      LOG_DEBUG1("  discard key repeat release");
+      LOG_VERBOSE("  discard key repeat release");
       break;
     }
 
@@ -1207,10 +1207,10 @@ void MSWindowsKeyState::fakeKey(const Keystroke &keystroke)
     // key events.
     if (!keystroke.m_data.m_group.m_restore) {
       if (keystroke.m_data.m_group.m_absolute) {
-        LOG_DEBUG1("  group %d", keystroke.m_data.m_group.m_group);
+        LOG_VERBOSE("  group %d", keystroke.m_data.m_group.m_group);
         setWindowGroup(keystroke.m_data.m_group.m_group);
       } else {
-        LOG_DEBUG1("  group %+d", keystroke.m_data.m_group.m_group);
+        LOG_VERBOSE("  group %+d", keystroke.m_data.m_group.m_group);
         setWindowGroup(getEffectiveGroup(pollActiveGroup(), keystroke.m_data.m_group.m_group));
       }
     }
@@ -1232,13 +1232,13 @@ bool MSWindowsKeyState::getGroups(GroupList &groups) const
   // get keyboard layouts
   uint32_t newNumLayouts = GetKeyboardLayoutList(0, nullptr);
   if (newNumLayouts == 0) {
-    LOG_DEBUG1("can't get keyboard layouts");
+    LOG_VERBOSE("can't get keyboard layouts");
     return false;
   }
   HKL *newLayouts = new HKL[newNumLayouts];
   newNumLayouts = GetKeyboardLayoutList(newNumLayouts, newLayouts);
   if (newNumLayouts == 0) {
-    LOG_DEBUG1("can't get keyboard layouts");
+    LOG_VERBOSE("can't get keyboard layouts");
     delete[] newLayouts;
     return false;
   }

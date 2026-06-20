@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
- * SPDX-FileCopyrightText: (C) 2012 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -9,8 +9,8 @@
 #pragma once
 
 #include "base/Event.h"
-#include "base/NetworkProtocol.h"
 #include "base/Stopwatch.h"
+#include "common/NetworkProtocol.h"
 #include "deskflow/Clipboard.h"
 #include "deskflow/ClipboardTypes.h"
 #include "deskflow/KeyTypes.h"
@@ -197,6 +197,7 @@ public:
   Set the \c list to the names of the currently connected clients.
   */
   void getClients(std::vector<std::string> &list) const;
+  void sendConnectedClientsIpc() const;
 
   //@}
 

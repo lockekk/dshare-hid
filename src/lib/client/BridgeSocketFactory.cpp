@@ -26,7 +26,7 @@ SecurityLevel BridgeSocketFactory::getServerSecurityLevel() const
   // Bridge clients follow CLI-selected TLS preference, enforcing PeerAuth when enabled
   SecurityLevel level = tlsEnabled ? SecurityLevel::PeerAuth : SecurityLevel::PlainText;
 
-  LOG_DEBUG1("bridge client TLS: %s (source=cli --secure)", tlsEnabled ? "enabled (PeerAuth)" : "disabled (PlainText)");
+  LOG_VERBOSE("bridge client TLS: %s (source=cli --secure)", tlsEnabled ? "enabled (PeerAuth)" : "disabled (PlainText)");
 
   return level;
 }

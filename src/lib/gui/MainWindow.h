@@ -2,29 +2,22 @@
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
  * SPDX-FileCopyrightText: (C) 2024 - 2026 Chris Rizzitello <sithord48@gmail.com>
- * SPDX-FileCopyrightText: (C) 2012 - 2024 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2024 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2008 Volker Lanz <vl@fidra.de>
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
 
 #pragma once
 
-#include <QHash>
-#include <QHostAddress>
 #include <QMainWindow>
-#include <QMutex>
 #include <QProcess>
 #include <QRegularExpression>
-#include <QSettings>
 #include <QSystemTrayIcon>
-#include <QThread>
 
 #include "VersionChecker.h"
 #include "config/ServerConfig.h"
-#include "gui/core/ClientConnection.h"
 #include "gui/core/CoreProcess.h"
 #include "gui/core/NetworkMonitor.h"
-#include "gui/core/ServerConnection.h"
 #include "net/Fingerprint.h"
 
 #ifdef Q_OS_MACOS
@@ -35,17 +28,6 @@
 
 class QAction;
 class QMenu;
-class QLabel;
-class QLineEdit;
-class QGroupBox;
-class QPushButton;
-class QTextEdit;
-class QComboBox;
-class QTabWidget;
-class QCheckBox;
-class QRadioButton;
-class QMessageBox;
-class QAbstractButton;
 class QLocalServer;
 
 class DeskflowApplication;
@@ -160,9 +142,10 @@ public:
 
 private:
   void setTrayIcon();
-  void updateFromLogLine(const QString &line);
-  void checkConnected(const QString &line);
-  void checkFingerprint(const QString &line);
+  void handleUnrecognisedClient(const QString &clientName);
+  void handleConnectionRefused(deskflow::core::ConnectionRefusal reason);
+  void handlePeerFingerprint(const QString &fingerprint);
+  void handleMissingKeyboardLayouts(const QString &layouts);
   void secureSocket(bool secureSocket);
   void connectSlots();
   void handleLogLine(const QString &line);
@@ -181,20 +164,14 @@ private:
   void daemonIpcClientConnectionFailed();
   void toggleCanRunCore(bool enableButtons);
   void remoteHostChanged(const QString &newRemoteHost);
-  void handleNewClientPromptRequest(const QString &clientName, bool usePeerAuth);
   void updateIpLabel(const QStringList &addresses);
+  void updateTimeoutDelay(int newDelay);
 
 #if defined(Q_OS_LINUX)
   void checkLinuxUsbPermissions();
 #endif
 
   bool canRunCore() const;
-  /**
-   * @brief showClientError
-   * @param error Error Type
-   * @param address
-   */
-  void showClientError(deskflow::client::ErrorType error, const QString &address);
 
   /**
    * @brief trustedFingerprintDatabase get the FingerprintDatabase for the trusted clients or trusted servers.
@@ -221,8 +198,9 @@ private:
   bool m_clientErrorVisible = false;
   ServerConfig m_serverConfig;
   deskflow::gui::CoreProcess m_coreProcess;
-  deskflow::gui::ServerConnection m_serverConnection;
-  deskflow::gui::ClientConnection m_clientConnection;
+  QSet<QString> m_ignoredClients;
+  bool m_newClientPromptShowing = false;
+  bool m_serverConfigDialogVisible = false;
   QSize m_expandedSize = QSize();
   QStringList m_checkedClients;
   QStringList m_checkedServers;

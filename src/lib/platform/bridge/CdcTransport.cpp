@@ -6,6 +6,7 @@
 #include "platform/OpenSSLCompat.h"
 
 #include "base/Log.h"
+#include "common/LogLevel.h"
 
 #include <QByteArray>
 #include <QRandomGenerator>
@@ -624,7 +625,7 @@ bool CdcTransport::sendUsbFrame(uint8_t type, uint8_t flags, const uint8_t *payl
     frame.insert(frame.end(), payload, payload + length);
   }
 
-  if (CLOG->getFilter() >= LogLevel::Debug) {
+  if (CLOG->getFilter() >= LogLevel::Level::Debug) {
     std::string frameHex = hexDump(frame.data(), frame.size(), 128);
     if (!frameHex.empty()) {
       LOG_DEBUG(

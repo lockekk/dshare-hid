@@ -1,7 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2004 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -35,7 +35,7 @@ public:
   EventQueue &operator=(EventQueue &&) = delete;
 
   // IEventQueue overrides
-  void loop() override;
+  int loop() override;
   void adoptBuffer(IEventQueueBuffer *) override;
   bool getEvent(Event &event, double timeout = -1.0) override;
   bool dispatchEvent(const Event &event) override;

@@ -1,6 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Symless Ltd.
+ * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -44,7 +44,6 @@ static const OptionID kOptionModifierMapForAltGr = OPTION_CODE("MMFG");
 static const OptionID kOptionModifierMapForMeta = OPTION_CODE("MMFM");
 static const OptionID kOptionModifierMapForSuper = OPTION_CODE("MMFR");
 static const OptionID kOptionHeartbeat = OPTION_CODE("HART");
-static const OptionID kOptionProtocol = OPTION_CODE("PROT");
 static const OptionID kOptionScreenSwitchCorners = OPTION_CODE("SSCM");
 static const OptionID kOptionScreenSwitchCornerSize = OPTION_CODE("SSCS");
 static const OptionID kOptionScreenSwitchDelay = OPTION_CODE("SSWT");
