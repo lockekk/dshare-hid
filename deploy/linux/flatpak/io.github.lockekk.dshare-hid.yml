@@ -50,8 +50,8 @@ modules:
     sources:
         - type: git
           url: https://gitlab.freedesktop.org/libinput/libei
-          tag: 1.5.0
-          commit: 19b64535408aa47abbc8151bc2c925afd6583851
+          tag: 1.6.0
+          commit: 8a46bf3d4b6af7f25a61be53386cf618218114ef
           x-checker-data:
             type: git
             tag-pattern: ^([\\d.]+)$
@@ -66,10 +66,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/flatpak/libportal.git
-        tag: 0.9.1
-        commit: 8f5dc8d192f6e31dafe69e35219e3b707bde71ce
-      - type: patch
-        path: libportal-qt69.patch
+        tag: 0.10.0
+        commit: c23024018c8eb076549a1517fcb2d7f80d3e2ed5
   - name: gtest
     buildsystem: cmake-ninja
     sources:

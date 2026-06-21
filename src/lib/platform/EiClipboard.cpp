@@ -1,25 +1,22 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
- * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
+ * SPDX-FileCopyrightText: (C) 2026 Red Hat, Inc.
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
 
-#include "deskflow/Clipboard.h"
+#include "platform/EiClipboard.h"
 #include "base/Log.h"
 
-//
-// Clipboard
-//
+namespace deskflow {
 
-Clipboard::Clipboard()
+EiClipboard::EiClipboard(ClipboardID id) : m_id(id)
 {
   open(0);
   empty();
   close();
 }
 
-bool Clipboard::empty()
+bool EiClipboard::empty()
 {
   std::scoped_lock lock{m_mutex};
   if (!m_open) {
@@ -27,22 +24,22 @@ bool Clipboard::empty()
     return false;
   }
 
-  // clear all data
+  // Clear all data
   for (int32_t index = 0; index < static_cast<int>(Format::TotalFormats); ++index) {
     m_data[index] = "";
     m_added[index] = false;
   }
 
-  // save time
+  // Save time
   m_timeOwned = m_time;
 
-  // we're the owner now
+  // We're the owner now
   m_owner = true;
 
   return true;
 }
 
-void Clipboard::add(Format format, const std::string &data)
+void EiClipboard::add(Format format, const std::string &data)
 {
   std::scoped_lock lock{m_mutex};
   if (!m_open) {
@@ -60,7 +57,7 @@ void Clipboard::add(Format format, const std::string &data)
   m_added[formatID] = true;
 }
 
-bool Clipboard::open(Time time) const
+bool EiClipboard::open(Time time) const
 {
   std::scoped_lock lock{m_mutex};
   if (m_open) {
@@ -74,7 +71,7 @@ bool Clipboard::open(Time time) const
   return true;
 }
 
-void Clipboard::close() const
+void EiClipboard::close() const
 {
   std::scoped_lock lock{m_mutex};
   if (!m_open) {
@@ -83,12 +80,12 @@ void Clipboard::close() const
   m_open = false;
 }
 
-Clipboard::Time Clipboard::getTime() const
+EiClipboard::Time EiClipboard::getTime() const
 {
   return m_timeOwned;
 }
 
-bool Clipboard::has(Format format) const
+bool EiClipboard::has(Format format) const
 {
   std::scoped_lock lock{m_mutex};
   if (!m_open) {
@@ -98,7 +95,7 @@ bool Clipboard::has(Format format) const
   return m_added[static_cast<int>(format)];
 }
 
-std::string Clipboard::get(Format format) const
+std::string EiClipboard::get(Format format) const
 {
   std::scoped_lock lock{m_mutex};
   if (!m_open) {
@@ -108,12 +105,4 @@ std::string Clipboard::get(Format format) const
   return m_data[static_cast<int>(format)];
 }
 
-void Clipboard::unmarshall(const std::string &data, Time time)
-{
-  IClipboard::unmarshall(this, data, time);
-}
-
-std::string Clipboard::marshall() const
-{
-  return IClipboard::marshall(this);
-}
+} // namespace deskflow

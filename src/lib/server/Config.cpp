@@ -9,7 +9,6 @@
 #include "server/Config.h"
 
 #include "base/IEventQueue.h"
-#include "deskflow/DeskflowException.h"
 #include "deskflow/KeyMap.h"
 #include "deskflow/KeyTypes.h"
 #include "deskflow/OptionTypes.h"
@@ -635,11 +634,10 @@ void Config::readSectionOptions(ConfigReadContext &s)
     ++i;
     s.parseNameWithArgs("value", line, ",;\n", i, value, valueArgs);
 
-    // Skip old protocol name
-    if (name == "protocol")
-      continue;
-
     bool handled = true;
+
+    if (m_oldNames.contains(name))
+      continue;
 
     if (name == "address") {
       try {
@@ -648,34 +646,16 @@ void Config::readSectionOptions(ConfigReadContext &s)
       } catch (SocketAddressException &e) {
         throw ServerConfigReadException(s, std::string("invalid address argument ") + e.what());
       }
-    } else if (name == "heartbeat") {
-      addOption("", kOptionHeartbeat, s.parseInt(value));
     } else if (name == "switchCorners") {
       addOption("", kOptionScreenSwitchCorners, s.parseCorners(value));
     } else if (name == "switchCornerSize") {
       addOption("", kOptionScreenSwitchCornerSize, s.parseInt(value));
-    } else if (name == "switchDelay") {
-      addOption("", kOptionScreenSwitchDelay, s.parseInt(value));
-    } else if (name == "switchDoubleTap") {
-      addOption("", kOptionScreenSwitchTwoTap, s.parseInt(value));
     } else if (name == "switchNeedsShift") {
       addOption("", kOptionScreenSwitchNeedsShift, s.parseBoolean(value));
     } else if (name == "switchNeedsControl") {
       addOption("", kOptionScreenSwitchNeedsControl, s.parseBoolean(value));
     } else if (name == "switchNeedsAlt") {
       addOption("", kOptionScreenSwitchNeedsAlt, s.parseBoolean(value));
-    } else if (name == "relativeMouseMoves") {
-      addOption("", kOptionRelativeMouseMoves, s.parseBoolean(value));
-    } else if (name == "win32KeepForeground") {
-      addOption("", kOptionWin32KeepForeground, s.parseBoolean(value));
-    } else if (name == "defaultLockToScreenState") {
-      addOption("", kOptionDefaultLockToScreenState, s.parseBoolean(value));
-    } else if (name == "disableLockToScreen") {
-      addOption("", kOptionDisableLockToScreen, s.parseBoolean(value));
-    } else if (name == "clipboardSharing") {
-      addOption("", kOptionClipboardSharing, s.parseBoolean(value));
-    } else if (name == "clipboardSharingSize") {
-      addOption("", kOptionClipboardSharingSize, s.parseInt(value));
     } else {
       handled = false;
     }
@@ -723,6 +703,26 @@ void Config::readSectionOptions(ConfigReadContext &s)
       m_inputFilter.addFilterRule(rule);
     }
   }
+
+  if (Settings::value(Settings::Server::EnableHeatbeat).toBool()) {
+    addOption("", kOptionHeartbeat, Settings::value(Settings::Server::Heartbeat).toInt());
+  }
+
+  if (Settings::value(Settings::Server::EnableSwitchDelay).toBool()) {
+    addOption("", kOptionScreenSwitchDelay, Settings::value(Settings::Server::SwitchDelay).toInt());
+  }
+
+  if (Settings::value(Settings::Server::EnableSwitchDoubleTap).toBool()) {
+    addOption("", kOptionScreenSwitchTwoTap, Settings::value(Settings::Server::SwitchDoubleTap).toInt());
+  }
+
+  addOption("", kOptionDefaultLockToScreenState, Settings::value(Settings::Server::DefaultLockToComputerState).toInt());
+  addOption("", kOptionDisableLockToScreen, Settings::value(Settings::Server::DisableLockToComputer).toInt());
+  addOption("", kOptionRelativeMouseMoves, Settings::value(Settings::Server::RelativeMouseMoves).toInt());
+  addOption("", kOptionWin32KeepForeground, Settings::value(Settings::Server::Win32KeepForeground).toInt());
+  addOption("", kOptionClipboardSharing, Settings::value(Settings::Server::EnableClipboard).toBool());
+  addOption("", kOptionClipboardSharingSize, Settings::value(Settings::Server::ClipboardSize).toUInt() * 1024);
+
   throw ServerConfigReadException(s, "unexpected end of options section");
 }
 

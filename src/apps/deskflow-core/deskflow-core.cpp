@@ -73,13 +73,11 @@ int main(int argc, char **argv)
 #endif
 
 #if defined(Q_OS_WIN)
-  {
-    // HACK to make sure settings gets the correct qApp path
-    QCoreApplication m(argc, argv);
-  }
-
   ArchMiscWindows::setInstanceWin32(GetModuleHandle(nullptr));
 #endif
+
+  QApplication::setApplicationName(QStringLiteral("%1 Core").arg(kAppName));
+  QApplication app(argc, argv);
 
   Arch arch;
   arch.init();
@@ -243,12 +241,10 @@ int main(int argc, char **argv)
     }
   }
 
-  // Step 7: Create the QApplication, IPC server and run the App on a worker thread.
-  // The QApplication is required so that platform-specific event loops (e.g. Cocoa on macOS)
-  // are kept alive while the App logic runs in `coreThread`.
-  QApplication app(argc, argv);
-  QApplication::setApplicationName(QStringLiteral("%1 Core").arg(kAppName));
-
+  // Step 7: Set up the IPC server and run the App on a worker thread.
+  // The QApplication was created early (above) so Qt event loops are available;
+  // platform-specific event loops (e.g. Cocoa on macOS) are kept alive while
+  // the App logic runs in `coreThread`.
   const auto ipcServer = new deskflow::core::ipc::CoreIpcServer(&app); // NOSONAR - Qt managed
   QObject::connect(
       ipcServer, &deskflow::core::ipc::IpcServer::stopProcessRequested, coreApp, &App::quit, Qt::DirectConnection

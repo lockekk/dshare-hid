@@ -368,11 +368,7 @@ void Client::sendClipboard(ClipboardID id)
     // marshall the data
     std::string data = clipboard.marshall();
     if (data.size() >= m_maximumClipboardSize * 1024) {
-      LOG(
-          (CLOG_INFO "skipping clipboard transfer because the clipboard"
-                     " contents exceeds the %i MB size limit set by the server",
-           m_maximumClipboardSize / 1024)
-      );
+      LOG_WARN("not sending clipboard data, exceeds limit: %zu KB", m_maximumClipboardSize);
       return;
     }
 
@@ -670,7 +666,7 @@ void Client::handleResume()
 void Client::bindNetworkInterface(IDataSocket *socket) const
 {
   if (Settings::isBridgeClientMode()) {
-    LOG_VERBOSE("bridge client mode detected; skipping network interface binding");
+    LOG_DEBUG("bridge client mode detected; skipping network interface binding");
     return;
   }
 
@@ -678,7 +674,7 @@ void Client::bindNetworkInterface(IDataSocket *socket) const
   if (address.isEmpty())
     return;
 
-  LOG_VERBOSE("bind to network interface: %s", qPrintable(address));
+  LOG_DEBUG("bind to network interface: %s", qPrintable(address));
 
   NetworkAddress bindAddress(address.toStdString());
   bindAddress.resolve();

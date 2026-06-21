@@ -41,26 +41,6 @@ public:
   //
   // New methods
   //
-  int heartbeat() const
-  {
-    return m_Heartbeat;
-  }
-  bool relativeMouseMoves() const
-  {
-    return m_RelativeMouseMoves;
-  }
-  bool win32KeepForeground() const
-  {
-    return m_Win32KeepForeground;
-  }
-  int switchDelay() const
-  {
-    return m_SwitchDelay;
-  }
-  int switchDoubleTap() const
-  {
-    return m_SwitchDoubleTap;
-  }
   bool switchCorner(int c) const
   {
     return m_SwitchCorners[c];
@@ -77,23 +57,6 @@ public:
   {
     return m_Hotkeys;
   }
-  bool defaultLockToScreenState() const
-  {
-    return m_DefaultLockToScreenState;
-  }
-  bool disableLockToScreen() const
-  {
-    return m_DisableLockToScreen;
-  }
-  bool clipboardSharing() const
-  {
-    return m_ClipboardSharing;
-  }
-  size_t clipboardSharingSize() const
-  {
-    return m_ClipboardSharingSize;
-  }
-  static size_t defaultClipboardSharingSize();
 
   bool save(const QString &fileName) const;
   bool screenExists(const QString &screenName) const;
@@ -106,8 +69,6 @@ public:
   QString configFile() const;
   bool useExternalConfig() const;
   void addClient(const QString &clientName);
-  QString getClientAddress() const;
-  void setClientAddress(const QString &address);
   bool renameScreen(const QString &oldName, const QString &newName);
   int moveScreenRelativeToServer(const QString &screenName, const QPoint &relativePos);
 
@@ -127,26 +88,6 @@ private:
   {
     m_Screens.append(screen);
   }
-  void setHeartbeat(int val)
-  {
-    m_Heartbeat = val;
-  }
-  void setRelativeMouseMoves(bool on)
-  {
-    m_RelativeMouseMoves = on;
-  }
-  void setWin32KeepForeground(bool on)
-  {
-    m_Win32KeepForeground = on;
-  }
-  void setSwitchDelay(int val)
-  {
-    m_SwitchDelay = val;
-  }
-  void setSwitchDoubleTap(int val)
-  {
-    m_SwitchDoubleTap = val;
-  }
   void setSwitchCorner(int c, bool on)
   {
     m_SwitchCorners[c] = on;
@@ -155,21 +96,8 @@ private:
   {
     m_SwitchCornerSize = val;
   }
-  void setDefaultLockToScreenState(bool on)
-  {
-    m_DefaultLockToScreenState = on;
-  }
-  void setDisableLockToScreen(bool on)
-  {
-    m_DisableLockToScreen = on;
-  }
-  void setClipboardSharing(bool on)
-  {
-    m_ClipboardSharing = on;
-  }
   void setConfigFile(const QString &configFile) const;
   void setUseExternalConfig(bool useExternalConfig) const;
-  size_t setClipboardSharingSize(size_t size);
   QList<bool> &switchCorners()
   {
     return m_SwitchCorners;
@@ -183,23 +111,13 @@ private:
   bool fixNoServer(const QString &name, int &index);
 
 private:
-  int m_Heartbeat = 0;
-  bool m_RelativeMouseMoves = false;
-  bool m_Win32KeepForeground = false;
-  int m_SwitchDelay = 0;
-  int m_SwitchDoubleTap = 0;
   int m_SwitchCornerSize = 0;
-  bool m_DefaultLockToScreenState = false;
-  bool m_DisableLockToScreen = false;
-  bool m_ClipboardSharing = true;
-  QString m_ClientAddress = "";
   QList<bool> m_SwitchCorners;
   HotkeyList m_Hotkeys;
 
   ScreenList m_Screens;
   int m_columns;
   int m_rows;
-  size_t m_ClipboardSharingSize = defaultClipboardSharingSize();
 };
 
 QTextStream &operator<<(QTextStream &outStream, const ServerConfig &config);

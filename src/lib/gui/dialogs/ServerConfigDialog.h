@@ -61,8 +61,8 @@ protected:
   void toggleSwitchDelay(bool enable);
   void setSwitchDelay(int delay);
 
-  void toggleDefaultLockToScreenState(bool state);
-  void toggleLockToScreen(bool disabled);
+  void toggleDefaultLockToComputerState(bool state);
+  void toggleLockToComputer(bool disabled);
   void toggleWin32Foreground(bool enabled);
 
   void toggleClipboard(bool enabled);
@@ -105,10 +105,19 @@ private:
   int m_rows;
   ServerConfig &m_originalServerConfig;
   NetworkProtocol m_protocol;
+  bool m_enableClipboard;
   bool m_enableHeartbeat;
+  int m_heartbeatRate;
+  int m_switchDelay;
+  int m_switchDoubleTap;
+  uint m_clipboardSize;
+  bool m_relativeMouseMoves;
   bool m_enableSwitchDelay;
   bool m_enableSwitchDoubleTap;
   bool m_originalServerConfigIsExternal;
+  bool m_win32keepForeground;
+  bool m_disableLockToComputer;
+  bool m_defaultLockToComputerState;
   QString m_originalServerConfigUsesExternalFile;
   ServerConfig m_serverConfig;
   ScreenSetupModel m_screenSetupModel;
