@@ -44,6 +44,7 @@ modules:
   - name: libei
     buildsystem: meson
     config-opts:
+        - --libdir=lib
         - -Ddocumentation=[]
         - -Dtests=disabled
         - -Dliboeffis=disabled
@@ -58,6 +59,7 @@ modules:
   - name: libportal
     buildsystem: meson
     config-opts:
+      - --libdir=lib
       - -Ddocs=false
       - -Dtests=false
       - -Dportal-tests=false
