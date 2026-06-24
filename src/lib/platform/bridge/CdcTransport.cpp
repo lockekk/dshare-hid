@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <array>
 #include <chrono>
+#include <cstdio>
 #include <cstring>
 #include <iomanip>
 #include <mutex>
@@ -673,7 +674,29 @@ bool CdcTransport::sendKeepAlive(uint32_t &uptimeSeconds)
     return false;
   }
 
-  // Parse uptime from response (4 bytes, little-endian)
+  {
+    std::string hex;
+    hex.reserve(responsePayload.size() * 3);
+    char buf[4];
+    for (uint8_t b : responsePayload) {
+      std::snprintf(buf, sizeof(buf), "%02X ", b);
+      hex += buf;
+    }
+    LOG_INFO(
+        "CDC: keep-alive response msgType=0x%02X status=%u payloadBytes=%zu hex=[%s]", msgType, status,
+        responsePayload.size(), hex.c_str()
+    );
+  }
+
+  // Protocol allows the firmware to return its uptime as a 4-byte little-endian
+  // uint32 in the response payload. In practice the current ESP32 firmware
+  // sends an empty payload (status=OK, payloadBytes=0), so this branch never
+  // fires and uptimeSeconds stays 0 — that's expected, not a bug. We are not
+  // planning to extend the firmware to populate this field, so the host log
+  // line `BridgeScreen: keep-alive ack uptime=0s` will always read 0s; treat
+  // it as a liveness ack, not a real uptime value. The 4-byte parser is kept
+  // so the host stays forward-compatible if the firmware ever does start
+  // sending an uptime.
   if (responsePayload.size() >= 4) {
     uptimeSeconds = static_cast<uint32_t>(responsePayload[0]) | (static_cast<uint32_t>(responsePayload[1]) << 8) |
                     (static_cast<uint32_t>(responsePayload[2]) << 16) |

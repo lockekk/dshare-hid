@@ -10,7 +10,7 @@
 namespace deskflow::gui {
 
 const QRegularExpression BridgeClientProcess::s_connectedRegex(
-    "connected to server|connection established", QRegularExpression::CaseInsensitiveOption
+    "connected to server|connected to secure socket|connection established", QRegularExpression::CaseInsensitiveOption
 );
 const QRegularExpression BridgeClientProcess::s_deviceNameRegex(R"(CDC:\s+firmware device name='([^']+)')");
 const QRegularExpression
