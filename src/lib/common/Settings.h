@@ -243,6 +243,10 @@ private:
     , QStringLiteral("security")
     , QStringLiteral("server")
     , QStringLiteral("internalConfig")
+    // Fork-specific: bridge client identity / auto-connect / orientation lives under bridge/*.
+    // Without this, ServerConfigDialog::accept() -> removeUnknownScreens() would silently
+    // wipe the entire bridge group every time the Server Config dialog is saved.
+    , QStringLiteral("bridge")
   };
 
   inline static const QStringList m_validKeys = {
