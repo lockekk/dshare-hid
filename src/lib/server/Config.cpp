@@ -41,88 +41,17 @@ bool Config::addScreen(const std::string &name)
   }
 
   // add cell
-  m_map.insert(std::make_pair(name, Cell()));
+  m_map.try_emplace(name, Cell());
 
   // add name
-  m_nameToCanonicalName.insert(std::make_pair(name, name));
+  m_nameToCanonicalName.try_emplace(name, name);
+
+  // add aliases
+  const auto aliases = Settings::value(Settings::Screen::Aliases.arg(QString::fromStdString(name))).toStringList();
+  for (const auto &alias : aliases)
+    m_nameToCanonicalName.try_emplace(alias.toStdString(), name);
 
   return true;
-}
-
-bool Config::renameScreen(const std::string &oldName, const std::string &newName)
-{
-  // get canonical name and find cell
-  std::string oldCanonical = getCanonicalName(oldName);
-  CellMap::iterator index = m_map.find(oldCanonical);
-  if (index == m_map.end()) {
-    return false;
-  }
-
-  // accept if names are equal but replace with new name to maintain
-  // case.  otherwise, the new name must not exist.
-  if (!CaselessCmp::equal(oldName, newName) && m_nameToCanonicalName.contains(newName)) {
-    return false;
-  }
-
-  // update cell
-  Cell tmpCell = index->second;
-  m_map.erase(index);
-  m_map.insert(std::make_pair(newName, tmpCell));
-
-  // update name
-  m_nameToCanonicalName.erase(oldCanonical);
-  m_nameToCanonicalName.insert(std::make_pair(newName, newName));
-
-  // update connections
-  Name oldNameObj(this, oldName);
-  for (index = m_map.begin(); index != m_map.end(); ++index) {
-    index->second.rename(oldNameObj, newName);
-  }
-
-  // update alias targets
-  if (CaselessCmp::equal(oldName, oldCanonical)) {
-    for (auto iter = m_nameToCanonicalName.begin(); iter != m_nameToCanonicalName.end(); ++iter) {
-      if (CaselessCmp::equal(iter->second, oldCanonical)) {
-        iter->second = newName;
-      }
-    }
-  }
-
-  return true;
-}
-
-void Config::removeScreen(const std::string &name)
-{
-  // get canonical name and find cell
-  std::string canonical = getCanonicalName(name);
-  CellMap::iterator index = m_map.find(canonical);
-  if (index == m_map.end()) {
-    return;
-  }
-
-  // remove from map
-  m_map.erase(index);
-
-  // disconnect
-  Name nameObj(this, name);
-  for (index = m_map.begin(); index != m_map.end(); ++index) {
-    index->second.remove(nameObj);
-  }
-
-  // remove aliases (and canonical name)
-  for (auto iter = m_nameToCanonicalName.begin(); iter != m_nameToCanonicalName.end();) {
-    if (iter->second == canonical) {
-      m_nameToCanonicalName.erase(iter++);
-    } else {
-      ++iter;
-    }
-  }
-}
-
-void Config::removeAllScreens()
-{
-  m_map.clear();
-  m_nameToCanonicalName.clear();
 }
 
 bool Config::addAlias(const std::string &canonical, const std::string &alias)
@@ -138,58 +67,9 @@ bool Config::addAlias(const std::string &canonical, const std::string &alias)
   }
 
   // insert alias
-  m_nameToCanonicalName.insert(std::make_pair(alias, canonical));
+  m_nameToCanonicalName.try_emplace(alias, canonical);
 
   return true;
-}
-
-bool Config::removeAlias(const std::string &alias)
-{
-  // must not be a canonical name
-  if (m_map.contains(alias)) {
-    return false;
-  }
-
-  // find alias
-  NameMap::iterator index = m_nameToCanonicalName.find(alias);
-  if (index == m_nameToCanonicalName.end()) {
-    return false;
-  }
-
-  // remove alias
-  m_nameToCanonicalName.erase(index);
-
-  return true;
-}
-
-bool Config::removeAliases(const std::string &canonical)
-{
-  // must be a canonical name
-  if (!m_map.contains(canonical)) {
-    return false;
-  }
-
-  // find and removing matching aliases
-  for (auto index = m_nameToCanonicalName.begin(); index != m_nameToCanonicalName.end();) {
-    if (index->second == canonical && index->first != canonical) {
-      m_nameToCanonicalName.erase(index++);
-    } else {
-      ++index;
-    }
-  }
-
-  return true;
-}
-
-void Config::removeAllAliases()
-{
-  // remove all names
-  m_nameToCanonicalName.clear();
-
-  // put the canonical names back in
-  for (auto index = m_map.begin(); index != m_map.end(); ++index) {
-    m_nameToCanonicalName.insert(std::make_pair(index->first, index->first));
-  }
 }
 
 bool Config::connect(
@@ -266,48 +146,6 @@ bool Config::addOption(const std::string &name, OptionID option, OptionValue val
 
   // add option
   options->insert(std::make_pair(option, value));
-  return true;
-}
-
-bool Config::removeOption(const std::string &name, OptionID option)
-{
-  // find options
-  ScreenOptions *options = nullptr;
-  if (name.empty()) {
-    options = &m_globalOptions;
-  } else {
-    CellMap::iterator index = m_map.find(name);
-    if (index != m_map.end()) {
-      options = &index->second.m_options;
-    }
-  }
-  if (options == nullptr) {
-    return false;
-  }
-
-  // remove option
-  options->erase(option);
-  return true;
-}
-
-bool Config::removeOptions(const std::string &name)
-{
-  // find options
-  ScreenOptions *options = nullptr;
-  if (name.empty()) {
-    options = &m_globalOptions;
-  } else {
-    CellMap::iterator index = m_map.find(name);
-    if (index != m_map.end()) {
-      options = &index->second.m_options;
-    }
-  }
-  if (options == nullptr) {
-    return false;
-  }
-
-  // remove options
-  options->clear();
   return true;
 }
 
@@ -603,10 +441,10 @@ void Config::readSection(ConfigReadContext &s)
     readSectionOptions(s);
   } else if (name == s_screens) {
     readSectionScreens(s);
-  } else if (name == s_links) {
-    readSectionLinks(s);
   } else if (name == s_aliases) {
     readSectionAliases(s);
+  } else if (name == s_links) {
+    readSectionLinks(s);
   } else {
     throw ServerConfigReadException(s, "unknown section name \"%{1}\"", name);
   }
@@ -614,6 +452,25 @@ void Config::readSection(ConfigReadContext &s)
 
 void Config::readSectionOptions(ConfigReadContext &s)
 {
+  if (Settings::value(Settings::Server::EnableHeatbeat).toBool()) {
+    addOption("", kOptionHeartbeat, Settings::value(Settings::Server::Heartbeat).toInt());
+  }
+
+  if (Settings::value(Settings::Server::EnableSwitchDelay).toBool()) {
+    addOption("", kOptionScreenSwitchDelay, Settings::value(Settings::Server::SwitchDelay).toInt());
+  }
+
+  if (Settings::value(Settings::Server::EnableSwitchDoubleTap).toBool()) {
+    addOption("", kOptionScreenSwitchTwoTap, Settings::value(Settings::Server::SwitchDoubleTap).toInt());
+  }
+
+  addOption("", kOptionDefaultLockToScreenState, Settings::value(Settings::Server::DefaultLockToComputerState).toInt());
+  addOption("", kOptionDisableLockToScreen, Settings::value(Settings::Server::DisableLockToComputer).toInt());
+  addOption("", kOptionRelativeMouseMoves, Settings::value(Settings::Server::RelativeMouseMoves).toInt());
+  addOption("", kOptionWin32KeepForeground, Settings::value(Settings::Server::Win32KeepForeground).toInt());
+  addOption("", kOptionClipboardSharing, Settings::value(Settings::Server::EnableClipboard).toBool());
+  addOption("", kOptionClipboardSharingSize, Settings::value(Settings::Server::ClipboardSize).toUInt() * 1024);
+
   std::string line;
   while (s.readLine(line)) {
     // check for end of section
@@ -646,16 +503,6 @@ void Config::readSectionOptions(ConfigReadContext &s)
       } catch (SocketAddressException &e) {
         throw ServerConfigReadException(s, std::string("invalid address argument ") + e.what());
       }
-    } else if (name == "switchCorners") {
-      addOption("", kOptionScreenSwitchCorners, s.parseCorners(value));
-    } else if (name == "switchCornerSize") {
-      addOption("", kOptionScreenSwitchCornerSize, s.parseInt(value));
-    } else if (name == "switchNeedsShift") {
-      addOption("", kOptionScreenSwitchNeedsShift, s.parseBoolean(value));
-    } else if (name == "switchNeedsControl") {
-      addOption("", kOptionScreenSwitchNeedsControl, s.parseBoolean(value));
-    } else if (name == "switchNeedsAlt") {
-      addOption("", kOptionScreenSwitchNeedsAlt, s.parseBoolean(value));
     } else {
       handled = false;
     }
@@ -703,25 +550,6 @@ void Config::readSectionOptions(ConfigReadContext &s)
       m_inputFilter.addFilterRule(rule);
     }
   }
-
-  if (Settings::value(Settings::Server::EnableHeatbeat).toBool()) {
-    addOption("", kOptionHeartbeat, Settings::value(Settings::Server::Heartbeat).toInt());
-  }
-
-  if (Settings::value(Settings::Server::EnableSwitchDelay).toBool()) {
-    addOption("", kOptionScreenSwitchDelay, Settings::value(Settings::Server::SwitchDelay).toInt());
-  }
-
-  if (Settings::value(Settings::Server::EnableSwitchDoubleTap).toBool()) {
-    addOption("", kOptionScreenSwitchTwoTap, Settings::value(Settings::Server::SwitchDoubleTap).toInt());
-  }
-
-  addOption("", kOptionDefaultLockToScreenState, Settings::value(Settings::Server::DefaultLockToComputerState).toInt());
-  addOption("", kOptionDisableLockToScreen, Settings::value(Settings::Server::DisableLockToComputer).toInt());
-  addOption("", kOptionRelativeMouseMoves, Settings::value(Settings::Server::RelativeMouseMoves).toInt());
-  addOption("", kOptionWin32KeepForeground, Settings::value(Settings::Server::Win32KeepForeground).toInt());
-  addOption("", kOptionClipboardSharing, Settings::value(Settings::Server::EnableClipboard).toBool());
-  addOption("", kOptionClipboardSharingSize, Settings::value(Settings::Server::ClipboardSize).toUInt() * 1024);
 
   throw ServerConfigReadException(s, "unexpected end of options section");
 }
@@ -880,38 +708,13 @@ void Config::readSectionLinks(ConfigReadContext &s)
 
 void Config::readSectionAliases(ConfigReadContext &s)
 {
+  qWarning(
+  ) << "Your server config has an alias section. Alias have moved to the general config this section will no be "
+       "parsed.";
   std::string line;
-  std::string screen;
   while (s.readLine(line)) {
-    // check for end of section
     if (line == "end") {
       return;
-    }
-
-    // see if it's the next screen
-    if (line[line.size() - 1] == ':') {
-      // strip :
-      screen = line.substr(0, line.size() - 1);
-
-      // verify we know about the screen
-      if (!isScreen(screen)) {
-        throw ServerConfigReadException(s, "unknown screen name \"%{1}\"", screen);
-      }
-      if (!isCanonicalName(screen)) {
-        throw ServerConfigReadException(s, "cannot use screen name alias here");
-      }
-    } else if (screen.empty()) {
-      throw ServerConfigReadException(s, "argument before first screen");
-    } else {
-      // verify validity of screen name
-      if (!isValidScreenName(line)) {
-        throw ServerConfigReadException(s, "invalid screen alias \"%{1}\"", line);
-      }
-
-      // add alias
-      if (!addAlias(screen, line)) {
-        throw ServerConfigReadException(s, "alias \"%{1}\" is already used", line);
-      }
     }
   }
   throw ServerConfigReadException(s, "unexpected end of aliases section");
@@ -1446,7 +1249,7 @@ bool Config::Cell::add(const CellEdge &src, const CellEdge &dst)
   }
 
   m_neighbors.erase(src);
-  m_neighbors.insert(std::make_pair(src, dst));
+  m_neighbors.try_emplace(src, dst);
   return true;
 }
 
@@ -1609,30 +1412,6 @@ std::ostream &operator<<(std::ostream &s, const Config &config)
     }
   }
   s << "end" << std::endl;
-
-  // aliases section (if there are any)
-  if (config.m_map.size() != config.m_nameToCanonicalName.size()) {
-    // map canonical to alias
-    using CMNameMap = std::multimap<std::string, std::string, CaselessCmp>;
-    CMNameMap aliases;
-    for (auto index = config.m_nameToCanonicalName.begin(); index != config.m_nameToCanonicalName.end(); ++index) {
-      if (index->first != index->second) {
-        aliases.insert(std::make_pair(index->second, index->first));
-      }
-    }
-
-    // dump it
-    std::string screen;
-    s << "section: aliases" << std::endl;
-    for (CMNameMap::const_iterator index = aliases.begin(); index != aliases.end(); ++index) {
-      if (index->first != screen) {
-        screen = index->first;
-        s << "\t" << screen.c_str() << ":" << std::endl;
-      }
-      s << "\t\t" << index->second.c_str() << std::endl;
-    }
-    s << "end" << std::endl;
-  }
 
   // options section
   s << "section: options" << std::endl;

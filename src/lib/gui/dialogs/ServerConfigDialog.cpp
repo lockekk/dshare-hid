@@ -92,6 +92,16 @@ void ServerConfigDialog::accept()
   Settings::setValue(Settings::Server::RelativeMouseMoves, m_relativeMouseMoves);
   Settings::setValue(Settings::Server::Win32KeepForeground, m_win32keepForeground);
 
+  QStringList screenNames;
+  const auto screenList = m_screenSetupModel.m_Screens;
+  for (const auto &screen : screenList) {
+    const auto &screenName = screen.name();
+    if (screenName.isEmpty())
+      continue;
+    screenNames.append(QStringLiteral("screen_%1").arg(screenName));
+    Settings::setValue(Settings::Screen::Aliases.arg(screenName), screen.aliases());
+  }
+  Settings::removeUnknownScreens(screenNames);
   QDialog::accept();
 }
 
@@ -273,36 +283,6 @@ void ServerConfigDialog::toggleProtocol()
   onChange();
 }
 
-void ServerConfigDialog::setSwitchCornerSize(int size)
-{
-  serverConfig().setSwitchCornerSize(size);
-  onChange();
-}
-
-void ServerConfigDialog::toggleCornerBottomLeft(bool enable)
-{
-  serverConfig().setSwitchCorner(static_cast<int>(BottomLeft), enable);
-  onChange();
-}
-
-void ServerConfigDialog::toggleCornerTopLeft(bool enable)
-{
-  serverConfig().setSwitchCorner(static_cast<int>(TopLeft), enable);
-  onChange();
-}
-
-void ServerConfigDialog::toggleCornerBottomRight(bool enable)
-{
-  serverConfig().setSwitchCorner(static_cast<int>(BottomRight), enable);
-  onChange();
-}
-
-void ServerConfigDialog::toggleCornerTopRight(bool enable)
-{
-  serverConfig().setSwitchCorner(static_cast<int>(TopRight), enable);
-  onChange();
-}
-
 void ServerConfigDialog::listActionsSelectionChanged(const QItemSelection &selected, const QItemSelection &)
 {
   bool enabled = !selected.isEmpty();
@@ -435,7 +415,6 @@ void ServerConfigDialog::toggleExternalConfig(bool checked)
   ui->tabWidget->setTabEnabled(0, !checked);
   ui->tabWidget->setTabEnabled(1, !checked);
   ui->groupMisc->setEnabled(!checked);
-  ui->groupCorners->setEnabled(!checked);
   ui->groupSwitch->setEnabled(!checked);
   ui->widgetHeartbeat->setEnabled(!checked);
   serverConfig().setUseExternalConfig(checked);
@@ -500,12 +479,6 @@ void ServerConfigDialog::loadFromConfig()
 
   ui->widgetExternalConfigControls->setEnabled(ui->groupExternalConfig->isChecked());
   toggleExternalConfig(ui->groupExternalConfig->isChecked());
-
-  ui->cbCornerTopLeft->setChecked(serverConfig().switchCorner(static_cast<int>(TopLeft)));
-  ui->cbCornerTopRight->setChecked(serverConfig().switchCorner(static_cast<int>(TopRight)));
-  ui->cbCornerBottomLeft->setChecked(serverConfig().switchCorner(static_cast<int>(BottomLeft)));
-  ui->cbCornerBottomRight->setChecked(serverConfig().switchCorner(static_cast<int>(BottomRight)));
-  ui->sbSwitchCornerSize->setValue(serverConfig().switchCornerSize());
 
   m_defaultLockToComputerState = Settings::value(Settings::Server::DefaultLockToComputerState).toBool();
   ui->cbDefaultLockToComputerState->setChecked(m_defaultLockToComputerState);
@@ -578,18 +551,11 @@ void ServerConfigDialog::initConnections()
   connect(ui->cbEnableClipboard, &QCheckBox::toggled, this, &ServerConfigDialog::toggleClipboard);
   connect(ui->btnBrowseConfigFile, &QPushButton::clicked, this, &ServerConfigDialog::browseConfigFile);
   connect(ui->groupExternalConfig, &QGroupBox::toggled, this, &ServerConfigDialog::toggleExternalConfig);
-  connect(
-      ui->sbSwitchCornerSize, QOverload<int>::of(&QSpinBox::valueChanged), this,
-      &ServerConfigDialog::setSwitchCornerSize
-  );
+
   connect(
       ui->sbClipboardSizeLimit, QOverload<int>::of(&QSpinBox::valueChanged), this,
       &ServerConfigDialog::setClipboardLimit
   );
-  connect(ui->cbCornerTopLeft, &QCheckBox::toggled, this, &ServerConfigDialog::toggleCornerTopLeft);
-  connect(ui->cbCornerTopRight, &QCheckBox::toggled, this, &ServerConfigDialog::toggleCornerTopRight);
-  connect(ui->cbCornerBottomLeft, &QCheckBox::toggled, this, &ServerConfigDialog::toggleCornerBottomLeft);
-  connect(ui->cbCornerBottomRight, &QCheckBox::toggled, this, &ServerConfigDialog::toggleCornerBottomRight);
   connect(
       ui->cbDefaultLockToComputerState, &QCheckBox::toggled, this, &ServerConfigDialog::toggleDefaultLockToComputerState
   );
