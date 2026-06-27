@@ -146,11 +146,6 @@ public:
     inline static const auto Aliases = QStringLiteral("screen_%1/aliases");
   };
 
-  struct Screen
-  {
-    inline static const auto Aliases = QStringLiteral("screen_%1/aliases");
-  };
-
   // Track Removed keys to make upgrading config easier
   // REMOVE FOR 2.0
   struct InternalConfig
@@ -430,25 +425,6 @@ private:
     , InternalConfig::Win32KeepForeground
     , InternalConfig::Protocol
     , QStringLiteral("internalConfig/switchCorner")
-  };
-  // Contains settings removed from server-configuration file
-  inline static const QStringList m_oldServerConfigKeys = {
-      QStringLiteral("internalConfig/defaultLockToScreenState")
-    , QStringLiteral("internalConfig/disableLockToScreen")
-    , QStringLiteral("internalConfig/clipboardSharing")
-    , QStringLiteral("internalConfig/clipboardSharingSize")
-    , QStringLiteral("internalConfig/hasHeartbeat")
-    , QStringLiteral("internalConfig/hasSwitchDelay")
-    , QStringLiteral("internalConfig/hasSwitchDoubleTap")
-    , QStringLiteral("internalConfig/heartbeat")
-    , QStringLiteral("internalConfig/protocol")
-    , QStringLiteral("internalConfig/numColumns")
-    , QStringLiteral("internalConfig/numRows")
-    , QStringLiteral("internalConfig/relativeMouseMoves")
-    , QStringLiteral("internalConfig/switchCorner")
-    , QStringLiteral("internalConfig/switchDelay")
-    , QStringLiteral("internalConfig/switchDoubleTap")
-    , QStringLiteral("internalConfig/win32KeepForeground")
   };
   // clang-format on
 };
