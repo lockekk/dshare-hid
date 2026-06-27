@@ -503,6 +503,33 @@ Do you want to connect to the server?
     </message>
 </context>
 <context>
+    <name>LogLevel</name>
+    <message>
+        <source>Fatal</source>
+        <translation type="unfinished">Fatal</translation>
+    </message>
+    <message>
+        <source>Error</source>
+        <translation type="unfinished">Error</translation>
+    </message>
+    <message>
+        <source>Warning</source>
+        <translation type="unfinished">Advertencia</translation>
+    </message>
+    <message>
+        <source>Info</source>
+        <translation type="unfinished">Información</translation>
+    </message>
+    <message>
+        <source>Debug</source>
+        <translation type="unfinished">Depurar</translation>
+    </message>
+    <message>
+        <source>Verbose</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>MainWindow</name>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Name can&apos;t have have spaces or special characters&lt;/p&gt;&lt;p&gt;Use Enter to save the name change.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
@@ -1200,6 +1227,14 @@ Esta nueva instancia no puede iniciar otro servidor, por lo que se cerrará ahor
         <source>The screen name cannot be the same as an alias. Please either remove the alias or change the screen name.</source>
         <translation type="unfinished">El nombre de usuario no puede ser el mismo que un alias. Elimine el alias o cambie el nombre de usuario.</translation>
     </message>
+    <message>
+        <source>Alt Gr</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Alt &amp;Gr</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ScreenSetupModel</name>
@@ -1291,31 +1326,31 @@ Esta nueva instancia no puede iniciar otro servidor, por lo que se cerrará ahor
     </message>
     <message>
         <source>&amp;Dead corners (for this computer)</source>
-        <translation type="unfinished">Esquinas &amp;muertas (para esta computadora)</translation>
+        <translation type="obsolete">Esquinas &amp;muertas (para esta computadora)</translation>
     </message>
     <message>
         <source>&amp;Bottom-left</source>
-        <translation type="unfinished">A&amp;bajo a la izquierda</translation>
+        <translation type="obsolete">A&amp;bajo a la izquierda</translation>
     </message>
     <message>
         <source>To&amp;p-left</source>
-        <translation type="unfinished">Arriba y abajo a la iz&amp;quierda</translation>
+        <translation type="obsolete">Arriba y abajo a la iz&amp;quierda</translation>
     </message>
     <message>
         <source>Bottom-ri&amp;ght</source>
-        <translation type="unfinished">Aba&amp;jo a la derecha</translation>
+        <translation type="obsolete">Aba&amp;jo a la derecha</translation>
     </message>
     <message>
         <source>Top-rig&amp;ht</source>
-        <translation type="unfinished">Derecha superio&amp;r</translation>
+        <translation type="obsolete">Derecha superio&amp;r</translation>
     </message>
     <message>
         <source>Cor&amp;ner size</source>
-        <translation type="unfinished">Tamaño de la esqui&amp;na</translation>
+        <translation type="obsolete">Tamaño de la esqui&amp;na</translation>
     </message>
     <message>
         <source>px</source>
-        <translation type="unfinished">px</translation>
+        <translation type="obsolete">px</translation>
     </message>
     <message>
         <source>&amp;Misc</source>
@@ -1363,7 +1398,7 @@ Esta nueva instancia no puede iniciar otro servidor, por lo que se cerrará ahor
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enables compatibility with programs that use either the Synergy or Barrier protocols:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 uses the Synergy protocol.&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap and Synergy 1 uses the Barrier protocol.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;A DShare-HID client will automatically use either the Synergy or Barrier protocol depending on the server protocol.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="obsolete">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Habilita la compatibilidad con programas que usan los protocolos Synergy o Barrier:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 usa el protocolo Synergy.&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap y Synergy 1 usan el protocolo Barrier.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Un cliente de DShare-HID usará automáticamente el Protocolo Synergy o Barrier según el protocolo del servidor.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Habilita la compatibilidad con programas que usan los protocolos Synergy o Barrier:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 usa el protocolo Synergy.&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap y Synergy 1 usan el protocolo Barrier.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Un cliente de DShare-HID usará automáticamente el Protocolo Synergy o Barrier según el protocolo del servidor.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Network protocol</source>
@@ -1438,10 +1473,6 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     <message>
         <source>Failed to delete bridge client configuration file for &apos;%1&apos;.</source>
         <translation>Error al eliminar el archivo de configuración del cliente puente para &apos;%1&apos;.</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enables compatibility with programs that use either the Synergy or Barrier protocols:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 uses the Synergy protocol.&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap and Synergy 1 uses the Barrier protocol.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;A Deskflow client will automatically use either the Synergy or Barrier protocol depending on the server protocol.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1544,35 +1575,35 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Fatal</source>
-        <translation type="unfinished">Fatal</translation>
+        <translation type="obsolete">Fatal</translation>
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished">Error</translation>
+        <translation type="obsolete">Error</translation>
     </message>
     <message>
         <source>Warning</source>
-        <translation type="unfinished">Advertencia</translation>
+        <translation type="obsolete">Advertencia</translation>
     </message>
     <message>
         <source>Note</source>
-        <translation type="unfinished">Nota</translation>
+        <translation type="obsolete">Nota</translation>
     </message>
     <message>
         <source>Info</source>
-        <translation type="unfinished">Información</translation>
+        <translation type="obsolete">Información</translation>
     </message>
     <message>
         <source>Debug</source>
-        <translation type="unfinished">Depurar</translation>
+        <translation type="obsolete">Depurar</translation>
     </message>
     <message>
         <source>Debug1</source>
-        <translation type="unfinished">Depuración1</translation>
+        <translation type="obsolete">Depuración1</translation>
     </message>
     <message>
         <source>Debug2</source>
-        <translation type="unfinished">Depuración 2</translation>
+        <translation type="obsolete">Depuración 2</translation>
     </message>
     <message>
         <source>Level</source>
@@ -1580,7 +1611,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Using a Debug log level may affect performance. Only use a Debug level if you are attempting to debug an issue or are gathering logs to submit with a bug report.</source>
-        <translation type="unfinished">Usar un nivel de registro de depuración puede afectar el rendimiento. Úselo solo si intenta depurar un problema o recopila registros para enviarlos junto con un informe de errores.</translation>
+        <translation type="obsolete">Usar un nivel de registro de depuración puede afectar el rendimiento. Úselo solo si intenta depurar un problema o recopila registros para enviarlos junto con un informe de errores.</translation>
     </message>
     <message>
         <source>Use background service (daemon)</source>
@@ -1604,7 +1635,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Notable events</source>
-        <translation type="unfinished">Eventos notables</translation>
+        <translation type="obsolete">Eventos notables</translation>
     </message>
     <message>
         <source>General events [Default]</source>
@@ -1616,7 +1647,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>More debug output</source>
-        <translation type="unfinished">Más resultados de depuración</translation>
+        <translation type="obsolete">Más resultados de depuración</translation>
     </message>
     <message>
         <source>Verbose debug output</source>
@@ -1668,7 +1699,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Enable wl-clipboard support</source>
-        <translation type="unfinished">Habilitar la compatibilidad con wl-clipboard</translation>
+        <translation type="obsolete">Habilitar la compatibilidad con wl-clipboard</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Requires the wl-clipboard package&lt;/p&gt;&lt;p&gt;When using wl-clipboard v2.2.1, there is a focus stealing bug that may make DShare-HID harder to use. This has been fixed when using the wl-clipboard master branch, unless your Compositor lacks wlroots-data-control protocol support.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
@@ -1703,10 +1734,6 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation type="unfinished">&amp;Red</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Requires the wl-clipboard package&lt;/p&gt;&lt;p&gt;When using wl-clipboard v2.2.1, there is a focus stealing bug that may make Deskflow harder to use. This has been fixed when using the wl-clipboard master branch, unless your Compositor lacks wlroots-data-control protocol support.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Window</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1736,6 +1763,10 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Run command on exit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Using a log level higher than Info may affect performance.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

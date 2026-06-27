@@ -505,6 +505,33 @@ Do you want to connect to the server?
     </message>
 </context>
 <context>
+    <name>LogLevel</name>
+    <message>
+        <source>Fatal</source>
+        <translation type="unfinished">Фатальная</translation>
+    </message>
+    <message>
+        <source>Error</source>
+        <translation type="unfinished">Ошибка</translation>
+    </message>
+    <message>
+        <source>Warning</source>
+        <translation type="unfinished">Предупреждение</translation>
+    </message>
+    <message>
+        <source>Info</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Debug</source>
+        <translation type="unfinished">Отладка</translation>
+    </message>
+    <message>
+        <source>Verbose</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>MainWindow</name>
     <message>
         <source>This computer&apos;s name:</source>
@@ -1217,6 +1244,14 @@ This new instance cannot start another server, so it will now exit.</source>
         <source>The screen name cannot be the same as an alias. Please either remove the alias or change the screen name.</source>
         <translation>мя экрана не может совпадать с псевдонимом. Пожалуйста, удалите псевдоним или измените имя экрана.</translation>
     </message>
+    <message>
+        <source>Alt Gr</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Alt &amp;Gr</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ScreenSetupModel</name>
@@ -1308,31 +1343,31 @@ This new instance cannot start another server, so it will now exit.</source>
     </message>
     <message>
         <source>&amp;Dead corners (for this computer)</source>
-        <translation>&amp;Мёртвые края (для компьютера)</translation>
+        <translation type="vanished">&amp;Мёртвые края (для компьютера)</translation>
     </message>
     <message>
         <source>&amp;Bottom-left</source>
-        <translation>&amp;Снизу слева</translation>
+        <translation type="vanished">&amp;Снизу слева</translation>
     </message>
     <message>
         <source>To&amp;p-left</source>
-        <translation>Свер&amp;ху слева</translation>
+        <translation type="vanished">Свер&amp;ху слева</translation>
     </message>
     <message>
         <source>Bottom-ri&amp;ght</source>
-        <translation>Снизу с&amp;права</translation>
+        <translation type="vanished">Снизу с&amp;права</translation>
     </message>
     <message>
         <source>Top-rig&amp;ht</source>
-        <translation>Сверху спр&amp;ва</translation>
+        <translation type="vanished">Сверху спр&amp;ва</translation>
     </message>
     <message>
         <source>Cor&amp;ner size</source>
-        <translation>Разме&amp;ры углов</translation>
+        <translation type="vanished">Разме&amp;ры углов</translation>
     </message>
     <message>
         <source>px</source>
-        <translation>px</translation>
+        <translation type="vanished">px</translation>
     </message>
     <message>
         <source>&amp;Misc</source>
@@ -1380,7 +1415,7 @@ This new instance cannot start another server, so it will now exit.</source>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enables compatibility with programs that use either the Synergy or Barrier protocols:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 uses the Synergy protocol.&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap and Synergy 1 uses the Barrier protocol.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;A DShare-HID client will automatically use either the Synergy or Barrier protocol depending on the server protocol.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Включить совместимость с программы, использующие либо Synergy  или Barrier протоколы:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 используеть протокол Synergy.&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap и Synergy 1 использует Barrier протокл.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;DShare-HID клиенты буду автоматически использовать Synergy или взависимотси от протокола сервера.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Включить совместимость с программы, использующие либо Synergy  или Barrier протоколы:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 используеть протокол Synergy.&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap и Synergy 1 использует Barrier протокл.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;DShare-HID клиенты буду автоматически использовать Synergy или взависимотси от протокола сервера.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Network protocol</source>
@@ -1454,10 +1489,6 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     <message>
         <source>Failed to delete bridge client configuration file for &apos;%1&apos;.</source>
         <translation>Не удалось удалить файл конфигурации мост-клиента для &apos;%1&apos;.</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enables compatibility with programs that use either the Synergy or Barrier protocols:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 uses the Synergy protocol.&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap and Synergy 1 uses the Barrier protocol.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;A Deskflow client will automatically use either the Synergy or Barrier protocol depending on the server protocol.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1565,35 +1596,35 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Fatal</source>
-        <translation>Фатальная</translation>
+        <translation type="vanished">Фатальная</translation>
     </message>
     <message>
         <source>Error</source>
-        <translation>Ошибка</translation>
+        <translation type="vanished">Ошибка</translation>
     </message>
     <message>
         <source>Warning</source>
-        <translation>Предупреждение</translation>
+        <translation type="vanished">Предупреждение</translation>
     </message>
     <message>
         <source>Note</source>
-        <translation>Примечание</translation>
+        <translation type="vanished">Примечание</translation>
     </message>
     <message>
         <source>Info</source>
-        <translation>Инфа</translation>
+        <translation type="vanished">Инфа</translation>
     </message>
     <message>
         <source>Debug</source>
-        <translation>Отладка</translation>
+        <translation type="vanished">Отладка</translation>
     </message>
     <message>
         <source>Debug1</source>
-        <translation>Отладка 1</translation>
+        <translation type="vanished">Отладка 1</translation>
     </message>
     <message>
         <source>Debug2</source>
-        <translation>Отладка 2</translation>
+        <translation type="vanished">Отладка 2</translation>
     </message>
     <message>
         <source>Log path</source>
@@ -1605,7 +1636,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Using a Debug log level may affect performance. Only use a Debug level if you are attempting to debug an issue or are gathering logs to submit with a bug report.</source>
-        <translation>Использование уровня логирования «Отладка» может повлиять на производительность. Используйте уровень «Отладка» только при поиске проблемы или сборе логов для отправки вместе с отчётом об ошибке.</translation>
+        <translation type="vanished">Использование уровня логирования «Отладка» может повлиять на производительность. Используйте уровень «Отладка» только при поиске проблемы или сборе логов для отправки вместе с отчётом об ошибке.</translation>
     </message>
     <message>
         <source>Enable GUI debug messages</source>
@@ -1629,7 +1660,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Enable wl-clipboard support</source>
-        <translation>Врубить поддержку буфера обмена</translation>
+        <translation type="vanished">Врубить поддержку буфера обмена</translation>
     </message>
     <message>
         <source>TLS Certificate Regenerated</source>
@@ -1661,7 +1692,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Notable events</source>
-        <translation>Известные события</translation>
+        <translation type="vanished">Известные события</translation>
     </message>
     <message>
         <source>General events [Default]</source>
@@ -1673,7 +1704,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>More debug output</source>
-        <translation>Больше отладочный опций</translation>
+        <translation type="vanished">Больше отладочный опций</translation>
     </message>
     <message>
         <source>Verbose debug output</source>
@@ -1720,10 +1751,6 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation type="unfinished">&amp;Сеть</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Requires the wl-clipboard package&lt;/p&gt;&lt;p&gt;When using wl-clipboard v2.2.1, there is a focus stealing bug that may make Deskflow harder to use. This has been fixed when using the wl-clipboard master branch, unless your Compositor lacks wlroots-data-control protocol support.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Window</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1753,6 +1780,10 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Run command on exit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Using a log level higher than Info may affect performance.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
