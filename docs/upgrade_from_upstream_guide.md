@@ -114,6 +114,13 @@ The following files were updated to display "DShare-HID" in the user interface (
 
 When interacting with the upstream `deskflow/deskflow` repository, use the following strategies:
 
+### Merge Commit Message Format
+
+*   **Rule**: Use the upstream commit's original subject line as the merge commit's subject line. Do NOT invent summaries like `Merge upstream/master <sha>: <slug>`.
+*   **Body**: Preserve the upstream commit's body verbatim (if any). Then append a short trailer line: `Merged from upstream <shortsha>.` If a Scenario was applied, extend that trailer with the scenario letter and one-line reason — e.g. `Merged from upstream 570e68e910. Scenario J: kept our deletion of .github/workflows/continuous-integration.yml.`
+*   **Rationale**: `git log --oneline` on `main` should read like the upstream history it tracks. A grep for an upstream subject should hit both the upstream commit and its merge commit on `main`, which is impossible when the merge commit rewrites the subject. Scenario notes belong in the body, not the subject.
+*   **Recovery**: If merge commits were already recorded with the wrong subject and haven't been pushed, rebuild them with `git commit-tree` (same tree, same two parents, new message) and update `refs/heads/main` — the reflog preserves the old tips.
+
 ### Scenario A: Upstream Updates Translations
 *   **Issue**: Upstream modifies, adds, or removes files under `translations/` (e.g., `translations/deskflow_<lang>.ts`, `translations/languages/*.json`, or new locales like `deskflow_ko.ts`).
 *   **Git Behavior**: Often "Modify vs Delete" conflicts because we renamed the upstream `deskflow_*.ts` files to `dshare-hid_*.ts`.
