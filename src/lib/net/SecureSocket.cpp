@@ -731,9 +731,9 @@ ISocketMultiplexerJob *SecureSocket::serviceConnect(ISocketMultiplexerJob *const
   setWritable(false);
 
   int status = 0;
-#ifdef SYSAPI_WIN32
+#if defined(Q_OS_WIN)
   status = secureConnect(static_cast<int>(getSocket()->m_socket));
-#elif SYSAPI_UNIX
+#else
   status = secureConnect(getSocket()->m_fd);
 #endif
 
@@ -770,9 +770,9 @@ ISocketMultiplexerJob *SecureSocket::serviceAccept(ISocketMultiplexerJob *const,
   setWritable(false);
 
   int status = 0;
-#ifdef SYSAPI_WIN32
+#if defined(Q_OS_WIN)
   status = secureAccept(static_cast<int>(getSocket()->m_socket));
-#elif SYSAPI_UNIX
+#else
   status = secureAccept(getSocket()->m_fd);
 #endif
   // If status < 0, error happened

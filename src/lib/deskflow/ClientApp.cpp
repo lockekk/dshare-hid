@@ -23,7 +23,7 @@
 #include "net/SocketMultiplexer.h"
 #include "net/TCPSocketFactory.h"
 
-#if WINAPI_MSWINDOWS
+#if defined(Q_OS_WIN)
 #include "platform/MSWindowsScreen.h"
 #endif
 
@@ -64,7 +64,7 @@ void ClientApp::parseArgs()
       try {
         NetworkAddress netAddr(trimmedAddr.toStdString(), port);
         netAddr.resolve();
-        m_serverAddresses.push_back(std::move(netAddr));
+        m_serverAddresses.append(netAddr);
         LOG_DEBUG("added server address: %s", qPrintable(trimmedAddr));
       } catch (SocketAddressException &e) {
         // allow an address that we can't look up if we're restartable.
@@ -76,7 +76,7 @@ void ClientApp::parseArgs()
         } else {
           // Still add it - we'll try to resolve later
           NetworkAddress netAddr(trimmedAddr.toStdString(), port);
-          m_serverAddresses.push_back(std::move(netAddr));
+          m_serverAddresses.append(netAddr);
           LOG_WARN("could not resolve address '%s': %s (will retry later)", qPrintable(trimmedAddr), e.what());
         }
       }
@@ -100,7 +100,7 @@ const char *ClientApp::daemonName() const
 
 deskflow::Screen *ClientApp::createScreen()
 {
-#if WINAPI_MSWINDOWS
+#if defined(Q_OS_WIN)
   return new deskflow::Screen(
       new MSWindowsScreen(
           false, Settings::value(Settings::Core::UseHooks).toBool(), getEvents(),
@@ -108,9 +108,11 @@ deskflow::Screen *ClientApp::createScreen()
       ),
       getEvents()
   );
-#endif
-
-#if defined(WINAPI_XWINDOWS) or defined(WINAPI_LIBEI)
+#elif defined(Q_OS_MAC)
+  return new deskflow::Screen(
+      new OSXScreen(getEvents(), false, Settings::value(Settings::Client::LanguageSync).toBool()), getEvents()
+  );
+#else
   if (deskflow::platform::isWayland()) {
 #if WINAPI_LIBEI
     LOG_INFO("using ei screen for wayland");
@@ -119,22 +121,14 @@ deskflow::Screen *ClientApp::createScreen()
     throw XNoEiSupport();
 #endif
   }
-#endif
-
 #if WINAPI_XWINDOWS
   LOG_INFO("using legacy x windows screen");
   return new deskflow::Screen(
       new XWindowsScreen(qPrintable(Settings::value(Settings::Core::Display).toString()), false, getEvents()),
       getEvents()
   );
-
 #endif
-
-#if WINAPI_CARBON
-  return new deskflow::Screen(
-      new OSXScreen(getEvents(), false, Settings::value(Settings::Client::LanguageSync).toBool()), getEvents()
-  );
-#endif
+#endif // end os check
 }
 
 deskflow::Screen *ClientApp::openClientScreen()

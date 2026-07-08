@@ -16,7 +16,7 @@
 #include "deskflow/DeskflowException.h"
 #include "mt/ThreadException.h"
 
-#if SYSAPI_WIN32
+#if defined(Q_OS_WIN)
 #include "base/IEventQueue.h"
 #endif
 

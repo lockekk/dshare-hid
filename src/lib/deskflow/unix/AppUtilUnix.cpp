@@ -13,7 +13,7 @@
 #if WINAPI_XWINDOWS
 #include "deskflow/unix/X11LayoutsParser.h"
 #include <X11/XKBlib.h>
-#elif WINAPI_CARBON
+#elif defined(Q_OS_MAC)
 #include <Carbon/Carbon.h>
 #include <dispatch/dispatch.h>
 #include <platform/OSXAutoTypes.h>
@@ -42,7 +42,7 @@ void AppUtilUnix::startNode()
   app().startNode();
 }
 
-#if WINAPI_CARBON
+#if defined(Q_OS_MAC)
 static void getMacKeyboardLayouts(void *ctx)
 {
   auto *layoutLangCodes = static_cast<std::vector<std::string> *>(ctx);
@@ -101,7 +101,7 @@ std::vector<std::string> AppUtilUnix::getKeyboardLayoutList()
     ;
   layoutLangCodes = X11LayoutsParser::getX11LanguageList(m_evdev);
 
-#elif WINAPI_CARBON
+#elif defined(Q_OS_MAC)
   if (pthread_main_np()) {
     getMacKeyboardLayouts(&layoutLangCodes);
   } else {

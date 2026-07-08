@@ -15,7 +15,7 @@
 #include "common/VersionInfo.h"
 #include "deskflow/ipc/DaemonIpcServer.h"
 
-#if SYSAPI_WIN32
+#if defined(Q_OS_WIN)
 
 #include "arch/win32/ArchMiscWindows.h"
 
@@ -34,7 +34,7 @@ void handleError(const char *message = "Unrecognized error.");
 
 int main(int argc, char **argv)
 {
-#if SYSAPI_WIN32
+#if defined(Q_OS_WIN)
   ArchMiscWindows::guardRuntimeVersion();
 
   // Save window instance for later use, e.g. `GetModuleFileName` which is used when installing the daemon.
@@ -86,7 +86,7 @@ int main(int argc, char **argv)
 
   try {
 
-#if SYSAPI_WIN32
+#if defined(Q_OS_WIN)
     // Show warning if not running as admin as daemon will behave differently.
     if (!ArchMiscWindows::isProcessElevated()) {
       LOG_WARN("not running as admin, some features may not work");
@@ -116,7 +116,7 @@ int main(int argc, char **argv)
   }
 }
 
-#if SYSAPI_WIN32
+#if defined(Q_OS_WIN)
 
 // Win32 subsystem entry point (simply forwards to main).
 // We need this because using regular main under the Win32 subsystem results in empty args.
@@ -132,7 +132,7 @@ void handleError(const char *message)
   // Always print error to stdout in case run as CLI program.
   LOG_ERR("%s", message);
 
-#if SYSAPI_WIN32
+#if defined(Q_OS_WIN)
   // Show a message box for when run from MSI in Win32 subsystem.
   MessageBoxA(nullptr, message, "DShare-HID daemon error", MB_OK | MB_ICONERROR);
 #endif

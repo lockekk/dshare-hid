@@ -5,7 +5,7 @@
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
-
+#include <QtSystemDetection>
 // Consider whether or not to use either encapsulation (as below)
 // or inheritance (as it is now) for the ARCH stuff.
 //
@@ -25,8 +25,7 @@
 
 #pragma once
 
-#if SYSAPI_WIN32
-
+#if defined(Q_OS_WIN)
 #include "arch/win32/ArchDaemonWindows.h"
 #include "arch/win32/ArchLogWindows.h"
 #include "arch/win32/ArchMultithreadWindows.h"
@@ -35,7 +34,6 @@
 #include "arch/unix/ArchLogUnix.h"
 #include "arch/unix/ArchMultithreadPosix.h"
 #include "arch/unix/ArchNetworkBSD.h"
-
 #endif
 
 /*!
@@ -64,7 +62,7 @@ public:
   Arch();
   ~Arch() override = default;
 
-#if SYSAPI_WIN32
+#if defined(Q_OS_WIN)
   //! Call init on other arch classes.
   /*!
   Some arch classes depend on others to exist first. When init is called

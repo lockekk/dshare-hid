@@ -31,7 +31,7 @@
 // must be before screen header includes
 #include <QFileInfo>
 
-#if WINAPI_MSWINDOWS
+#if defined(Q_OS_WIN)
 #include "platform/MSWindowsScreen.h"
 #endif
 
@@ -114,7 +114,7 @@ bool ServerApp::loadConfig(const QString &filename)
   try {
     // load configuration
     LOG_DEBUG("opening configuration \"%s\"", path.c_str());
-#ifdef SYSAPI_WIN32
+#if defined(Q_OS_WIN)
     std::ifstream configStream(filename.toStdWString());
 #else
     std::ifstream configStream(path);
@@ -389,13 +389,13 @@ bool ServerApp::startServer()
 
 deskflow::Screen *ServerApp::createScreen()
 {
-#if WINAPI_MSWINDOWS
+#if defined(Q_OS_WIN)
   return new deskflow::Screen(
       new MSWindowsScreen(true, Settings::value(Settings::Core::UseHooks).toBool(), getEvents()), getEvents()
   );
-#endif
-
-#if defined(WINAPI_XWINDOWS) or defined(WINAPI_LIBEI)
+#elif defined(Q_OS_MAC)
+  return new deskflow::Screen(new OSXScreen(getEvents(), true), getEvents());
+#else
   if (deskflow::platform::isWayland()) {
 #if WINAPI_LIBEI
     LOG_INFO("using ei screen for wayland");
@@ -404,17 +404,14 @@ deskflow::Screen *ServerApp::createScreen()
     throw XNoEiSupport();
 #endif
   }
-#endif
-
 #if WINAPI_XWINDOWS
   LOG_INFO("using legacy x windows screen");
   return new deskflow::Screen(
       new XWindowsScreen(qPrintable(Settings::value(Settings::Core::Display).toString()), true, getEvents()),
       getEvents()
   );
-#elif WINAPI_CARBON
-  return new deskflow::Screen(new OSXScreen(getEvents(), true), getEvents());
 #endif
+#endif // end os check
 }
 
 PrimaryClient *ServerApp::openPrimaryClient(const std::string &name, deskflow::Screen *screen)

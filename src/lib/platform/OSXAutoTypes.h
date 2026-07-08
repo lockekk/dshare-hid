@@ -5,7 +5,6 @@
  */
 #pragma once
 
-#if WINAPI_CARBON
 #include <Carbon/Carbon.h>
 #include <memory>
 #include <mutex>
@@ -16,5 +15,3 @@ using AutoCFDictionary = std::unique_ptr<const __CFDictionary, CFDeallocator>;
 using AutoTISInputSourceRef = std::unique_ptr<__TISInputSource, CFDeallocator>;
 
 inline std::mutex g_tisMutex;
-
-#endif
