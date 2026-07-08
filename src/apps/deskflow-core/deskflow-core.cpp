@@ -76,6 +76,14 @@ int main(int argc, char **argv)
   ArchMiscWindows::setInstanceWin32(GetModuleHandle(nullptr));
 #endif
 
+  // Snapshot the arguments before constructing QApplication: its constructor
+  // strips options it recognizes, and on X11 that includes --name (legacy WM
+  // instance name), which is also our client screen-name option.
+  QStringList args;
+  args.reserve(argc);
+  for (int i = 0; i < argc; i++)
+    args.append(QString::fromUtf8(argv[i]));
+
   QApplication::setApplicationName(QStringLiteral("%1 Core").arg(kAppName));
   QApplication app(argc, argv);
 
@@ -88,10 +96,6 @@ int main(int argc, char **argv)
   // Initialize OpenSSL 3.x providers/environment (macOS and Linux)
   deskflow::platform::initializeOpenSSL();
 
-  QStringList args;
-  for (int i = 0; i < argc; i++)
-    args.append(argv[i]);
-
   // Step 1: Early lightweight argument pre-parse to extract --name and detect mode
   QString instanceName = "default";
   QString linkDevice;
@@ -101,17 +105,17 @@ int main(int argc, char **argv)
 
   QString configOverride;
 
-  for (int i = 1; i < argc; i++) {
-    const QString arg = QString::fromUtf8(argv[i]);
+  for (int i = 1; i < args.size(); i++) {
+    const QString &arg = args.at(i);
 
-    if ((arg == "--name" || arg == "-n") && (i + 1 < argc)) {
-      instanceName = QString::fromUtf8(argv[++i]);
-    } else if (arg == "--link" && (i + 1 < argc)) {
-      linkDevice = QString::fromUtf8(argv[++i]);
+    if ((arg == "--name" || arg == "-n") && (i + 1 < args.size())) {
+      instanceName = args.at(++i);
+    } else if (arg == "--link" && (i + 1 < args.size())) {
+      linkDevice = args.at(++i);
       isBridgeClient = true;
       isClient = true; // Bridge client is a type of client
-    } else if ((arg == "--settings" || arg == "-s") && (i + 1 < argc)) {
-      configOverride = QString::fromUtf8(argv[++i]);
+    } else if ((arg == "--settings" || arg == "-s") && (i + 1 < args.size())) {
+      configOverride = args.at(++i);
     } else if (arg == "client") {
       isClient = true;
     } else if (arg == "server") {
