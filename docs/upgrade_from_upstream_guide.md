@@ -271,3 +271,76 @@ Use this table to identify which rebranded file corresponds to an upstream file 
     2.  **For each compile error**, treat it as a real breakage of HEAD code by upstream API rename. The fix lives in HEAD's file (rename the call site, adopt the new API, add the new include). Bake those fixups into the same squash commit; they are part of the merge resolution, not a follow-up.
     3.  **Don't `--amend`** if you've already committed the squash and discovered the breakage later — `--amend` silently sweeps any other working-tree changes (e.g. regenerated `translations/dshare-hid_*.ts` from `lupdate`) into the merge commit. Use a follow-up `fixup(merge): adopt <symbol> after upstream API rename` commit on the same branch instead.
 *   **Rationale**: Conflict resolution by Scenarios A–N only catches files git can see as touched on both sides. HEAD-only files (most of the bridge tree, DShare-HID-only extensions) are invisible to the merge — they survive the merge intact but reference symbols that may no longer exist. Compile is the only line of defence.
+
+---
+
+## 5. One-time git config (per clone)
+
+Run these once in every clone; they are not committable:
+
+```
+git config rerere.enabled true      # record & replay conflict resolutions
+git config rerere.autoUpdate true   # auto-stage files rerere resolved
+git config merge.ours.driver true   # activates ".gitattributes: README.md merge=ours"
+```
+
+Without `merge.ours.driver`, the `merge=ours` attribute on README.md is silently
+inert. With rerere enabled, recurring conflicts (rebrand strings, INSTALL_DAEMON
+block, Scenario M files) resolve themselves after the first time.
+
+## 6. Divergence Budget
+
+The 2026-07-08 convergence audit (branch `chore/upstream-convergence`) reverted
+every *accidental* divergence from upstream: SPDX-header drift, the dead
+SYSAPI_*/WINAPI_CARBON macro family (upstream f2a54f4af0 replaced it with
+Q_OS_*), and the lost log-SearchWidget integration. What remains is
+**intentional** and is the complete list of upstream files this fork modifies.
+
+**Rule for future merges**: when resolving a conflict in a file NOT listed
+below, prefer upstream ("theirs") — our side is probably drift. When a file
+listed below conflicts, protect the named fork content and take upstream for
+everything else. Do not let new never-listed divergence accumulate silently:
+either add it here (with its reason) in the same commit, or revert it.
+
+### Identity / rebrand (protect per Scenarios A–K)
+All files carrying DShare-HID naming, URLs, bundle IDs, icons, installer
+artwork (`deploy/mac/dmg-*`, `deploy/windows/wix-*.png` are branded binaries —
+never take upstream's), translations, README.md, and docs. See Sections 1–3.
+
+### Build / packaging
+- `CMakeLists.txt` (root) — project identity + fork build additions
+- `cmake/Libraries.cmake` — Qt `Concurrent` component; `HAVE_FORMAT` disabled on APPLE
+- `deploy/CMakeLists.txt` — `CPACK_STRIP_FILES` off on APPLE
+- `deploy/mac/deploy.cmake`, `deploy/mac/post_bundle_process.cmake.in`,
+  `deploy/mac/build_universal_openssl.sh` — Scenario M (OpenSSL @rpath bundling,
+  universal build, codesign)
+- `src/apps/deskflow-daemon/CMakeLists.txt` — `INSTALL_DAEMON` toggle (Scenario I)
+
+### Bridge/HID feature hooks in upstream files
+- `src/lib/deskflow/ProtocolTypes.{h,cpp}` — `kMsgDIdentity` bridge handshake
+- `src/lib/deskflow/App.h` — `virtual handleScreenError`
+- `src/lib/deskflow/ClientApp.h` — virtual connection handlers, protected `getSocketFactory`
+- `src/lib/deskflow/ClientApp.cpp` — `m_clientScreen` reset guards, daemonName
+- `src/lib/deskflow/ServerApp.cpp` — bridge restart-on-resume/reset, Quit-on-screen-error
+- `src/lib/deskflow/PlatformScreen.h` — `applyClientScrollModifier` hook
+- `src/lib/deskflow/unix/AppUtilUnix.cpp` — mac keyboard-layout main-thread dispatch
+- `src/lib/common/Settings.{cpp,h}`, `Constants.h.in`, `UrlConstants.h`
+- `src/lib/client/Client.cpp`, `src/lib/client/CMakeLists.txt`
+- `src/lib/server/{Server.cpp,BaseClientProxy.h,ClientProxy.{cpp,h},ClientProxyUnknown.cpp}`
+- `src/lib/gui/`: MainWindow.{cpp,h,ui}, ScreenSetupModel.{cpp,h},
+  ScreenList.{cpp,h} (`addScreenAwayFromServer`), ServerConfig.{cpp,h},
+  ServerConfigDialog.{cpp,h,ui} (`onScreenDeleted`), CoreProcess.{cpp,h}
+  (DuplicateServer), SettingsDialog.cpp, AboutDialog.*, StyleUtils.h,
+  LogWidget.cpp (h-scroll preservation in `appendLine` only — the SearchWidget
+  wiring is upstream's, keep it)
+- `src/apps/deskflow-core/` — CoreArgs.h, CoreArgParser.{cpp,h},
+  deskflow-core.cpp (bridge CLI: --link, screen size, --name handling)
+- `src/lib/platform/CMakeLists.txt`, `EiScreen.cpp`, `MSWindowsWatchdog.cpp`
+
+### Fork bugfixes (keep; candidates to upstream as PRs)
+- `src/lib/arch/win32/ArchMultithreadWindows.cpp` — recursive-lock deadlock fix
+- `src/lib/arch/win32/ArchNetworkWinsock.cpp` — IPV6_V6ONLY only for INet6
+- `src/lib/net/SecureUtils.cpp` — OpenSSL error handling, binary fopen mode
+- `src/lib/net/SocketMultiplexer.cpp` — `Thread::testCancel` in lock-wait loops
+- `src/lib/platform/OSXKeyState.cpp` — `IOMainPort` (IOMasterPort deprecated)
+- `src/lib/gui/dialogs/SettingsDialog.cpp` — resetToDefault radio-button fix
