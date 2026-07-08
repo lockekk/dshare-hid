@@ -32,6 +32,7 @@ inline void setAppId()
   );
 
   if (!i->property("version").toInt()) {
+    qDebug() << "portal registry not found";
     return;
   }
 
