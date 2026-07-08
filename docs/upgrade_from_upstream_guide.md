@@ -272,6 +272,41 @@ Use this table to identify which rebranded file corresponds to an upstream file 
     3.  **Don't `--amend`** if you've already committed the squash and discovered the breakage later — `--amend` silently sweeps any other working-tree changes (e.g. regenerated `translations/dshare-hid_*.ts` from `lupdate`) into the merge commit. Use a follow-up `fixup(merge): adopt <symbol> after upstream API rename` commit on the same branch instead.
 *   **Rationale**: Conflict resolution by Scenarios A–N only catches files git can see as touched on both sides. HEAD-only files (most of the bridge tree, DShare-HID-only extensions) are invisible to the merge — they survive the merge intact but reference symbols that may no longer exist. Compile is the only line of defence.
 
+### Scenario P: Hybrid app bundle after raw `cmake --build` (macOS launch failure)
+*   **Issue**: On macOS, `./run_task.sh 1` is *build + macdeployqt on
+    `build/bin/DShare-HID.app` + codesign* as one unit. Running a raw
+    `cmake --build build` **after** any task-1 deploy relinks the executable
+    (whose `LC_RPATH` then points at `~/Qt/...`) inside a bundle that still
+    contains the old macdeployqt output (`Resources/qt.conf`, `Frameworks/`,
+    `PlugIns/`). At launch the exe loads the system QtCore while `qt.conf`
+    forces the bundled cocoa plugin (linked against the bundled QtCore) —
+    two Qt runtimes in one process.
+*   **Symptom**: `objc[..]: Class ... is implemented in both ...QtCore...`
+    warnings followed by `qt.qpa.plugin: Could not load the Qt platform plugin
+    "cocoa" ... even though it was found.` The app exits immediately.
+*   **Resolution**:
+    1.  Raw `cmake --build build --target <lib>` is fine for compile-only
+        checks during a merge session (libraries are not deployed).
+    2.  Any time the app must *run* — and always at the end of a session
+        before handing back — finish with `./run_task.sh 1`. Re-running
+        task 1 also repairs an already-hybrid bundle.
+    3.  Verify: `otool -L build/bin/DShare-HID.app/Contents/MacOS/DShare-HID | grep QtCore`
+        must show `@loader_path/../Frameworks/...` (deployed) — an `@rpath/...`
+        reference plus an `LC_RPATH` to `~/Qt` means the exe was relinked after
+        the deploy and the bundle is hybrid.
+*   **Note**: This is a build-tree state trap like Scenarios M and N, not a
+    conflict scenario. First hit 2026-07-08: the app "couldn't launch at all"
+    right before a planned push; no source change was at fault.
+
+## Automation
+
+`.agent/skills/merge-upstream-master/merge_next_upstream.sh` merges the next
+upstream commit (or `--all` for the whole backlog), auto-applies the
+deterministic Scenarios A/B/J/L, formats the merge-commit message per the rule
+above, and stops with a template (`.git/MERGE_MSG_TEMPLATE`) whenever a human
+scenario (C–M) is hit. `verify_merge.sh` is the session gate: rebrand grep +
+`./run_task.sh 1` + the Scenario M DMG sweep.
+
 ---
 
 ## 5. One-time git config (per clone)
