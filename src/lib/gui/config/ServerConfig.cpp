@@ -10,6 +10,7 @@
 
 #include "Hotkey.h"
 #include "common/Settings.h"
+#include "gui/core/BridgeClientConfigManager.h"
 
 #include <QAbstractButton>
 #include <QPushButton>
@@ -269,7 +270,11 @@ void ServerConfig::addClient(const QString &clientName)
     fixNoServer(screenName, serverIndex);
   }
 
-  m_Screens.addScreenByPriority(Screen(clientName));
+  if (!deskflow::gui::BridgeClientConfigManager::findConfigByScreenName(clientName).isEmpty()) {
+    m_Screens.addScreenAwayFromServer(Screen(clientName));
+  } else {
+    m_Screens.addScreenByPriority(Screen(clientName));
+  }
 }
 
 void ServerConfig::setConfigFile(const QString &configFile) const

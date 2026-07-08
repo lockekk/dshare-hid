@@ -35,6 +35,16 @@ public:
   void addScreenToFirstEmpty(const Screen &newScreen);
 
   /**
+   * @brief addScreenAwayFromServer adds a new screen into the empty place
+   * farthest from the server, so it never shares an edge with the server
+   * unless the grid leaves no other choice. Used for headless screens
+   * (bridge clients), where an accidental edge-switch would forward all
+   * input to a device with no display.
+   * @param newScreen
+   */
+  void addScreenAwayFromServer(const Screen &newScreen);
+
+  /**
    * @brief Returns true if screens are equal
    * @param sc
    */

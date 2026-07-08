@@ -76,7 +76,7 @@ protected:
   {
     return m_Screens[row * m_NumColumns + column];
   }
-  void addScreen(const Screen &newScreen);
+  void addScreen(const Screen &newScreen, bool awayFromServer = false);
 
 private:
   ScreenList &m_Screens;

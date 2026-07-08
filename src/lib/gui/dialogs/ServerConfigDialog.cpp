@@ -572,7 +572,10 @@ bool ServerConfigDialog::addComputer(const QString &clientName, bool doSilent)
   Screen newScreen(clientName);
 
   if (ScreenSettingsDialog dlg(this, &newScreen, &model().m_Screens); doSilent || dlg.exec() == QDialog::Accepted) {
-    model().addScreen(newScreen);
+    // Bridge screens are headless: placed next to the server, one stray
+    // edge-switch forwards all local input to a device with no display.
+    const bool isBridge = !deskflow::gui::BridgeClientConfigManager::findConfigByScreenName(newScreen.name()).isEmpty();
+    model().addScreen(newScreen, isBridge);
     isAccepted = true;
   }
 

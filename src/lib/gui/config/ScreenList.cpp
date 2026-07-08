@@ -7,7 +7,9 @@
 
 #include "ScreenList.h"
 
+#include <algorithm>
 #include <array>
+#include <cstdlib>
 
 namespace {
 
@@ -90,6 +92,35 @@ void ScreenList::addScreenByPriority(const Screen &newScreen)
 
   if (!isAdded) {
     addScreenToFirstEmpty(newScreen);
+  }
+}
+
+void ScreenList::addScreenAwayFromServer(const Screen &newScreen)
+{
+  const int serverIndex = getServerIndex(*this);
+  if (serverIndex < 0 || m_width <= 0) {
+    addScreenToFirstEmpty(newScreen);
+    return;
+  }
+
+  const int serverColumn = serverIndex % m_width;
+  const int serverRow = serverIndex / m_width;
+
+  // Chebyshev distance: 1 = shares an edge or corner with the server
+  int bestIndex = -1;
+  int bestDistance = -1;
+  for (int i = 0; i < size(); ++i) {
+    if (!operator[](i).isNull())
+      continue;
+    const int distance = std::max(std::abs(i % m_width - serverColumn), std::abs(i / m_width - serverRow));
+    if (distance > bestDistance) {
+      bestDistance = distance;
+      bestIndex = i;
+    }
+  }
+
+  if (bestIndex >= 0) {
+    operator[](bestIndex) = newScreen;
   }
 }
 

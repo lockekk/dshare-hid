@@ -148,9 +148,13 @@ bool ScreenSetupModel::dropMimeData(
   return true;
 }
 
-void ScreenSetupModel::addScreen(const Screen &newScreen)
+void ScreenSetupModel::addScreen(const Screen &newScreen, bool awayFromServer)
 {
-  m_Screens.addScreenByPriority(newScreen);
+  if (awayFromServer) {
+    m_Screens.addScreenAwayFromServer(newScreen);
+  } else {
+    m_Screens.addScreenByPriority(newScreen);
+  }
   Q_EMIT screensChanged();
 }
 
