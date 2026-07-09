@@ -275,10 +275,22 @@ bool ClientApp::startClient()
   try {
     if (m_clientScreen == nullptr) {
       clientScreen = openClientScreen();
-      m_client = openClient(
-          Settings::value(Settings::Core::ComputerName).toString().toStdString(), getCurrentServerAddress(),
-          clientScreen
-      );
+
+      // the server identifies a bridge client by a "[BRIDGE]" suffix on the name
+      // sent in the hello; ClientProxyUnknown strips it back off and flags the
+      // proxy via setBridge().  the marker used to ride along on the App's name
+      // (BridgeClientApp passes processName + "[BRIDGE]"), but that argument is
+      // only ever used for logging, and the transmitted name now comes from
+      // Settings.  without the marker the server never sets isBridge(), so its
+      // "don't touch the clipboard for bridge clients" guards silently do
+      // nothing -- and switching onto the bridge wedges the server in the X
+      // clipboard code while it holds the keyboard+pointer grab.
+      auto clientName = Settings::value(Settings::Core::ComputerName).toString().toStdString();
+      if (Settings::isBridgeClientMode()) {
+        clientName += "[BRIDGE]";
+      }
+
+      m_client = openClient(clientName, getCurrentServerAddress(), clientScreen);
       m_clientScreen = clientScreen;
       LOG_INFO("started client");
     }

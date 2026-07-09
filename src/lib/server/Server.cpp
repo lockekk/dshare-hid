@@ -448,7 +448,16 @@ void Server::switchScreen(BaseClientProxy *dst, int32_t x, int32_t y, bool forSc
 
     // update the primary client's clipboards if we're leaving the
     // primary screen.
-    if (m_active == m_primaryClient && m_enableClipboard) {
+    //
+    // skip this entirely when switching onto a bridge screen: a bridge never
+    // receives clipboard data (see the !isBridge() guard below), so reading the
+    // primary's clipboard here buys nothing.  it also costs everything -- on
+    // X11 the read blocks the core event loop inside the selection/Motif
+    // handshake while we are already holding the keyboard+pointer grab taken by
+    // leave().  the server then wedges: input is captured but never forwarded,
+    // the grab is never released (the machine looks locked up), and the client
+    // sees no keep-alive so it declares the server dead and exits.
+    if (m_active == m_primaryClient && m_enableClipboard && !dst->isBridge()) {
       for (ClipboardID id = 0; id < kClipboardEnd; ++id) {
         const ClipboardInfo &clipboard = m_clipboards[id];
         if (clipboard.m_clipboardOwner == getName(m_primaryClient)) {
