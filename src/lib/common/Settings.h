@@ -294,8 +294,10 @@ private:
     , QStringLiteral("server")
     , QStringLiteral("internalConfig")
     // Fork-specific: bridge client identity / auto-connect / orientation lives under bridge/*.
-    // Without this, ServerConfigDialog::accept() -> removeUnknownScreens() would silently
+    // Without this, ServerConfigDialog::save() -> removeUnknownComputers() would silently
     // wipe the entire bridge group every time the Server Config dialog is saved.
+    // Listing the group also makes cleanSettings() drop any bridge/* key missing from
+    // m_validKeys, so new Bridge keys must be added there too.
     , QStringLiteral("bridge")
   };
 
@@ -362,10 +364,20 @@ private:
     , Server::SwitchDelay
     , Server::SwitchDoubleTap
     , Server::Win32KeepForeground
-    // DShare-HID fork keys
+    // DShare-HID fork keys. Every key in a group listed in m_validGroup must be
+    // here, or cleanSettings() deletes it on load (including when the core
+    // loads a per-device bridge-clients/*.conf).
     , Client::InvertScrollDirection
+    , Core::RestartOnFailure
+    , Bridge::SerialNumber
+    , Bridge::HostOs
+    , Bridge::ActivationState
+    , Bridge::DeviceName
+    , Bridge::ActiveProfileHostname
     , Bridge::ActiveProfileOrientation
+    , Bridge::BluetoothKeepAlive
     , Bridge::AutoConnect
+    , Bridge::ShowLogs
   };
 
   // When checking the default values this list contains the ones that default to false.

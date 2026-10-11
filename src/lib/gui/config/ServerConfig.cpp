@@ -312,6 +312,15 @@ bool ServerConfig::renameScreen(const QString &oldName, const QString &newName)
   // Commit changes to persist them
   commit();
 
+  // The server builds its computer list from the computer_<name> settings groups,
+  // so drop the group left behind by the old name (same as ServerConfigDialog::save).
+  QStringList computerGroups;
+  for (const auto &computer : std::as_const(m_computers)) {
+    if (!computer.name().isEmpty())
+      computerGroups.append(QStringLiteral("computer_%1").arg(computer.name()));
+  }
+  Settings::removeUnknownComputers(computerGroups);
+
   return true;
 }
 
