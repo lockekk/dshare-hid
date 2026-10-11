@@ -6,6 +6,7 @@ To build DShare-HID you will a minimum of:
     - [openssl] 3.0+
     - [libportal] 0.9.1+ (linux, bsd)
     - [libei] 1.3+ (linux, bsd)
+    - [libxkbcommon] with xkbregistry (linux, bsd), e.g. Ubuntu: `sudo apt install libxkbcommon-dev libxkbregistry-dev`
 
 > ^ Will be fetched if not found on the host system.
 
@@ -105,3 +106,4 @@ After configuring you should be able to run make to build all targets.
 [openssl]:https://www.openssl.org/
 [libei]:https://gitlab.freedesktop.org/libinput/libei
 [libportal]:https://github.com/flatpak/libportal
+[libxkbcommon]:https://xkbcommon.org/
