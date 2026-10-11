@@ -94,7 +94,6 @@ QString BridgeClientConfigManager::createDefaultConfig(const QString &serialNumb
   config.setValue(Settings::Client::LanguageSync, true);
 
   // [core] section
-  config.setValue(Settings::Core::ScreenName, defaultScreenName);
   config.setValue(Settings::Core::ComputerName, defaultScreenName);
   config.setValue(Settings::Core::RestartOnFailure, true);
   config.setValue(Settings::Core::ProcessMode, Settings::Desktop);
@@ -129,7 +128,8 @@ QString BridgeClientConfigManager::readScreenName(const QString &configPath)
   QSettings config(configPath, QSettings::IniFormat);
   QString name = config.value(Settings::Core::ComputerName).toString();
   if (name.isEmpty()) {
-    name = config.value(Settings::Core::ScreenName).toString();
+    // configs written before v1.27 may only carry the legacy core/screenName key
+    name = config.value(QStringLiteral("core/screenName")).toString();
   }
   return name;
 }

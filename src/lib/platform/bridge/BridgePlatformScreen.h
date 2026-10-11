@@ -5,7 +5,7 @@
 #pragma once
 
 #include "CdcTransport.h"
-#include "deskflow/PlatformScreen.h"
+#include "deskflow/PlatformComputer.h"
 
 #include <chrono>
 #include <cstdint>
@@ -29,7 +29,7 @@ namespace deskflow::bridge {
  * - Clipboard operations are discarded
  * - Input events are converted to HID reports and sent via CDC
  */
-class BridgePlatformScreen : public PlatformScreen
+class BridgePlatformScreen : public PlatformComputer
 {
 public:
   BridgePlatformScreen(
@@ -43,7 +43,7 @@ public:
   void getShape(int32_t &x, int32_t &y, int32_t &width, int32_t &height) const override;
   void getCursorPos(int32_t &x, int32_t &y) const override;
 
-  // IPrimaryScreen overrides
+  // IPrimaryComputer overrides
   void reconfigure(uint32_t activeSides) override;
   uint32_t activeSides() override;
   void warpCursor(int32_t x, int32_t y) override;
@@ -55,7 +55,7 @@ public:
   bool isAnyMouseButtonDown(uint32_t &buttonID) const override;
   void getCursorCenter(int32_t &x, int32_t &y) const override;
 
-  // ISecondaryScreen overrides
+  // ISecondaryComputer overrides
   void fakeMouseButton(ButtonID id, bool press) override;
   void fakeMouseMove(int32_t x, int32_t y) override;
   void fakeMouseRelativeMove(int32_t dx, int32_t dy) const override;
@@ -76,7 +76,7 @@ public:
   int32_t pollActiveGroup() const override;
   void pollPressedKeys(IKeyState::KeyButtonSet &pressedKeys) const override;
 
-  // IPlatformScreen overrides
+  // IPlatformComputer overrides
   void enable() override;
   void disable() override;
   void enter() override;

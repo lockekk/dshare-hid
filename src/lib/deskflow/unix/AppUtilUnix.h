@@ -20,8 +20,6 @@ public:
   ~AppUtilUnix() override = default;
 
   int run() override;
-  void startNode() override;
   std::vector<std::string> getKeyboardLayoutList() override;
   std::string getCurrentLanguageCode() override;
-  std::string m_evdev;
 };

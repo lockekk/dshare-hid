@@ -35,7 +35,7 @@
 #include <QLoggingCategory>
 #endif
 
-#if defined(WINAPI_XWINDOWS) or defined(WINAPI_LIBEI)
+#if !defined(Q_OS_MACOS) && !defined(Q_OS_WIN)
 #include "platform/XDGPortalRegistry.h"
 #endif
 
@@ -54,8 +54,9 @@ int main(int argc, char *argv[])
   QLoggingCategory::setFilterRules(QStringLiteral("*.debug=true\nqt.*=false"));
 #endif
 
-#if defined(WINAPI_XWINDOWS) or defined(WINAPI_LIBEI)
-  deskflow::platform::setAppId();
+#if !defined(Q_OS_MACOS) && !defined(Q_OS_WIN)
+  if (QT_VERSION < QT_VERSION_CHECK(6, 10, 0))
+    deskflow::platform::setAppId();
 #endif
 
   Arch arch;

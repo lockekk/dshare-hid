@@ -14,7 +14,7 @@
 #include <QList>
 
 namespace deskflow {
-class Screen;
+class Computer;
 class ClientArgs;
 } // namespace deskflow
 
@@ -45,22 +45,22 @@ public:
   }
   int start() override;
   int runInner(StartupFunc startup) override;
-  deskflow::Screen *createScreen() override;
+  deskflow::Computer *createComputer() override;
   int mainLoop() override;
   void startNode() override;
 
   //
   // Regular functions
   //
-  deskflow::Screen *openClientScreen();
-  void closeClientScreen(deskflow::Screen *screen);
+  deskflow::Computer *openClientComputer();
+  void closeClientComputer(deskflow::Computer *computer);
   void handleClientRestart(const Event &, EventQueueTimer *vtimer);
   void scheduleClientRestart(double retryTime);
   virtual void handleClientConnected();
   virtual void handleClientFailed(const Event &e);
   virtual void handleClientRefused(const Event &e);
   virtual void handleClientDisconnected();
-  Client *openClient(const std::string &name, const NetworkAddress &address, deskflow::Screen *screen);
+  Client *openClient(const std::string &name, const NetworkAddress &address, deskflow::Computer *computer);
   void closeClient(Client *client);
   bool startClient();
   void stopClient();
@@ -94,7 +94,7 @@ private:
 private:
   bool m_suspended = false;
   Client *m_client = nullptr;
-  deskflow::Screen *m_clientScreen = nullptr;
+  deskflow::Computer *m_clientComputer = nullptr;
   QList<NetworkAddress> m_serverAddresses;
   size_t m_currentServerIndex = 0;
   size_t m_lastServerAddressIndex = 0;

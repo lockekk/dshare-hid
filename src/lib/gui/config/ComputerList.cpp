@@ -1,0 +1,141 @@
+/*
+ * Deskflow -- mouse and keyboard sharing utility
+ * SPDX-FileCopyrightText: (C) 2012 - 2021 Synergy App Ltd
+ * SPDX-FileCopyrightText: (C) 2008 Volker Lanz <vl@fidra.de>
+ * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
+ */
+
+#include "ComputerList.h"
+
+#include <algorithm>
+#include <array>
+#include <cstdlib>
+
+namespace {
+
+/**
+ * @brief getNeightborIndexes returns indexes for server neighbors
+ * @param serverIndex server index
+ * @param width of the grid
+ * @param size of the grid
+ * @return indexes for server neighbors
+ */
+std::array<int, 8> getNeighborsIndexes(int serverIndex, int width, int size)
+{
+  const int UNSET = -1;
+  const int LEFT = 0;
+  const int RIGHT = 1;
+  const int TOP = 2;
+  const int BOTTOM = 3;
+  const int TOP_LEFT = 4;
+  const int TOP_RIGHT = 5;
+  const int BOTTOM_RIGHT = 6;
+  const int BOTTOM_LEFT = 7;
+
+  std::array<int, 8> indexes = {UNSET};
+
+  if (serverIndex >= 0 && serverIndex < size) {
+    indexes[LEFT] = (serverIndex - 1) % width != width - 1 ? (serverIndex - 1) : UNSET;
+    indexes[RIGHT] = (serverIndex + 1) % width != 0 ? (serverIndex + 1) : UNSET;
+    indexes[TOP] = (serverIndex - width) >= 0 ? (serverIndex - width) : UNSET;
+    indexes[BOTTOM] = (serverIndex + width) < size ? (serverIndex + width) : UNSET;
+    indexes[TOP_LEFT] = (indexes[TOP] != UNSET && indexes[LEFT] != UNSET) ? indexes[TOP] - 1 : UNSET;
+    indexes[TOP_RIGHT] = (indexes[TOP] != UNSET && indexes[RIGHT] != UNSET) ? indexes[TOP] + 1 : UNSET;
+    indexes[BOTTOM_RIGHT] = (indexes[BOTTOM] != UNSET && indexes[RIGHT] != UNSET) ? indexes[BOTTOM] + 1 : UNSET;
+    indexes[BOTTOM_LEFT] = (indexes[BOTTOM] != UNSET && indexes[LEFT] != UNSET) ? indexes[BOTTOM] - 1 : UNSET;
+  }
+
+  return indexes;
+}
+
+/**
+ * @brief getServerIndex finds server and returns it's index
+ * @param computers list to find server
+ * @return server index
+ */
+int getServerIndex(const ComputerList &computers)
+{
+  int serverIndex = -1;
+
+  for (int i = 0; i < computers.size(); ++i) {
+    if (computers[i].isServer()) {
+      serverIndex = i;
+      break;
+    }
+  }
+
+  return serverIndex;
+}
+
+} // namespace
+
+ComputerList::ComputerList(int width) : QList<Computer>(), m_width(width)
+{
+}
+
+void ComputerList::addComputerByPriority(const Computer &newComputer)
+{
+  int serverIndex = getServerIndex(*this);
+  auto indexes = getNeighborsIndexes(serverIndex, m_width, static_cast<int>(size()));
+
+  bool isAdded = false;
+  for (const auto &index : indexes) {
+    if (index >= 0 && index < size()) {
+      auto &computer = operator[](index);
+      if (computer.isNull()) {
+        computer = newComputer;
+        isAdded = true;
+        break;
+      }
+    }
+  }
+
+  if (!isAdded) {
+    addComputerToFirstEmpty(newComputer);
+  }
+}
+
+void ComputerList::addComputerAwayFromServer(const Computer &newComputer)
+{
+  const int serverIndex = getServerIndex(*this);
+  if (serverIndex < 0 || m_width <= 0) {
+    addComputerToFirstEmpty(newComputer);
+    return;
+  }
+
+  const int serverColumn = serverIndex % m_width;
+  const int serverRow = serverIndex / m_width;
+
+  // Chebyshev distance: 1 = shares an edge or corner with the server
+  int bestIndex = -1;
+  int bestDistance = -1;
+  for (int i = 0; i < size(); ++i) {
+    if (!operator[](i).isNull())
+      continue;
+    const int distance = std::max(std::abs(i % m_width - serverColumn), std::abs(i / m_width - serverRow));
+    if (distance > bestDistance) {
+      bestDistance = distance;
+      bestIndex = i;
+    }
+  }
+
+  if (bestIndex >= 0) {
+    operator[](bestIndex) = newComputer;
+  }
+}
+
+void ComputerList::addComputerToFirstEmpty(const Computer &newComputer)
+{
+  for (int i = 0; i < size(); ++i) {
+    auto &computer = operator[](i);
+    if (computer.isNull()) {
+      computer = newComputer;
+      break;
+    }
+  }
+}
+
+bool ComputerList::operator==(const ComputerList &sc) const
+{
+  return m_width == sc.m_width && QList::operator==(sc);
+}

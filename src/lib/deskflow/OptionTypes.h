@@ -1,5 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
+ * SPDX-FileCopyrightText: (C) 2026 Deskflow Developers
  * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
@@ -44,31 +45,27 @@ static const OptionID kOptionModifierMapForAltGr = OPTION_CODE("MMFG");
 static const OptionID kOptionModifierMapForMeta = OPTION_CODE("MMFM");
 static const OptionID kOptionModifierMapForSuper = OPTION_CODE("MMFR");
 static const OptionID kOptionHeartbeat = OPTION_CODE("HART");
-static const OptionID kOptionScreenSwitchCorners = OPTION_CODE("SSCM");
-static const OptionID kOptionScreenSwitchCornerSize = OPTION_CODE("SSCS");
-static const OptionID kOptionScreenSwitchDelay = OPTION_CODE("SSWT");
-static const OptionID kOptionScreenSwitchTwoTap = OPTION_CODE("SSTT");
-static const OptionID kOptionScreenSwitchNeedsShift = OPTION_CODE("SSNS");
-static const OptionID kOptionScreenSwitchNeedsControl = OPTION_CODE("SSNC");
-static const OptionID kOptionScreenSwitchNeedsAlt = OPTION_CODE("SSNA");
+static const OptionID kOptionComputerSwitchCorners = OPTION_CODE("SSCM");
+static const OptionID kOptionComputerSwitchCornerSize = OPTION_CODE("SSCS");
+static const OptionID kOptionComputerSwitchDelay = OPTION_CODE("SSWT");
+static const OptionID kOptionComputerSwitchTwoTap = OPTION_CODE("SSTT");
 static const OptionID kOptionXTestXineramaUnaware = OPTION_CODE("XTXU");
-static const OptionID kOptionScreenPreserveFocus = OPTION_CODE("SFOC");
+static const OptionID kOptionComputerX11WeakFocus = OPTION_CODE("SFOC");
 static const OptionID kOptionRelativeMouseMoves = OPTION_CODE("MDLT");
 static const OptionID kOptionWin32KeepForeground = OPTION_CODE("_KFW");
-static const OptionID kOptionDefaultLockToScreenState = OPTION_CODE("LTSS");
-static const OptionID kOptionDisableLockToScreen = OPTION_CODE("DLTS");
+static const OptionID kOptionDefaultLockToComputerState = OPTION_CODE("LTSS");
+static const OptionID kOptionDisableLockToComputer = OPTION_CODE("DLTS");
 static const OptionID kOptionClipboardSharing = OPTION_CODE("CLPS");
 static const OptionID kOptionClipboardSharingSize = OPTION_CODE("CLSZ");
 //@}
 
-//! @name Screen switch corner masks
+//! @name Computer switch corner masks
 //@{
 inline static const auto s_noCornerMask = 0;
 inline static const auto s_topLeftCornerMask = 1 << 0;
 inline static const auto s_topRightCornerMask = 1 << 1;
 inline static const auto s_bottomLeftCornerMask = 1 << 2;
 inline static const auto s_bottomRightCornerMask = 1 << 3;
-inline static const auto s_allCornersMask = 1 << 0 | 1 << 1 | 1 << 2 | 1 << 3;
 //@}
 
 #undef OPTION_CODE

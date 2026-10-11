@@ -41,8 +41,8 @@ public:
 
   ~BridgeClientApp() override = default;
 
-  // Override createScreen to return BridgePlatformScreen
-  deskflow::Screen *createScreen() override;
+  // Override createComputer to return BridgePlatformScreen
+  deskflow::Computer *createComputer() override;
 
   /**
    * @brief Get the CDC transport
@@ -70,7 +70,7 @@ protected:
    */
   void initApp() override;
   ISocketFactory *getSocketFactory() const override;
-  void handleScreenError() const override;
+  void handleComputerError() const override;
   void handleClientConnected() override;
   void handleClientFailed(const Event &e) override;
   void handleClientDisconnected() override;

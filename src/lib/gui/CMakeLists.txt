@@ -1,5 +1,5 @@
-# SPDX-FileCopyrightText: 2024 Deskflow Developers
-# SPDX-FileCopyrightText: 2024 Symless Ltd
+# SPDX-FileCopyrightText: (C) 2024 - 2026 Deskflow Developers
+# SPDX-FileCopyrightText: (C) 2024 Symless Ltd
 # SPDX-License-Identifier: MIT
 
 set(target gui)
@@ -15,16 +15,12 @@ endif()
 
 add_library(${target} STATIC
   ${platform_sources}
-  Action.cpp
-  Action.h
+  ComputerSetupModel.cpp
+  ComputerSetupModel.h
   Diagnostic.cpp
   Diagnostic.h
   FileTail.cpp
   FileTail.h
-  Hotkey.cpp
-  Hotkey.h
-  KeySequence.cpp
-  KeySequence.h
   Logger.cpp
   Logger.h
   MainWindow.cpp
@@ -32,19 +28,16 @@ add_library(${target} STATIC
   MainWindow.ui
   Messages.cpp
   Messages.h
-  ScreenSetupModel.cpp
-  ScreenSetupModel.h
   StyleUtils.h
   TlsUtility.cpp
   TlsUtility.h
   VersionChecker.cpp
   VersionChecker.h
-  config/Screen.cpp
-  config/Screen.h
-  config/ScreenConfig.cpp
-  config/ScreenConfig.h
-  config/ScreenList.cpp
-  config/ScreenList.h
+  config/ComputerConfig.h
+  config/Computer.cpp
+  config/Computer.h
+  config/ComputerList.cpp
+  config/ComputerList.h
   config/ServerConfig.cpp
   config/ServerConfig.h
   core/CoreProcess.cpp
@@ -60,14 +53,16 @@ add_library(${target} STATIC
   dialogs/ClientConfigDialog.h
   dialogs/ClientConfigDialog.cpp
   dialogs/ClientConfigDialog.ui
+  dialogs/ComputerSettingsDialog.cpp
+  dialogs/ComputerSettingsDialog.h
+  dialogs/ComputerSettingsDialog.ui
   dialogs/FingerprintDialog.cpp
   dialogs/FingerprintDialog.h
+  dialogs/HelpDialog.cpp
+  dialogs/HelpDialog.h
   dialogs/HotkeyDialog.cpp
   dialogs/HotkeyDialog.h
   dialogs/HotkeyDialog.ui
-  dialogs/ScreenSettingsDialog.cpp
-  dialogs/ScreenSettingsDialog.h
-  dialogs/ScreenSettingsDialog.ui
   dialogs/ServerConfigDialog.cpp
   dialogs/ServerConfigDialog.h
   dialogs/ServerConfigDialog.ui
@@ -82,6 +77,10 @@ add_library(${target} STATIC
   ipc/CoreIpcClient.h
   validators/AliasValidator.cpp
   validators/AliasValidator.h
+  validators/ComputerDuplicationsValidator.cpp
+  validators/ComputerDuplicationsValidator.h
+  validators/ComputerLineNameValidator.cpp
+  validators/ComputerLineNameValidator.h
   validators/ComputerNameValidator.cpp
   validators/ComputerNameValidator.h
   validators/EmptyStringValidator.cpp
@@ -90,16 +89,14 @@ add_library(${target} STATIC
   validators/IStringValidator.h
   validators/LineEditValidator.cpp
   validators/LineEditValidator.h
-  validators/ScreenDuplicationsValidator.cpp
-  validators/ScreenDuplicationsValidator.h
-  validators/ScreenNameValidator.cpp
-  validators/ScreenNameValidator.h
   validators/SpacesValidator.cpp
   validators/SpacesValidator.h
   validators/ValidationError.cpp
   validators/ValidationError.h
   validators/IpAddressValidator.cpp
   validators/IpAddressValidator.h
+  widgets/ComputerSetupView.cpp
+  widgets/ComputerSetupView.h
   widgets/FingerprintPreview.cpp
   widgets/FingerprintPreview.h
   widgets/KeySequenceWidget.cpp
@@ -108,37 +105,30 @@ add_library(${target} STATIC
   widgets/LogDock.h
   widgets/LogWidget.h
   widgets/LogWidget.cpp
-  widgets/NewScreenWidget.cpp
-  widgets/NewScreenWidget.h
-  widgets/ScreenSetupView.cpp
-  widgets/ScreenSetupView.h
+  widgets/NewComputerWidget.cpp
+  widgets/NewComputerWidget.h
+  widgets/RemoveComputerWidget.cpp
+  widgets/RemoveComputerWidget.h
   widgets/SearchWidget.h
   widgets/SearchWidget.cpp
   widgets/StatusBar.cpp
   widgets/StatusBar.h
-  widgets/TrashScreenWidget.cpp
-  widgets/TrashScreenWidget.h
+  widgets/SettingsDialogButtonBox.cpp
+  widgets/SettingsDialogButtonBox.h
 )
 
-target_link_libraries(
-  ${target}
-  common
-  platform
-  Qt6::Core
-  Qt6::Widgets
-  Qt6::Network
-  Qt6::Concurrent)
+target_link_libraries(${target}
+  PUBLIC
+    common
+    platform
+    net
+    Qt6::Widgets
+  PRIVATE
+    Qt6::Concurrent
+)
 
 if(WIN32)
-  target_link_libraries(
-    ${target}
-    base
-    arch
-    net
-    setupapi
-    wtsapi32
-  )
+  target_link_libraries(${target} PRIVATE base arch setupapi wtsapi32)
 endif()
-
 
 include(CMakeLists.user.cmake OPTIONAL)

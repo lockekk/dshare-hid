@@ -17,6 +17,7 @@ const auto kUrlSourceQuery = QStringLiteral("source=gui");
 const auto kUrlApp = QStringLiteral("https://github.com/lockekk/dshare-hid");
 const auto kUrlHelp = QStringLiteral("https://github.com/lockekk/dshare-hid/issues");
 const auto kUrlDownload = QStringLiteral("%1/releases?%2").arg(kUrlApp, kUrlSourceQuery);
+const auto kUrlWiki = QStringLiteral("%1/wiki?%2").arg(kUrlApp, kUrlSourceQuery);
 
 // Point to raw version file for update check
 const auto kUrlUpdateCheck =

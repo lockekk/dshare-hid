@@ -1,0 +1,248 @@
+/*
+ * Deskflow -- mouse and keyboard sharing utility
+ * SPDX-FileCopyrightText: (C) 2024, 2026 Synergy App Ltd
+ * SPDX-FileCopyrightText: (C) 2022, 2026 Red Hat, Inc.
+ * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
+ */
+
+#pragma once
+
+#include "deskflow/IComputer.h"
+#include "deskflow/PlatformComputer.h"
+#ifdef HAVE_LIBPORTAL_SHORTCUTS
+#include "platform/PortalGlobalShortcuts.h"
+#endif
+#include "platform/XDGPowerManager.h"
+
+#include <bitset>
+#include <climits>
+#include <libei.h>
+#include <map>
+#include <mutex>
+#include <vector>
+
+struct ei;
+struct ei_event;
+struct ei_seat;
+struct ei_device;
+
+class EventQueueTimer;
+
+namespace deskflow {
+
+class EiKeyState;
+class PortalRemoteDesktop;
+class PortalInputCapture;
+class PortalGlobalShortcuts;
+class EiClipboard;
+
+using ClipboardInfo = IComputer::ClipboardInfo;
+
+//! Implementation of IPlatformComputer for X11
+class EiComputer : public PlatformComputer
+{
+public:
+  EiComputer(bool isPrimary, IEventQueue *events, bool usePortal);
+  ~EiComputer() override;
+
+  // IComputer overrides
+  void *getEventTarget() const final;
+  bool getClipboard(ClipboardID id, IClipboard *) const override;
+  void getShape(std::int32_t &x, std::int32_t &y, std::int32_t &width, std::int32_t &height) const override;
+  void getCursorPos(std::int32_t &x, std::int32_t &y) const override;
+
+  // IPrimaryComputer overrides
+  void reconfigure(std::uint32_t activeSides) override;
+  std::uint32_t activeSides() override;
+  void warpCursor(std::int32_t x, std::int32_t y) override;
+  std::uint32_t registerHotKey(KeyID key, KeyModifierMask mask) override;
+  void unregisterHotKey(std::uint32_t id) override;
+  void fakeInputBegin() override;
+  void fakeInputEnd() override;
+  std::int32_t getJumpZoneSize() const override;
+  bool isAnyMouseButtonDown(std::uint32_t &buttonID) const override;
+  void getCursorCenter(std::int32_t &x, std::int32_t &y) const override;
+
+  // ISecondaryComputer overrides
+  void fakeMouseButton(ButtonID id, bool press) override;
+  void fakeMouseMove(std::int32_t x, std::int32_t y) override;
+  void fakeMouseRelativeMove(std::int32_t dx, std::int32_t dy) const override;
+  void fakeMouseWheel(ScrollDelta delta) const override;
+  void fakeKey(std::uint32_t keycode, bool isDown) const;
+
+  // IPlatformComputer overrides
+  void enable() override;
+  void disable() override;
+  void enter() override;
+  bool canLeave() override;
+  void leave() override;
+  bool setClipboard(ClipboardID, const IClipboard *) override;
+  void checkClipboards() override;
+  void openScreensaver(bool notify) override;
+  void closeScreensaver() override;
+  void screensaver(bool activate) override;
+  void resetOptions() override;
+  void setOptions(const OptionsList &options) override;
+  void setSequenceNumber(std::uint32_t) override;
+  bool isPrimary() const override;
+
+  // Send clipboard event (needed by PortalInputCapture)
+  void sendClipboardEvent(EventTypes type, ClipboardID id) const;
+
+  // Local clipboard cache (used by PortalRemoteDesktop to land selection reads)
+  EiClipboard *getClipboardCache() const
+  {
+    return m_clipboard;
+  }
+
+  // Maximum clipboard size in KB, configured by the server
+  size_t maximumClipboardSize() const
+  {
+    return m_maximumClipboardSize;
+  }
+
+protected:
+  // IPlatformComputer overrides
+  void handleSystemEvent(const Event &event) override;
+  void updateButtons() override;
+  IKeyState *getKeyState() const override;
+  std::string getSecureInputApp() const override;
+
+  void updateShape();
+  void addDevice(ei_device *device);
+  void removeDevice(ei_device *device);
+
+private:
+  void initEi();
+  void cleanupEi();
+  void sendEvent(EventTypes type, void *data);
+  ButtonID mapButtonFromEvdev(ei_event *event) const;
+  void onKeyEvent(ei_event *event);
+  void onButtonEvent(ei_event *event);
+  void sendWheelEvents(ei_device *device, const int threshold, double dx, double dy, bool is_discrete);
+  void onPointerScrollEvent(ei_event *event);
+  void onPointerScrollDiscreteEvent(ei_event *event);
+  void onMotionEvent(ei_event *event);
+  void onAbsMotionEvent(const ei_event *) const;
+  bool onHotkey(KeyID key, bool isPressed, KeyModifierMask mask);
+  void eiLogEvent(ei_log_priority priority, const char *message) const;
+
+  void handleConnectedToEisEvent(const Event &event);
+  void handlePortalSessionClosed();
+  void ensureEmulating() const;
+  void stopEmulating() const;
+  void cancelIdleEmulationTimer() const;
+  void updatePortalGlobalShortcuts();
+
+  static void handleEiLogEvent(ei *ei, const ei_log_priority priority, const char *message, ei_log_context *)
+  {
+    auto computer = static_cast<EiComputer *>(ei_get_user_data(ei));
+    computer->eiLogEvent(priority, message);
+  }
+
+private:
+  // true if computer is being used as a primary computer, false otherwise
+  bool m_isPrimary = false;
+  IEventQueue *m_events = nullptr;
+
+  // keyboard stuff
+  EiKeyState *m_keyState = nullptr;
+
+  KeyID m_lastPressed = kKeyNone;
+
+  // mouse buttons currently held, indexed by ButtonID
+  std::bitset<NumButtonIDs> m_buttons;
+
+  // clipboard stuff
+  EiClipboard *m_clipboard = nullptr;
+  size_t m_maximumClipboardSize = INT_MAX;
+
+  std::vector<ei_device *> m_eiDevices;
+
+  ei *m_ei = nullptr;
+  ei_seat *m_eiSeat = nullptr;
+  ei_device *m_eiPointer = nullptr;
+  ei_device *m_eiKeyboard = nullptr;
+  ei_device *m_eiAbs = nullptr;
+
+  mutable std::uint32_t m_sequenceNumber = 0;
+
+  // Lazily-started EIS emulation: only grab while relayed input is actually
+  // flowing, and release after a short idle so the compositor can DPMS-sleep
+  // this computer even while the deskflow cursor logically sits on it.
+  mutable bool m_isEmulating = false;
+  mutable EventQueueTimer *m_idleEmulationTimer = nullptr;
+  // Chosen empirically on one machine in 2026-06; not derived from any protocol constant.
+  static constexpr double s_idleEmulationTimeout = 4.0;
+
+  std::uint32_t m_activeSides = 0;
+  std::uint32_t m_x = 0;
+  std::uint32_t m_y = 0;
+  std::uint32_t m_w = 0;
+  std::uint32_t m_h = 0;
+  bool m_isShapeInitialized = false;
+
+  // true if mouse has entered the computer
+  bool m_isOnComputer;
+
+  // server: last pointer position
+  // client: position sent before enter()
+  std::int32_t m_cursorX = 0;
+  std::int32_t m_cursorY = 0;
+
+  double m_bufferDX = 0;
+  double m_bufferDY = 0;
+
+  mutable std::mutex m_mutex;
+
+  PortalRemoteDesktop *m_portalRemoteDesktop = nullptr;
+  PortalInputCapture *m_portalInputCapture = nullptr;
+  PortalGlobalShortcuts *m_portalGlobalShortcuts = nullptr;
+
+  bool m_activated = false;
+
+  struct HotKeyItem
+  {
+  public:
+    HotKeyItem(std::uint32_t mask, std::uint32_t id);
+    auto operator<=>(const HotKeyItem &other) const
+    {
+      return mask <=> other.mask;
+    }
+
+  public:
+    std::uint32_t mask = 0;
+    std::uint32_t id = 0; // for registering the hotkey
+  };
+
+  class HotKeySet
+  {
+  public:
+    explicit HotKeySet(KeyID keyid);
+    KeyID keyid() const
+    {
+      return m_id;
+    }
+    bool removeById(std::uint32_t id);
+    void addItem(HotKeyItem item);
+    std::uint32_t findByMask(std::uint32_t mask) const;
+    bool empty() const
+    {
+      return m_set.empty();
+    }
+#ifdef HAVE_LIBPORTAL_SHORTCUTS
+    const std::vector<PortalGlobalShortcuts::HotKey> getPortalHotKeys() const;
+#endif
+
+  private:
+    KeyID m_id = 0;
+    std::vector<HotKeyItem> m_set;
+  };
+
+  using HotKeyMap = std::map<KeyID, HotKeySet>;
+
+  HotKeyMap m_hotkeys;
+  [[no_unique_address]] XDGPowerManager m_powerManager;
+};
+
+} // namespace deskflow

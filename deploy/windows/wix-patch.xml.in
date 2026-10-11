@@ -18,6 +18,23 @@
 
     <Binary Id="CustomDLL" SourceFile="@CMAKE_CURRENT_BINARY_DIR@/wix-custom.dll" />
 
+    <!--
+      Close any running DShare-HID processes before file replacement so the
+      installer does not have to schedule files for replace-on-reboot.
+    -->
+    <util:CloseApplication
+      Id="CloseDShareHidGui"
+      Target="dshare-hid.exe"
+      CloseMessage="yes"
+      RebootPrompt="no"
+      TerminateProcess="10" />
+    <util:CloseApplication
+      Id="CloseDShareHidCore"
+      Target="dshare-hid-core.exe"
+      CloseMessage="yes"
+      RebootPrompt="no"
+      TerminateProcess="10" />
+
     <UI>
        <Publish Dialog="ExitDialog"
            Control="Finish"

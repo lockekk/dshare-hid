@@ -1,6 +1,6 @@
-# SPDX-FileCopyrightText: 2024 - 2026 Deskflow Developers
-# SPDX-FileCopyrightText: 2012 - 2024 Symless Ltd
-# SPDX-FileCopyrightText: 2009 - 2012 Nick Bolton
+# SPDX-FileCopyrightText: (C) 2024 - 2026 Deskflow Developers
+# SPDX-FileCopyrightText: (C) 2012 - 2024 Symless Ltd
+# SPDX-FileCopyrightText: (C) 2009 - 2012 Nick Bolton
 # SPDX-License-Identifier: MIT
 
 cmake_minimum_required(VERSION 3.24)
@@ -16,6 +16,24 @@ if(POLICY CMP0156)
   cmake_policy(SET CMP0156 NEW)
 endif()
 
+# Use native paths to collect dependents on windows
+if(POLICY CMP0207)
+  cmake_policy(SET CMP0207 NEW)
+endif()
+
+#Project level options
+option(BUILD_INSTALLER "Build installer" ON)
+option(ENABLE_COVERAGE "Enable test coverage" OFF)
+if(UNIX)
+  if(APPLE)
+    option(BUILD_OSX_BUNDLE "Build mac os bundle" ON)
+  else()
+    option(BUILD_X11_SUPPORT "Build with x11 support" ON)
+  endif()
+elseif(WIN32)
+  option (VCPKG_QT "Use Qt from VCPKG" OFF)
+endif()
+
 # Set CXX Requirements
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -23,7 +41,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Fallback for when git can not be found
 set(DESKFLOW_VERSION_MAJOR 1)
-set(DESKFLOW_VERSION_MINOR 26)
+set(DESKFLOW_VERSION_MINOR 27)
 set(DESKFLOW_VERSION_PATCH 0)
 set(DESKFLOW_VERSION_TWEAK 0)
 
@@ -65,7 +83,6 @@ endif()
 
 #generate vcpkg file if needed
 if(WIN32)
-    option (VCPKG_QT "Use Qt from VCPKG" OFF)
     if(VCPKG_QT)
         set(QT_LIBS ", \"qttranslations\", \"qtsvg\"")
     endif()
@@ -119,18 +136,20 @@ else()
 endif()
 
 if (MSVC)
-  # On Windows, require that the same MSVC runtime is used as on the host.
-  # Mitigates things like access violations caused by accidental ABI-compatibility breakage.
+  # Require the same MSVC runtime that built the binary. Mitigates access violations
+  # from accidental ABI-compatibility breakage across runtime minor versions.
+  #
+  # Derive the minor from the compiler toolset (cl major 19 maps to CRT major 14 and
+  # the minor matches, e.g. 19.44 -> 14.44) rather than the host's installed redist
+  # from the registry. The toolset version tracks the runtime it actually produces,
+  # including the debug CRT (vcruntime140d.dll); the registry redist can be newer than
+  # the loaded DLL and make the runtime guard reject a valid local build.
   set(REQUIRED_MSVC_RUNTIME_MAJOR 14)
-  cmake_host_system_information(
-    RESULT REQUIRED_MSVC_RUNTIME_MINOR
-    QUERY WINDOWS_REGISTRY
-    "HKLM/SOFTWARE/Microsoft/VisualStudio/${REQUIRED_MSVC_RUNTIME_MAJOR}.0/VC/Runtimes/${BUILD_ARCHITECTURE}"
-    VALUE "Minor")
-  if (REQUIRED_MSVC_RUNTIME_MINOR)
+  if (CMAKE_CXX_COMPILER_VERSION MATCHES "^[0-9]+\\.([0-9]+)")
+    set(REQUIRED_MSVC_RUNTIME_MINOR "${CMAKE_MATCH_1}")
     message(STATUS "MSVC runtime: ${REQUIRED_MSVC_RUNTIME_MAJOR}.${REQUIRED_MSVC_RUNTIME_MINOR}")
   else()
-    message(FATAL_ERROR "MSVC runtime registry entry not found")
+    message(FATAL_ERROR "Failed to parse MSVC compiler version: ${CMAKE_CXX_COMPILER_VERSION}")
   endif()
 endif()
 
@@ -153,18 +172,51 @@ add_definitions(-DQT_NO_KEYWORDS)
 if(WIN32)
     add_definitions(-DNOMINMAX)
 endif()
-include(cmake/Libraries.cmake)
-include(GNUInstallDirs)
 
-#Options for Linux platform support
+#Find and setup Qt
+# DShare-HID: Concurrent is used by the ESP32 HID tools widget
+find_package(Qt6 ${REQUIRED_QT_VERSION} REQUIRED COMPONENTS Core Widgets Network Concurrent)
 if(UNIX AND NOT APPLE)
-  option(BUILD_X11_SUPPORT "Build with x11 support" ON)
-elseif (APPLE)
-  option(BUILD_OSX_BUNDLE "Build mac os bundle" ON)
+    find_package(Qt6 ${REQUIRED_QT_VERSION} REQUIRED COMPONENTS DBus)
 endif()
+
+# Define the location of Qt deployment tool
+if(WIN32)
+  if (CMAKE_BUILD_TYPE STREQUAL "Debug" AND VCPKG_QT)
+    set(DEPLOY_TOOL windeployqt.debug.bat)
+  else()
+    set(DEPLOY_TOOL windeployqt)
+  endif()
+elseif(APPLE)
+    set(DEPLOY_TOOL macdeployqt)
+endif()
+
+if (WIN32 OR APPLE)
+  find_program(DEPLOYQT ${DEPLOY_TOOL})
+  if(DEPLOYQT STREQUAL "DEPLOYQT-NOTFOUND")
+    message(FATAL_ERROR "Unable to locate the Qt Deploy Tool: \"${DEPLOY_TOOL}\"")
+  endif()
+  unset(DEPLOY_TOOL)
+endif()
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
+
+message(STATUS "Qt version: ${Qt6_VERSION}")
 
 include(cmake/Libraries.cmake)
 configure_libs()
+
+if(ENABLE_COVERAGE)
+  message(STATUS "Enabling code coverage")
+  include(cmake/CodeCoverage.cmake)
+  append_coverage_compiler_flags()
+  # Apparently solves the bug in gcov where it returns negative counts and confuses gcovr.
+  # > Got negative hit value in gcov line 'branch  2 taken -1' caused by a bug in gcov tool
+  # Bug report: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=68080
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-update=atomic")
+endif()
 
 # setup install paths
 include(GNUInstallDirs)
@@ -177,7 +229,7 @@ if (WIN32)
 elseif(BUILD_OSX_BUNDLE)
   set(CMAKE_INSTALL_BINDIR ${CMAKE_PROJECT_PROPER_NAME}.app/Contents/MacOS)
   set(CMAKE_INSTALL_LICENSE_DIR ${CMAKE_PROJECT_PROPER_NAME}.app/Contents/Resources)
-  set(CMAKE_INSTALL_DOCDIR ${CMAKE_PROJECT_PROPER_NAME}.app/Contents/Resources/docs)
+  set(CMAKE_INSTALL_DOCDIR ${CMAKE_INSTALL_LICENSE_DIR}/docs)
 else()
   set(CMAKE_INSTALL_LICENSE_DIR ${CMAKE_INSTALL_DATADIR}/licenses/${CMAKE_PROJECT_NAME})
   set(CMAKE_INSTALL_I18N_DIR ${CMAKE_INSTALL_DATADIR}/${CMAKE_PROJECT_NAME}/translations)
@@ -201,7 +253,6 @@ install(
   RENAME LICENSE_EXCEPTION
 )
 
-option(BUILD_INSTALLER "Build installer" ON)
 if(BUILD_INSTALLER)
     add_subdirectory(deploy)
 endif()

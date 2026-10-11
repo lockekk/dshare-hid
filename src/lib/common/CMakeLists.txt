@@ -10,11 +10,19 @@ configure_file(Constants.h.in Constants.h @ONLY)
 configure_file(VersionInfo.h.in VersionInfo.h @ONLY)
 
 add_library(common STATIC
+  Action.cpp
+  Action.h
   Coordinate.h
   Enums.h
   ExitCodes.h
+  Hotkey.cpp
+  Hotkey.h
   I18N.h
   I18N.cpp
+  KeyModifierID.h
+  KeyboardModifier.h
+  KeySequence.h
+  KeySequence.cpp
   LogLevel.h
   NetworkProtocol.h
   PlatformInfo.h

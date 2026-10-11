@@ -265,6 +265,7 @@ int main(int argc, char **argv)
   if (exitCode == s_exitSuccess) {
     exitCode = coreApp->getExitCode();
   }
+  delete coreApp;
 
   // Bridge client cleanup: close the transport before exit
   if (isBridgeClient && bridgeTransport) {

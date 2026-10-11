@@ -102,6 +102,7 @@ elseif(APPLE)
     set_target_properties(${target} PROPERTIES
       INSTALL_RPATH "@loader_path/../Libraries;@loader_path/../Frameworks"
       MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_BINARY_DIR}/deskflow.plist"
+      XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME YES
     )
 
     # Warning: Do not use for CI/production, as the `entitlements-dev.plist` file adds special

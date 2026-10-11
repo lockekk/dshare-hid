@@ -331,7 +331,7 @@ void DeskflowHidExtension::applyProfileScreenBonding(const QString &configPath, 
 
 void DeskflowHidExtension::updateBondedScreenLocations(const ServerConfig &config)
 {
-  const auto &screens = config.screens();
+  const auto &screens = config.computers();
   const int cols = Settings::value(Settings::Server::GridWidth).toInt();
   const QString serverName = config.getServerName();
 
@@ -351,7 +351,7 @@ void DeskflowHidExtension::updateBondedScreenLocations(const ServerConfig &confi
 
   if (serverIndex >= 0 && cols > 0) {
     for (int i = 0; i < screens.size(); ++i) {
-      const Screen &screen = screens[i];
+      const Computer &screen = screens[i];
       if (screen.name() == serverName || screen.name().isEmpty())
         continue;
 
@@ -997,8 +997,7 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
       return;
     }
 
-    QSettings bridgeConfig(configPath, QSettings::IniFormat);
-    QString clientName = bridgeConfig.value(Settings::Core::ScreenName).toString();
+    QString clientName = BridgeClientConfigManager::readScreenName(configPath);
 
     // Stop polling timer if it exists
     m_bridgeClientManager->updateTimer(configPath, nullptr);
@@ -1087,7 +1086,7 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
         screenHeight = tmp;
       }
     }
-    QString screenName = config.value(Settings::Core::ScreenName).toString();
+    QString screenName = BridgeClientConfigManager::readScreenName(configPath);
 
     const QVariant logLevelVariant = config.value(Settings::Log::Level, "INFO");
     QString logLevel = logLevelVariant.toString().trimmed();

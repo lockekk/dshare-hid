@@ -53,7 +53,7 @@ std::string hexDump(const uint8_t *data, size_t length, size_t maxBytes = 32)
 BridgePlatformScreen::BridgePlatformScreen(
     IEventQueue *events, std::shared_ptr<CdcTransport> transport, int32_t screenWidth, int32_t screenHeight
 )
-    : PlatformScreen(events),
+    : PlatformComputer(events),
       m_transport(std::move(transport)),
       m_screenWidth(screenWidth),
       m_screenHeight(screenHeight),
@@ -581,7 +581,7 @@ bool BridgePlatformScreen::sendEvent(HidEventType type, const std::vector<uint8_
   packet.payload = payload;
   if (!m_transport->sendHidEvent(packet)) {
     LOG_ERR("BridgeScreen: failed to send HID event type=%u", static_cast<unsigned>(type));
-    m_events->addEvent(Event(EventTypes::ScreenError, getEventTarget()));
+    m_events->addEvent(Event(EventTypes::ComputerError, getEventTarget()));
     return false;
   }
 
@@ -1362,7 +1362,7 @@ void BridgePlatformScreen::sendKeepAliveIfIdle() const
     recordCdcCommand(now);
   } else {
     LOG_WARN("BridgeScreen: keep-alive failed (%s)", m_transport->lastError().c_str());
-    m_events->addEvent(Event(EventTypes::ScreenError, getEventTarget()));
+    m_events->addEvent(Event(EventTypes::ComputerError, getEventTarget()));
   }
 }
 

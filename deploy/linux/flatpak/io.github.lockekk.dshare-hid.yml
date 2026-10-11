@@ -1,6 +1,6 @@
 app-id: io.github.lockekk.dshare-hid
 runtime: org.kde.Platform
-runtime-version: "6.10"
+runtime-version: "6.11"
 sdk: org.kde.Sdk
 command: dshare-hid
 finish-args:
@@ -19,7 +19,6 @@ cleanup:
   - /lib/pkgconfig
   - /share/pkgconfig
   - /share/cmake
-  - /share/doc
   - /share/gir-1.0
   - /lib/girepository-1.0
 modules:
@@ -70,18 +69,6 @@ modules:
         url: https://github.com/flatpak/libportal.git
         tag: 0.10.0
         commit: c23024018c8eb076549a1517fcb2d7f80d3e2ed5
-  - name: gtest
-    buildsystem: cmake-ninja
-    sources:
-      - type: git
-        url: https://github.com/google/googletest.git
-        tag: v1.17.0
-        commit: 52eb8108c5bdec04579160ae17225d66034bd723
-        x-checker-data:
-          type: git
-          tag-pattern: ^([\\d.]+)$
-    cleanup:
-      - '*'
   - name: dshare-hid
     buildsystem: cmake-ninja
     config-opts:

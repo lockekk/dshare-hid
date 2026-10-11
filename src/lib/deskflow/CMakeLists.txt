@@ -1,4 +1,5 @@
-# SPDX-FileCopyrightText: (C) 2024 - 2025 Chris Rizzitello <sithlord48@gmail.com>
+# SPDX-FileCopyrightText: (C) 2026 Deskflow Developers
+# SPDX-FileCopyrightText: (C) 2024 - 2026 Chris Rizzitello <sithlord48@gmail.com>
 # SPDX-FileCopyrightText: (C) 2012 - 2025 Symless Ltd
 # SPDX-FileCopyrightText: (C) 2009 - 2012 Nick Bolton
 # SPDX-License-Identifier: MIT
@@ -18,8 +19,8 @@ elseif(UNIX)
     unix/DeskflowXkbKeyboard.cpp
     unix/DeskflowXkbKeyboard.h
     unix/ISO639Table.h
-    unix/X11LayoutsParser.cpp
-    unix/X11LayoutsParser.h
+    unix/XkbLayoutsParser.cpp
+    unix/XkbLayoutsParser.h
   )
 endif()
 
@@ -37,22 +38,25 @@ add_library(${lib_name} STATIC ${PLATFORM_CODE}
   Clipboard.h
   ClipboardChunk.cpp
   ClipboardChunk.h
+  Computer.cpp
+  Computer.h
   DeskflowException.cpp
   DeskflowException.h
+  DisplayException.cpp
+  DisplayException.h
   DisplayInvalidException.h
   IApp.h
   IClient.h
   IClipboard.cpp
   IClipboard.h
+  IComputer.h
   IKeyState.cpp
   IKeyState.h
-  IPlatformScreen.cpp
-  IPlatformScreen.h
-  IPrimaryScreen.cpp
-  IPrimaryScreen.h
-  IScreen.h
+  IPlatformComputer.h
+  IPrimaryComputer.cpp
+  IPrimaryComputer.h
   IScreenSaver.h
-  ISecondaryScreen.h
+  ISecondaryComputer.h
   KeyTypes.cpp
   KeyTypes.h
   KeyMap.cpp
@@ -63,16 +67,12 @@ add_library(${lib_name} STATIC ${PLATFORM_CODE}
   OptionTypes.h
   PacketStreamFilter.cpp
   PacketStreamFilter.h
-  PlatformScreen.cpp
-  PlatformScreen.h
+  PlatformComputer.cpp
+  PlatformComputer.h
   ProtocolTypes.cpp
   ProtocolTypes.h
   ProtocolUtil.cpp
   ProtocolUtil.h
-  Screen.cpp
-  Screen.h
-  ScreenException.cpp
-  ScreenException.h
   ServerApp.cpp
   ServerApp.h
   StreamChunker.cpp
@@ -89,26 +89,14 @@ add_library(${lib_name} STATIC ${PLATFORM_CODE}
   ipc/CoreIpcServer.h
 )
 
-target_link_libraries(${lib_name} PUBLIC common Qt6::Core Qt6::Network)
-
-if(WIN32)
-  target_link_libraries(${lib_name} PRIVATE platform)
-endif()
-
-if(UNIX)
-  target_link_libraries(
-    ${lib_name}
-    PRIVATE
-    arch
-    client
-    net
-    base
+target_link_libraries(${lib_name}
+  PUBLIC
+    common
+    Qt6::Network
+  PRIVATE
     platform
-    mt
-    server
-  )
+)
 
-  if(NOT APPLE)
-    target_link_libraries(${lib_name} PRIVATE Qt6::Xml)
-  endif()
+if(UNIX AND NOT APPLE)
+  target_link_libraries(${lib_name} PRIVATE server ${LIBXKBREGISTRY_LINK_LIBRARIES})
 endif()

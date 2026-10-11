@@ -9,7 +9,7 @@
 #pragma once
 
 #include "base/DirectionTypes.h"
-#include "deskflow/IPlatformScreen.h"
+#include "deskflow/IPlatformComputer.h"
 #include "deskflow/KeyTypes.h"
 #include "deskflow/MouseTypes.h"
 
@@ -51,7 +51,7 @@ public:
   class KeystrokeCondition : public Condition
   {
   public:
-    KeystrokeCondition(IEventQueue *events, IPlatformScreen::KeyInfo *);
+    KeystrokeCondition(IEventQueue *events, IPlatformComputer::KeyInfo *);
     KeystrokeCondition(IEventQueue *events, KeyID key, KeyModifierMask mask);
     ~KeystrokeCondition() override = default;
 
@@ -76,7 +76,7 @@ public:
   class MouseButtonCondition : public Condition
   {
   public:
-    MouseButtonCondition(IEventQueue *events, const IPlatformScreen::ButtonInfo &);
+    MouseButtonCondition(IEventQueue *events, const IPlatformComputer::ButtonInfo &);
     MouseButtonCondition(IEventQueue *events, ButtonID, KeyModifierMask mask);
     ~MouseButtonCondition() override = default;
 
@@ -94,12 +94,12 @@ public:
     IEventQueue *m_events;
   };
 
-  // ScreenConnectedCondition
-  class ScreenConnectedCondition : public Condition
+  // ComputerConnectedCondition
+  class ComputerConnectedCondition : public Condition
   {
   public:
-    ScreenConnectedCondition(IEventQueue *events, const std::string &screen);
-    ~ScreenConnectedCondition() override = default;
+    ComputerConnectedCondition(IEventQueue *events, const std::string &computer);
+    ~ComputerConnectedCondition() override = default;
 
     // Condition overrides
     Condition *clone() const override;
@@ -107,7 +107,7 @@ public:
     FilterStatus match(const Event &) override;
 
   private:
-    std::string m_screen;
+    std::string m_computer;
     IEventQueue *m_events;
   };
 
@@ -127,8 +127,8 @@ public:
     virtual void perform(const Event &) = 0;
   };
 
-  // LockCursorToScreenAction
-  class LockCursorToScreenAction : public Action
+  // LockCursorToComputerAction
+  class LockCursorToComputerAction : public Action
   {
   public:
     enum Mode
@@ -138,7 +138,7 @@ public:
       kToggle
     };
 
-    explicit LockCursorToScreenAction(IEventQueue *events, Mode = kToggle);
+    explicit LockCursorToComputerAction(IEventQueue *events, Mode = kToggle);
 
     Mode getMode() const;
 
@@ -173,13 +173,13 @@ public:
     Mode m_mode;
   };
 
-  // SwitchToScreenAction
-  class SwitchToScreenAction : public Action
+  // SwitchToComputerAction
+  class SwitchToComputerAction : public Action
   {
   public:
-    SwitchToScreenAction(IEventQueue *events, const std::string &screen);
+    SwitchToComputerAction(IEventQueue *events, const std::string &computer);
 
-    std::string getScreen() const;
+    std::string getComputer() const;
 
     // Action overrides
     Action *clone() const override;
@@ -187,7 +187,7 @@ public:
     void perform(const Event &) override;
 
   private:
-    std::string m_screen;
+    std::string m_computer;
     IEventQueue *m_events;
   };
 
@@ -209,11 +209,11 @@ public:
     IEventQueue *m_events;
   };
 
-  // SwitchToNextScreenAction
-  class SwitchToNextScreenAction : public Action
+  // SwitchToNextComputerAction
+  class SwitchToNextComputerAction : public Action
   {
   public:
-    explicit SwitchToNextScreenAction(IEventQueue *events);
+    explicit SwitchToNextComputerAction(IEventQueue *events);
 
     // Action overrides
     Action *clone() const override;
@@ -239,7 +239,7 @@ public:
     explicit KeyboardBroadcastAction(IEventQueue *events, Mode, const std::set<std::string> &screens);
 
     Mode getMode() const;
-    std::set<std::string> getScreens() const;
+    std::set<std::string> getComputers() const;
 
     // Action overrides
     Action *clone() const override;
@@ -248,7 +248,7 @@ public:
 
   private:
     Mode m_mode;
-    std::string m_screens;
+    std::string m_computers;
     IEventQueue *m_events;
   };
 
@@ -256,7 +256,7 @@ public:
   class KeystrokeAction : public Action
   {
   public:
-    KeystrokeAction(IEventQueue *events, IPlatformScreen::KeyInfo *adoptedInfo, bool press);
+    KeystrokeAction(IEventQueue *events, IPlatformComputer::KeyInfo *adoptedInfo, bool press);
     KeystrokeAction(KeystrokeAction const &) = delete;
     KeystrokeAction(KeystrokeAction &&) = delete;
     ~KeystrokeAction() override;
@@ -264,8 +264,8 @@ public:
     KeystrokeAction &operator=(KeystrokeAction const &) = delete;
     KeystrokeAction &operator=(KeystrokeAction &&) = delete;
 
-    void adoptInfo(IPlatformScreen::KeyInfo *);
-    const IPlatformScreen::KeyInfo *getInfo() const;
+    void adoptInfo(IPlatformComputer::KeyInfo *);
+    const IPlatformComputer::KeyInfo *getInfo() const;
     bool isOnPress() const;
 
     // Action overrides
@@ -277,7 +277,7 @@ public:
     virtual const char *formatName() const;
 
   private:
-    IPlatformScreen::KeyInfo *m_keyInfo;
+    IPlatformComputer::KeyInfo *m_keyInfo;
     bool m_press;
     IEventQueue *m_events;
   };
@@ -286,7 +286,7 @@ public:
   class MouseButtonAction : public Action
   {
   public:
-    MouseButtonAction(IEventQueue *events, const IPlatformScreen::ButtonInfo &adoptedInfo, bool press);
+    MouseButtonAction(IEventQueue *events, const IPlatformComputer::ButtonInfo &adoptedInfo, bool press);
     MouseButtonAction(MouseButtonAction const &) = delete;
     MouseButtonAction(MouseButtonAction &&) = delete;
     ~MouseButtonAction() override = default;
@@ -294,7 +294,7 @@ public:
     MouseButtonAction &operator=(MouseButtonAction const &) = delete;
     MouseButtonAction &operator=(MouseButtonAction &&) = delete;
 
-    const IPlatformScreen::ButtonInfo &getInfo() const;
+    const IPlatformComputer::ButtonInfo &getInfo() const;
     bool isOnPress() const;
 
     // Action overrides
@@ -306,7 +306,7 @@ public:
     virtual const char *formatName() const;
 
   private:
-    IPlatformScreen::ButtonInfo m_buttonInfo;
+    IPlatformComputer::ButtonInfo m_buttonInfo;
     bool m_press;
     IEventQueue *m_events;
   };
@@ -377,9 +377,6 @@ public:
 
   // add rule, adopting the condition and the actions
   void addFilterRule(const Rule &rule);
-
-  // remove a rule
-  void removeFilterRule(uint32_t index);
 
   // get rule by index
   Rule &getRule(uint32_t index);

@@ -1,17 +1,14 @@
-# Deskflow
+# DShare-HID
 
-Deskflow is a free and open source keyboard and mouse sharing app. Use the keyboard, mouse, or trackpad of one computer to control nearby computers, and work seamlessly between them.
+DShare-HID is a free and open source keyboard and mouse sharing app derived from [Deskflow](https://github.com/deskflow/deskflow). Use the keyboard, mouse, or trackpad of one computer to control nearby computers and, through a DShare-HID bridge device, mobile devices such as iPad, iPhone, and Android phones.
 
-[Homepage](https://deskflow.org) [Code](https://github.com/deskflow/deskflo)
+[Homepage](https://github.com/lockekk/dshare-hid) [Releases](https://github.com/lockekk/dshare-hid/releases)
 
 ## Getting help online
 
- - View the [wiki](https://github.com/deskflow/deskflow/wiki) Online resource
-
-### Chat with us
- - Main discussion on Matrix: [`#deskflow:matrix.org`](https://matrix.to/#/#deskflow:matrix.org) ([Matrix clients](https://matrix.org/ecosystem/clients/))
- - Discussion also happens on IRC: `#deskflow` or `#deskflow-dev` on [Libera Chat](https://libera.chat/)
- - Start a [new discussion](https://github.com/deskflow/deskflow/discussions) on our GitHub project.
+ - Start a [new discussion](https://github.com/lockekk/dshare-hid/discussions) on our GitHub project.
+ - Report bugs via [GitHub Issues](https://github.com/lockekk/dshare-hid/issues).
+ - Email: [dshare.hid@gmail.com](mailto:dshare.hid@gmail.com)
 
 ## Reporting security issues
 

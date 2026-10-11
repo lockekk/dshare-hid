@@ -1,6 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
+ * SPDX-FileCopyrightText: (C) 2025 - 2026 Deskflow Developers
  * SPDX-FileCopyrightText: (C) 2012 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2008 Volker Lanz <vl@fidra.de>
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
@@ -10,6 +10,8 @@
 #include <QDialog>
 
 #include "gui/config/ServerConfig.h"
+
+class SettingsDialogButtonBox;
 
 namespace Ui {
 class SettingsDialog;
@@ -25,7 +27,7 @@ public:
   ~SettingsDialog() override;
 
 Q_SIGNALS:
-  void shown();
+  void requestRemoveAllSettings();
 
 protected:
   void changeEvent(QEvent *e) override;
@@ -37,11 +39,10 @@ private:
   void browseLogPath();
   void setLogToFile(bool logToFile);
   void accept() override;
-  void showEvent(QShowEvent *event) override;
   bool isClientMode() const;
   void updateTlsControls();
   void updateTlsControlsEnabled();
-  void showReadOnlyMessage();
+  void resetAllSettings();
   void updateText();
 
   /// @brief Load all settings.
@@ -85,4 +86,5 @@ private:
   bool m_interfaceSetOnLoad = false;
   std::unique_ptr<Ui::SettingsDialog> ui;
   const ServerConfig &m_serverConfig;
+  SettingsDialogButtonBox *m_buttonBox = nullptr;
 };

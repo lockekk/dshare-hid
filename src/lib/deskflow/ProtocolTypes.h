@@ -175,6 +175,7 @@ enum class TransferState : uint8_t
   Started,    ///< Reception started
   InProgress, ///< Reception in progress
   Finished,   ///< Reception completed successfully
+  Oversize,   ///< Declared size over the limit, chunks are discarded
   Error       ///< Reception failed with error
 };
 
@@ -318,7 +319,7 @@ extern const char *const kMsgDIdentity;
 
 /**
  * @defgroup protocol_commands Command Messages
- * @brief Control messages for screen management and connection maintenance
+ * @brief Control messages for computer management and connection maintenance
  * @{
  */
 
@@ -351,7 +352,7 @@ extern const char *const kMsgCNoop;
 extern const char *const kMsgCClose;
 
 /**
- * @brief Enter screen command
+ * @brief Enter computer command
  *
  * **Message Code**: `"CINN"`
  * **Direction**: Primary → Secondary
@@ -369,11 +370,11 @@ extern const char *const kMsgCClose;
  * "CINN\x01\x90\x01\x2C\x00\x00\x00\x01\x00\x00"
  * ```
  *
- * Sent when the mouse cursor enters the secondary screen from the primary.
+ * Sent when the mouse cursor enters the secondary computer from the primary.
  * The coordinates specify the exact entry point. The sequence number is used
  * to order messages and must be returned in subsequent messages from the client.
  * The modifier mask indicates which toggle keys (Caps Lock, Num Lock, etc.)
- * are active and should be synchronized on the secondary screen.
+ * are active and should be synchronized on the secondary computer.
  *
  * @see kMsgCLeave
  * @since Protocol version 1.0
@@ -381,14 +382,14 @@ extern const char *const kMsgCClose;
 extern const char *const kMsgCEnter;
 
 /**
- * @brief Leave screen command
+ * @brief Leave computer command
  *
  * **Message Code**: `"COUT"`
  * **Direction**: Primary → Secondary
  * **Format**: No parameters
  *
- * Sent when the mouse cursor leaves the secondary screen and returns to the primary.
- * Upon receiving this message, the secondary screen should:
+ * Sent when the mouse cursor leaves the secondary computer and returns to the primary.
+ * Upon receiving this message, the secondary computer should:
  * 1. Send clipboard data for any clipboards it has grabbed
  * 2. Only send clipboards that have changed since the last leave
  * 3. Use the sequence number from the most recent kMsgCEnter
@@ -415,9 +416,9 @@ extern const char *const kMsgCLeave;
  * "CCLP\x00\x00\x00\x00\x01"
  * ```
  *
- * Sent when an application grabs a clipboard on either screen.
- * This notifies the other screen that clipboard ownership has changed.
- * Secondary screens must use the sequence number from the most recent
+ * Sent when an application grabs a clipboard on either computer.
+ * This notifies the other computer that clipboard ownership has changed.
+ * Secondary computers must use the sequence number from the most recent
  * kMsgCEnter. The primary always sends sequence number 0.
  *
  * **Clipboard Identifiers**:
@@ -449,7 +450,7 @@ extern const char *const kMsgCClipboard;
  * "CSEC\x00"
  * ```
  *
- * Notifies the secondary screen when the primary's screensaver
+ * Notifies the secondary computer when the primary's screensaver
  * starts or stops. The secondary can use this to synchronize
  * its own screensaver state.
  *
@@ -473,13 +474,13 @@ extern const char *const kMsgCScreenSaver;
 extern const char *const kMsgCResetOptions;
 
 /**
- * @brief Screen information acknowledgment
+ * @brief Computer information acknowledgment
  *
  * **Message Code**: `"CIAK"`
  * **Direction**: Primary → Secondary
  * **Format**: No parameters
  *
- * Sent by the primary in response to a secondary screen's kMsgDInfo message.
+ * Sent by the primary in response to a secondary computer's kMsgDInfo message.
  * This acknowledgment is sent for every kMsgDInfo, whether or not the
  * primary had previously sent a kMsgQInfo query.
  *
@@ -528,7 +529,7 @@ extern const char *const kMsgCKeepAlive;
  */
 
 /**
- * @brief Key press with language code (v1.8+)
+ * @brief Key press event
  *
  * **Message Code**: `"DKDL"`
  * **Direction**: Primary → Secondary
@@ -548,37 +549,9 @@ extern const char *const kMsgCKeepAlive;
  * "DKDL\x00\x61\x00\x00\x00\x1E\x00\x00\x00\x02en"
  * ```
  *
- * Enhanced version of kMsgDKeyDown that includes language information
- * to help clients handle unknown language characters correctly.
- *
- * @see kMsgDKeyDown
- * @since Protocol version 1.8
- */
-extern const char *const kMsgDKeyDownLang;
-
-/**
- * @brief Key press event
- *
- * **Message Code**: `"DKDN"`
- * **Direction**: Primary → Secondary
- * **Format**: `"DKDN%2i%2i%2i"`
- * **Parameters**:
- * - `$1`: KeyID (2 bytes) - Virtual key identifier, often called a "keysym" on Linux/X11. This is platform-dependent
- * and corresponds to values like `XK_a` on X11/Linux, `'a'` on macOS, and `'A'` on Windows.
- * - `$2`: KeyModifierMask (2 bytes) - Active modifier keys
- * - `$3`: KeyButton (2 bytes) - Physical key code, often called a "keycode" or "scancode". This is the raw,
- * platform-dependent scan code of the key pressed.
- *
- * **Example**:
- *
- * 'a' key (KeyID 0x61), no modifiers, physical key (KeyButton 0x1E)
- * ```
- * "DKDN\x00\x61\x00\x00\x00\x1E"
- * ```
- *
  * **Key Mapping Strategy**:
  * The KeyButton parameter is crucial for proper key release handling.
- * The secondary screen should:
+ * The secondary computer should:
  * 1. Map the KeyID to its local virtual key
  * 2. Remember the association between KeyButton and the local physical key
  * 3. Use KeyButton (not KeyID) to identify which key to release
@@ -588,10 +561,41 @@ extern const char *const kMsgDKeyDownLang;
  * - Different keyboard layouts may produce different KeyIDs
  * - Modifier keys released before the main key can alter KeyID
  *
- * @see kMsgDKeyUp, kMsgDKeyDownLang
- * @since Protocol version 1.1
+ * The language code helps clients handle characters from a keyboard layout
+ * they do not have active. Only sent to clients that replied 1.8 in their hello.
+ *
+ * @see kMsgDKeyUp, kMsgDKeyDown1_1
+ * @since Protocol version 1.8
  */
 extern const char *const kMsgDKeyDown;
+
+/**
+ * @brief Key press event (v1.1 to v1.7)
+ *
+ * **Message Code**: `"DKDN"`
+ * **Direction**: Primary → Secondary
+ * **Format**: `"DKDN%2i%2i%2i"`
+ * **Parameters**:
+ * - `$1`: KeyID (2 bytes) - Virtual key identifier
+ * - `$2`: KeyModifierMask (2 bytes) - Active modifier keys
+ * - `$3`: KeyButton (2 bytes) - Physical key code
+ *
+ * **Example**:
+ *
+ * 'a' key (KeyID 0x61), no modifiers, physical key (KeyButton 0x1E)
+ * ```
+ * "DKDN\x00\x61\x00\x00\x00\x1E"
+ * ```
+ *
+ * Version without the language code. Used when communicating with
+ * protocol version 1.1 through 1.7 clients (Synergy 1.4 to 1.14.1,
+ * Barrier, Input Leap). The key mapping strategy is the same as for
+ * kMsgDKeyDown.
+ *
+ * @see kMsgDKeyDown
+ * @since Protocol version 1.1
+ */
+extern const char *const kMsgDKeyDown1_1;
 
 /**
  * @brief Key press event (legacy v1.0)
@@ -606,8 +610,8 @@ extern const char *const kMsgDKeyDown;
  * Legacy version without KeyButton parameter. Used only when
  * communicating with protocol version 1.0 clients.
  *
- * @deprecated Use kMsgDKeyDown for protocol version 1.1+
- * @see kMsgDKeyDown
+ * @deprecated Use kMsgDKeyDown1_1 for protocol version 1.1+
+ * @see kMsgDKeyDown1_1
  * @since Protocol version 1.0
  */
 extern const char *const kMsgDKeyDown1_0;
@@ -637,10 +641,42 @@ extern const char *const kMsgDKeyDown1_0;
  * Sent when a key is held down and auto-repeating. The repeat count
  * indicates how many repeat events occurred since the last message.
  *
- * @see kMsgDKeyDown
- * @since Protocol version 1.1
+ * Shares the `DKRP` message code with kMsgDKeyRepeat1_1, so the receiver can
+ * only tell the two apart by the negotiated protocol version. Only sent to
+ * clients that replied 1.8 in their hello.
+ *
+ * @see kMsgDKeyDown, kMsgDKeyRepeat1_1
+ * @since Protocol version 1.8
  */
 extern const char *const kMsgDKeyRepeat;
+
+/**
+ * @brief Key auto-repeat event (v1.1 to v1.7)
+ *
+ * **Message Code**: `"DKRP"`
+ * **Direction**: Primary → Secondary
+ * **Format**: `"DKRP%2i%2i%2i%2i"`
+ * **Parameters**:
+ * - `$1`: KeyID (2 bytes) - Virtual key identifier
+ * - `$2`: KeyModifierMask (2 bytes) - Active modifier keys
+ * - `$3`: Repeat count (2 bytes) - Number of repeats
+ * - `$4`: KeyButton (2 bytes) - Physical key code
+ *
+ * **Example**:
+ *
+ * 'a' key repeating 3 times
+ * ```
+ * "DKRP\x00\x61\x00\x00\x00\x03\x00\x1E"
+ * ```
+ *
+ * Version without the language code. Used when communicating with
+ * protocol version 1.1 through 1.7 clients (Synergy 1.4 to 1.14.1,
+ * Barrier, Input Leap).
+ *
+ * @see kMsgDKeyRepeat
+ * @since Protocol version 1.1
+ */
+extern const char *const kMsgDKeyRepeat1_1;
 
 /**
  * @brief Key auto-repeat event (legacy v1.0)
@@ -653,10 +689,10 @@ extern const char *const kMsgDKeyRepeat;
  * - `$2`: KeyModifierMask (2 bytes) - Active modifier keys
  * - `$3`: Repeat count (2 bytes) - Number of repeats
  *
- * Legacy version without KeyButton and language parameters.
+ * Legacy version without the KeyButton parameter.
  *
- * @deprecated Use kMsgDKeyRepeat for protocol version 1.1+
- * @see kMsgDKeyRepeat
+ * @deprecated Use kMsgDKeyRepeat1_1 for protocol version 1.1+
+ * @see kMsgDKeyRepeat1_1
  * @since Protocol version 1.0
  */
 extern const char *const kMsgDKeyRepeat1_0;
@@ -681,7 +717,7 @@ extern const char *const kMsgDKeyRepeat1_0;
  * "DKUP\x00\x61\x00\x00\x00\x1E"
  * ```
  *
- * **Important**: The secondary screen should use KeyButton (not KeyID)
+ * **Important**: The secondary computer should use KeyButton (not KeyID)
  * to determine which physical key to release. This ensures correct
  * behavior with dead keys and layout differences.
  *
@@ -783,8 +819,8 @@ extern const char *const kMsgDMouseUp;
  * **Direction**: Primary → Secondary
  * **Format**: `"DMMV%2i%2i"`
  * **Parameters**:
- * - `$1`: X coordinate (2 bytes, signed) - Absolute screen position
- * - `$2`: Y coordinate (2 bytes, signed) - Absolute screen position
+ * - `$1`: X coordinate (2 bytes, signed) - Absolute computer position
+ * - `$2`: Y coordinate (2 bytes, signed) - Absolute computer position
  *
  * **Example**:
  *
@@ -793,7 +829,7 @@ extern const char *const kMsgDMouseUp;
  * "DMMV\x01\x90\x01\x2C"
  * ```
  *
- * Coordinates are absolute positions on the secondary screen.
+ * Coordinates are absolute positions on the secondary computer.
  * The origin (0,0) is typically the top-left corner.
  *
  * @see kMsgDMouseRelMove
@@ -938,12 +974,12 @@ extern const char *const kMsgDClipboard;
 
 /**
  * @defgroup protocol_info Information Messages
- * @brief Screen information and configuration messages
+ * @brief Computer information and configuration messages
  * @{
  */
 
 /**
- * @brief Client screen information
+ * @brief Client computer information
  *
  * **Message Code**: `"DINF"`
  * **Direction**: Secondary → Primary
@@ -951,29 +987,29 @@ extern const char *const kMsgDClipboard;
  * **Parameters**:
  * - `$1`: Left edge coordinate (2 bytes, signed)
  * - `$2`: Top edge coordinate (2 bytes, signed)
- * - `$3`: Screen width in pixels (2 bytes, unsigned)
- * - `$4`: Screen height in pixels (2 bytes, unsigned)
+ * - `$3`: Computer width in pixels (2 bytes, unsigned)
+ * - `$4`: Computer height in pixels (2 bytes, unsigned)
  * - `$5`: Warp zone size (2 bytes, obsolete)
  * - `$6`: Mouse X position (2 bytes, signed)
  * - `$7`: Mouse Y position (2 bytes, signed)
  *
  * **Example**:
  *
- * Screen at (0,0), 1920x1080, mouse at (400,300)
+ * Computer at (0,0), 1920x1080, mouse at (400,300)
  * ```
  * "DINF\x00\x00\x00\x00\x07\x80\x04\x38\x00\x00\x01\x90\x01\x2C"
  * ```
  *
  * **When to Send**:
  * 1. In response to kMsgQInfo query
- * 2. When screen resolution changes
+ * 2. When computer resolution changes
  * 3. During initial connection setup
  *
  * **Resolution Change Protocol**:
  * When sending due to resolution change, the secondary should:
  * 1. Send kMsgDInfo with new dimensions
  * 2. Ignore kMsgDMouseMove until receiving kMsgCInfoAck
- * 3. This prevents mouse movement outside the new screen area
+ * 3. This prevents mouse movement outside the new computer area
  *
  * @see kMsgQInfo, kMsgCInfoAck
  * @since Protocol version 1.0
@@ -1107,7 +1143,7 @@ extern const char *const kMsgDDragInfo;
  * "SECN\x00\x00\x00\x08Terminal"
  * ```
  *
- * Notifies the secondary screen when an application on the primary
+ * Notifies the secondary computer when an application on the primary
  * requests secure input mode. This is primarily a macOS feature
  * where certain applications (like password fields) can request
  * exclusive keyboard access.
@@ -1138,7 +1174,7 @@ extern const char *const kMsgDSecureInputNotification;
  * ```
  *
  * Synchronizes keyboard language/layout information between
- * primary and secondary screens. Helps ensure proper character
+ * primary and secondary computers. Helps ensure proper character
  * mapping when different keyboard layouts are used.
  *
  * **Language Format**:
@@ -1161,21 +1197,21 @@ extern const char *const kMsgDLanguageSynchronisation;
  */
 
 /**
- * @brief Query screen information
+ * @brief Query computer information
  *
  * **Message Code**: `"QINF"`
  * **Direction**: Primary → Secondary
  * **Format**: No parameters
  *
- * Requests the secondary screen to send its current screen information.
+ * Requests the secondary computer to send its current computer information.
  * The client should respond with a kMsgDInfo message containing:
- * - Screen dimensions and position
+ * - Computer dimensions and position
  * - Current mouse position
- * - Other screen-related data
+ * - Other computer-related data
  *
  * This is typically sent:
  * - During initial connection setup
- * - When the server needs updated screen information
+ * - When the server needs updated computer information
  * - After configuration changes
  *
  * @see kMsgDInfo, kMsgCInfoAck
@@ -1249,7 +1285,7 @@ extern const char *const kMsgEBusy;
  * **Format**: No parameters
  *
  * Sent when the client name provided during connection is not
- * found in the server's screen configuration map. This means
+ * found in the server's computer configuration map. This means
  * the server doesn't know about this client.
  *
  * This can happen when:
@@ -1305,16 +1341,16 @@ extern const char *const kMsgEBad;
  */
 
 /**
- * @brief Client screen information structure
+ * @brief Client computer information structure
  *
- * Contains comprehensive information about a secondary screen,
+ * Contains comprehensive information about a secondary computer,
  * including dimensions, position, and current mouse location.
  * This data is sent via kMsgDInfo messages.
  *
  * **Usage**:
  * - Sent by client in response to kMsgQInfo
- * - Sent when screen resolution changes
- * - Used by server for screen layout calculations
+ * - Sent when computer resolution changes
+ * - Used by server for computer layout calculations
  *
  * **Coordinate System**:
  * - Origin (0,0) is typically top-left corner
@@ -1328,9 +1364,9 @@ class ClientInfo
 {
 public:
   /**
-   * @brief Screen position coordinates
+   * @brief Computer position coordinates
    *
-   * The position of the upper-left corner of the screen in the
+   * The position of the upper-left corner of the computer in the
    * virtual desktop coordinate system. This is typically (0,0)
    * for single-monitor setups, but can be different in multi-monitor
    * configurations.
@@ -1341,15 +1377,15 @@ public:
   int32_t m_y; ///< Top edge Y coordinate
 
   /**
-   * @brief Screen dimensions
+   * @brief Computer dimensions
    *
-   * The size of the screen in pixels. These values represent
-   * the usable screen area for mouse movement and window placement.
+   * The size of the computer in pixels. These values represent
+   * the usable computer area for mouse movement and window placement.
    *
    * @since Protocol version 1.0
    */
-  int32_t m_w; ///< Screen width in pixels
-  int32_t m_h; ///< Screen height in pixels
+  int32_t m_w; ///< Computer width in pixels
+  int32_t m_h; ///< Computer height in pixels
 
   /**
    * @brief Obsolete jump zone size
@@ -1362,14 +1398,14 @@ public:
   /**
    * @brief Current mouse position
    *
-   * The current location of the mouse cursor on this screen.
-   * Coordinates are relative to the screen's coordinate system
+   * The current location of the mouse cursor on this computer.
+   * Coordinates are relative to the computer's coordinate system
    * (m_x, m_y represent the origin).
    *
    * **Usage**:
-   * - Updated when mouse moves on this screen
-   * - Used for cursor synchronization between screens
-   * - Helps with smooth transitions during screen switching
+   * - Updated when mouse moves on this computer
+   * - Used for cursor synchronization between computers
+   * - Helps with smooth transitions during computer switching
    *
    * @since Protocol version 1.0
    */

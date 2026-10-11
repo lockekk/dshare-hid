@@ -51,6 +51,7 @@ if(BUILD_OSX_BUNDLE)
   set_target_properties(${target} PROPERTIES
     INSTALL_RPATH "@loader_path/../Libraries;@loader_path/../Frameworks"
     RUNTIME_OUTPUT_DIRECTORY $<TARGET_BUNDLE_CONTENT_DIR:${CMAKE_PROJECT_PROPER_NAME}>/MacOS
+    XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME YES
   )
 elseif (WIN32)
   install(RUNTIME_DEPENDENCY_SET coreDeps

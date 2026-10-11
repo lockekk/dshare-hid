@@ -51,7 +51,7 @@ elseif(APPLE)
 
   find_library(IOKIT_LIBRARY IOKit)
   find_library(COREFOUNDATION_LIBRARY CoreFoundation)
-  target_link_libraries(gui ${IOKIT_LIBRARY} ${COREFOUNDATION_LIBRARY})
+  target_link_libraries(gui PRIVATE ${IOKIT_LIBRARY} ${COREFOUNDATION_LIBRARY})
 endif()
 
 set(ESP32_HID_TOOLS_DIR "${CMAKE_SOURCE_DIR}/submodules/esp32-hid-tools")
@@ -67,7 +67,7 @@ if(HAS_ESP32_HID_TOOLS)
     ${ESP32_HID_TOOLS_DIR}
   )
 
-  target_link_libraries(gui
+  target_link_libraries(gui PRIVATE
     flash_tool_lib
     downloader_lib
   )
@@ -81,7 +81,7 @@ if(UNIX AND NOT APPLE)
   # Find libudev for USB device monitoring
   find_library(UDEV_LIBRARY udev)
   if(UDEV_LIBRARY)
-    target_link_libraries(gui ${UDEV_LIBRARY})
+    target_link_libraries(gui PRIVATE ${UDEV_LIBRARY})
     message(STATUS "Found libudev: ${UDEV_LIBRARY}")
   else()
     message(WARNING "libudev not found - USB device monitoring will not be available")

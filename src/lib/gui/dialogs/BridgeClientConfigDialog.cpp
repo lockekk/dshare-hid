@@ -343,10 +343,7 @@ void BridgeClientConfigDialog::loadConfig()
   // Same implementation as before, keeping file structure clean
   QSettings config(m_configPath, QSettings::IniFormat);
 
-  QString screenName = config.value(Settings::Core::ComputerName).toString();
-  if (screenName.isEmpty()) {
-    screenName = config.value(Settings::Core::ScreenName).toString();
-  }
+  QString screenName = BridgeClientConfigManager::readScreenName(m_configPath);
   m_editScreenName->setText(screenName);
   m_originalScreenName = screenName;
 
@@ -641,7 +638,6 @@ void BridgeClientConfigDialog::saveConfig()
 {
   QSettings config(m_configPath, QSettings::IniFormat);
 
-  config.setValue(Settings::Core::ScreenName, m_editScreenName->text());
   config.setValue(Settings::Core::ComputerName, m_editScreenName->text());
   // Removed global resolution/orientation
   config.setValue(Settings::Bridge::DeviceName, deviceName());

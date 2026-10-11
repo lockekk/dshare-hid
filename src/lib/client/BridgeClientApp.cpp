@@ -11,7 +11,7 @@
 #include "common/ExitCodes.h"
 #include "common/Settings.h"
 #include "deskflow/DeskflowException.h"
-#include "deskflow/Screen.h"
+#include "deskflow/Computer.h"
 #include "net/SocketMultiplexer.h"
 #include "platform/bridge/BridgePlatformScreen.h"
 
@@ -33,7 +33,7 @@ void BridgeClientApp::initApp()
   ClientApp::initApp();
 }
 
-deskflow::Screen *BridgeClientApp::createScreen()
+deskflow::Computer *BridgeClientApp::createComputer()
 {
   LOG_INFO("BridgeClientApp: creating BridgePlatformScreen");
 
@@ -41,8 +41,8 @@ deskflow::Screen *BridgeClientApp::createScreen()
   auto *platformScreen =
       new deskflow::bridge::BridgePlatformScreen(getEvents(), m_transport, m_screenWidth, m_screenHeight);
 
-  // Wrap in deskflow::Screen
-  return new deskflow::Screen(platformScreen, getEvents());
+  // Wrap in deskflow::Computer
+  return new deskflow::Computer(platformScreen, getEvents());
 }
 
 ISocketFactory *BridgeClientApp::getSocketFactory() const
@@ -53,7 +53,7 @@ ISocketFactory *BridgeClientApp::getSocketFactory() const
   return new BridgeSocketFactory(getEvents(), getSocketMultiplexer());
 }
 
-void BridgeClientApp::handleScreenError() const
+void BridgeClientApp::handleComputerError() const
 {
   LOG_CRIT("Bridge screen fatal error detected. Exiting for restart.");
   throw ExitAppException(s_exitFailed);

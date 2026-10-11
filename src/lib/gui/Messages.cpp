@@ -192,7 +192,9 @@ bool showNewClientPrompt(QWidget *parent, const QString &clientName)
     // This is why we do not show a dialog with an option to ignore the new client
     QMessageBox::information(
         parent, QObject::tr("%1 - New Client").arg(kAppName),
-        QObject::tr("A new client called '%1' has been accepted. You'll need to add it to your server's screen layout.")
+        QObject::tr(
+            "A new client called '%1' has been accepted. You'll need to add it to your server's computer layout."
+        )
             .arg(clientName)
     );
     return true;
@@ -203,28 +205,6 @@ bool showNewClientPrompt(QWidget *parent, const QString &clientName)
   message.setText(QObject::tr("A new client called '%1' wants to connect").arg(clientName));
   message.exec();
   return message.buttonRole(message.clickedButton()) == QMessageBox::AcceptRole;
-}
-
-bool showClearSettings(QWidget *parent)
-{
-  const auto title = QObject::tr("%1 Clear Settings").arg(kAppName);
-  const auto message = QObject::tr(
-                           "<p>Are you sure you want to clear all settings and restart %1?</p>"
-                           "<p>This action cannot be undone.</p>"
-  )
-                           .arg(kAppName);
-  return QMessageBox::question(parent, title, message) == QMessageBox::Yes;
-}
-
-void showReadOnlySettings(QWidget *parent, const QString &systemSettingsPath)
-{
-  const auto title = QObject::tr("%1 Read-only settings").arg(kAppName);
-  const auto message = QObject::tr(
-                           "<p>Settings are read-only because you only have read access "
-                           "to the file:</p><p>%1</p>"
-  )
-                           .arg(QDir::toNativeSeparators(systemSettingsPath));
-  QMessageBox::information(parent, title, message);
 }
 
 bool showUpdateCheckOption(QWidget *parent)

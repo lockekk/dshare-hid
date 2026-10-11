@@ -22,7 +22,7 @@
 
 #include <stdexcept>
 
-#if defined(Q_OS_MAC)
+#if defined(Q_OS_MACOS)
 #include <ApplicationServices/ApplicationServices.h>
 #endif
 
@@ -162,9 +162,9 @@ void App::initApp()
   loadConfig();
 }
 
-void App::handleScreenError() const
+void App::handleComputerError() const
 {
-  LOG_CRIT("error on screen");
+  LOG_CRIT("error on computer");
   getEvents()->addEvent(Event(EventTypes::Quit));
 }
 

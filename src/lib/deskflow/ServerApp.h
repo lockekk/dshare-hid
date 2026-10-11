@@ -28,7 +28,7 @@ enum class ServerState
 
 class Server;
 namespace deskflow {
-class Screen;
+class Computer;
 }
 class ClientListener;
 class EventQueueTimer;
@@ -56,7 +56,7 @@ public:
   const char *daemonName() const override;
   void loadConfig() override;
   bool loadConfig(const QString &filename) override;
-  deskflow::Screen *createScreen() override;
+  deskflow::Computer *createComputer() override;
   int mainLoop() override;
   int runInner(StartupFunc startup) override;
   int start() override;
@@ -75,12 +75,12 @@ public:
   void closeClientListener(ClientListener *listen);
   void stopServer();
   void closePrimaryClient(PrimaryClient *primaryClient);
-  void closeServerScreen(deskflow::Screen *screen);
+  void closeServerComputer(deskflow::Computer *computer);
   void cleanupServer();
   bool initServer();
   void retryHandler();
-  deskflow::Screen *openServerScreen();
-  PrimaryClient *openPrimaryClient(const std::string &name, deskflow::Screen *screen);
+  deskflow::Computer *openServerComputer();
+  PrimaryClient *openPrimaryClient(const std::string &name, deskflow::Computer *computer);
   void handleSuspend();
   void handleResume();
   ClientListener *openClientListener(const NetworkAddress &address);
@@ -102,14 +102,14 @@ public:
   }
 
 private:
-  void handleScreenSwitched() const;
+  void handleComputerSwitched() const;
   std::unique_ptr<ISocketFactory> getSocketFactory() const;
   NetworkAddress getAddress(const NetworkAddress &address) const;
 
   bool m_suspended = false;
   Server *m_server = nullptr;
   ServerState m_serverState = ServerState::Uninitialized;
-  deskflow::Screen *m_serverScreen = nullptr;
+  deskflow::Computer *m_serverComputer = nullptr;
   PrimaryClient *m_primaryClient = nullptr;
   ClientListener *m_listener = nullptr;
   EventQueueTimer *m_timer = nullptr;

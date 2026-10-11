@@ -9,7 +9,7 @@
 #pragma once
 
 #include "mt/Thread.h"
-#include "platform/EiScreen.h"
+#include "platform/EiComputer.h"
 
 #include <QByteArray>
 
@@ -29,7 +29,7 @@ class EiClipboard;
 class PortalInputCapture
 {
 public:
-  PortalInputCapture(EiScreen *screen, IEventQueue *events);
+  PortalInputCapture(EiComputer *computer, IEventQueue *events);
   ~PortalInputCapture();
 
   // Get the clipboard for the specified ID
@@ -140,14 +140,14 @@ private:
   scaleCoordinateBetweenRanges(double value, int sourceMin, int sourceMax, int destinationMin, int destinationMax);
   bool getPortalBounds(Bounds &bounds) const;
   bool getClosestReleaseBarrier(
-      double x, double y, int screenLeft, int screenTop, int screenRight, int screenBottom, const Bounds &portalBounds,
-      BarrierInfo &barrier
+      double x, double y, int computerLeft, int computerTop, int computerRight, int computerBottom,
+      const Bounds &portalBounds, BarrierInfo &barrier
   ) const;
-  std::pair<int, int> mapPortalActivationToScreenPosition(guint barrierId, double rawX, double rawY) const;
+  std::pair<int, int> mapPortalActivationToComputerPosition(guint barrierId, double rawX, double rawY) const;
   std::pair<double, double> mapPortalReleasePosition(double x, double y) const;
   void addBarrier(guint id, BarrierSide side, gint zoneX, gint zoneY, guint zoneWidth, guint zoneHeight);
 
-  EiScreen *m_screen = nullptr;
+  EiComputer *m_computer = nullptr;
   IEventQueue *m_events = nullptr;
   int m_portalVersion = 0;
 

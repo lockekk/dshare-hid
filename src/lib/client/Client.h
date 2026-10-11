@@ -10,17 +10,19 @@
 
 #include "deskflow/IClient.h"
 
+#include "base/Event.h"
 #include "base/EventTypes.h"
 #include "common/Enums.h"
 #include "deskflow/IClipboard.h"
 #include "net/NetworkAddress.h"
 
 #include <climits>
+#include <string>
 
 class Event;
 class EventQueueTimer;
 namespace deskflow {
-class Screen;
+class Computer;
 }
 class ServerProxy;
 class IDataSocket;
@@ -39,6 +41,39 @@ This class implements the top-level client algorithms for deskflow.
 class Client : public IClient
 {
 public:
+  class DisconnectRequest : public EventData
+  {
+  public:
+    enum class Kind
+    {
+      Disconnect,
+      Refuse
+    };
+
+    DisconnectRequest(Kind kind, const char *message);
+    DisconnectRequest(deskflow::core::ConnectionRefusal reason, const char *message);
+
+    Kind kind() const
+    {
+      return m_kind;
+    }
+
+    deskflow::core::ConnectionRefusal refusalReason() const
+    {
+      return m_refusalReason;
+    }
+
+    const char *message() const
+    {
+      return m_message.empty() ? nullptr : m_message.c_str();
+    }
+
+  private:
+    Kind m_kind = Kind::Disconnect;
+    deskflow::core::ConnectionRefusal m_refusalReason = deskflow::core::ConnectionRefusal::ProtocolError;
+    std::string m_message;
+  };
+
   class FailInfo
   {
   public:
@@ -54,11 +89,11 @@ public:
   /*!
   This client will attempt to connect to the server using \p name
   as its name and \p address as the server's address and \p factory
-  to create the socket.  \p screen is    the local screen.
+  to create the socket.  \p computer is    the local computer.
   */
   Client(
       IEventQueue *events, const std::string &name, const NetworkAddress &address, ISocketFactory *socketFactory,
-      deskflow::Screen *screen
+      deskflow::Computer *computer
   );
   Client(Client const &) = delete;
   Client(Client &&) = delete;
@@ -130,7 +165,7 @@ public:
 
   //@}
 
-  // IScreen overrides
+  // IComputer overrides
   void *getEventTarget() const final;
   bool getClipboard(ClipboardID id, IClipboard *) const override;
   void getShape(int32_t &x, int32_t &y, int32_t &width, int32_t &height) const override;
@@ -162,12 +197,12 @@ private:
   void sendConnectionFailedEvent(const char *msg);
   void setupConnecting();
   void setupConnection();
-  void setupScreen();
+  bool setupComputer(int16_t protocolMinor);
   void setupTimer();
   void cleanup();
   void cleanupConnecting();
   void cleanupConnection();
-  void cleanupScreen();
+  void cleanupComputer();
   void cleanupTimer();
   void cleanupStream();
   void handleConnected();
@@ -175,6 +210,7 @@ private:
   void handleConnectTimeout();
   void handleOutputError();
   void handleDisconnected();
+  void handleDisconnectRequested(const Event &event);
   void handleShapeChanged();
   void handleClipboardGrabbed(const Event &event);
   void handleHello();
@@ -187,7 +223,7 @@ private:
   std::string m_name;
   NetworkAddress m_serverAddress;
   ISocketFactory *m_socketFactory = nullptr;
-  deskflow::Screen *m_screen = nullptr;
+  deskflow::Computer *m_computer = nullptr;
   deskflow::IStream *m_stream = nullptr;
   EventQueueTimer *m_timer = nullptr;
   ServerProxy *m_server = nullptr;
@@ -206,7 +242,6 @@ private:
   bool m_hasRelativeRestorePosition = false;
   int32_t m_relativeRestoreX = 0;
   int32_t m_relativeRestoreY = 0;
-  size_t m_maximumClipboardReceiveSize = 0;
   size_t m_maximumClipboardSize = INT_MAX;
   size_t m_resolvedAddressesCount = 0;
 };

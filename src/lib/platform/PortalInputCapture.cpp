@@ -11,15 +11,12 @@
 #include "base/Event.h"
 #include "base/Log.h"
 #include "base/TMethodJob.h"
+#include "common/Settings.h"
 #include "deskflow/ClipboardTypes.h"
 #include "platform/EiClipboard.h"
 
 #ifdef HAVE_LIBPORTAL_CLIPBOARD
 #include "platform/PortalClipboard.h"
-#endif
-
-#ifdef HAVE_LIBPORTAL_INPUTCAPTURE_RESTORE
-#include "common/Settings.h"
 #endif
 
 #include <algorithm>
@@ -93,11 +90,11 @@ bool PortalInputCapture::getPortalBounds(Bounds &bounds) const
 }
 
 bool PortalInputCapture::getClosestReleaseBarrier(
-    double x, double y, int screenLeft, int screenTop, int screenRight, int screenBottom, const Bounds &portalBounds,
-    BarrierInfo &barrier
+    double x, double y, int computerLeft, int computerTop, int computerRight, int computerBottom,
+    const Bounds &portalBounds, BarrierInfo &barrier
 ) const
 {
-  const auto activeSides = m_screen->activeSides();
+  const auto activeSides = m_computer->activeSides();
   using enum DirectionMask;
 
   auto side = BarrierSide::Left;
@@ -110,23 +107,25 @@ bool PortalInputCapture::getClosestReleaseBarrier(
   };
 
   if (activeSides & static_cast<int>(LeftMask)) {
-    considerSide(BarrierSide::Left, std::abs(x - screenLeft));
+    considerSide(BarrierSide::Left, std::abs(x - computerLeft));
   }
   if (activeSides & static_cast<int>(RightMask)) {
-    considerSide(BarrierSide::Right, std::abs(x - screenRight));
+    considerSide(BarrierSide::Right, std::abs(x - computerRight));
   }
   if (activeSides & static_cast<int>(TopMask)) {
-    considerSide(BarrierSide::Top, std::abs(y - screenTop));
+    considerSide(BarrierSide::Top, std::abs(y - computerTop));
   }
   if (activeSides & static_cast<int>(BottomMask)) {
-    considerSide(BarrierSide::Bottom, std::abs(y - screenBottom));
+    considerSide(BarrierSide::Bottom, std::abs(y - computerBottom));
   }
   if (sideDistance == std::numeric_limits<double>::max()) {
     return false;
   }
 
-  const auto portalX = scaleCoordinateBetweenRanges(x, screenLeft, screenRight, portalBounds.left, portalBounds.right);
-  const auto portalY = scaleCoordinateBetweenRanges(y, screenTop, screenBottom, portalBounds.top, portalBounds.bottom);
+  const auto portalX =
+      scaleCoordinateBetweenRanges(x, computerLeft, computerRight, portalBounds.left, portalBounds.right);
+  const auto portalY =
+      scaleCoordinateBetweenRanges(y, computerTop, computerBottom, portalBounds.top, portalBounds.bottom);
 
   auto bestDistance = std::numeric_limits<int>::max();
   for (const auto &info : m_barrierInfo) {
@@ -169,8 +168,8 @@ bool PortalInputCapture::getClosestReleaseBarrier(
   return bestDistance != std::numeric_limits<int>::max();
 }
 
-PortalInputCapture::PortalInputCapture(EiScreen *screen, IEventQueue *events)
-    : m_screen{screen},
+PortalInputCapture::PortalInputCapture(EiComputer *computer, IEventQueue *events)
+    : m_computer{computer},
       m_events{events},
       m_portalVersion(0),
       m_portal{xdp_portal_new()}
@@ -205,12 +204,15 @@ PortalInputCapture::~PortalInputCapture()
   if (m_session) {
     using enum Signal;
     XdpSession *parentSession = xdp_input_capture_session_get_session(m_session);
-    g_signal_handler_disconnect(G_OBJECT(parentSession), m_signals.at(SessionClosed));
+    if (m_signals.at(SessionClosed) != 0)
+      g_signal_handler_disconnect(parentSession, m_signals.at(SessionClosed));
     g_signal_handler_disconnect(m_session, m_signals.at(Disabled));
     g_signal_handler_disconnect(m_session, m_signals.at(Activated));
     g_signal_handler_disconnect(m_session, m_signals.at(Deactivated));
     g_signal_handler_disconnect(m_session, m_signals.at(ZonesChanged));
-    g_signal_handler_disconnect(m_session, m_signals.at(SelectionTransfer));
+#ifdef HAVE_LIBPORTAL_CLIPBOARD
+    g_signal_handler_disconnect(parentSession, m_signals.at(SelectionTransfer));
+#endif
     g_object_unref(m_session);
   }
 
@@ -257,7 +259,7 @@ void PortalInputCapture::claimClipboardOwnership([[maybe_unused]] XdpSession *se
 void PortalInputCapture::readClipboardSelection(XdpSession *session) const
 {
 #ifdef HAVE_LIBPORTAL_CLIPBOARD
-  const qint64 maxBytes = static_cast<qint64>(m_screen->maximumClipboardSize()) * 1024;
+  const qint64 maxBytes = static_cast<qint64>(m_computer->maximumClipboardSize()) * 1024;
   LOG_DEBUG("clipboard read cap: %lld bytes", static_cast<long long>(maxBytes));
 
   const char **mimeTypes = xdp_session_get_selection_mime_types(session);
@@ -267,7 +269,7 @@ void PortalInputCapture::readClipboardSelection(XdpSession *session) const
   }
 
   if (PortalClipboard::readSelectionIntoCache(m_clipboard, session, mimeTypes, maxBytes))
-    m_screen->sendClipboardEvent(EventTypes::ClipboardGrabbed, kClipboardClipboard);
+    m_computer->sendClipboardEvent(EventTypes::ClipboardGrabbed, kClipboardClipboard);
 #else
   (void)session;
 #endif
@@ -295,17 +297,20 @@ void PortalInputCapture::setupSession(XdpInputCaptureSession *session)
 
 #ifdef HAVE_LIBPORTAL_CLIPBOARD
   if (!xdp_session_is_clipboard_enabled(parentSession) && m_portalVersion > 1) {
-    // Restored sessions can pre-date clipboard support, leaving the channel
-    // disabled even though we requested it. Drop the saved token and recreate
-    // the session from scratch so the user gets a fresh permission dialog.
-    LOG_WARN("clipboard not enabled on session, discarding restore token to force a fresh session");
+    if (Settings::value(Settings::Server::XdpClipboardRetried).toBool()) {
+      // some backends never report clipboard enabled even when granted; don't loop forever
+      LOG_DEBUG("clipboard still not enabled on session after one retry, continuing without it");
+    } else {
+      LOG_WARN("clipboard not enabled on session, discarding restore token to force a fresh session");
 #ifdef HAVE_LIBPORTAL_INPUTCAPTURE_RESTORE
-    Settings::setValue(Settings::Server::XdpRestoreToken, QString());
+      Settings::setValue(Settings::Server::XdpRestoreToken, QString());
 #endif
-    g_object_unref(m_session);
-    m_session = nullptr;
-    g_idle_add([](gpointer data) { return static_cast<PortalInputCapture *>(data)->initSession(); }, this);
-    return;
+      Settings::setValue(Settings::Server::XdpClipboardRetried, true);
+      g_object_unref(m_session);
+      m_session = nullptr;
+      g_idle_add([](gpointer data) { return static_cast<PortalInputCapture *>(data)->initSession(); }, this);
+      return;
+    }
   }
 #endif
 
@@ -317,8 +322,9 @@ void PortalInputCapture::setupSession(XdpInputCaptureSession *session)
     return;
   }
 
-  // Socket ownership is transferred to the EiScreen
-  m_events->addEvent(Event(EventTypes::EIConnected, m_screen->getEventTarget(), EiScreen::EiConnectInfo::alloc(fd)));
+  // Socket ownership is transferred to the EiComputer
+  m_events->addEvent(Event(EventTypes::EIConnected, m_computer->getEventTarget(), EiComputer::EiConnectInfo::alloc(fd))
+  );
 
   using enum Signal;
   m_signals.at(Disabled) = g_signal_connect(G_OBJECT(session), "disabled", G_CALLBACK(disabled), this);
@@ -409,7 +415,7 @@ void PortalInputCapture::handleSetPointerBarriers(const GObject *, GAsyncResult 
 }
 
 std::pair<int, int>
-PortalInputCapture::mapPortalActivationToScreenPosition(guint barrierId, double rawX, double rawY) const
+PortalInputCapture::mapPortalActivationToComputerPosition(guint barrierId, double rawX, double rawY) const
 {
   auto x = static_cast<int>(rawX);
   auto y = static_cast<int>(rawY);
@@ -425,35 +431,35 @@ PortalInputCapture::mapPortalActivationToScreenPosition(guint barrierId, double 
   const auto zoneRight = it->x + static_cast<gint>(it->width) - 1;
   const auto zoneBottom = it->y + static_cast<gint>(it->height) - 1;
 
-  std::int32_t screenX;
-  std::int32_t screenY;
-  std::int32_t screenW;
-  std::int32_t screenH;
-  m_screen->getShape(screenX, screenY, screenW, screenH);
+  std::int32_t computerX;
+  std::int32_t computerY;
+  std::int32_t computerW;
+  std::int32_t computerH;
+  m_computer->getShape(computerX, computerY, computerW, computerH);
 
   if (Bounds portalBounds; getPortalBounds(portalBounds)) {
-    x = scaleCoordinateBetweenRanges(rawX, portalBounds.left, portalBounds.right, screenX, screenX + screenW - 1);
-    y = scaleCoordinateBetweenRanges(rawY, portalBounds.top, portalBounds.bottom, screenY, screenY + screenH - 1);
+    x = scaleCoordinateBetweenRanges(rawX, portalBounds.left, portalBounds.right, computerX, computerX + computerW - 1);
+    y = scaleCoordinateBetweenRanges(rawY, portalBounds.top, portalBounds.bottom, computerY, computerY + computerH - 1);
   } else {
     x = std::clamp(x, zoneLeft, zoneRight);
     y = std::clamp(y, zoneTop, zoneBottom);
   }
 
-  // The portal reports per-output zones, while Deskflow models the whole computer as one screen.
+  // The portal reports per-output zones, while Deskflow models the whole computer as one computer.
   // Use the activated barrier to preserve the intended switch direction in Deskflow's aggregate coordinates.
   using enum BarrierSide;
   switch (it->side) {
   case Left:
-    x = screenX;
+    x = computerX;
     break;
   case Right:
-    x = screenX + screenW - 1;
+    x = computerX + computerW - 1;
     break;
   case Top:
-    y = screenY;
+    y = computerY;
     break;
   case Bottom:
-    y = screenY + screenH - 1;
+    y = computerY + computerH - 1;
     break;
   }
 
@@ -462,27 +468,28 @@ PortalInputCapture::mapPortalActivationToScreenPosition(guint barrierId, double 
 
 std::pair<double, double> PortalInputCapture::mapPortalReleasePosition(double x, double y) const
 {
-  std::int32_t screenX;
-  std::int32_t screenY;
-  std::int32_t screenW;
-  std::int32_t screenH;
-  m_screen->getShape(screenX, screenY, screenW, screenH);
+  std::int32_t computerX;
+  std::int32_t computerY;
+  std::int32_t computerW;
+  std::int32_t computerH;
+  m_computer->getShape(computerX, computerY, computerW, computerH);
 
-  const auto screenLeft = screenX;
-  const auto screenTop = screenY;
-  const auto screenRight = screenX + screenW - 1;
-  const auto screenBottom = screenY + screenH - 1;
-  const auto jumpZoneSize = m_screen->getJumpZoneSize();
+  const auto computerLeft = computerX;
+  const auto computerTop = computerY;
+  const auto computerRight = computerX + computerW - 1;
+  const auto computerBottom = computerY + computerH - 1;
+  const auto jumpZoneSize = m_computer->getJumpZoneSize();
   Bounds portalBounds;
   if (!getPortalBounds(portalBounds)) {
     return {x, y};
   }
 
-  auto mappedX = scaleCoordinateBetweenRanges(x, screenLeft, screenRight, portalBounds.left, portalBounds.right);
-  auto mappedY = scaleCoordinateBetweenRanges(y, screenTop, screenBottom, portalBounds.top, portalBounds.bottom);
+  auto mappedX = static_cast<std::int32_t>(std::lround(x));
+  auto mappedY = static_cast<std::int32_t>(std::lround(y));
 
-  if (BarrierInfo releaseBarrier;
-      getClosestReleaseBarrier(x, y, screenLeft, screenTop, screenRight, screenBottom, portalBounds, releaseBarrier)) {
+  if (BarrierInfo releaseBarrier; getClosestReleaseBarrier(
+          x, y, computerLeft, computerTop, computerRight, computerBottom, portalBounds, releaseBarrier
+      )) {
     const Bounds releaseBounds = {
         releaseBarrier.x, releaseBarrier.y, releaseBarrier.x + static_cast<gint>(releaseBarrier.width) - 1,
         releaseBarrier.y + static_cast<gint>(releaseBarrier.height) - 1
@@ -709,7 +716,7 @@ void PortalInputCapture::handleActivated(
 
       if (const bool hasBarrierId = g_variant_lookup(options, "barrier_id", "u", &barrierId);
           hasBarrierId && barrierId > 0) {
-        auto [mappedX, mappedY] = mapPortalActivationToScreenPosition(barrierId, x, y);
+        auto [mappedX, mappedY] = mapPortalActivationToComputerPosition(barrierId, x, y);
         warpX = mappedX;
         warpY = mappedY;
       } else if (!hasBarrierId) {
@@ -718,10 +725,10 @@ void PortalInputCapture::handleActivated(
         LOG_DEBUG("portal activation barrier id is zero, using raw cursor position");
       }
 
-      m_screen->warpCursor(warpX, warpY);
+      m_computer->warpCursor(warpX, warpY);
       m_events->addEvent(Event(
-          EventTypes::PrimaryScreenMotionOnPrimary, m_screen->getEventTarget(),
-          IPrimaryScreen::MotionInfo::alloc(warpX, warpY)
+          EventTypes::PrimaryComputerMotionOnPrimary, m_computer->getEventTarget(),
+          IPrimaryComputer::MotionInfo::alloc(warpX, warpY)
       ));
     } else {
       LOG_WARN("failed to get cursor position");
@@ -735,7 +742,7 @@ void PortalInputCapture::handleActivated(
 #ifdef HAVE_LIBPORTAL_CLIPBOARD
   if (m_session) {
     LOG_DEBUG("reading clipboard selection on activation");
-    m_screen->sendClipboardEvent(EventTypes::ClipboardGrabbed, kClipboardClipboard);
+    m_computer->sendClipboardEvent(EventTypes::ClipboardGrabbed, kClipboardClipboard);
 
     XdpSession *session = xdp_input_capture_session_get_session(m_session);
     const char **mimeTypes = xdp_session_get_selection_mime_types(session);
@@ -771,11 +778,46 @@ void PortalInputCapture::handleZonesChanged(XdpInputCaptureSession *session, con
   m_barriers.clear();
   m_barrierInfo.clear();
 
-  const auto activeSides = m_screen->activeSides();
+  const auto activeSides = m_computer->activeSides();
   using enum DirectionMask;
 
-  // May not correctly handle different sized screens
   auto zones = xdp_input_capture_session_get_zones(session);
+
+  // First pass: compute the bounding box (union) of all input-capture zones.
+  // A pointer barrier must lie on the outer boundary of the combined desktop and
+  // be adjacent to a single monitor edge. A barrier placed on an internal edge
+  // between two adjacent monitors is rejected by the portal ("adjacent to
+  // multiple monitor edges"), and a single rejected barrier fails the whole
+  // barrier set - so on a multi-monitor server input capture never engages.
+  gint unionLeft = 0;
+  gint unionTop = 0;
+  gint unionRight = 0;
+  gint unionBottom = 0;
+  bool boundsInit = false;
+  for (auto z = zones; z != nullptr; z = z->next) {
+    guint w;
+    guint h;
+    gint x;
+    gint y;
+    g_object_get(z->data, "width", &w, "height", &h, "x", &x, "y", &y, nullptr);
+    const gint right = x + static_cast<gint>(w);
+    const gint bottom = y + static_cast<gint>(h);
+    if (!boundsInit) {
+      unionLeft = x;
+      unionTop = y;
+      unionRight = right;
+      unionBottom = bottom;
+      boundsInit = true;
+    } else {
+      unionLeft = std::min(unionLeft, x);
+      unionTop = std::min(unionTop, y);
+      unionRight = std::max(unionRight, right);
+      unionBottom = std::max(unionBottom, bottom);
+    }
+  }
+
+  // Second pass: only add a barrier for a zone edge that is part of the outer
+  // boundary of the union (i.e. not an internal seam between two monitors).
   guint id = 0;
   while (zones != nullptr) {
     guint w;
@@ -786,19 +828,19 @@ void PortalInputCapture::handleZonesChanged(XdpInputCaptureSession *session, con
 
     LOG_DEBUG("input capture zone, %dx%d@%d,%d", w, h, x, y);
 
-    if (activeSides & static_cast<int>(LeftMask)) {
+    if ((activeSides & static_cast<int>(LeftMask)) && x == unionLeft) {
       addBarrier(++id, BarrierSide::Left, x, y, w, h);
     }
 
-    if (activeSides & static_cast<int>(RightMask)) {
+    if ((activeSides & static_cast<int>(RightMask)) && (x + static_cast<gint>(w)) == unionRight) {
       addBarrier(++id, BarrierSide::Right, x, y, w, h);
     }
 
-    if (activeSides & static_cast<int>(TopMask)) {
+    if ((activeSides & static_cast<int>(TopMask)) && y == unionTop) {
       addBarrier(++id, BarrierSide::Top, x, y, w, h);
     }
 
-    if (activeSides & static_cast<int>(BottomMask)) {
+    if ((activeSides & static_cast<int>(BottomMask)) && (y + static_cast<gint>(h)) == unionBottom) {
       addBarrier(++id, BarrierSide::Bottom, x, y, w, h);
     }
     zones = zones->next;
