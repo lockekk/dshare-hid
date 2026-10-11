@@ -55,7 +55,6 @@ private Q_SLOTS:
   void onCheckUpgrade();
   void onFlashOnline();
   void onFlashLocal();
-  void onCopyInfo();
   void onCopySerialClicked();
   void onActivateClicked();
   void onPortChanged(int index);
@@ -83,7 +82,6 @@ private:
   QPushButton *m_factoryBrowseBtn;
   QPushButton *m_factoryFlashBtn;
   QPushButton *m_downloadFlashBtn;
-  QPushButton *m_copyInfoBtn;
 
   // Upgrade Tab
   // Upgrade Tab
@@ -110,11 +108,8 @@ private:
   // Order Tab
   QLineEdit *m_orderName;
   QLineEdit *m_orderEmail;
-  QRadioButton *m_orderOption1;
   QRadioButton *m_orderOption2;
-  QRadioButton *m_orderOption3;
   QRadioButton *m_orderOption4;
-  QLineEdit *m_orderDeviceSecret;
   QLabel *m_orderSerialLabel;
   QComboBox *m_orderTotalProfiles;
   QLabel *m_lblPaymentDetails;
