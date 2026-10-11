@@ -162,27 +162,169 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Close and save changes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Close and forget changes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reset to stored values</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reset to default values</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Allow the client to slow the rate it attempts to reconnect to the server when connections attempts are failing. The delay between connection attempts will  start at 1 second intervals and can be a maxium of 5 minutes between connection attempts.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Use dynamic reconnection time based on connection attempts</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ComputerSettingsDialog</name>
+    <message>
+        <source>Computer settings</source>
+        <translation type="unfinished">コンピューターの設定</translation>
+    </message>
+    <message>
+        <source>Computer Info</source>
+        <translation type="unfinished">コンピューター情報</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished">名前</translation>
+    </message>
+    <message>
+        <source>Modifier Keys</source>
+        <translation type="unfinished">修飾キー</translation>
+    </message>
+    <message>
+        <source>M&amp;eta</source>
+        <translation type="unfinished">M&amp;eta</translation>
+    </message>
+    <message>
+        <source>&amp;Ctrl</source>
+        <translation type="unfinished">&amp;Ctrl</translation>
+    </message>
+    <message>
+        <source>S&amp;uper</source>
+        <translation type="unfinished">S&amp;uper</translation>
+    </message>
+    <message>
+        <source>Al&amp;t</source>
+        <translation type="unfinished">Al&amp;t</translation>
+    </message>
+    <message>
+        <source>Shift</source>
+        <translation type="unfinished">Shift</translation>
+    </message>
+    <message>
+        <source>Ctrl</source>
+        <translation type="unfinished">Ctrl</translation>
+    </message>
+    <message>
+        <source>Alt</source>
+        <translation type="unfinished">Alt</translation>
+    </message>
+    <message>
+        <source>Meta</source>
+        <translation type="unfinished">Meta</translation>
+    </message>
+    <message>
+        <source>Super</source>
+        <translation type="unfinished">Super</translation>
+    </message>
+    <message>
+        <source>Alt Gr</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>None</source>
+        <translation type="unfinished">なし</translation>
+    </message>
+    <message>
+        <source>&amp;Shift</source>
+        <translation type="unfinished">&amp;Shift</translation>
+    </message>
+    <message>
+        <source>Alt &amp;Gr</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Dead Corners</source>
+        <translation type="unfinished">無効領域</translation>
+    </message>
+    <message>
+        <source>Top Left</source>
+        <translation type="unfinished">左上</translation>
+    </message>
+    <message>
+        <source>Top Right</source>
+        <translation type="unfinished">右上</translation>
+    </message>
+    <message>
+        <source>Corner si&amp;ze</source>
+        <translation type="unfinished">大きさ(&amp;Z)</translation>
+    </message>
+    <message>
+        <source>Bottom Left</source>
+        <translation type="unfinished">左下</translation>
+    </message>
+    <message>
+        <source>Bottom Right</source>
+        <translation type="unfinished">右下</translation>
+    </message>
+    <message>
+        <source>Fixes</source>
+        <translation type="unfinished">修正</translation>
+    </message>
+    <message>
+        <source>SCROLL LOCK key</source>
+        <translation type="unfinished">SCROLL LOCK キー</translation>
+    </message>
+    <message>
+        <source>CAPS LOCK key</source>
+        <translation type="unfinished">CAPS LOCK キー</translation>
+    </message>
+    <message>
+        <source>NUM LOCK key</source>
+        <translation type="unfinished">NUM LOCK キー</translation>
+    </message>
+    <message>
+        <source>XTest for Xinerama</source>
+        <translation type="unfinished">Xinerama 用 XTest</translation>
+    </message>
+    <message>
+        <source>X11 computers Only, When enabled the client will not give focus to its focused window as soon as the client is switched to. This can help prevent unwanted focus stealing with some X11 setups.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Weaken X11 Focus</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Aliases</source>
+        <translation type="unfinished">別名</translation>
+    </message>
+    <message>
+        <source>&amp;Add</source>
+        <translation type="unfinished">追加(&amp;A)</translation>
+    </message>
+    <message>
+        <source>&amp;Remove</source>
+        <translation type="unfinished">削除(&amp;R)</translation>
+    </message>
+    <message>
+        <source>Computer name is empty</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The computer name cannot be empty. Please either fill in a name or cancel the dialog.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Computer name matches alias</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The computer name cannot be the same as an alias. Please either remove the alias or change the computer name.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ComputerSetupModel</name>
+    <message>
+        <source>&lt;center&gt;Computer: &lt;b&gt;%1&lt;/b&gt;&lt;/center&gt;&lt;br&gt;Double click to edit settings&lt;br&gt;Drag computer to the trashcan to remove it</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -473,6 +615,17 @@ Do you want to connect to the server?
     </message>
 </context>
 <context>
+    <name>HelpDialog</name>
+    <message>
+        <source>%1 Help</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>HotkeyDialog</name>
     <message>
         <source>Hotkey</source>
@@ -603,7 +756,7 @@ Do you want to connect to the server?
     </message>
     <message>
         <source>Core cannot be started</source>
-        <translation>コアが起動できません</translation>
+        <translation type="vanished">コアが起動できません</translation>
     </message>
     <message>
         <source>Save server configuration as...</source>
@@ -721,11 +874,11 @@ A bound IP is now invalid, you may need to restart the server.</source>
     </message>
     <message>
         <source>Clear settings</source>
-        <translation>設定を消去</translation>
+        <translation type="vanished">設定を消去</translation>
     </message>
     <message>
         <source>Report a Bug</source>
-        <translation>バグレポート</translation>
+        <translation type="vanished">バグレポート</translation>
     </message>
     <message>
         <source>&amp;Minimize to tray</source>
@@ -762,6 +915,10 @@ A bound IP is now invalid, you may need to restart the server.</source>
         <translation>%1 について…</translation>
     </message>
     <message>
+        <source>View &amp;Help</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Ctrl+S</source>
         <extracomment>start / restart core shortcut</extracomment>
         <translation>Ctrl+S</translation>
@@ -786,11 +943,11 @@ A bound IP is now invalid, you may need to restart the server.</source>
     </message>
     <message>
         <source>Invalid Screen Name</source>
-        <translation>不正なコンピューター名</translation>
+        <translation type="vanished">不正なコンピューター名</translation>
     </message>
     <message>
         <source>Screen name already exists</source>
-        <translation>コンピューター名の重複</translation>
+        <translation type="vanished">コンピューター名の重複</translation>
     </message>
     <message>
         <source>The name you have chosen is invalid.
@@ -825,7 +982,7 @@ Valid names:
     </message>
     <message>
         <source>The Core executable could not be successfully started, although it does exist. Please check if you have sufficient permissions to run this program.</source>
-        <translation>Core 実行ファイルは存在しますが、正常に起動できませんでした。このプログラムを実行するための十分な権限があるか確認してください。</translation>
+        <translation type="vanished">Core 実行ファイルは存在しますが、正常に起動できませんでした。このプログラムを実行するための十分な権限があるか確認してください。</translation>
     </message>
     <message>
         <source>Use another computer&apos;s mouse and keyboard
@@ -850,6 +1007,24 @@ Valid names:
         <translation type="unfinished">%1 接続エラー</translation>
     </message>
     <message>
+        <source>The Core executable could not be started.
+Please check if you have sufficient permissions to run %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>read</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>read and write</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>
+Additionally, check you are able to %1 the server config file: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>&lt;p&gt;Failed to connect to the server &apos;%1&apos;.&lt;/p&gt;&lt;p&gt;A Client with your name is already connected to the server.&lt;/p&gt;Please ensure that you&apos;re using a unique name and that only a single instance of the client process is running.&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -863,6 +1038,14 @@ Valid names:
     </message>
     <message>
         <source>Don&apos;t show this again</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invalid Computer Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Computer name already exists</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -895,11 +1078,19 @@ Valid names:
     </message>
 </context>
 <context>
+    <name>NewComputerWidget</name>
+    <message>
+        <source>Unnamed</source>
+        <extracomment>Used as the hostname. Translation may not contain spaces</extracomment>
+        <translation type="unfinished">Unnamed</translation>
+    </message>
+</context>
+<context>
     <name>NewScreenWidget</name>
     <message>
         <source>Unnamed</source>
         <extracomment>Used as the hostname. Translation may not contain spaces</extracomment>
-        <translation>Unnamed</translation>
+        <translation type="vanished">Unnamed</translation>
     </message>
 </context>
 <context>
@@ -979,6 +1170,10 @@ Valid names:
         <translation>%1 接続完了</translation>
     </message>
     <message>
+        <source>A new client called &apos;%1&apos; has been accepted. You&apos;ll need to add it to your server&apos;s computer layout.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>&lt;p&gt;Failed to connect to the server &apos;%1&apos;.&lt;/p&gt;</source>
         <translation type="vanished">&lt;p&gt;サーバー &apos;%1&apos; への接続に失敗しました。&lt;/p&gt;</translation>
     </message>
@@ -996,7 +1191,7 @@ Valid names:
     </message>
     <message>
         <source>A new client called &apos;%1&apos; has been accepted. You&apos;ll need to add it to your server&apos;s screen layout.</source>
-        <translation>新しいクライアント &apos;%1&apos; が承認されました。サーバーの画面レイアウトに追加する必要があります。</translation>
+        <translation type="vanished">新しいクライアント &apos;%1&apos; が承認されました。サーバーの画面レイアウトに追加する必要があります。</translation>
     </message>
     <message>
         <source>Ignore</source>
@@ -1012,19 +1207,19 @@ Valid names:
     </message>
     <message>
         <source>%1 Clear Settings</source>
-        <translation>%1 設定消去</translation>
+        <translation type="vanished">%1 設定消去</translation>
     </message>
     <message>
         <source>&lt;p&gt;Are you sure you want to clear all settings and restart %1?&lt;/p&gt;&lt;p&gt;This action cannot be undone.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;全ての設定を消去して %1 を再起動しますか？&lt;/p&gt;&lt;p&gt;この操作は取り消せません。&lt;/p&gt;</translation>
+        <translation type="vanished">&lt;p&gt;全ての設定を消去して %1 を再起動しますか？&lt;/p&gt;&lt;p&gt;この操作は取り消せません。&lt;/p&gt;</translation>
     </message>
     <message>
         <source>%1 Read-only settings</source>
-        <translation>%1 読み取り専用設定</translation>
+        <translation type="vanished">%1 読み取り専用設定</translation>
     </message>
     <message>
         <source>&lt;p&gt;Settings are read-only because you only have read access to the file:&lt;/p&gt;&lt;p&gt;%1&lt;/p&gt;</source>
-        <translation>&lt;p&gt;以下のファイルへの書き込み権限がないため、設定は読み取り専用です:&lt;/p&gt;&lt;p&gt;%1&lt;/p&gt;</translation>
+        <translation type="vanished">&lt;p&gt;以下のファイルへの書き込み権限がないため、設定は読み取り専用です:&lt;/p&gt;&lt;p&gt;%1&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;p&gt;Sorry, while this version of %1 does support Wayland, this build was not linked with one or more of the required libraries.&lt;/p&gt;&lt;p&gt;Please either switch to X from your login screen or use a build that uses the correct libraries.&lt;/p&gt;&lt;p&gt;If you think this is incorrect, please &lt;a href=&quot;%2&quot;&gt;report a bug&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Please check the logs for more information.&lt;/p&gt;</source>
@@ -1093,155 +1288,175 @@ This new instance cannot start another server, so it will now exit.</source>
         <source>DShare-HID</source>
         <translation>DShare-HID</translation>
     </message>
+    <message>
+        <source>Shift</source>
+        <translation type="unfinished">Shift</translation>
+    </message>
+    <message>
+        <source>Ctrl</source>
+        <translation type="unfinished">Ctrl</translation>
+    </message>
+    <message>
+        <source>Alt</source>
+        <translation type="unfinished">Alt</translation>
+    </message>
+    <message>
+        <source>Meta</source>
+        <translation type="unfinished">Meta</translation>
+    </message>
+    <message>
+        <source>Super</source>
+        <translation type="unfinished">Super</translation>
+    </message>
+    <message>
+        <source>AltGr</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>None</source>
+        <translation type="unfinished">なし</translation>
+    </message>
 </context>
 <context>
     <name>ScreenSettingsDialog</name>
     <message>
         <source>Computer settings</source>
-        <translation>コンピューターの設定</translation>
+        <translation type="vanished">コンピューターの設定</translation>
     </message>
     <message>
         <source>Computer Info</source>
-        <translation>コンピューター情報</translation>
+        <translation type="vanished">コンピューター情報</translation>
     </message>
     <message>
         <source>Name</source>
-        <translation>名前</translation>
+        <translation type="vanished">名前</translation>
     </message>
     <message>
         <source>Modifier Keys</source>
-        <translation>修飾キー</translation>
+        <translation type="vanished">修飾キー</translation>
     </message>
     <message>
         <source>M&amp;eta</source>
-        <translation>M&amp;eta</translation>
+        <translation type="vanished">M&amp;eta</translation>
     </message>
     <message>
         <source>&amp;Ctrl</source>
-        <translation>&amp;Ctrl</translation>
+        <translation type="vanished">&amp;Ctrl</translation>
     </message>
     <message>
         <source>S&amp;uper</source>
-        <translation>S&amp;uper</translation>
+        <translation type="vanished">S&amp;uper</translation>
     </message>
     <message>
         <source>Al&amp;t</source>
-        <translation>Al&amp;t</translation>
+        <translation type="vanished">Al&amp;t</translation>
     </message>
     <message>
         <source>Shift</source>
-        <translation>Shift</translation>
+        <translation type="vanished">Shift</translation>
     </message>
     <message>
         <source>Ctrl</source>
-        <translation>Ctrl</translation>
+        <translation type="vanished">Ctrl</translation>
     </message>
     <message>
         <source>Alt</source>
-        <translation>Alt</translation>
+        <translation type="vanished">Alt</translation>
     </message>
     <message>
         <source>Meta</source>
-        <translation>Meta</translation>
+        <translation type="vanished">Meta</translation>
     </message>
     <message>
         <source>Super</source>
-        <translation>Super</translation>
+        <translation type="vanished">Super</translation>
     </message>
     <message>
         <source>None</source>
-        <translation>なし</translation>
+        <translation type="vanished">なし</translation>
     </message>
     <message>
         <source>&amp;Shift</source>
-        <translation>&amp;Shift</translation>
+        <translation type="vanished">&amp;Shift</translation>
     </message>
     <message>
         <source>Dead Corners</source>
-        <translation>無効領域</translation>
+        <translation type="vanished">無効領域</translation>
     </message>
     <message>
         <source>Top Left</source>
-        <translation>左上</translation>
+        <translation type="vanished">左上</translation>
     </message>
     <message>
         <source>Top Right</source>
-        <translation>右上</translation>
+        <translation type="vanished">右上</translation>
     </message>
     <message>
         <source>Corner si&amp;ze</source>
-        <translation>大きさ(&amp;Z)</translation>
+        <translation type="vanished">大きさ(&amp;Z)</translation>
     </message>
     <message>
         <source>Bottom Left</source>
-        <translation>左下</translation>
+        <translation type="vanished">左下</translation>
     </message>
     <message>
         <source>Bottom Right</source>
-        <translation>右下</translation>
+        <translation type="vanished">右下</translation>
     </message>
     <message>
         <source>Fixes</source>
-        <translation>修正</translation>
+        <translation type="vanished">修正</translation>
     </message>
     <message>
         <source>SCROLL LOCK key</source>
-        <translation>SCROLL LOCK キー</translation>
+        <translation type="vanished">SCROLL LOCK キー</translation>
     </message>
     <message>
         <source>CAPS LOCK key</source>
-        <translation>CAPS LOCK キー</translation>
+        <translation type="vanished">CAPS LOCK キー</translation>
     </message>
     <message>
         <source>NUM LOCK key</source>
-        <translation>NUM LOCK キー</translation>
+        <translation type="vanished">NUM LOCK キー</translation>
     </message>
     <message>
         <source>XTest for Xinerama</source>
-        <translation>Xinerama 用 XTest</translation>
+        <translation type="vanished">Xinerama 用 XTest</translation>
     </message>
     <message>
         <source>Aliases</source>
-        <translation>別名</translation>
+        <translation type="vanished">別名</translation>
     </message>
     <message>
         <source>&amp;Add</source>
-        <translation>追加(&amp;A)</translation>
+        <translation type="vanished">追加(&amp;A)</translation>
     </message>
     <message>
         <source>&amp;Remove</source>
-        <translation>削除(&amp;R)</translation>
+        <translation type="vanished">削除(&amp;R)</translation>
     </message>
     <message>
         <source>Screen name is empty</source>
-        <translation>空のコンピューター名</translation>
+        <translation type="vanished">空のコンピューター名</translation>
     </message>
     <message>
         <source>The screen name cannot be empty. Please either fill in a name or cancel the dialog.</source>
-        <translation>コンピューター名を空にすることはできません。なにか名前を入力するか、ダイアログをキャンセルしてください。</translation>
+        <translation type="vanished">コンピューター名を空にすることはできません。なにか名前を入力するか、ダイアログをキャンセルしてください。</translation>
     </message>
     <message>
         <source>Screen name matches alias</source>
-        <translation>コンピューター名と別名の重複</translation>
+        <translation type="vanished">コンピューター名と別名の重複</translation>
     </message>
     <message>
         <source>The screen name cannot be the same as an alias. Please either remove the alias or change the screen name.</source>
-        <translation>コンピューター名は別名と同じにできません。別名を削除するか、コンピューター名を変更してください。</translation>
-    </message>
-    <message>
-        <source>Alt Gr</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Alt &amp;Gr</source>
-        <translation type="unfinished"></translation>
+        <translation type="vanished">コンピューター名は別名と同じにできません。別名を削除するか、コンピューター名を変更してください。</translation>
     </message>
 </context>
 <context>
     <name>ScreenSetupModel</name>
     <message>
         <source>&lt;center&gt;Screen: &lt;b&gt;%1&lt;/b&gt;&lt;/center&gt;&lt;br&gt;Double click to edit settings&lt;br&gt;Drag screen to the trashcan to remove it</source>
-        <translation>&lt;center&gt;コンピューター: &lt;b&gt;%1&lt;/b&gt;&lt;/center&gt;&lt;br&gt;ダブルクリックで設定&lt;br&gt;ゴミ箱にドラッグして削除</translation>
+        <translation type="vanished">&lt;center&gt;コンピューター: &lt;b&gt;%1&lt;/b&gt;&lt;/center&gt;&lt;br&gt;ダブルクリックで設定&lt;br&gt;ゴミ箱にドラッグして削除</translation>
     </message>
 </context>
 <context>
@@ -1419,11 +1634,11 @@ This new instance cannot start another server, so it will now exit.</source>
     </message>
     <message>
         <source>Config file</source>
-        <translation>設定ファイル</translation>
+        <translation type="vanished">設定ファイル</translation>
     </message>
     <message>
         <source>Core server config file</source>
-        <translation>Coreサーバー設定ファイル</translation>
+        <translation type="vanished">Coreサーバー設定ファイル</translation>
     </message>
     <message>
         <source>Use a server config file to create complex computer layouts that are not possible with the simple grid-based computer layout editor.
@@ -1651,6 +1866,14 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation>ログをファイルに保存…</translation>
     </message>
     <message>
+        <source>%1 Clear Settings</source>
+        <translation type="unfinished">%1 設定消去</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Are you sure you want to clear all settings and restart %1?&lt;/p&gt; &lt;p&gt;This action cannot be undone.&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Required messages</source>
         <translation>必須のメッセージ</translation>
     </message>
@@ -1681,22 +1904,6 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     <message>
         <source>Verbose debug output</source>
         <translation>詳細なデバッグ出力</translation>
-    </message>
-    <message>
-        <source>Close and save changes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Close and forget changes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reset to stored values</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reset to default values</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Enable wl-clipboard support</source>
@@ -1768,6 +1975,37 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Using a log level higher than Info may affect performance.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove all settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SettingsDialogButtonBox</name>
+    <message>
+        <source>Settings are read only</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 is not writable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close and save changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close and forget changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset to stored values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset to default values</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2879,22 +3117,41 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
 </context>
 <context>
-    <name>validators::ScreenNameValidator</name>
+    <name>validators::ComputerLineNameValidator</name>
     <message>
         <source>Computer name cannot be empty</source>
-        <translation>コンピュータ名を空にすることはできません</translation>
+        <translation type="unfinished">コンピュータ名を空にすることはできません</translation>
     </message>
     <message>
         <source>Computer name cannot contain spaces</source>
-        <translation>コンピューター名に空白を含めることはできません</translation>
+        <translation type="unfinished">コンピューター名に空白を含めることはできません</translation>
     </message>
     <message>
         <source>Contains invalid characters or is too long</source>
-        <translation>無効な文字が含まれているか長すぎます</translation>
+        <translation type="unfinished">無効な文字が含まれているか長すぎます</translation>
     </message>
     <message>
         <source>A computer with this name already exists</source>
-        <translation>この名前のコンピューターはすでに存在します</translation>
+        <translation type="unfinished">この名前のコンピューターはすでに存在します</translation>
+    </message>
+</context>
+<context>
+    <name>validators::ScreenNameValidator</name>
+    <message>
+        <source>Computer name cannot be empty</source>
+        <translation type="vanished">コンピュータ名を空にすることはできません</translation>
+    </message>
+    <message>
+        <source>Computer name cannot contain spaces</source>
+        <translation type="vanished">コンピューター名に空白を含めることはできません</translation>
+    </message>
+    <message>
+        <source>Contains invalid characters or is too long</source>
+        <translation type="vanished">無効な文字が含まれているか長すぎます</translation>
+    </message>
+    <message>
+        <source>A computer with this name already exists</source>
+        <translation type="vanished">この名前のコンピューターはすでに存在します</translation>
     </message>
 </context>
 </TS>

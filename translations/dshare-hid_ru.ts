@@ -164,27 +164,169 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Close and save changes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Close and forget changes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reset to stored values</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reset to default values</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Allow the client to slow the rate it attempts to reconnect to the server when connections attempts are failing. The delay between connection attempts will  start at 1 second intervals and can be a maxium of 5 minutes between connection attempts.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Use dynamic reconnection time based on connection attempts</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ComputerSettingsDialog</name>
+    <message>
+        <source>Computer settings</source>
+        <translation type="unfinished">Настройки компьютера</translation>
+    </message>
+    <message>
+        <source>Computer Info</source>
+        <translation type="unfinished">Информация о компьютере</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished">Имя</translation>
+    </message>
+    <message>
+        <source>Modifier Keys</source>
+        <translation type="unfinished">Клавиши-модификаторы</translation>
+    </message>
+    <message>
+        <source>M&amp;eta</source>
+        <translation type="unfinished">M&amp;eta</translation>
+    </message>
+    <message>
+        <source>&amp;Ctrl</source>
+        <translation type="unfinished">&amp;Ctrl</translation>
+    </message>
+    <message>
+        <source>S&amp;uper</source>
+        <translation type="unfinished">S&amp;uper</translation>
+    </message>
+    <message>
+        <source>Al&amp;t</source>
+        <translation type="unfinished">Al&amp;t</translation>
+    </message>
+    <message>
+        <source>Shift</source>
+        <translation type="unfinished">Shift</translation>
+    </message>
+    <message>
+        <source>Ctrl</source>
+        <translation type="unfinished">Ctrl</translation>
+    </message>
+    <message>
+        <source>Alt</source>
+        <translation type="unfinished">Alt</translation>
+    </message>
+    <message>
+        <source>Meta</source>
+        <translation type="unfinished">Meta</translation>
+    </message>
+    <message>
+        <source>Super</source>
+        <translation type="unfinished">Super</translation>
+    </message>
+    <message>
+        <source>Alt Gr</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>None</source>
+        <translation type="unfinished">Нету</translation>
+    </message>
+    <message>
+        <source>&amp;Shift</source>
+        <translation type="unfinished">&amp;Shift</translation>
+    </message>
+    <message>
+        <source>Alt &amp;Gr</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Dead Corners</source>
+        <translation type="unfinished">Мёртвые края</translation>
+    </message>
+    <message>
+        <source>Top Left</source>
+        <translation type="unfinished">Сверху слева</translation>
+    </message>
+    <message>
+        <source>Top Right</source>
+        <translation type="unfinished">Сверху справа</translation>
+    </message>
+    <message>
+        <source>Corner si&amp;ze</source>
+        <translation type="unfinished">Раз&amp;мер края</translation>
+    </message>
+    <message>
+        <source>Bottom Left</source>
+        <translation type="unfinished">Снмзу слева</translation>
+    </message>
+    <message>
+        <source>Bottom Right</source>
+        <translation type="unfinished">Снизу справа</translation>
+    </message>
+    <message>
+        <source>Fixes</source>
+        <translation type="unfinished">Исправление</translation>
+    </message>
+    <message>
+        <source>SCROLL LOCK key</source>
+        <translation type="unfinished">SCROLL LOCK клавиша</translation>
+    </message>
+    <message>
+        <source>CAPS LOCK key</source>
+        <translation type="unfinished">CAPS LOCK клавиша</translation>
+    </message>
+    <message>
+        <source>NUM LOCK key</source>
+        <translation type="unfinished">NUM LOCK клавиша</translation>
+    </message>
+    <message>
+        <source>XTest for Xinerama</source>
+        <translation type="unfinished">XTest для Xinerama</translation>
+    </message>
+    <message>
+        <source>X11 computers Only, When enabled the client will not give focus to its focused window as soon as the client is switched to. This can help prevent unwanted focus stealing with some X11 setups.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Weaken X11 Focus</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Aliases</source>
+        <translation type="unfinished">Псевдонимы</translation>
+    </message>
+    <message>
+        <source>&amp;Add</source>
+        <translation type="unfinished">&amp;Добавить</translation>
+    </message>
+    <message>
+        <source>&amp;Remove</source>
+        <translation type="unfinished">&amp;Убрать</translation>
+    </message>
+    <message>
+        <source>Computer name is empty</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The computer name cannot be empty. Please either fill in a name or cancel the dialog.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Computer name matches alias</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The computer name cannot be the same as an alias. Please either remove the alias or change the computer name.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ComputerSetupModel</name>
+    <message>
+        <source>&lt;center&gt;Computer: &lt;b&gt;%1&lt;/b&gt;&lt;/center&gt;&lt;br&gt;Double click to edit settings&lt;br&gt;Drag computer to the trashcan to remove it</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -475,6 +617,17 @@ Do you want to connect to the server?
     </message>
 </context>
 <context>
+    <name>HelpDialog</name>
+    <message>
+        <source>%1 Help</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>HotkeyDialog</name>
     <message>
         <source>Hotkey</source>
@@ -605,7 +758,7 @@ Do you want to connect to the server?
     </message>
     <message>
         <source>Core cannot be started</source>
-        <translation>Ядро не может стартануть</translation>
+        <translation type="vanished">Ядро не может стартануть</translation>
     </message>
     <message>
         <source>Save server configuration as...</source>
@@ -723,11 +876,11 @@ A bound IP is now invalid, you may need to restart the server.</source>
     </message>
     <message>
         <source>Clear settings</source>
-        <translation>Сбросить настройки</translation>
+        <translation type="vanished">Сбросить настройки</translation>
     </message>
     <message>
         <source>Report a Bug</source>
-        <translation>Сообщить об Ошибке</translation>
+        <translation type="vanished">Сообщить об Ошибке</translation>
     </message>
     <message>
         <source>&amp;Minimize to tray</source>
@@ -764,6 +917,10 @@ A bound IP is now invalid, you may need to restart the server.</source>
         <translation>О %1...</translation>
     </message>
     <message>
+        <source>View &amp;Help</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Ctrl+S</source>
         <extracomment>start / restart core shortcut</extracomment>
         <translation>Ctrl+S</translation>
@@ -788,11 +945,11 @@ A bound IP is now invalid, you may need to restart the server.</source>
     </message>
     <message>
         <source>Invalid Screen Name</source>
-        <translation>Неправильное имя экрана</translation>
+        <translation type="vanished">Неправильное имя экрана</translation>
     </message>
     <message>
         <source>Screen name already exists</source>
-        <translation>Экраное имя уже существует</translation>
+        <translation type="vanished">Экраное имя уже существует</translation>
     </message>
     <message>
         <source>The name you have chosen is invalid.
@@ -829,7 +986,7 @@ Valid names:
     </message>
     <message>
         <source>The Core executable could not be successfully started, although it does exist. Please check if you have sufficient permissions to run this program.</source>
-        <translation>Исполняемый файл Core не удалось запустить, хотя он существует. Пожалуйста, проверьте наличие достаточных прав для запуска этой программы.</translation>
+        <translation type="vanished">Исполняемый файл Core не удалось запустить, хотя он существует. Пожалуйста, проверьте наличие достаточных прав для запуска этой программы.</translation>
     </message>
     <message>
         <source>Use another computer&apos;s mouse and keyboard
@@ -854,6 +1011,24 @@ Valid names:
         <translation type="unfinished">%1 Ошибка соединения</translation>
     </message>
     <message>
+        <source>The Core executable could not be started.
+Please check if you have sufficient permissions to run %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>read</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>read and write</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>
+Additionally, check you are able to %1 the server config file: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>&lt;p&gt;Failed to connect to the server &apos;%1&apos;.&lt;/p&gt;&lt;p&gt;A Client with your name is already connected to the server.&lt;/p&gt;Please ensure that you&apos;re using a unique name and that only a single instance of the client process is running.&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -867,6 +1042,14 @@ Valid names:
     </message>
     <message>
         <source>Don&apos;t show this again</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invalid Computer Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Computer name already exists</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -899,11 +1082,19 @@ Valid names:
     </message>
 </context>
 <context>
+    <name>NewComputerWidget</name>
+    <message>
+        <source>Unnamed</source>
+        <extracomment>Used as the hostname. Translation may not contain spaces</extracomment>
+        <translation type="unfinished">Безназвания</translation>
+    </message>
+</context>
+<context>
     <name>NewScreenWidget</name>
     <message>
         <source>Unnamed</source>
         <extracomment>Used as the hostname. Translation may not contain spaces</extracomment>
-        <translation>Безназвания</translation>
+        <translation type="vanished">Безназвания</translation>
     </message>
 </context>
 <context>
@@ -981,6 +1172,10 @@ Valid names:
         <translation>%1 Подключено</translation>
     </message>
     <message>
+        <source>A new client called &apos;%1&apos; has been accepted. You&apos;ll need to add it to your server&apos;s computer layout.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>&lt;p&gt;Failed to connect to the server &apos;%1&apos;.&lt;/p&gt;</source>
         <translation type="vanished">&lt;p&gt;Неудалось подключиться к серверу &apos;%1&apos;.&lt;/p&gt;</translation>
     </message>
@@ -1010,7 +1205,7 @@ Valid names:
     </message>
     <message>
         <source>A new client called &apos;%1&apos; has been accepted. You&apos;ll need to add it to your server&apos;s screen layout.</source>
-        <translation>Новый клиент с именем &apos;%1&apos; был принят. Вам нужно добавить его в макет экрана вашего сервера.</translation>
+        <translation type="vanished">Новый клиент с именем &apos;%1&apos; был принят. Вам нужно добавить его в макет экрана вашего сервера.</translation>
     </message>
     <message>
         <source>Ignore</source>
@@ -1026,19 +1221,19 @@ Valid names:
     </message>
     <message>
         <source>%1 Clear Settings</source>
-        <translation>%1 Вернуть настройки</translation>
+        <translation type="vanished">%1 Вернуть настройки</translation>
     </message>
     <message>
         <source>&lt;p&gt;Are you sure you want to clear all settings and restart %1?&lt;/p&gt;&lt;p&gt;This action cannot be undone.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Вы уверены, что хотите вернуть все настройки по умолчанию и перезапустить %1?&lt;/p&gt;&lt;p&gt;Это действие нельзя обратить.&lt;/p&gt;</translation>
+        <translation type="vanished">&lt;p&gt;Вы уверены, что хотите вернуть все настройки по умолчанию и перезапустить %1?&lt;/p&gt;&lt;p&gt;Это действие нельзя обратить.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>%1 Read-only settings</source>
-        <translation>%1 Только чтение настроек</translation>
+        <translation type="vanished">%1 Только чтение настроек</translation>
     </message>
     <message>
         <source>&lt;p&gt;Settings are read-only because you only have read access to the file:&lt;/p&gt;&lt;p&gt;%1&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Вам разрешено только чтение настроек из-за ограничения доступа к файлу:&lt;/p&gt;&lt;p&gt;%1&lt;/p&gt;</translation>
+        <translation type="vanished">&lt;p&gt;Вам разрешено только чтение настроек из-за ограничения доступа к файлу:&lt;/p&gt;&lt;p&gt;%1&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;p&gt;Sorry, while this version of %1 does support Wayland, this build was not linked with one or more of the required libraries.&lt;/p&gt;&lt;p&gt;Please either switch to X from your login screen or use a build that uses the correct libraries.&lt;/p&gt;&lt;p&gt;If you think this is incorrect, please &lt;a href=&quot;%2&quot;&gt;report a bug&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Please check the logs for more information.&lt;/p&gt;</source>
@@ -1107,157 +1302,177 @@ This new instance cannot start another server, so it will now exit.</source>
         <source>DShare-HID</source>
         <translation>DShare-HID</translation>
     </message>
+    <message>
+        <source>Shift</source>
+        <translation type="unfinished">Shift</translation>
+    </message>
+    <message>
+        <source>Ctrl</source>
+        <translation type="unfinished">Ctrl</translation>
+    </message>
+    <message>
+        <source>Alt</source>
+        <translation type="unfinished">Alt</translation>
+    </message>
+    <message>
+        <source>Meta</source>
+        <translation type="unfinished">Meta</translation>
+    </message>
+    <message>
+        <source>Super</source>
+        <translation type="unfinished">Super</translation>
+    </message>
+    <message>
+        <source>AltGr</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>None</source>
+        <translation type="unfinished">Нету</translation>
+    </message>
 </context>
 <context>
     <name>ScreenSettingsDialog</name>
     <message>
         <source>Computer settings</source>
-        <translation>Настройки компьютера</translation>
+        <translation type="vanished">Настройки компьютера</translation>
     </message>
     <message>
         <source>Computer Info</source>
-        <translation>Информация о компьютере</translation>
+        <translation type="vanished">Информация о компьютере</translation>
     </message>
     <message>
         <source>Name</source>
-        <translation>Имя</translation>
+        <translation type="vanished">Имя</translation>
     </message>
     <message>
         <source>Modifier Keys</source>
-        <translation>Клавиши-модификаторы</translation>
+        <translation type="vanished">Клавиши-модификаторы</translation>
     </message>
     <message>
         <source>M&amp;eta</source>
-        <translation>M&amp;eta</translation>
+        <translation type="vanished">M&amp;eta</translation>
     </message>
     <message>
         <source>&amp;Ctrl</source>
-        <translation>&amp;Ctrl</translation>
+        <translation type="vanished">&amp;Ctrl</translation>
     </message>
     <message>
         <source>S&amp;uper</source>
-        <translation>S&amp;uper</translation>
+        <translation type="vanished">S&amp;uper</translation>
     </message>
     <message>
         <source>Al&amp;t</source>
-        <translation>Al&amp;t</translation>
+        <translation type="vanished">Al&amp;t</translation>
     </message>
     <message>
         <source>Shift</source>
-        <translation>Shift</translation>
+        <translation type="vanished">Shift</translation>
     </message>
     <message>
         <source>Ctrl</source>
-        <translation>Ctrl</translation>
+        <translation type="vanished">Ctrl</translation>
     </message>
     <message>
         <source>Alt</source>
-        <translation>Alt</translation>
+        <translation type="vanished">Alt</translation>
     </message>
     <message>
         <source>Meta</source>
-        <translation>Meta</translation>
+        <translation type="vanished">Meta</translation>
     </message>
     <message>
         <source>Super</source>
-        <translation>Super</translation>
+        <translation type="vanished">Super</translation>
     </message>
     <message>
         <source>None</source>
-        <translation>Нету</translation>
+        <translation type="vanished">Нету</translation>
     </message>
     <message>
         <source>&amp;Shift</source>
-        <translation>&amp;Shift</translation>
+        <translation type="vanished">&amp;Shift</translation>
     </message>
     <message>
         <source>Dead Corners</source>
         <translatorcomment>mayber мёртвая зона (area) сorners края</translatorcomment>
-        <translation>Мёртвые края</translation>
+        <translation type="vanished">Мёртвые края</translation>
     </message>
     <message>
         <source>Top Left</source>
-        <translation>Сверху слева</translation>
+        <translation type="vanished">Сверху слева</translation>
     </message>
     <message>
         <source>Top Right</source>
-        <translation>Сверху справа</translation>
+        <translation type="vanished">Сверху справа</translation>
     </message>
     <message>
         <source>Corner si&amp;ze</source>
-        <translation>Раз&amp;мер края</translation>
+        <translation type="vanished">Раз&amp;мер края</translation>
     </message>
     <message>
         <source>Bottom Left</source>
-        <translation>Снмзу слева</translation>
+        <translation type="vanished">Снмзу слева</translation>
     </message>
     <message>
         <source>Bottom Right</source>
-        <translation>Снизу справа</translation>
+        <translation type="vanished">Снизу справа</translation>
     </message>
     <message>
         <source>Fixes</source>
-        <translation>Исправление</translation>
+        <translation type="vanished">Исправление</translation>
     </message>
     <message>
         <source>SCROLL LOCK key</source>
-        <translation>SCROLL LOCK клавиша</translation>
+        <translation type="vanished">SCROLL LOCK клавиша</translation>
     </message>
     <message>
         <source>CAPS LOCK key</source>
-        <translation>CAPS LOCK клавиша</translation>
+        <translation type="vanished">CAPS LOCK клавиша</translation>
     </message>
     <message>
         <source>NUM LOCK key</source>
-        <translation>NUM LOCK клавиша</translation>
+        <translation type="vanished">NUM LOCK клавиша</translation>
     </message>
     <message>
         <source>XTest for Xinerama</source>
-        <translation>XTest для Xinerama</translation>
+        <translation type="vanished">XTest для Xinerama</translation>
     </message>
     <message>
         <source>Aliases</source>
         <translatorcomment>maybe its no corect translate</translatorcomment>
-        <translation>Псевдонимы</translation>
+        <translation type="vanished">Псевдонимы</translation>
     </message>
     <message>
         <source>&amp;Add</source>
-        <translation>&amp;Добавить</translation>
+        <translation type="vanished">&amp;Добавить</translation>
     </message>
     <message>
         <source>&amp;Remove</source>
-        <translation>&amp;Убрать</translation>
+        <translation type="vanished">&amp;Убрать</translation>
     </message>
     <message>
         <source>Screen name is empty</source>
-        <translation>Имя экрана не заполнено</translation>
+        <translation type="vanished">Имя экрана не заполнено</translation>
     </message>
     <message>
         <source>The screen name cannot be empty. Please either fill in a name or cancel the dialog.</source>
-        <translation>Поле с именим экрана должно быть заполнено. Пожалуйста сделайте это или закройте диалоговое окно.</translation>
+        <translation type="vanished">Поле с именим экрана должно быть заполнено. Пожалуйста сделайте это или закройте диалоговое окно.</translation>
     </message>
     <message>
         <source>Screen name matches alias</source>
-        <translation>Имя экрана соответствует псевдониму</translation>
+        <translation type="vanished">Имя экрана соответствует псевдониму</translation>
     </message>
     <message>
         <source>The screen name cannot be the same as an alias. Please either remove the alias or change the screen name.</source>
-        <translation>мя экрана не может совпадать с псевдонимом. Пожалуйста, удалите псевдоним или измените имя экрана.</translation>
-    </message>
-    <message>
-        <source>Alt Gr</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Alt &amp;Gr</source>
-        <translation type="unfinished"></translation>
+        <translation type="vanished">мя экрана не может совпадать с псевдонимом. Пожалуйста, удалите псевдоним или измените имя экрана.</translation>
     </message>
 </context>
 <context>
     <name>ScreenSetupModel</name>
     <message>
         <source>&lt;center&gt;Screen: &lt;b&gt;%1&lt;/b&gt;&lt;/center&gt;&lt;br&gt;Double click to edit settings&lt;br&gt;Drag screen to the trashcan to remove it</source>
-        <translation>&lt;center&gt;Экран: &lt;b&gt;%1&lt;/b&gt;&lt;/center&gt;&lt;br&gt;Нажмите дважды для изменения настроек&lt;br&gt;Переместите окно в корзину, чтобы убрать его</translation>
+        <translation type="vanished">&lt;center&gt;Экран: &lt;b&gt;%1&lt;/b&gt;&lt;/center&gt;&lt;br&gt;Нажмите дважды для изменения настроек&lt;br&gt;Переместите окно в корзину, чтобы убрать его</translation>
     </message>
 </context>
 <context>
@@ -1435,11 +1650,11 @@ This new instance cannot start another server, so it will now exit.</source>
     </message>
     <message>
         <source>Config file</source>
-        <translation>Файл конфигурации</translation>
+        <translation type="vanished">Файл конфигурации</translation>
     </message>
     <message>
         <source>Core server config file</source>
-        <translation>Файл конфигурации ядра сервера (DShare-HID)</translation>
+        <translation type="vanished">Файл конфигурации ядра сервера (DShare-HID)</translation>
     </message>
     <message>
         <source>Use a server config file to create complex computer layouts that are not possible with the simple grid-based computer layout editor.
@@ -1679,6 +1894,14 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation>Сохринить лог файл в...</translation>
     </message>
     <message>
+        <source>%1 Clear Settings</source>
+        <translation type="unfinished">%1 Вернуть настройки</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Are you sure you want to clear all settings and restart %1?&lt;/p&gt; &lt;p&gt;This action cannot be undone.&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Required messages</source>
         <translation>Обязательный сообщения</translation>
     </message>
@@ -1709,22 +1932,6 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     <message>
         <source>Verbose debug output</source>
         <translation>Подробный отладочный вывод</translation>
-    </message>
-    <message>
-        <source>Close and save changes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Close and forget changes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reset to stored values</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reset to default values</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Requires the wl-clipboard package&lt;/p&gt;&lt;p&gt;When using wl-clipboard v2.2.1, there is a focus stealing bug that may make DShare-HID harder to use. This has been fixed when using the wl-clipboard master branch, unless your Compositor lacks wlroots-data-control protocol support.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
@@ -1784,6 +1991,37 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Using a log level higher than Info may affect performance.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove all settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SettingsDialogButtonBox</name>
+    <message>
+        <source>Settings are read only</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 is not writable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close and save changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close and forget changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset to stored values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset to default values</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2897,22 +3135,41 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
 </context>
 <context>
-    <name>validators::ScreenNameValidator</name>
+    <name>validators::ComputerLineNameValidator</name>
     <message>
         <source>Computer name cannot be empty</source>
-        <translation>Имя компьютера не может быть пустым</translation>
+        <translation type="unfinished">Имя компьютера не может быть пустым</translation>
     </message>
     <message>
         <source>Computer name cannot contain spaces</source>
-        <translation>Имя компьютера не может содержать пробелы</translation>
+        <translation type="unfinished">Имя компьютера не может содержать пробелы</translation>
     </message>
     <message>
         <source>Contains invalid characters or is too long</source>
-        <translation>Имя содержит недопосутмые символы или слишком длинное</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>A computer with this name already exists</source>
-        <translation>Компьютер с таким именем уже существует</translation>
+        <translation type="unfinished">Компьютер с таким именем уже существует</translation>
+    </message>
+</context>
+<context>
+    <name>validators::ScreenNameValidator</name>
+    <message>
+        <source>Computer name cannot be empty</source>
+        <translation type="vanished">Имя компьютера не может быть пустым</translation>
+    </message>
+    <message>
+        <source>Computer name cannot contain spaces</source>
+        <translation type="vanished">Имя компьютера не может содержать пробелы</translation>
+    </message>
+    <message>
+        <source>Contains invalid characters or is too long</source>
+        <translation type="vanished">Имя содержит недопосутмые символы или слишком длинное</translation>
+    </message>
+    <message>
+        <source>A computer with this name already exists</source>
+        <translation type="vanished">Компьютер с таким именем уже существует</translation>
     </message>
 </context>
 </TS>

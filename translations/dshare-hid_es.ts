@@ -162,27 +162,169 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Close and save changes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Close and forget changes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reset to stored values</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reset to default values</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Allow the client to slow the rate it attempts to reconnect to the server when connections attempts are failing. The delay between connection attempts will  start at 1 second intervals and can be a maxium of 5 minutes between connection attempts.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Use dynamic reconnection time based on connection attempts</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ComputerSettingsDialog</name>
+    <message>
+        <source>Computer settings</source>
+        <translation type="unfinished">Ajustes de la computadora</translation>
+    </message>
+    <message>
+        <source>Computer Info</source>
+        <translation type="unfinished">Información de la computadora</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished">Nombre</translation>
+    </message>
+    <message>
+        <source>Modifier Keys</source>
+        <translation type="unfinished">Teclas modificadoras</translation>
+    </message>
+    <message>
+        <source>M&amp;eta</source>
+        <translation type="unfinished">M&amp;eta</translation>
+    </message>
+    <message>
+        <source>&amp;Ctrl</source>
+        <translation type="unfinished">&amp;Ctrl</translation>
+    </message>
+    <message>
+        <source>S&amp;uper</source>
+        <translation type="unfinished">S&amp;úper</translation>
+    </message>
+    <message>
+        <source>Al&amp;t</source>
+        <translation type="unfinished">Al&amp;t</translation>
+    </message>
+    <message>
+        <source>Shift</source>
+        <translation type="unfinished">Shift</translation>
+    </message>
+    <message>
+        <source>Ctrl</source>
+        <translation type="unfinished">Ctrl</translation>
+    </message>
+    <message>
+        <source>Alt</source>
+        <translation type="unfinished">Alt</translation>
+    </message>
+    <message>
+        <source>Meta</source>
+        <translation type="unfinished">Meta</translation>
+    </message>
+    <message>
+        <source>Super</source>
+        <translation type="unfinished">Súper</translation>
+    </message>
+    <message>
+        <source>Alt Gr</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>None</source>
+        <translation type="unfinished">Ninguno</translation>
+    </message>
+    <message>
+        <source>&amp;Shift</source>
+        <translation type="unfinished">&amp;Shift</translation>
+    </message>
+    <message>
+        <source>Alt &amp;Gr</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Dead Corners</source>
+        <translation type="unfinished">Esquinas muertas</translation>
+    </message>
+    <message>
+        <source>Top Left</source>
+        <translation type="unfinished">Arriba a la izquierda</translation>
+    </message>
+    <message>
+        <source>Top Right</source>
+        <translation type="unfinished">Arriba a la derecha</translation>
+    </message>
+    <message>
+        <source>Corner si&amp;ze</source>
+        <translation type="unfinished">Tamaño de la e&amp;squina</translation>
+    </message>
+    <message>
+        <source>Bottom Left</source>
+        <translation type="unfinished">Abajo a la izquierda</translation>
+    </message>
+    <message>
+        <source>Bottom Right</source>
+        <translation type="unfinished">Abajo a la derecha</translation>
+    </message>
+    <message>
+        <source>Fixes</source>
+        <translation type="unfinished">Correcciones</translation>
+    </message>
+    <message>
+        <source>SCROLL LOCK key</source>
+        <translation type="unfinished">Tecla BLOQ DESPLAZAMIENTO</translation>
+    </message>
+    <message>
+        <source>CAPS LOCK key</source>
+        <translation type="unfinished">Tecla BLOQ MAYÚS</translation>
+    </message>
+    <message>
+        <source>NUM LOCK key</source>
+        <translation type="unfinished">Tecla BLOQ NUM</translation>
+    </message>
+    <message>
+        <source>XTest for Xinerama</source>
+        <translation type="unfinished">XTest para Xinerama</translation>
+    </message>
+    <message>
+        <source>X11 computers Only, When enabled the client will not give focus to its focused window as soon as the client is switched to. This can help prevent unwanted focus stealing with some X11 setups.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Weaken X11 Focus</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Aliases</source>
+        <translation type="unfinished">Alias</translation>
+    </message>
+    <message>
+        <source>&amp;Add</source>
+        <translation type="unfinished">&amp;Agregar</translation>
+    </message>
+    <message>
+        <source>&amp;Remove</source>
+        <translation type="unfinished">Elimina&amp;r</translation>
+    </message>
+    <message>
+        <source>Computer name is empty</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The computer name cannot be empty. Please either fill in a name or cancel the dialog.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Computer name matches alias</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The computer name cannot be the same as an alias. Please either remove the alias or change the computer name.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ComputerSetupModel</name>
+    <message>
+        <source>&lt;center&gt;Computer: &lt;b&gt;%1&lt;/b&gt;&lt;/center&gt;&lt;br&gt;Double click to edit settings&lt;br&gt;Drag computer to the trashcan to remove it</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -473,6 +615,17 @@ Do you want to connect to the server?
     </message>
 </context>
 <context>
+    <name>HelpDialog</name>
+    <message>
+        <source>%1 Help</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>HotkeyDialog</name>
     <message>
         <source>Hotkey</source>
@@ -575,11 +728,11 @@ Do you want to connect to the server?
     </message>
     <message>
         <source>Clear settings</source>
-        <translation type="unfinished">Borrar configuración</translation>
+        <translation type="obsolete">Borrar configuración</translation>
     </message>
     <message>
         <source>Report a Bug</source>
-        <translation type="unfinished">Informar un error</translation>
+        <translation type="obsolete">Informar un error</translation>
     </message>
     <message>
         <source>&amp;Minimize to tray</source>
@@ -610,6 +763,10 @@ Do you want to connect to the server?
         <source>About %1...</source>
         <extracomment>%1 will be the replaced with the appname</extracomment>
         <translation type="unfinished">Acerca de %1...</translation>
+    </message>
+    <message>
+        <source>View &amp;Help</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Ctrl+S</source>
@@ -651,7 +808,7 @@ Do you want to connect to the server?
     </message>
     <message>
         <source>Core cannot be started</source>
-        <translation type="unfinished">No se puede iniciar el núcleo</translation>
+        <translation type="obsolete">No se puede iniciar el núcleo</translation>
     </message>
     <message>
         <source>Save server configuration as...</source>
@@ -722,6 +879,24 @@ Do you want to connect to the server?
 A bound IP is now invalid, you may need to restart the server.</source>
         <translation type="unfinished">
 La dirección IP asignada ahora no es válida; es posible que deba reiniciar el servidor.</translation>
+    </message>
+    <message>
+        <source>The Core executable could not be started.
+Please check if you have sufficient permissions to run %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>read</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>read and write</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>
+Additionally, check you are able to %1 the server config file: %2</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Missing Keyboard Layouts</source>
@@ -798,11 +973,11 @@ La dirección IP asignada ahora no es válida; es posible que deba reiniciar el 
     </message>
     <message>
         <source>Invalid Screen Name</source>
-        <translation type="unfinished">Nombre de pantalla no válido</translation>
+        <translation type="obsolete">Nombre de pantalla no válido</translation>
     </message>
     <message>
         <source>Screen name already exists</source>
-        <translation type="unfinished">El nombre de pantalla ya existe</translation>
+        <translation type="obsolete">El nombre de pantalla ya existe</translation>
     </message>
     <message>
         <source>The name you have chosen is invalid.
@@ -838,7 +1013,7 @@ Nombres válidos:
     </message>
     <message>
         <source>The Core executable could not be successfully started, although it does exist. Please check if you have sufficient permissions to run this program.</source>
-        <translation>El ejecutable Core no se pudo iniciar con éxito, aunque existe. Por favor, compruebe si tiene permisos suficientes para ejecutar este programa.</translation>
+        <translation type="vanished">El ejecutable Core no se pudo iniciar con éxito, aunque existe. Por favor, compruebe si tiene permisos suficientes para ejecutar este programa.</translation>
     </message>
     <message>
         <source>Use another computer&apos;s mouse and keyboard
@@ -864,6 +1039,14 @@ Nombres válidos:
     </message>
     <message>
         <source>&lt;p&gt;Failed to connect to the server &apos;%1&apos;.&lt;/p&gt;&lt;p&gt;A Client with your name is already connected to the server.&lt;/p&gt;Please ensure that you&apos;re using a unique name and that only a single instance of the client process is running.&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invalid Computer Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Computer name already exists</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -896,11 +1079,19 @@ Nombres válidos:
     </message>
 </context>
 <context>
-    <name>NewScreenWidget</name>
+    <name>NewComputerWidget</name>
     <message>
         <source>Unnamed</source>
         <extracomment>Used as the hostname. Translation may not contain spaces</extracomment>
         <translation type="unfinished">Sin-nombre</translation>
+    </message>
+</context>
+<context>
+    <name>NewScreenWidget</name>
+    <message>
+        <source>Unnamed</source>
+        <extracomment>Used as the hostname. Translation may not contain spaces</extracomment>
+        <translation type="obsolete">Sin-nombre</translation>
     </message>
 </context>
 <context>
@@ -978,6 +1169,10 @@ Nombres válidos:
         <translation type="unfinished">%1 Conectado</translation>
     </message>
     <message>
+        <source>A new client called &apos;%1&apos; has been accepted. You&apos;ll need to add it to your server&apos;s computer layout.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>&lt;p&gt;Failed to connect to the server &apos;%1&apos;.&lt;/p&gt;</source>
         <translation type="obsolete">&lt;p&gt;Error al conectar con el servidor &apos;%1&apos;.&lt;/p&gt;</translation>
     </message>
@@ -995,7 +1190,7 @@ Nombres válidos:
     </message>
     <message>
         <source>A new client called &apos;%1&apos; has been accepted. You&apos;ll need to add it to your server&apos;s screen layout.</source>
-        <translation>Se ha aceptado un nuevo cliente llamado &apos;%1&apos;. Deberá añadirlo al diseño de pantalla de su servidor.</translation>
+        <translation type="vanished">Se ha aceptado un nuevo cliente llamado &apos;%1&apos;. Deberá añadirlo al diseño de pantalla de su servidor.</translation>
     </message>
     <message>
         <source>Ignore</source>
@@ -1011,19 +1206,19 @@ Nombres válidos:
     </message>
     <message>
         <source>%1 Clear Settings</source>
-        <translation type="unfinished">%1 Borrar configuración</translation>
+        <translation type="obsolete">%1 Borrar configuración</translation>
     </message>
     <message>
         <source>&lt;p&gt;Are you sure you want to clear all settings and restart %1?&lt;/p&gt;&lt;p&gt;This action cannot be undone.&lt;/p&gt;</source>
-        <translation type="unfinished">&lt;p&gt;¿Está seguro de que desea borrar todas las configuraciones y reiniciar %1?&lt;/p&gt;&lt;p&gt;Esta acción no se puede deshacer.&lt;/p&gt;</translation>
+        <translation type="obsolete">&lt;p&gt;¿Está seguro de que desea borrar todas las configuraciones y reiniciar %1?&lt;/p&gt;&lt;p&gt;Esta acción no se puede deshacer.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>%1 Read-only settings</source>
-        <translation type="unfinished">%1 Configuración de solo lectura</translation>
+        <translation type="obsolete">%1 Configuración de solo lectura</translation>
     </message>
     <message>
         <source>&lt;p&gt;Settings are read-only because you only have read access to the file:&lt;/p&gt;&lt;p&gt;%1&lt;/p&gt;</source>
-        <translation type="unfinished">&lt;p&gt;Las configuraciones son de solo lectura porque solo tiene acceso de lectura al archivo:&lt;/p&gt;&lt;p&gt;%1&lt;/p&gt;</translation>
+        <translation type="obsolete">&lt;p&gt;Las configuraciones son de solo lectura porque solo tiene acceso de lectura al archivo:&lt;/p&gt;&lt;p&gt;%1&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;p&gt;Sorry, while this version of %1 does support Wayland, this build was not linked with one or more of the required libraries.&lt;/p&gt;&lt;p&gt;Please either switch to X from your login screen or use a build that uses the correct libraries.&lt;/p&gt;&lt;p&gt;If you think this is incorrect, please &lt;a href=&quot;%2&quot;&gt;report a bug&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Please check the logs for more information.&lt;/p&gt;</source>
@@ -1092,41 +1287,6 @@ Esta nueva instancia no puede iniciar otro servidor, por lo que se cerrará ahor
         <source>DShare-HID</source>
         <translation>DShare-HID</translation>
     </message>
-</context>
-<context>
-    <name>ScreenSettingsDialog</name>
-    <message>
-        <source>Computer settings</source>
-        <translation>Ajustes de la computadora</translation>
-    </message>
-    <message>
-        <source>Computer Info</source>
-        <translation>Información de la computadora</translation>
-    </message>
-    <message>
-        <source>Name</source>
-        <translation>Nombre</translation>
-    </message>
-    <message>
-        <source>Modifier Keys</source>
-        <translation>Teclas modificadoras</translation>
-    </message>
-    <message>
-        <source>M&amp;eta</source>
-        <translation type="unfinished">M&amp;eta</translation>
-    </message>
-    <message>
-        <source>&amp;Ctrl</source>
-        <translation type="unfinished">&amp;Ctrl</translation>
-    </message>
-    <message>
-        <source>S&amp;uper</source>
-        <translation type="unfinished">S&amp;úper</translation>
-    </message>
-    <message>
-        <source>Al&amp;t</source>
-        <translation type="unfinished">Al&amp;t</translation>
-    </message>
     <message>
         <source>Shift</source>
         <translation type="unfinished">Shift</translation>
@@ -1148,99 +1308,154 @@ Esta nueva instancia no puede iniciar otro servidor, por lo que se cerrará ahor
         <translation type="unfinished">Súper</translation>
     </message>
     <message>
+        <source>AltGr</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>None</source>
         <translation type="unfinished">Ninguno</translation>
     </message>
+</context>
+<context>
+    <name>ScreenSettingsDialog</name>
+    <message>
+        <source>Computer settings</source>
+        <translation type="vanished">Ajustes de la computadora</translation>
+    </message>
+    <message>
+        <source>Computer Info</source>
+        <translation type="vanished">Información de la computadora</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="vanished">Nombre</translation>
+    </message>
+    <message>
+        <source>Modifier Keys</source>
+        <translation type="vanished">Teclas modificadoras</translation>
+    </message>
+    <message>
+        <source>M&amp;eta</source>
+        <translation type="obsolete">M&amp;eta</translation>
+    </message>
+    <message>
+        <source>&amp;Ctrl</source>
+        <translation type="obsolete">&amp;Ctrl</translation>
+    </message>
+    <message>
+        <source>S&amp;uper</source>
+        <translation type="obsolete">S&amp;úper</translation>
+    </message>
+    <message>
+        <source>Al&amp;t</source>
+        <translation type="obsolete">Al&amp;t</translation>
+    </message>
+    <message>
+        <source>Shift</source>
+        <translation type="obsolete">Shift</translation>
+    </message>
+    <message>
+        <source>Ctrl</source>
+        <translation type="obsolete">Ctrl</translation>
+    </message>
+    <message>
+        <source>Alt</source>
+        <translation type="obsolete">Alt</translation>
+    </message>
+    <message>
+        <source>Meta</source>
+        <translation type="obsolete">Meta</translation>
+    </message>
+    <message>
+        <source>Super</source>
+        <translation type="obsolete">Súper</translation>
+    </message>
+    <message>
+        <source>None</source>
+        <translation type="obsolete">Ninguno</translation>
+    </message>
     <message>
         <source>&amp;Shift</source>
-        <translation type="unfinished">&amp;Shift</translation>
+        <translation type="obsolete">&amp;Shift</translation>
     </message>
     <message>
         <source>Dead Corners</source>
-        <translation type="unfinished">Esquinas muertas</translation>
+        <translation type="obsolete">Esquinas muertas</translation>
     </message>
     <message>
         <source>Top Left</source>
-        <translation type="unfinished">Arriba a la izquierda</translation>
+        <translation type="obsolete">Arriba a la izquierda</translation>
     </message>
     <message>
         <source>Top Right</source>
-        <translation type="unfinished">Arriba a la derecha</translation>
+        <translation type="obsolete">Arriba a la derecha</translation>
     </message>
     <message>
         <source>Corner si&amp;ze</source>
-        <translation type="unfinished">Tamaño de la e&amp;squina</translation>
+        <translation type="obsolete">Tamaño de la e&amp;squina</translation>
     </message>
     <message>
         <source>Bottom Left</source>
-        <translation type="unfinished">Abajo a la izquierda</translation>
+        <translation type="obsolete">Abajo a la izquierda</translation>
     </message>
     <message>
         <source>Bottom Right</source>
-        <translation type="unfinished">Abajo a la derecha</translation>
+        <translation type="obsolete">Abajo a la derecha</translation>
     </message>
     <message>
         <source>Fixes</source>
-        <translation type="unfinished">Correcciones</translation>
+        <translation type="obsolete">Correcciones</translation>
     </message>
     <message>
         <source>SCROLL LOCK key</source>
-        <translation type="unfinished">Tecla BLOQ DESPLAZAMIENTO</translation>
+        <translation type="obsolete">Tecla BLOQ DESPLAZAMIENTO</translation>
     </message>
     <message>
         <source>CAPS LOCK key</source>
-        <translation type="unfinished">Tecla BLOQ MAYÚS</translation>
+        <translation type="obsolete">Tecla BLOQ MAYÚS</translation>
     </message>
     <message>
         <source>NUM LOCK key</source>
-        <translation type="unfinished">Tecla BLOQ NUM</translation>
+        <translation type="obsolete">Tecla BLOQ NUM</translation>
     </message>
     <message>
         <source>XTest for Xinerama</source>
-        <translation>XTest para Xinerama</translation>
+        <translation type="vanished">XTest para Xinerama</translation>
     </message>
     <message>
         <source>Aliases</source>
-        <translation type="unfinished">Alias</translation>
+        <translation type="obsolete">Alias</translation>
     </message>
     <message>
         <source>&amp;Add</source>
-        <translation type="unfinished">&amp;Agregar</translation>
+        <translation type="obsolete">&amp;Agregar</translation>
     </message>
     <message>
         <source>&amp;Remove</source>
-        <translation type="unfinished">Elimina&amp;r</translation>
+        <translation type="obsolete">Elimina&amp;r</translation>
     </message>
     <message>
         <source>Screen name is empty</source>
-        <translation type="unfinished">El nombre de pantalla está vacío</translation>
+        <translation type="obsolete">El nombre de pantalla está vacío</translation>
     </message>
     <message>
         <source>The screen name cannot be empty. Please either fill in a name or cancel the dialog.</source>
-        <translation type="unfinished">El nombre de usuario no puede estar vacío. Escriba un nombre o cancele el diálogo.</translation>
+        <translation type="obsolete">El nombre de usuario no puede estar vacío. Escriba un nombre o cancele el diálogo.</translation>
     </message>
     <message>
         <source>Screen name matches alias</source>
-        <translation type="unfinished">El nombre de pantalla coincide con el alias</translation>
+        <translation type="obsolete">El nombre de pantalla coincide con el alias</translation>
     </message>
     <message>
         <source>The screen name cannot be the same as an alias. Please either remove the alias or change the screen name.</source>
-        <translation type="unfinished">El nombre de usuario no puede ser el mismo que un alias. Elimine el alias o cambie el nombre de usuario.</translation>
-    </message>
-    <message>
-        <source>Alt Gr</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Alt &amp;Gr</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">El nombre de usuario no puede ser el mismo que un alias. Elimine el alias o cambie el nombre de usuario.</translation>
     </message>
 </context>
 <context>
     <name>ScreenSetupModel</name>
     <message>
         <source>&lt;center&gt;Screen: &lt;b&gt;%1&lt;/b&gt;&lt;/center&gt;&lt;br&gt;Double click to edit settings&lt;br&gt;Drag screen to the trashcan to remove it</source>
-        <translation type="unfinished">&lt;center&gt;Pantalla: &lt;b&gt;%1&lt;/b&gt;&lt;/center&gt;&lt;br&gt;Haga doble clic para editar la configuración&lt;br&gt;Arrastre la pantalla a la papelera para eliminarla</translation>
+        <translation type="obsolete">&lt;center&gt;Pantalla: &lt;b&gt;%1&lt;/b&gt;&lt;/center&gt;&lt;br&gt;Haga doble clic para editar la configuración&lt;br&gt;Arrastre la pantalla a la papelera para eliminarla</translation>
     </message>
 </context>
 <context>
@@ -1418,11 +1633,11 @@ Esta nueva instancia no puede iniciar otro servidor, por lo que se cerrará ahor
     </message>
     <message>
         <source>Config file</source>
-        <translation type="unfinished">Archivo de configuración</translation>
+        <translation type="obsolete">Archivo de configuración</translation>
     </message>
     <message>
         <source>Core server config file</source>
-        <translation type="unfinished">Archivo de configuración del servidor principal</translation>
+        <translation type="obsolete">Archivo de configuración del servidor principal</translation>
     </message>
     <message>
         <source>Use a server config file to create complex computer layouts that are not possible with the simple grid-based computer layout editor.
@@ -1654,22 +1869,6 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation type="unfinished">Salida de depuración detallada</translation>
     </message>
     <message>
-        <source>Close and save changes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Close and forget changes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reset to stored values</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reset to default values</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>TLS Certificate Regenerated</source>
         <translation type="unfinished">Certificado TLS regenerado</translation>
     </message>
@@ -1684,6 +1883,14 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     <message>
         <source>Save log file to...</source>
         <translation type="unfinished">Guardar archivo de registro en...</translation>
+    </message>
+    <message>
+        <source>%1 Clear Settings</source>
+        <translation type="unfinished">%1 Borrar configuración</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Are you sure you want to clear all settings and restart %1?&lt;/p&gt; &lt;p&gt;This action cannot be undone.&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Language</source>
@@ -1767,6 +1974,37 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Using a log level higher than Info may affect performance.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove all settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SettingsDialogButtonBox</name>
+    <message>
+        <source>Settings are read only</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 is not writable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close and save changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close and forget changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset to stored values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset to default values</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2879,7 +3117,7 @@ Siguiente paso: Debe flashear el firmware por dispositivo para usar el dispositi
     </message>
 </context>
 <context>
-    <name>validators::ScreenNameValidator</name>
+    <name>validators::ComputerLineNameValidator</name>
     <message>
         <source>Computer name cannot be empty</source>
         <translation type="unfinished">El nombre de la computadora no puede estar vacío</translation>
@@ -2895,6 +3133,25 @@ Siguiente paso: Debe flashear el firmware por dispositivo para usar el dispositi
     <message>
         <source>A computer with this name already exists</source>
         <translation type="unfinished">Ya existe un ordenador con este nombre</translation>
+    </message>
+</context>
+<context>
+    <name>validators::ScreenNameValidator</name>
+    <message>
+        <source>Computer name cannot be empty</source>
+        <translation type="obsolete">El nombre de la computadora no puede estar vacío</translation>
+    </message>
+    <message>
+        <source>Computer name cannot contain spaces</source>
+        <translation type="obsolete">El nombre de la computadora no puede contener espacios</translation>
+    </message>
+    <message>
+        <source>Contains invalid characters or is too long</source>
+        <translation type="obsolete">Contiene caracteres no válidos o es demasiado largo</translation>
+    </message>
+    <message>
+        <source>A computer with this name already exists</source>
+        <translation type="obsolete">Ya existe un ordenador con este nombre</translation>
     </message>
 </context>
 </TS>
