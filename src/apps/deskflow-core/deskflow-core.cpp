@@ -128,8 +128,11 @@ int main(int argc, char **argv)
   // Determine initial settings file before constructing CoreArgParser so CLI overrides take effect.
   QString initialSettingsFile;
   if (isBridgeClient) {
-    // Bridge clients use: ~/.config/deskflow/bridge-clients/<client-name>.conf
-    initialSettingsFile = QStringLiteral("%1/bridge-clients/%2.conf").arg(Settings::settingsPath(), instanceName);
+    // Bridge clients use the config the GUI passes with --settings; without it, fall back to
+    // <settings>/bridge-clients/<client-name>.conf (the GUI's file can have a "-N" suffix).
+    initialSettingsFile = !configOverride.isEmpty()
+                              ? configOverride
+                              : QStringLiteral("%1/bridge-clients/%2.conf").arg(Settings::settingsPath(), instanceName);
   } else if (!configOverride.isEmpty()) {
     initialSettingsFile = configOverride;
   }

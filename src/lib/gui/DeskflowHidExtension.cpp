@@ -1124,6 +1124,9 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
     command << "client";
     command << "--name" << screenName;
     command << "--link" << devicePath;
+    // Point the core at this exact config: its filename can differ from the screen
+    // name (e.g. "Bridge-XXX-1.conf"), and the core reads bridge/* keys from it.
+    command << "--settings" << configPath;
     command << "--remoteHost" << remoteHost;
     command << "--secure" << (tlsEnabled ? "true" : "false");
     command << "--log-level" << logLevel;
