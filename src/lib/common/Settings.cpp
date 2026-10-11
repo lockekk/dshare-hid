@@ -120,6 +120,13 @@ void Settings::upgradeSettings()
     newKey.replace("screen_", "computer_");
     m_settings->setValue(newKey, m_settings->value(key));
   }
+  // DShare-HID: v1.27.0 fixed the stored key name (server/enableHeatbeat ->
+  // server/enableHeartbeat) without migrating it. Carry the value over before the
+  // map below, so a stale internalConfig/hasHeartbeat cannot take precedence.
+  if (const auto oldHeartbeatKey = QStringLiteral("server/enableHeatbeat");
+      m_settings->contains(oldHeartbeatKey) && !m_settings->contains(Settings::Server::EnableHeartbeat))
+    m_settings->setValue(Settings::Server::EnableHeartbeat, m_settings->value(oldHeartbeatKey));
+
   for (const auto [oldKey, newKey] : m_upgradedMap.asKeyValueRange()) {
     if (m_settings->contains(newKey) || !m_settings->contains(oldKey))
       continue;
