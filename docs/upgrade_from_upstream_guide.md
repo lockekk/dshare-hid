@@ -190,18 +190,19 @@ Use this table to identify which rebranded file corresponds to an upstream file 
     3.  Ensure that project-specific ignores for **DShare-HID** are preserved.
 
 ### Scenario G: Configuration Documentation Updates
-*   **Issue**: Upstream updates `docs/user/configuration.md` with clearer wording, new configuration keys, moved keys, or removed keys.
+*   **Issue**: Upstream updates `docs/Configuration.md` (was `docs/user/configuration.md` before v1.27.0) with clearer wording, new configuration keys, moved keys, or removed keys.
 *   **Why this file matters more than other docs**: `configuration.md` is the user-facing contract for baseline functionality (server/client/options/hotkeys/actions). Changes here usually correspond to *behavioral* changes in the source code (settings keys added, moved between sections, deprecated, semantics changed). Treat this file as an early-warning signal, not just docs.
 *   **Resolution**:
     1.  **Adopt the logic/wording improvements**: Upstream often clarifies how settings work. Use their new descriptions.
     2.  **STRICT BRANDING**: Manually replace all instances of "Deskflow" or "deskflow" in the new text with **DShare-HID** or **dshare-hid**.
     3.  **Preserve Layout**: Ensure tables and links match the DShare-HID structure.
-    4.  **Diff the keys, not just the prose**: Run `git diff <merge-base>..upstream-master -- docs/user/configuration.md` and enumerate what changed at the *key/option* level:
+    4.  **Diff the keys, not just the prose**: Run `git diff -M <merge-base>..<upstream-ref> -- docs/Configuration.md` and enumerate what changed at the *key/option* level:
         - **Added** option → new feature in upstream; check if backing code landed and whether DShare-HID needs UI/Settings work to expose it.
         - **Removed** option → upstream deprecated/removed a feature; verify our code doesn't still rely on it (especially in `BridgeClient*`, `Settings.*`, `ServerConfig.*`).
-        - **Moved** option (e.g., `protocol` moved from `[options]` → `[server]` in this last merge) → there's an underlying code refactor; track down the upstream commit (`git log -p -- docs/user/configuration.md`) and verify the corresponding code change merged cleanly into our tree.
+        - **Moved** option (e.g., `protocol` moved from `[options]` → `[server]` in this last merge) → there's an underlying code refactor; track down the upstream commit (`git log -p --follow -- docs/Configuration.md`) and verify the corresponding code change merged cleanly into our tree.
         - **Semantic change** → wording change without key change can hide behavior tweaks (e.g., default value flipped, validation added). Read the upstream commit body.
-    5.  **ALERT THE USER** when any function/option is **added, removed, moved, or changed in semantics**. Surface the list explicitly with the upstream commit ref and a one-line "this might affect us because ___" note. Do not silently rebrand-and-commit. The user wants the chance to decide whether DShare-HID needs to adopt, ignore, or work around each change.
+    5.  **In-app help docs are user-visible.** Since v1.27.0, `docs/{HelpMain,Issues,Readme,Security,Configuration}.md` are installed into the app and rendered by Help ▸ View Help (F1). Rebrand every upstream change to them: links to deskflow.org, the deskflow/deskflow issue tracker or advisories, Matrix/IRC channels, and "continuous" builds have no DShare-HID equivalent. Support channels are GitHub Issues/Discussions on lockekk/dshare-hid and dshare.hid@gmail.com.
+    6.  **ALERT THE USER** when any function/option is **added, removed, moved, or changed in semantics**. Surface the list explicitly with the upstream commit ref and a one-line "this might affect us because ___" note. Do not silently rebrand-and-commit. The user wants the chance to decide whether DShare-HID needs to adopt, ignore, or work around each change.
 
 ### Scenario H: Daemon & Process Naming Regressions
 *   **Issue**: Upstream modifies `daemonName()` or similar methods in `ClientApp.cpp`, `ServerApp.cpp`, or `MainWindow.cpp`.
@@ -301,6 +302,24 @@ Use this table to identify which rebranded file corresponds to an upstream file 
     conflict scenario. First hit 2026-07-08: the app "couldn't launch at all"
     right before a planned push; no source change was at fault.
 
+### Scenario Q: CMake keyword / plain `target_link_libraries` mixing (CMP0023)
+*   **Issue**: Upstream converts a library's links to the keyword form (`target_link_libraries(gui PUBLIC ...)`), while a fork file adds links to the same target in the plain form (`target_link_libraries(gui ${LIB})`). CMake refuses to configure: one target cannot mix both signatures. No conflict marker shows this — the fork lines live in `src/lib/gui/CMakeLists.user.cmake` or in auto-merged tails of upstream CMakeLists.
+*   **Resolution**: Always use the keyword form for fork links (`PRIVATE` unless a public header needs the dependency). Seen in v1.27.0 for `gui` (CMakeLists.user.cmake) and `platform` (OpenSSL link, duplicate Cocoa block).
+
+### Scenario R: Settings key whitelist (`m_validGroup` / `m_validKeys`)
+*   **Issue**: `Settings::cleanSettings()` runs on every settings load, including when the core opens a per-device `bridge-clients/*.conf`. It deletes any key whose group is listed in `m_validGroup` but which is itself missing from `m_validKeys`. `"bridge"` is in `m_validGroup` (so `removeUnknownComputers()` keeps the group), which means **every `Settings::Bridge::*` key and every other fork key in a listed group (`core/`, `client/`, ...) must be in `m_validKeys`**, or it silently disappears from disk.
+*   **Upstream key removals bite the same way**: when upstream drops a key from `m_validKeys` (v1.27.0: `core/screenName`), it is deleted from bridge configs on the next core start. Fork readers must move to the replacement key (bridge code reads names through `BridgeClientConfigManager::readScreenName()`, which falls back to the legacy key).
+*   **Renamed stored keys**: when upstream changes a stored key string without a migration (v1.27.0: `server/enableHeatbeat` → `server/enableHeartbeat`), add one in `upgradeSettings()` and call it out as a Scenario G alert.
+*   **Verify** with the core binary against a throwaway `HOME` (the core runs `upgradeSettings`/`cleanSettings` before handling `--version`), never against the real `~/Library/DShare-HID`: `HOME=$tmp build/bin/DShare-HID.app/Contents/MacOS/dshare-hid-core client --link /dev/null --name Bridge-TEST --version`, then inspect `$tmp/Library/DShare-HID/bridge-clients/Bridge-TEST.conf`.
+
+### Scenario S: Functional identity strings that auto-merge
+*   **Issue**: Not every Deskflow string is cosmetic, and these merge without conflict. v1.27.0 examples: `deploy/windows/wix-patch.xml.in` gained `util:CloseApplication` entries targeting `deskflow.exe`/`deskflow-core.exe` (the MSI would close a real Deskflow install and never ours); the xdg portal global-shortcut description; the macOS power-assertion name in `OSXComputer.mm`.
+*   **Resolution**: The post-merge rebrand sweep must grep the *added lines* of the whole merge, not just conflicted files: `git diff --cached <pre-merge-tip> | grep '^+' | grep -E 'Deskflow|deskflow(-core)?\.exe|deskflow\.org'`. Retarget executables to `dshare-hid.exe` / `dshare-hid-core.exe`; leave comments, `deskflow::` namespaces, SPDX headers and internal identifiers alone.
+
+### Scenario T: Rename not detected → modify/delete
+*   **Issue**: When upstream renames a file *and* rewrites much of it (v1.27.0: `ScreenSetupModel.cpp` → `ComputerSetupModel.cpp`), git may not pair the two, and reports `CONFLICT (modify/delete): <old> deleted in <upstream> and modified in HEAD`. The fork's version of the old file is left in the tree and would be built or silently dropped.
+*   **Resolution**: `git diff <merge-base> HEAD -- <old path>` to list the fork hunks, port them into the renamed upstream file using the new names, then `git rm <old path>`. Preview a merge's conflict set without touching the worktree with `git merge-tree --write-tree --name-only HEAD <upstream-ref>` (rename-aware, including these modify/delete cases).
+
 ## Automation
 
 `.agent/skills/merge-upstream-master/merge_next_upstream.sh` merges the next
@@ -308,7 +327,17 @@ upstream commit (or `--all` for the whole backlog), auto-applies the
 deterministic Scenarios A/B/J/L, formats the merge-commit message per the rule
 above, and stops with a template (`.git/MERGE_MSG_TEMPLATE`) whenever a human
 scenario (C–M) is hit. `verify_merge.sh` is the session gate: rebrand grep +
-`./run_task.sh 1` + the Scenario M DMG sweep.
+`./run_task.sh 1` + the Scenario M DMG sweep (pass the pre-merge tip as the
+base ref when not merging onto `main`).
+
+The script assumes the target branch is `main` and the source is
+`upstream/master`. To merge a release tag or into another branch, do it by
+hand. Per-commit merges stay the default. When the user explicitly opts into a
+single merge for a large backlog (v1.27.0: 210 commits merged into `1011`),
+use **one two-parent merge** (`git merge --no-ff --no-commit <tag>`, resolve,
+build, commit) and never `git merge --squash`: a squash commit has one parent,
+so git keeps the old merge-base and the next sync re-conflicts on every one of
+those commits.
 
 ---
 
@@ -353,27 +382,32 @@ never take upstream's), translations, README.md, and docs. See Sections 1–3.
   `deploy/mac/build_universal_openssl.sh` — Scenario M (OpenSSL @rpath bundling,
   universal build, codesign)
 - `src/apps/deskflow-daemon/CMakeLists.txt` — `INSTALL_DAEMON` toggle (Scenario I)
+- `src/lib/gui/CMakeLists.txt` — `Qt6::Concurrent`, WIN32 links, `include(CMakeLists.user.cmake OPTIONAL)` (Scenario Q)
+- `deploy/windows/wix-patch.xml.in` — firewall/run/close-on-install targets use `dshare-hid*.exe` (Scenario S)
 
 ### Bridge/HID feature hooks in upstream files
 - `src/lib/deskflow/ProtocolTypes.{h,cpp}` — `kMsgDIdentity` bridge handshake
-- `src/lib/deskflow/App.h` — `virtual handleScreenError`
+- `src/lib/deskflow/App.h` — `virtual handleComputerError`
 - `src/lib/deskflow/ClientApp.h` — virtual connection handlers, protected `getSocketFactory`
-- `src/lib/deskflow/ClientApp.cpp` — `m_clientScreen` reset guards, daemonName
-- `src/lib/deskflow/ServerApp.cpp` — bridge restart-on-resume/reset, Quit-on-screen-error
-- `src/lib/deskflow/PlatformScreen.h` — `applyClientScrollModifier` hook
+- `src/lib/deskflow/ClientApp.cpp` — `m_clientComputer` reset guards, `[BRIDGE]` name suffix, daemonName
+- `src/lib/deskflow/ServerApp.cpp` — bridge restart-on-resume/reset, Quit on `ComputerError`
+- `src/lib/deskflow/PlatformComputer.h` (was PlatformScreen.h) — `applyClientScrollModifier` hook
 - `src/lib/deskflow/unix/AppUtilUnix.cpp` — mac keyboard-layout main-thread dispatch
-- `src/lib/common/Settings.{cpp,h}`, `Constants.h.in`, `UrlConstants.h`
+- `src/lib/common/Settings.{cpp,h}` (Bridge keys — all must be in `m_validKeys`, see Scenario R; enableHeatbeat migration), `Constants.h.in`, `UrlConstants.h` (fork URLs + `kUrlWiki`)
 - `src/lib/client/Client.cpp`, `src/lib/client/CMakeLists.txt`
 - `src/lib/server/{Server.cpp,BaseClientProxy.h,ClientProxy.{cpp,h},ClientProxyUnknown.cpp}`
-- `src/lib/gui/`: MainWindow.{cpp,h,ui}, ScreenSetupModel.{cpp,h},
-  ScreenList.{cpp,h} (`addScreenAwayFromServer`), ServerConfig.{cpp,h},
-  ServerConfigDialog.{cpp,h,ui} (`onScreenDeleted`), CoreProcess.{cpp,h}
-  (DuplicateServer), SettingsDialog.cpp, AboutDialog.*, StyleUtils.h,
+- `src/lib/gui/`: MainWindow.{cpp,h,ui}, ComputerSetupModel.{cpp,h}
+  (`addComputer(..., awayFromServer)`), config/ComputerList.{cpp,h}
+  (`addComputerAwayFromServer`), widgets/ComputerSetupView.{cpp,h}
+  (`screenDeleted` signal), ServerConfig.{cpp,h} (bridge placement,
+  `renameScreen`, `moveScreenRelativeToServer`), ServerConfigDialog.{cpp,h,ui}
+  (`onScreenDeleted`), CoreProcess.{cpp,h} (DuplicateServer only — the rest is
+  upstream's), SettingsDialog.cpp, AboutDialog.*, StyleUtils.h,
   LogWidget.cpp (h-scroll preservation in `appendLine` only — the SearchWidget
   wiring is upstream's, keep it)
 - `src/apps/deskflow-core/` — CoreArgs.h, CoreArgParser.{cpp,h},
   deskflow-core.cpp (bridge CLI: --link, screen size, --name handling)
-- `src/lib/platform/CMakeLists.txt`, `EiScreen.cpp`, `MSWindowsWatchdog.cpp`
+- `src/lib/platform/CMakeLists.txt` (bridge sources, OpenSSLCompat, keyword-form links), `EiComputer.cpp` (shut down on EI disconnect), `MSWindowsWatchdog.cpp`
 
 ### Fork bugfixes (keep; candidates to upstream as PRs)
 - `src/lib/arch/win32/ArchMultithreadWindows.cpp` — recursive-lock deadlock fix

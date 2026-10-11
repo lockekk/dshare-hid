@@ -13,7 +13,10 @@ conflict.
 ## Hard rule
 
 Merge **one upstream commit at a time**, each as its own merge commit on
-`main`. Never `git merge upstream/master` or a range.
+`main`. Never `git merge upstream/master` or a range. The only exception is an
+explicit user opt-in to a single merge (e.g. a release tag): then use one
+two-parent `git merge --no-ff <tag>`, never `--squash` (see the Automation
+section of the guide).
 
 ## Workflow
 
