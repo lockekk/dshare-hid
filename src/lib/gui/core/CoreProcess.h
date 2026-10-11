@@ -109,7 +109,7 @@ private:
   void startProcessFromDaemon();
   void stopForegroundProcess();
   void stopProcessFromDaemon();
-  QString persistServerConfig() const;
+  QPair<bool, QString> persistServerConfig() const;
   void setConnectionState(ConnectionState state);
   void setProcessState(ProcessState state);
   bool checkSecureSocket(const QString &line);
