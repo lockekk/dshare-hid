@@ -606,16 +606,7 @@ void Esp32HidToolsWidget::onFlashFactory()
 
   log(tr("Checking device status..."));
 
-  // Create a struct to hold result so we can capture it by value
-  struct Result
-  {
-    FlashResult res;
-    std::string info;
-  };
-
   auto task = [this, port, data]() {
-    std::string info;
-
     // Callback for progress/logging to update UI
     auto log_cb = [this](const std::string &msg) {
       QMetaObject::invokeMethod(this, [this, msg]() { log(QString::fromStdString(msg)); });
@@ -678,13 +669,12 @@ void Esp32HidToolsWidget::onFlashFactory()
 
     log(tr("Starting Factory Flash..."));
     auto replug_cb = createReplugCallback();
-    FlashResult res = flash_factory(port, data, info, progress_cb, log_cb, replug_cb);
+    FlashResult res = flash_factory(port, data, progress_cb, log_cb, replug_cb);
 
     // Update UI on main thread
-    QMetaObject::invokeMethod(this, [this, res, info]() {
+    QMetaObject::invokeMethod(this, [this, res]() {
       if (res == FlashResult::OK) {
         log(tr("Factory Flash Success!"));
-        log(tr("Device Info: %1").arg(QString::fromStdString(info)));
         showFactoryFlashSuccess();
       } else {
         log(tr("Flash failed, %1").arg(QString::fromStdString(flashResultToString(res))));
@@ -760,7 +750,6 @@ void Esp32HidToolsWidget::onDownloadAndFlashFactory()
         });
 
         // 2. Flash
-        std::string info;
         auto log_cb = [this](const std::string &msg) {
           QMetaObject::invokeMethod(this, [this, msg]() { log(QString::fromStdString(msg)); });
         };
@@ -801,12 +790,11 @@ void Esp32HidToolsWidget::onDownloadAndFlashFactory()
         }
 
         auto replug_cb = createReplugCallback();
-        FlashResult res = flash_factory(port, data, info, progress_cb, log_cb, replug_cb);
+        FlashResult res = flash_factory(port, data, progress_cb, log_cb, replug_cb);
 
-        QMetaObject::invokeMethod(this, [this, res, info]() {
+        QMetaObject::invokeMethod(this, [this, res]() {
           if (res == FlashResult::OK) {
             log(tr("Flash Success!"));
-            log(tr("Device Info: %1").arg(QString::fromStdString(info)));
             showFactoryFlashSuccess();
           } else {
             QString errorMsg = QString::fromStdString(flashResultToString(res));
@@ -1011,16 +999,9 @@ void Esp32HidToolsWidget::onCheckUpgrade()
           log(tr("Update available (Device version unknown)."));
         }
 
-        if (cdc.deviceConfig().hasOtaPartition) {
-          m_onlineFlashAllowed = true;
-          m_flashOnlineBtn->setEnabled(true);
-          m_flashOnlineBtn->setToolTip("");
-        } else {
-          m_onlineFlashAllowed = false;
-          m_flashOnlineBtn->setEnabled(false);
-          m_flashOnlineBtn->setToolTip(tr("Please flash per-device firmware firstly."));
-          log(tr("Online flashing disabled: Device missing OTA partition."));
-        }
+        m_onlineFlashAllowed = true;
+        m_flashOnlineBtn->setEnabled(true);
+        m_flashOnlineBtn->setToolTip("");
       } else {
         log(tr("Device is up to date."));
       }

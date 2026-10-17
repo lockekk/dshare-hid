@@ -2616,7 +2616,7 @@ The device will boot into a 7-day free trial automatically. After the trial expi
     </message>
     <message>
         <source>Device Info: %1</source>
-        <translation>设备信息：%1</translation>
+        <translation type="vanished">设备信息：%1</translation>
     </message>
     <message>
         <source>Info</source>
@@ -2900,11 +2900,11 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Please flash per-device firmware firstly.</source>
-        <translation>请先刷写每台设备的固件。</translation>
+        <translation type="vanished">请先刷写每台设备的固件。</translation>
     </message>
     <message>
         <source>Online flashing disabled: Device missing OTA partition.</source>
-        <translation>在线刷写已禁用：设备缺少 OTA 分区。</translation>
+        <translation type="vanished">在线刷写已禁用：设备缺少 OTA 分区。</translation>
     </message>
     <message>
         <source>Found upgrade firmware: %1</source>
