@@ -2359,7 +2359,7 @@ The device will boot into a 7-day free trial automatically. After the trial expi
     </message>
     <message>
         <source>Device Info: %1</source>
-        <translation>Информация об устройстве: %1</translation>
+        <translation type="vanished">Информация об устройстве: %1</translation>
     </message>
     <message>
         <source>Info</source>
@@ -2627,14 +2627,6 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Factory flash cancelled.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Please flash per-device firmware firstly.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Online flashing disabled: Device missing OTA partition.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

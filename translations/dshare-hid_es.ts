@@ -2307,7 +2307,7 @@ Duplicado: %1</translation>
     </message>
     <message>
         <source>Device Info: %1</source>
-        <translation>Información del dispositivo: %1</translation>
+        <translation type="vanished">Información del dispositivo: %1</translation>
     </message>
     <message>
         <source>Info</source>
@@ -2550,14 +2550,6 @@ Siguiente paso: Debe flashear el firmware por dispositivo para usar el dispositi
     <message>
         <source>Update available (Device version unknown).</source>
         <translation>Actualización disponible (versión del dispositivo desconocida).</translation>
-    </message>
-    <message>
-        <source>Please flash per-device firmware firstly.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Online flashing disabled: Device missing OTA partition.</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Device is up to date.</source>
