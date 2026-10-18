@@ -6,6 +6,7 @@
 
 #include "I18NTests.h"
 
+#include "common/Constants.h"
 #include "common/I18N.h"
 #include "common/Settings.h"
 #include <QDir>
@@ -31,7 +32,7 @@ void I18NTests::initTestCase()
 
   dir.mkdir(m_myTDir);
   dir.setPath(srcTDir);
-  for (const auto &file : dir.entryList({"deskflow_*.qm"}, QDir::Files, QDir::Name)) {
+  for (const auto &file : dir.entryList({QStringLiteral("%1_*.qm").arg(kAppId)}, QDir::Files, QDir::Name)) {
     QFile::copy(QStringLiteral("%1/%2").arg(srcTDir, file), QStringLiteral("%1/%2").arg(m_myTDir, file));
     QVERIFY(QFile::exists(QStringLiteral("%1/%2").arg(m_myTDir, file)));
   }
@@ -104,7 +105,7 @@ void I18NTests::reDetectTest()
   I18N::reDetectLanguages();
   QCOMPARE(spy.count(), 0);
 
-  QFile::remove(QStringLiteral("%1/deskflow_en.qm").arg(m_myTDir));
+  QFile::remove(QStringLiteral("%1/%2_en.qm").arg(m_myTDir, kAppId));
 
   I18N::reDetectLanguages();
   QCOMPARE(spy.count(), 1);
