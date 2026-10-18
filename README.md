@@ -184,27 +184,23 @@ You will need an **ESP32-C3 Supermini** board. These are cheap and widely availa
 Open DShare-HID and navigate to **File -> Firmware** to open the management interface.
 
 ### 3. Setup (For New Devices)
-For a brand new "virgin" device, follow this sequence:
+For a brand new device:
 
-1.  **Factory Mode (Online)**:
-    *   Go to the **Factory Mode** tab.
-    *   Click **Flash** under the "Online" section to install the generic factory firmware.
-    *   This prepares the device for pairing and licensing.
+1.  Go to the **Factory Mode** tab.
+2.  Click **Flash** under the "Online" section. The app downloads the latest firmware package and installs it.
+3.  When it finishes, the device restarts and the **7-day free trial** starts automatically. No order or activation key is needed for the trial.
 
-2.  **Request per-device application**:
-    *   Go to the **Order** tab.
-    *   Choose **Request 7-Day Free Trial** or **Purchase Full License**.
-    *   Fill in your details and click **Email** to send the request.
-    *   You will receive a specific **per-device firmware file** (e.g., `app_xxxx.uzip`) via email.
+**Note**: The first start permanently locks the board to official DShare-HID firmware (Secure Boot and flash encryption). After that, the board can only be updated from the **Upgrade Mode** tab and cannot be reused for other ESP32 projects.
 
-3.  **Install Application (Manual)**:
-    *   Go to the **Upgrade Mode** tab.
-    *   Under "Manual", browse and select the file you received.
-    *   Click **Flash** to install your licensed firmware.
+### 4. Purchase & Activation
+1.  Go to the **Order** tab.
+2.  Choose **Purchase Full License** (or **Upgrade Profile Capacity** for more profiles), fill in your details and payment information, and click **Email** to send the order.
+3.  Once the payment is confirmed, you will receive an **activation key** by email.
+4.  Go to the **Activation** tab, paste the key and click **Activate**. The device state changes to **Activated**.
 
-### 4. Updates & Maintenance
-*   **Upgrading**: Go to the **Upgrade Mode** tab and click **Check for Updates** -> **Flash** to install the latest features via OTA.
-*   **Activation**: Go to the **Activation** tab to view your license status or input a new activation key.
+### 5. Updates & Maintenance
+*   **Upgrading**: Go to the **Upgrade Mode** tab and click **Check for Updates** -> **Flash** to install the latest firmware via OTA. Your license, profiles and pairings are kept. To install a firmware file (`.uzip`) you already have, select it under "Manual" and click **Flash**.
+*   **Activation**: Go to the **Activation** tab to view your serial number and license status, or enter a new activation key.
 
 ## Building from Source
 The development environment and build process for DShare-HID are **identical to the upstream [Deskflow project](https://github.com/deskflow/deskflow)**. You can follow the official build instructions for Windows, macOS, and Linux.
