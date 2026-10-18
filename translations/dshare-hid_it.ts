@@ -2447,17 +2447,7 @@ Duplicato: %1</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Failed to find factory firmware in the latest release.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Downloading %1...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Firmware flashed successfully.
-
-The device will boot into a 7-day free trial automatically. After the trial expires, use the Activation tab to activate with a license key.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2597,6 +2587,14 @@ The device will boot into a 7-day free trial automatically. After the trial expi
         <translation>Controllo stato dispositivo...</translation>
     </message>
     <message>
+        <source>Device is in factory mode without application firmware.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No Application Firmware</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Device is already running with factory firmware.</source>
         <translation>Il dispositivo sta già eseguendo il firmware di fabbrica.</translation>
     </message>
@@ -2657,6 +2655,10 @@ The device will boot into a 7-day free trial automatically. After the trial expi
         <translation>Flash Fabbrica Riuscito!</translation>
     </message>
     <message>
+        <source>Failed to find factory firmware (%1*.fzip) in the latest release.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Starting Download &amp; Flash process...</source>
         <translation>Avvio processo Download &amp; Flash...</translation>
     </message>
@@ -2691,6 +2693,14 @@ The device will boot into a 7-day free trial automatically. After the trial expi
     <message>
         <source>Flash Success!</source>
         <translation>Flash Riuscito!</translation>
+    </message>
+    <message>
+        <source>Waiting for the device to start the application firmware...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device is running the application firmware, activation state: %1</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Success</source>
@@ -2841,6 +2851,10 @@ Prossimo passo: Flashare firmware per dispositivo. Vai alla scheda &apos;Ordina&
         <translation>Aggiornamento firmware riuscito.</translation>
     </message>
     <message>
+        <source>This device has no application firmware and may have been prepared by an older version of DShare-HID. Contact %1 with the device serial number.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Flash failed: %1</source>
         <translation>Flash fallito: %1</translation>
     </message>
@@ -2878,6 +2892,42 @@ Prossimo passo: Flashare firmware per dispositivo. Vai alla scheda &apos;Ordina&
     </message>
     <message>
         <source>Factory flash cancelled.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Firmware flashed successfully.
+
+The device is running a 7-day free trial. After the trial expires, use the Activation tab to activate with a license key.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Firmware flashed successfully.
+
+The device is running the application firmware. Check its license on the Activation tab.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device stayed in factory mode: the package has no valid application firmware.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device did not report back after flashing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device Not Detected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The firmware was written, but the device did not start the application within 60 seconds.
+
+Disconnect and reconnect the device, then check its status on the Activation tab.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The device is in factory mode without application firmware.
+
+Install it from the Upgrade tab (Check for Updates, then Flash). If that fails, contact %1 with the device serial number.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

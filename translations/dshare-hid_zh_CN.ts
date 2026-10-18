@@ -2450,7 +2450,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Failed to find factory firmware in the latest release.</source>
-        <translation>在最新发布版本中未找到工厂固件。</translation>
+        <translation type="vanished">在最新发布版本中未找到工厂固件。</translation>
     </message>
     <message>
         <source>Downloading %1...</source>
@@ -2459,12 +2459,6 @@ Duplicate: %1</source>
     <message>
         <source>About to flash: &lt;b&gt;%1&lt;/b&gt;&lt;br&gt;&lt;br&gt;This action will permanently convert your device to DShare-HID. This process is irreversible and precludes non-DShare firmware.&lt;br&gt;&lt;br&gt;Proceed?</source>
         <translation>即将刷写: &lt;b&gt;%1&lt;/b&gt;&lt;br&gt;&lt;br&gt;此操作将永久地将您的设备转换为 DShare-HID。此过程不可逆转，且会排除非 DShare-HID 固件。&lt;br&gt;&lt;br&gt;是否继续？</translation>
-    </message>
-    <message>
-        <source>Firmware flashed successfully.
-
-The device will boot into a 7-day free trial automatically. After the trial expires, use the Activation tab to activate with a license key.</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Failed to find upgrade firmware in the latest release.</source>
@@ -2603,6 +2597,14 @@ The device will boot into a 7-day free trial automatically. After the trial expi
         <translation>正在检查设备状态...</translation>
     </message>
     <message>
+        <source>Device is in factory mode without application firmware.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No Application Firmware</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Device is already running with factory firmware.</source>
         <translation>设备已在运行工厂固件。</translation>
     </message>
@@ -2663,6 +2665,10 @@ The device will boot into a 7-day free trial automatically. After the trial expi
         <translation>工厂固件烧录成功！</translation>
     </message>
     <message>
+        <source>Failed to find factory firmware (%1*.fzip) in the latest release.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Starting Download &amp; Flash process...</source>
         <translation>正在开始下载和烧录过程...</translation>
     </message>
@@ -2697,6 +2703,14 @@ The device will boot into a 7-day free trial automatically. After the trial expi
     <message>
         <source>Flash Success!</source>
         <translation>烧录成功！</translation>
+    </message>
+    <message>
+        <source>Waiting for the device to start the application firmware...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device is running the application firmware, activation state: %1</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Success</source>
@@ -2845,6 +2859,10 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     <message>
         <source>Firmware upgrade successful.</source>
         <translation>固件升级成功。</translation>
+    </message>
+    <message>
+        <source>This device has no application firmware and may have been prepared by an older version of DShare-HID. Contact %1 with the device serial number.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Flash failed: %1</source>
@@ -3037,6 +3055,42 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     <message>
         <source>Order Options</source>
         <translation>订购选项</translation>
+    </message>
+    <message>
+        <source>Firmware flashed successfully.
+
+The device is running a 7-day free trial. After the trial expires, use the Activation tab to activate with a license key.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Firmware flashed successfully.
+
+The device is running the application firmware. Check its license on the Activation tab.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device stayed in factory mode: the package has no valid application firmware.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device did not report back after flashing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device Not Detected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The firmware was written, but the device did not start the application within 60 seconds.
+
+Disconnect and reconnect the device, then check its status on the Activation tab.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The device is in factory mode without application firmware.
+
+Install it from the Upgrade tab (Check for Updates, then Flash). If that fails, contact %1 with the device serial number.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>State: %1, %2 Profiles</source>

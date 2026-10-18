@@ -45,5 +45,7 @@ if(DESKFLOW_CDC_PUBLIC_KEY)
    include_directories("${CMAKE_BINARY_DIR}/src")
 else()
    message(STATUS "Using default dummy public key for CDC Transport")
+   # Without the production keys this is a dev build (run_task "Configure Pristine")
+   add_compile_definitions(DESKFLOW_DEV_BUILD)
 endif()
 

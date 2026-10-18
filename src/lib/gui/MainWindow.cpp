@@ -850,11 +850,14 @@ bool MainWindow::nativeEvent(const QByteArray &eventType, void *message, qintptr
 
 void MainWindow::applyConfig()
 {
+  QString title = kAppName;
+#ifdef DESKFLOW_DEV_BUILD
+  title.append(QStringLiteral(" (dev)"));
+#endif
   if (Settings::value(Settings::Gui::ShowVersionInTitle).toBool()) {
-    setWindowTitle(QStringLiteral("%1 - %2").arg(kAppName, kDisplayVersion));
-  } else {
-    setWindowTitle(kAppName);
+    title = QStringLiteral("%1 - %2").arg(title, kDisplayVersion);
   }
+  setWindowTitle(title);
 
   if (const auto host = Settings::value(Settings::Client::RemoteHost).toString(); !host.isEmpty())
     ui->lineHostname->setText(host);
