@@ -256,7 +256,12 @@ int main(int argc, char **argv)
   QObject::connect(
       ipcServer, &deskflow::core::ipc::IpcServer::stopProcessRequested, coreApp, &App::quit, Qt::DirectConnection
   );
-  ipcServer->listen();
+  // Bridge cores run alongside the server core and would share its IPC name, so the GUI's
+  // core IPC client (connection state, stop) could attach to a bridge instead of the server.
+  // The GUI manages bridge cores through their process and log output, not IPC.
+  if (!isBridgeClient) {
+    ipcServer->listen();
+  }
 
   QThread coreThread;
   QObject::connect(&coreThread, &QThread::finished, &app, &QApplication::quit);
