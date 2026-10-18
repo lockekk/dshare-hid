@@ -36,6 +36,19 @@
 
 #include "platform/bridge/CdcTransport.h"
 
+#include <chrono>
+#include <thread>
+
+namespace {
+
+const auto kSupportEmail = QStringLiteral("dshare.hid@gmail.com");
+
+// Only the public free-trial package boots into the application by itself. Older factory
+// packages (esp32-hid-factory-*.fzip) leave the device waiting for per-device firmware.
+constexpr auto kFreeTrialFactoryPrefix = "esp32-hid-free-trial-";
+
+} // namespace
+
 namespace deskflow::gui {
 
 Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *parent)
@@ -634,7 +647,13 @@ void Esp32HidToolsWidget::onFlashFactory()
         // Check if it is Factory Mode
         const auto &config = cdc.deviceConfig();
         if (config.firmwareMode == deskflow::bridge::FirmwareMode::Factory) {
-          QMetaObject::invokeMethod(this, [this]() {
+          const bool hasApp = config.hasOtaPartition;
+          QMetaObject::invokeMethod(this, [this, hasApp]() {
+            if (!hasApp) {
+              log(tr("Device is in factory mode without application firmware."));
+              showWideMessageBox(QMessageBox::Warning, tr("No Application Firmware"), noApplicationFirmwareMessage());
+              return;
+            }
             log(tr("Device is already running with factory firmware."));
             showWideMessageBox(
                 QMessageBox::Information, tr("Info"),
@@ -670,16 +689,16 @@ void Esp32HidToolsWidget::onFlashFactory()
     log(tr("Starting Factory Flash..."));
     auto replug_cb = createReplugCallback();
     FlashResult res = flash_factory(port, data, progress_cb, log_cb, replug_cb);
-
-    // Update UI on main thread
-    QMetaObject::invokeMethod(this, [this, res]() {
-      if (res == FlashResult::OK) {
-        log(tr("Factory Flash Success!"));
-        showFactoryFlashSuccess();
-      } else {
+    if (res != FlashResult::OK) {
+      QMetaObject::invokeMethod(this, [this, res]() {
         log(tr("Flash failed, %1").arg(QString::fromStdString(flashResultToString(res))));
-      }
-    });
+      });
+      return;
+    }
+
+    QMetaObject::invokeMethod(this, [this]() { log(tr("Factory Flash Success!")); });
+    const auto check = waitForAppAfterFactoryFlash(port);
+    QMetaObject::invokeMethod(this, [this, check]() { showFactoryFlashResult(check); });
   };
 
   runBackgroundTask(task);
@@ -704,7 +723,7 @@ void Esp32HidToolsWidget::onDownloadAndFlashFactory()
     auto assets = downloader.get_latest_assets();
     std::string assetName;
     for (const auto &asset : assets) {
-      if (asset.name.length() >= 5 && asset.name.compare(asset.name.length() - 5, 5, ".fzip") == 0) {
+      if (asset.name.starts_with(kFreeTrialFactoryPrefix) && asset.name.ends_with(".fzip")) {
         assetName = asset.name;
         break;
       }
@@ -712,7 +731,8 @@ void Esp32HidToolsWidget::onDownloadAndFlashFactory()
 
     QMetaObject::invokeMethod(this, [this, assetName, port]() {
       if (assetName.empty()) {
-        log(tr("Failed to find factory firmware in the latest release."));
+        log(tr("Failed to find factory firmware (%1*.fzip) in the latest release.")
+                .arg(QString::fromLatin1(kFreeTrialFactoryPrefix)));
         showWideMessageBox(QMessageBox::Critical, tr("Error"), tr("Failed to find factory firmware."));
         return;
       }
@@ -770,7 +790,15 @@ void Esp32HidToolsWidget::onDownloadAndFlashFactory()
           if (cdc.open(true)) {
             const auto &config = cdc.deviceConfig();
             if (config.firmwareMode == deskflow::bridge::FirmwareMode::Factory) {
-              QMetaObject::invokeMethod(this, [this]() {
+              const bool hasApp = config.hasOtaPartition;
+              QMetaObject::invokeMethod(this, [this, hasApp]() {
+                if (!hasApp) {
+                  log(tr("Device is in factory mode without application firmware."));
+                  showWideMessageBox(
+                      QMessageBox::Warning, tr("No Application Firmware"), noApplicationFirmwareMessage()
+                  );
+                  return;
+                }
                 showWideMessageBox(
                     QMessageBox::Information, tr("Info"), tr("Device is already running factory firmware.")
                 );
@@ -791,17 +819,18 @@ void Esp32HidToolsWidget::onDownloadAndFlashFactory()
 
         auto replug_cb = createReplugCallback();
         FlashResult res = flash_factory(port, data, progress_cb, log_cb, replug_cb);
-
-        QMetaObject::invokeMethod(this, [this, res]() {
-          if (res == FlashResult::OK) {
-            log(tr("Flash Success!"));
-            showFactoryFlashSuccess();
-          } else {
+        if (res != FlashResult::OK) {
+          QMetaObject::invokeMethod(this, [this, res]() {
             QString errorMsg = QString::fromStdString(flashResultToString(res));
             log(tr("Flash failed, %1").arg(errorMsg));
             showWideMessageBox(QMessageBox::Critical, tr("Error"), tr("Flash failed, %1").arg(errorMsg));
-          }
-        });
+          });
+          return;
+        }
+
+        QMetaObject::invokeMethod(this, [this]() { log(tr("Flash Success!")); });
+        const auto check = waitForAppAfterFactoryFlash(port);
+        QMetaObject::invokeMethod(this, [this, check]() { showFactoryFlashResult(check); });
       };
       runBackgroundTask(flashTask);
     });
@@ -858,13 +887,90 @@ bool Esp32HidToolsWidget::confirmFactoryFlash(const QString &filename)
   );
 }
 
-void Esp32HidToolsWidget::showFactoryFlashSuccess()
+// Runs on the worker thread: polls the device until it reports the application firmware.
+Esp32HidToolsWidget::FactoryFlashCheck Esp32HidToolsWidget::waitForAppAfterFactoryFlash(const std::string &port)
 {
-  QString msg = tr("Firmware flashed successfully.\n\n"
-                   "The device will boot into a 7-day free trial automatically. "
-                   "After the trial expires, use the Activation tab to activate with a license key.");
+  using namespace std::chrono_literals;
+  using deskflow::bridge::FirmwareMode;
 
-  showWideMessageBox(QMessageBox::Information, tr("Success"), msg);
+  QMetaObject::invokeMethod(this, [this]() { log(tr("Waiting for the device to start the application firmware...")); });
+
+  // Any byte the factory receives restarts its 10 s idle timer before it boots OTA_0,
+  // so back off after seeing the factory instead of probing it every second.
+  constexpr auto kTimeout = 60s;
+  constexpr auto kRetryDelay = 1s;
+  constexpr auto kFactoryBootDelay = 12s;
+
+  const auto deadline = std::chrono::steady_clock::now() + kTimeout;
+  while (std::chrono::steady_clock::now() < deadline) {
+    auto delay = kRetryDelay;
+    {
+      deskflow::bridge::CdcTransport cdc(QString::fromStdString(port));
+      if (cdc.open(true) && cdc.hasDeviceConfig()) {
+        const auto &config = cdc.deviceConfig();
+        if (config.firmwareMode == FirmwareMode::App) {
+          return {FactoryFlashOutcome::AppStarted, config.activationState};
+        }
+        if (config.firmwareMode == FirmwareMode::Factory) {
+          if (!config.hasOtaPartition) {
+            return {FactoryFlashOutcome::FactoryWithoutApp, config.activationState};
+          }
+          delay = kFactoryBootDelay;
+        }
+      }
+    }
+    std::this_thread::sleep_for(delay);
+  }
+
+  return {FactoryFlashOutcome::NotDetected, deskflow::bridge::ActivationState::Unknown};
+}
+
+void Esp32HidToolsWidget::showFactoryFlashResult(const FactoryFlashCheck &check)
+{
+  using deskflow::bridge::ActivationState;
+
+  switch (check.outcome) {
+  case FactoryFlashOutcome::AppStarted:
+    log(tr("Device is running the application firmware, activation state: %1")
+            .arg(QString::fromLatin1(deskflow::bridge::activationStateToString(check.activationState))));
+    if (check.activationState == ActivationState::FreeTrial) {
+      showWideMessageBox(
+          QMessageBox::Information, tr("Success"),
+          tr("Firmware flashed successfully.\n\n"
+             "The device is running a 7-day free trial. "
+             "After the trial expires, use the Activation tab to activate with a license key.")
+      );
+    } else {
+      showWideMessageBox(
+          QMessageBox::Information, tr("Success"),
+          tr("Firmware flashed successfully.\n\n"
+             "The device is running the application firmware. Check its license on the Activation tab.")
+      );
+    }
+    break;
+
+  case FactoryFlashOutcome::FactoryWithoutApp:
+    log(tr("Device stayed in factory mode: the package has no valid application firmware."));
+    showWideMessageBox(QMessageBox::Warning, tr("No Application Firmware"), noApplicationFirmwareMessage());
+    break;
+
+  case FactoryFlashOutcome::NotDetected:
+    log(tr("Device did not report back after flashing."));
+    showWideMessageBox(
+        QMessageBox::Warning, tr("Device Not Detected"),
+        tr("The firmware was written, but the device did not start the application within 60 seconds.\n\n"
+           "Disconnect and reconnect the device, then check its status on the Activation tab.")
+    );
+    break;
+  }
+}
+
+QString Esp32HidToolsWidget::noApplicationFirmwareMessage() const
+{
+  return tr("The device is in factory mode without application firmware.\n\n"
+            "Install it from the Upgrade tab (Check for Updates, then Flash). "
+            "If that fails, contact %1 with the device serial number.")
+      .arg(kSupportEmail);
 }
 
 // Check Upgrade
@@ -881,6 +987,10 @@ void Esp32HidToolsWidget::onCheckUpgrade()
 
   log(tr("Checking for upgrades..."));
   std::string port = portName.toStdString();
+
+  // Online flash is only allowed for the port that this check finds an update for
+  m_onlineFlashAllowed = false;
+  m_flashOnlineBtn->setEnabled(false);
 
   auto task = [this, port]() {
     // Check for "dshare-hid" / "dshare-hid-release"
@@ -1108,9 +1218,13 @@ void Esp32HidToolsWidget::flashFirmware(const std::vector<uint8_t> &firmwareData
     // Check mode
     // ... reused logic ...
     bool inFactory = false;
+    // A factory without a valid OTA_0 may have been prepared by an older app for per-device
+    // firmware, which the public package cannot replace
+    bool factoryWithoutApp = false;
     if (cdc.isOpen()) {
       if (cdc.hasDeviceConfig() && cdc.deviceConfig().firmwareMode == deskflow::bridge::FirmwareMode::Factory) {
         inFactory = true;
+        factoryWithoutApp = !cdc.deviceConfig().hasOtaPartition;
       } else {
         // App mode, try switching
         if (cdc.gotoFactory()) {
@@ -1165,8 +1279,15 @@ void Esp32HidToolsWidget::flashFirmware(const std::vector<uint8_t> &firmwareData
         QString errorMsg = QString::fromStdString(flashResultToString(res));
         log_cb_func(tr("Flash failed, %1").arg(errorMsg).toStdString()
         ); // log_cb takes std::string, but log takes QString. log_cb calls log.
-        QMetaObject::invokeMethod(this, [this, errorMsg]() {
-          showWideMessageBox(QMessageBox::Critical, tr("Error"), tr("Flash failed, %1").arg(errorMsg));
+        QMetaObject::invokeMethod(this, [this, errorMsg, factoryWithoutApp]() {
+          QString text = tr("Flash failed, %1").arg(errorMsg);
+          if (factoryWithoutApp) {
+            text += QStringLiteral("\n\n") +
+                    tr("This device has no application firmware and may have been prepared by an older version "
+                       "of DShare-HID. Contact %1 with the device serial number.")
+                        .arg(kSupportEmail);
+          }
+          showWideMessageBox(QMessageBox::Critical, tr("Error"), text);
         });
       }
     } catch (const std::exception &e) {
@@ -1730,6 +1851,7 @@ void deskflow::gui::Esp32HidToolsWidget::onPortChanged(int index)
   // Reset UI metadata
   m_lblCurrentVersion->setText(tr("Current Version: Unknown"));
   m_lblLatestVersion->setText(tr("Latest Version: Unknown"));
+  m_onlineFlashAllowed = false;
   m_flashOnlineBtn->setEnabled(false);
   m_lineSerial->clear();
   m_orderSerialLabel->setText(tr("-"));

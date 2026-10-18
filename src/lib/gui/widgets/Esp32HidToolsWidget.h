@@ -18,9 +18,14 @@
 #include <QTextEdit>
 #include <cstdint>
 #include <functional>
+#include <string>
 #include <vector>
 
 class QNetworkAccessManager;
+
+namespace deskflow::bridge {
+enum class ActivationState : uint8_t;
+}
 
 namespace deskflow::gui {
 
@@ -67,9 +72,24 @@ private Q_SLOTS:
   void onPayNowClicked();
 
 private:
+  // What the device reported after a factory flash
+  enum class FactoryFlashOutcome
+  {
+    AppStarted,
+    FactoryWithoutApp,
+    NotDetected
+  };
+  struct FactoryFlashCheck
+  {
+    FactoryFlashOutcome outcome;
+    deskflow::bridge::ActivationState activationState;
+  };
+
   void refreshDeviceState();
   bool confirmFactoryFlash(const QString &filename);
-  void showFactoryFlashSuccess();
+  FactoryFlashCheck waitForAppAfterFactoryFlash(const std::string &port);
+  void showFactoryFlashResult(const FactoryFlashCheck &check);
+  QString noApplicationFirmwareMessage() const;
   void fetchPrices();
   void onPriceResponse(QNetworkReply *reply);
 
