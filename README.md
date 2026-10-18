@@ -98,7 +98,7 @@ brew upgrade dshare-hid
 
 Available as a portable archive (Recommended) or installer.
 
--   **Portable (.7z)**: **Recommended**. Extract and run `dshare-hid.exe`.
+-   **Portable (.zip)**: **Recommended**. Extract and run `dshare-hid.exe`.
 -   **Installer (.msi)**: Download and double-click to install.
 
 ### Linux
