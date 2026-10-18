@@ -21,6 +21,7 @@ public:
   {
     QString screenName;
     QString devicePath;
+    QString configPath;
     QString remoteHost;
     bool tlsEnabled;
     QString logLevel;

@@ -48,6 +48,11 @@ bool BridgeClientProcess::start(const Config &config)
   args << "client";
   args << "--name" << config.screenName;
   args << "--link" << config.devicePath;
+  // Point the core at this exact config: its filename can differ from the screen
+  // name (e.g. "Bridge-XXX-1.conf"), and the core reads bridge/* keys from it.
+  if (!config.configPath.isEmpty()) {
+    args << "--settings" << config.configPath;
+  }
   args << "--remoteHost" << config.remoteHost;
   args << "--secure" << (config.tlsEnabled ? "true" : "false");
   args << "--log-level" << config.logLevel;
