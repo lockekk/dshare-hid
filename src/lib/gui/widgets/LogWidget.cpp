@@ -63,9 +63,3 @@ void LogWidget::findPrevious(const QString &text)
     m_textLog->find(text, QTextDocument::FindBackward);
   }
 }
-
-void LogWidget::scrollToBottom() const
-{
-  auto sb = m_textLog->verticalScrollBar();
-  sb->setValue(sb->maximum());
-}
