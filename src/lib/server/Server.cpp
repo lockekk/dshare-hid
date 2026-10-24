@@ -461,7 +461,9 @@ void Server::switchComputer(BaseClientProxy *dst, int32_t x, int32_t y, bool for
     }
 
     // update the primary client's clipboards if we're leaving the
-    // primary computer.
+    // primary computer, or leaving a bridge for another client (the
+    // primary's clipboard isn't read while a bridge is active, see
+    // handleClipboardGrabbed).
     //
     // skip this entirely when switching onto a bridge computer: a bridge never
     // receives clipboard data (see the !isBridge() guard below), so reading the
@@ -471,7 +473,8 @@ void Server::switchComputer(BaseClientProxy *dst, int32_t x, int32_t y, bool for
     // leave().  the server then wedges: input is captured but never forwarded,
     // the grab is never released (the machine looks locked up), and the client
     // sees no keep-alive so it declares the server dead and exits.
-    if (m_active == m_primaryClient && m_enableClipboard && !dst->isBridge()) {
+    const bool leavingForClient = m_active == m_primaryClient || (m_active->isBridge() && dst != m_primaryClient);
+    if (leavingForClient && m_enableClipboard && !dst->isBridge()) {
       for (ClipboardID id = 0; id < kClipboardEnd; ++id) {
         const ClipboardInfo &clipboard = m_clipboards[id];
         if (clipboard.m_clipboardOwner == getName(m_primaryClient)) {
@@ -1216,7 +1219,10 @@ void Server::handleClipboardGrabbed(const Event &event, BaseClientProxy *grabber
     }
   }
 
-  if (grabber == m_primaryClient && m_active != m_primaryClient) {
+  // not while a bridge is active: it never receives clipboard data, and on X11 the
+  // read blocks the event loop while the keyboard+pointer grab is held, wedging the
+  // server (see switchComputer).  the data is read when leaving the bridge instead.
+  if (grabber == m_primaryClient && m_active != m_primaryClient && !m_active->isBridge()) {
     LOG_DEBUG("clipboard grabbed while active computer was changed, resending clipboard data");
     onClipboardChanged(m_primaryClient, info->m_id, clipboard.m_clipboardSeqNum);
   }
