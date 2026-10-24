@@ -134,6 +134,88 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>BridgeFirmwareNotice</name>
+    <message>
+        <source>Pairings were reset. On each host, forget &quot;%1&quot; and pair again with its profile active.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pair Again</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>BridgeProfileBackup</name>
+    <message>
+        <source>%1: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&quot;%1&quot; is missing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&quot;%1&quot; must be a whole number from %2 to %3.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Entry %1 of &quot;profiles&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 isn&apos;t a profile.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Profile %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Profile %1 is in the backup more than once.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&quot;%1&quot; must be %2, the profile&apos;s index.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the hostname must be 1 to 31 characters: A-Z, 0-9, spaces and .-_ (not only spaces).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The file is too large to be a profile backup.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The file isn&apos;t valid JSON: %1 (at character %2).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The file isn&apos;t a profile backup: it has no &quot;%1&quot;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The device name must be 1 to 22 characters: A-Z, 0-9, spaces and .-_ (not only spaces).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&quot;%1&quot; must be a list.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The backup has no profiles.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This device has no profile %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This device has no profile %1 to make active.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ClientConfigDialog</name>
     <message>
         <source>Client Configuration</source>
@@ -494,6 +576,30 @@ File -&gt; Firmware -&gt; Order.</source>
     <message>
         <source>Failed to start bridge client: %1</source>
         <translation type="unfinished">Не удалось запустить клиент моста: %1</translation>
+    </message>
+    <message>
+        <source>Failed to switch profile on %1: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Several bridge clients are connected: move the cursor onto the one to switch</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 has no profile %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bridge Profile Shortcuts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to rename the device to %1</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Factory firmware detected. Please update firmware.</source>
@@ -2126,8 +2232,36 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation>Клавиатура + Мышь</translation>
     </message>
     <message>
+        <source>Disconnect to rename the screen.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Switched to %1</source>
-        <translation>Переключено на %1</translation>
+        <translation type="vanished">Переключено на %1</translation>
+    </message>
+    <message>
+        <source>Failed to read the profiles: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Profile backups (*.json)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to save %1: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Restore Profiles</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Profile backups (*.json);;All files (*)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to open %1: %2</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Rename Failed</source>
@@ -2142,8 +2276,40 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation>Неверный ввод</translation>
     </message>
     <message>
+        <source>and %1 more</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset %1. Its host must pair again manually.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Active profile changes to %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device name changes to %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Apply Changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Apply these changes to the device?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Screen name cannot be empty.</source>
         <translation>Имя экрана не может быть пустым.</translation>
+    </message>
+    <message>
+        <source>Screen name can only contain letters, numbers, &apos;-&apos;, &apos;_&apos; and &apos;.&apos;, and cannot start or end with &apos;-&apos;, &apos;_&apos; or &apos;.&apos;.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Device name cannot be empty.</source>
@@ -2155,7 +2321,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Success</source>
-        <translation>Успех</translation>
+        <translation type="vanished">Успех</translation>
     </message>
     <message>
         <source>Advanced</source>
@@ -2188,6 +2354,10 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     <message>
         <source>Profiles (Device)</source>
         <translation>Профили (Устройство)</translation>
+    </message>
+    <message>
+        <source>Restore...</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>A-Z, 0-9, spaces, .-_ (max 31 chars)</source>
@@ -2223,10 +2393,22 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Activate</source>
-        <translation>Активировать</translation>
+        <translation type="vanished">Активировать</translation>
     </message>
     <message>
         <source>When enabled, the saved screen location for the active profile will be restored automatically.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Backup...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save the device&apos;s profiles to a file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Load profiles from a backup file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2247,35 +2429,63 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Failed to open device</source>
-        <translation>Не удалось открыть устройство</translation>
+        <translation type="vanished">Не удалось открыть устройство</translation>
     </message>
     <message>
         <source>Profile saved to device.</source>
-        <translation>Профиль сохранен на устройстве.</translation>
+        <translation type="vanished">Профиль сохранен на устройстве.</translation>
     </message>
     <message>
         <source>Failed to save profile: %1</source>
-        <translation>Ошибка сохранения профиля: %1</translation>
+        <translation type="vanished">Ошибка сохранения профиля: %1</translation>
     </message>
     <message>
         <source>Failed to switch profile: %1</source>
-        <translation>Ошибка переключения профиля: %1</translation>
+        <translation type="vanished">Ошибка переключения профиля: %1</translation>
     </message>
     <message>
         <source>Confirm Reset</source>
-        <translation>Подтвердить сброс</translation>
+        <translation type="vanished">Подтвердить сброс</translation>
     </message>
     <message>
         <source>Are you sure you want to reset and erase this profile?</source>
-        <translation>Вы уверены, что хотите сбросить и стереть этот профиль?</translation>
+        <translation type="vanished">Вы уверены, что хотите сбросить и стереть этот профиль?</translation>
     </message>
     <message>
         <source>Profile erased.</source>
-        <translation>Профиль стерт.</translation>
+        <translation type="vanished">Профиль стерт.</translation>
     </message>
     <message>
         <source>Failed to erase profile: %1</source>
-        <translation>Ошибка стирания профиля: %1</translation>
+        <translation type="vanished">Ошибка стирания профиля: %1</translation>
+    </message>
+    <message>
+        <source>Backup Profiles</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This device has no profiles to backup.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Please fix these profiles first:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to update the device: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Backup saved to:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This file can&apos;t be restored:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Backup loaded. Click OK to apply.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Duplicate Configuration</source>
@@ -2289,11 +2499,37 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Save to Device</source>
-        <translation>Сохранить на устройство</translation>
+        <translation type="vanished">Сохранить на устройство</translation>
     </message>
     <message>
         <source>Scroll speed:</source>
         <translation type="vanished">Скорость прокрутки:</translation>
+    </message>
+</context>
+<context>
+    <name>deskflow::gui::BridgeClientManager</name>
+    <message>
+        <source>&lt;br&gt;Device plugged in</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>deskflow::gui::BridgeClientProcess</name>
+    <message>
+        <source>the bridge client isn&apos;t running</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the bridge client isn&apos;t answering</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the bridge client didn&apos;t answer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the bridge client stopped</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2327,6 +2563,14 @@ Duplicate: %1</source>
         <translation>Отключить</translation>
     </message>
     <message>
+        <source>Active profile: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Switch to profile: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Device not connected</source>
         <translation>Устройство не подключено</translation>
     </message>
@@ -2340,7 +2584,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Disconnect before configuring</source>
-        <translation>Отключитесь перед настройкой</translation>
+        <translation type="vanished">Отключитесь перед настройкой</translation>
     </message>
     <message>
         <source>This profile is locked because another one is connected</source>
@@ -2360,6 +2604,30 @@ Duplicate: %1</source>
     <message>
         <source>Failed to open device after retries.</source>
         <translation>Не удалось открыть устройство после нескольких попыток.</translation>
+    </message>
+    <message>
+        <source>the firmware tool is using the device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>failed to write profile %1: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>profile %1 didn&apos;t read back as it was written</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>failed to make profile %1 active: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the device didn&apos;t make profile %1 active</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the device sent an invalid profile list</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
