@@ -139,10 +139,6 @@ p, li { white-space: pre-wrap; }
         <source>Pairings were reset. On each host, forget &quot;%1&quot; and pair again with its profile active.</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Pair Again</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>BridgeProfileBackup</name>
