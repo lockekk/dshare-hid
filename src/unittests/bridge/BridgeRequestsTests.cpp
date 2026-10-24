@@ -91,6 +91,31 @@ void BridgeRequestsTests::responseRejectsOtherLines()
   QVERIFY(!requests::parseResponse(QStringLiteral("@bridge-rsp 1"), id, ok, fields));
 }
 
+void BridgeRequestsTests::focusRoundTrip()
+{
+  QCOMPARE(requests::formatFocus(true), QStringLiteral("@bridge-focus in"));
+
+  bool entered = false;
+  QVERIFY(requests::parseFocus(requests::formatFocus(true), entered));
+  QVERIFY(entered);
+  QVERIFY(requests::parseFocus(requests::formatFocus(false), entered));
+  QVERIFY(!entered);
+
+  // as the core's log prints it
+  QVERIFY(requests::parseFocus(QStringLiteral("[2026-10-25T10:00:00] PRINT: @bridge-focus in"), entered));
+  QVERIFY(entered);
+}
+
+void BridgeRequestsTests::focusRejectsOtherLines()
+{
+  bool entered = false;
+  QVERIFY(!requests::parseFocus(QStringLiteral("BridgeScreen: enter"), entered));
+  QVERIFY(!requests::parseFocus(QStringLiteral("@bridge-focus"), entered));
+  QVERIFY(!requests::parseFocus(QStringLiteral("@bridge-focus maybe"), entered));
+  QVERIFY(!requests::parseFocus(QStringLiteral("@bridge-focus in now"), entered));
+  QVERIFY(!requests::parseFocus(QStringLiteral("@bridge-rsp 1 ok"), entered));
+}
+
 void BridgeRequestsTests::profileRoundTrip()
 {
   const DeviceProfile profile = makeProfile("ipad air m3", 1640, 2048, 1);

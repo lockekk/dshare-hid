@@ -12,6 +12,8 @@ private Q_SLOTS:
   void requestRejectsOtherLines();
   void responseRoundTrip();
   void responseRejectsOtherLines();
+  void focusRoundTrip();
+  void focusRejectsOtherLines();
   void profileRoundTrip();
   void profileRejectsBadHex();
   void profilesReply();
