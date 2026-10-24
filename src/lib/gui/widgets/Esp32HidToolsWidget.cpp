@@ -698,7 +698,7 @@ void Esp32HidToolsWidget::onFlashFactory()
     }
 
     QMetaObject::invokeMethod(this, [this]() { log(tr("Factory Flash Success!")); });
-    const auto check = waitForAppAfterFactoryFlash(port);
+    const auto check = waitForAppAfterFlash(port);
     QMetaObject::invokeMethod(this, [this, check]() { showFactoryFlashResult(check); });
   };
 
@@ -830,7 +830,7 @@ void Esp32HidToolsWidget::onDownloadAndFlashFactory()
         }
 
         QMetaObject::invokeMethod(this, [this]() { log(tr("Flash Success!")); });
-        const auto check = waitForAppAfterFactoryFlash(port);
+        const auto check = waitForAppAfterFlash(port);
         QMetaObject::invokeMethod(this, [this, check]() { showFactoryFlashResult(check); });
       };
       runBackgroundTask(flashTask);
@@ -889,7 +889,7 @@ bool Esp32HidToolsWidget::confirmFactoryFlash(const QString &filename)
 }
 
 // Runs on the worker thread: polls the device until it reports the application firmware.
-Esp32HidToolsWidget::FactoryFlashCheck Esp32HidToolsWidget::waitForAppAfterFactoryFlash(const std::string &port)
+Esp32HidToolsWidget::FactoryFlashCheck Esp32HidToolsWidget::waitForAppAfterFlash(const std::string &port)
 {
   using namespace std::chrono_literals;
   using deskflow::bridge::FirmwareMode;
@@ -910,11 +910,17 @@ Esp32HidToolsWidget::FactoryFlashCheck Esp32HidToolsWidget::waitForAppAfterFacto
       if (cdc.open(true) && cdc.hasDeviceConfig()) {
         const auto &config = cdc.deviceConfig();
         if (config.firmwareMode == FirmwareMode::App) {
-          return {FactoryFlashOutcome::AppStarted, config.activationState};
+          // the version it runs now, for the notice to pair the hosts again after 1.2.1
+          std::string serial;
+          QString notice;
+          if (cdc.fetchSerialNumber(serial)) {
+            notice = BridgeFirmwareNotice::noteHandshake(QString::fromStdString(serial), config);
+          }
+          return {FactoryFlashOutcome::AppStarted, config.activationState, notice};
         }
         if (config.firmwareMode == FirmwareMode::Factory) {
           if (!config.hasOtaPartition) {
-            return {FactoryFlashOutcome::FactoryWithoutApp, config.activationState};
+            return {FactoryFlashOutcome::FactoryWithoutApp, config.activationState, QString()};
           }
           delay = kFactoryBootDelay;
         }
@@ -923,7 +929,7 @@ Esp32HidToolsWidget::FactoryFlashCheck Esp32HidToolsWidget::waitForAppAfterFacto
     std::this_thread::sleep_for(delay);
   }
 
-  return {FactoryFlashOutcome::NotDetected, deskflow::bridge::ActivationState::Unknown};
+  return {FactoryFlashOutcome::NotDetected, deskflow::bridge::ActivationState::Unknown, QString()};
 }
 
 void Esp32HidToolsWidget::showFactoryFlashResult(const FactoryFlashCheck &check)
@@ -1228,12 +1234,10 @@ void Esp32HidToolsWidget::flashFirmware(const std::vector<uint8_t> &firmwareData
         factoryWithoutApp = !cdc.deviceConfig().hasOtaPartition;
       } else {
         // the version before the update, for the notice to pair the hosts again after 1.2.1:
-        // factory mode reports none
+        // factory mode reports none.  Only the success message below shows the notice.
         std::string serial;
         if (cdc.hasDeviceConfig() && cdc.fetchSerialNumber(serial)) {
-          const QString notice =
-              BridgeFirmwareNotice::noteHandshake(QString::fromStdString(serial), cdc.deviceConfig());
-          QMetaObject::invokeMethod(this, [this, notice]() { BridgeFirmwareNotice::show(this, notice); });
+          BridgeFirmwareNotice::noteHandshake(QString::fromStdString(serial), cdc.deviceConfig());
         }
 
         // App mode, try switching
@@ -1282,8 +1286,15 @@ void Esp32HidToolsWidget::flashFirmware(const std::vector<uint8_t> &firmwareData
       FlashResult res = flash_upgrade(portStd, dataCopy, progress_cb, log_cb_func);
       if (res == FlashResult::OK) {
         log_cb_func("Upgrade flash complete.");
-        QMetaObject::invokeMethod(this, [this]() {
-          showWideMessageBox(QMessageBox::Information, tr("Success"), tr("Firmware upgrade successful."));
+        // the factory restarts 100 ms after it acks the reboot: let it go before looking for the new firmware
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        const auto check = waitForAppAfterFlash(portStd);
+        QMetaObject::invokeMethod(this, [this, check]() {
+          QString message = tr("Firmware upgrade successful.");
+          if (!check.pairingNotice.isEmpty()) {
+            message += QStringLiteral("\n\n") + check.pairingNotice;
+          }
+          showWideMessageBox(QMessageBox::Information, tr("Success"), message);
         });
       } else {
         QString errorMsg = QString::fromStdString(flashResultToString(res));
@@ -1422,7 +1433,6 @@ void deskflow::gui::Esp32HidToolsWidget::refreshDeviceState()
       uint8_t totalProfiles;
       bool success;
       QString error;
-      QString pairingNotice;
     } result;
 
     if (openSuccess) {
@@ -1431,7 +1441,6 @@ void deskflow::gui::Esp32HidToolsWidget::refreshDeviceState()
       }
 
       const auto &config = cdc.deviceConfig();
-      result.pairingNotice = BridgeFirmwareNotice::noteHandshake(result.serial, config);
       result.activationState = QString::fromLatin1(config.activationStateString());
       result.stateEnum = config.activationState;
       result.isActivated = (config.activationState == deskflow::bridge::ActivationState::Activated);
@@ -1445,7 +1454,6 @@ void deskflow::gui::Esp32HidToolsWidget::refreshDeviceState()
 
     QMetaObject::invokeMethod(this, [this, result]() {
       setControlsEnabled(true);
-      BridgeFirmwareNotice::show(this, result.pairingNotice);
       if (result.success) {
         m_lineSerial->setText(result.serial);
         m_orderSerialLabel->setText(result.serial);

@@ -6,12 +6,8 @@
 
 #include "common/Settings.h"
 
-#include <QApplication>
 #include <QDir>
-#include <QMessageBox>
 #include <QSettings>
-#include <QTimer>
-#include <QWidget>
 
 namespace deskflow::gui {
 
@@ -63,15 +59,6 @@ QString BridgeFirmwareNotice::advertisedName(ActivationState state, const QStrin
     // the firmware doesn't advertise then: the name a host paired with it most likely shows
     return kDefaultName;
   }
-}
-
-void BridgeFirmwareNotice::show(QWidget *parent, const QString &notice)
-{
-  if (notice.isEmpty()) {
-    return;
-  }
-  QObject *context = parent != nullptr ? static_cast<QObject *>(parent) : qApp;
-  QTimer::singleShot(0, context, [parent, notice] { QMessageBox::information(parent, tr("Pair Again"), notice); });
 }
 
 QString BridgeFirmwareNotice::versionsFile()

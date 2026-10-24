@@ -9,8 +9,6 @@
 #include <QCoreApplication>
 #include <QString>
 
-class QWidget;
-
 namespace deskflow::gui {
 
 /**
@@ -38,9 +36,6 @@ public:
 
   /// the name hosts see the device by, as the firmware advertises it
   static QString advertisedName(deskflow::bridge::ActivationState state, const QString &deviceName);
-
-  /// show the notice once what is under way is done, such as a device being plugged in
-  static void show(QWidget *parent, const QString &notice);
 
   /// where the versions are kept: next to the app's settings
   static QString versionsFile();

@@ -228,17 +228,19 @@ Development builds before 1.2.1 report 1.0.1 (101). The rule covers them too: th
 
 `BridgeFirmwareNotice` (`src/lib/gui/core/BridgeFirmwareNotice.h`) has the rule. It keeps the last version seen for each serial number in `bridge-firmware.ini`, next to the app's settings. It isn't a `.conf`, which would be taken for a bridge client's config. A version of 0 (factory mode) is ignored, so it doesn't hide the version from before the update.
 
-The version is noted wherever the app reads a HELLO ACK on a device in app mode:
+The notice shows only at the end of a successful upgrade in the firmware tool (`Esp32HidToolsWidget::flashFirmware()`), as part of its success message. The main window, the Activation and Order tabs, and a factory flash don't show it, and an update made elsewhere gets none. The tool notes the version:
 
-- `BridgeDeviceService::syncDeviceConfig()`: a known device plugged in, at startup, and when the firmware tool closes. A due notice comes out as the `pairingsReset` signal, which the main window shows.
-- `DeskflowHidExtension`: a new device's first handshake, and the one before a bridge client starts.
-- `Esp32HidToolsWidget`: before an update sends the device to factory mode (the "before" version), and when it refreshes the device's state.
+- before an upgrade sends the device to factory mode (the "before" version);
+- once the device runs the application firmware again after an upgrade or a factory flash (`waitForAppAfterFlash()`, up to 60 seconds). If the device doesn't come back in time, the success message has no notice.
 
-The notice names the device as the hosts see it (`BridgeFirmwareNotice::advertisedName()`), in place of "Deskflow HID" below. It shows once whatever is under way is done, such as a device being plugged in. `BridgeFirmwareNoticeTests` covers the rule and the text.
+Nothing else notes it, so nothing can take the version change before the upgrade's own check does.
+
+The notice names the device as the hosts see it (`BridgeFirmwareNotice::advertisedName()`), in place of "Deskflow HID" below. `BridgeFirmwareNoticeTests` covers the rule and the text.
 
 ### Notice text
 
-> **Pair Again**
+> Firmware upgrade successful.
+>
 > Pairings were reset. On each host, forget "Deskflow HID" and pair again with its profile active.
 
 If the notice has room for more detail, give the steps:
@@ -253,6 +255,6 @@ The marker stays when older firmware is flashed. If a device goes back below 1.2
 ### Testing the notice
 
 1. On a development board, run firmware before 1.2.1 (a development build of esp32-hid `a82a483` reports 1.0.1) and pair a host.
-2. Update to 1.2.1 with the app. The notice shows once. `python3 scripts/usb_cdc_test.py handshake` reports `firmware version : 1.21`.
-3. Reconnect the device, and restart the app. The notice doesn't show again.
+2. Update to 1.2.1 with the app. The success message ends with the notice. `python3 scripts/usb_cdc_test.py handshake` reports `firmware version : 1.21`.
+3. Upgrade to 1.2.1 again. The notice doesn't show again.
 4. A device flashed straight to 1.2.1 shows no notice.

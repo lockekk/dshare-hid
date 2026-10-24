@@ -13,7 +13,6 @@
 #include "common/PlatformInfo.h"
 #include "common/Settings.h"
 #include "gui/core/BridgeClientConfigManager.h"
-#include "gui/core/BridgeFirmwareNotice.h"
 #include "gui/core/BridgeProfileShortcuts.h"
 #include "gui/core/CoreProcess.h"
 #include "gui/devices/UsbDeviceHelper.h"
@@ -75,11 +74,6 @@ DeskflowHidExtension::DeskflowHidExtension(MainWindow *parent) : QObject(parent)
 {
   m_bridgeClientManager = new BridgeClientManager(this);
   m_bridgeDeviceService = new BridgeDeviceService(this);
-  // before setup(), whose first scan syncs the devices plugged in
-  connect(
-      m_bridgeDeviceService, &BridgeDeviceService::pairingsReset, this,
-      [this](const QString &, const QString &notice) { BridgeFirmwareNotice::show(m_mainWindow, notice); }
-  );
   m_showBridgeLogs = Settings::value(Settings::Bridge::ShowLogs).toBool();
   setup();
 }
@@ -769,9 +763,6 @@ void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
       if (transport.open()) {
         validHandshake = true;
         if (transport.hasDeviceConfig()) {
-          BridgeFirmwareNotice::show(
-              m_mainWindow, BridgeFirmwareNotice::noteHandshake(serialNumber, transport.deviceConfig())
-          );
           handshakeDeviceName = QString::fromStdString(transport.deviceConfig().deviceName);
           isBleConnected = transport.deviceConfig().isBleConnected;
           uint8_t currentProfile = transport.deviceConfig().activeProfile;
@@ -1076,9 +1067,6 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
       deskflow::bridge::CdcTransport transport(devicePath);
       if (transport.open()) {
         if (transport.hasDeviceConfig()) {
-          BridgeFirmwareNotice::show(
-              m_mainWindow, BridgeFirmwareNotice::noteHandshake(serialNumber, transport.deviceConfig())
-          );
           if (transport.deviceConfig().activationState == deskflow::bridge::ActivationState::Inactive) {
             transport.close();
 

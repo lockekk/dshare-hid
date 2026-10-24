@@ -72,7 +72,7 @@ private Q_SLOTS:
   void onPayNowClicked();
 
 private:
-  // What the device reported after a factory flash
+  // What the device reported after a factory flash or an upgrade
   enum class FactoryFlashOutcome
   {
     AppStarted,
@@ -83,11 +83,12 @@ private:
   {
     FactoryFlashOutcome outcome;
     deskflow::bridge::ActivationState activationState;
+    QString pairingNotice; // BridgeFirmwareNotice: the flash took the device to 1.2.1; only an upgrade shows it
   };
 
   void refreshDeviceState();
   bool confirmFactoryFlash(const QString &filename);
-  FactoryFlashCheck waitForAppAfterFactoryFlash(const std::string &port);
+  FactoryFlashCheck waitForAppAfterFlash(const std::string &port);
   void showFactoryFlashResult(const FactoryFlashCheck &check);
   QString noApplicationFirmwareMessage() const;
   void fetchPrices();
