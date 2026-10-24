@@ -1,6 +1,8 @@
 #include "BridgeDeviceService.h"
 #include "common/Settings.h"
 #include "gui/core/BridgeClientConfigManager.h"
+#include "gui/core/BridgeClientProcess.h"
+#include "platform/bridge/BridgeRequests.h"
 #include "platform/bridge/CdcTransport.h"
 #include <QDebug>
 #include <QEventLoop>
@@ -11,11 +13,19 @@
 
 namespace deskflow::gui {
 
+namespace requests = deskflow::bridge::requests;
+
 namespace {
+
+bool s_suspended = false;
 
 // Attempt to open the transport with retries (macOS port readiness can be tricky)
 bool openWithRetries(deskflow::bridge::CdcTransport &transport, const QString &devicePath)
 {
+  if (!BridgeDeviceService::mayOpen(devicePath)) {
+    qDebug() << "Not opening device" << devicePath << "while a bridge client or the firmware tool owns it";
+    return false;
+  }
   for (int retry = 0; retry < 3; ++retry) {
     if (transport.open()) {
       return true;
@@ -113,13 +123,9 @@ bool BridgeDeviceService::applyFirmwareDeviceName(const QString &devicePath, con
     return false;
   }
 
-  deskflow::bridge::CdcTransport transport(devicePath);
-  if (!transport.open()) {
-    return false;
-  }
-
-  const bool result = transport.setDeviceName(deviceName.toStdString());
-  transport.close();
+  QStringList fields;
+  QString error;
+  const bool result = request(devicePath, requests::kSetName, {requests::encodeText(deviceName)}, fields, error);
 
   if (result) {
     Q_EMIT deviceNameUpdated(devicePath, deviceName);
@@ -133,52 +139,97 @@ bool BridgeDeviceService::fetchFirmwareDeviceName(const QString &devicePath, QSt
   if (devicePath.isEmpty()) {
     return false;
   }
-  deskflow::bridge::CdcTransport transport(devicePath);
-  if (!transport.open()) {
+  QStringList fields;
+  QString error;
+  if (!request(devicePath, requests::kGetName, {}, fields, error)) {
     return false;
   }
-  std::string deviceName;
-  bool ok = transport.fetchDeviceName(deviceName);
-  transport.close();
-  if (ok) {
-    outName = QString::fromStdString(deviceName);
+  outName = requests::decodeText(fields.value(0));
+  return true;
+}
+
+bool BridgeDeviceService::request(
+    const QString &devicePath, const QString &command, const QStringList &arguments, QStringList &fields, QString &error
+)
+{
+  if (auto *owner = BridgeClientProcess::forDevice(devicePath)) {
+    return owner->request(command, arguments, fields, error);
   }
+
+  deskflow::bridge::CdcTransport transport(devicePath);
+  if (!openWithRetries(transport, devicePath)) {
+    error = s_suspended ? tr("the firmware tool is using the device") : QString::fromStdString(transport.lastError());
+    return false;
+  }
+  const bool ok = requests::execute(transport, command, arguments, fields, error);
+  transport.close();
   return ok;
 }
 
-bool BridgeDeviceService::switchProfile(const QString &devicePath, int profileIndex)
+bool BridgeDeviceService::readProfiles(const QString &devicePath, BridgeProfileSet &profiles, QString &error)
 {
-  if (devicePath.isEmpty()) {
-    return false;
-  }
-  deskflow::bridge::CdcTransport transport(devicePath);
-  if (!openWithRetries(transport, devicePath)) {
-    return false;
-  }
-  const bool switched = transport.switchProfile(static_cast<uint8_t>(profileIndex));
-  if (!switched) {
-    qWarning() << "Failed to switch device" << devicePath << "to profile" << profileIndex << ":"
-               << QString::fromStdString(transport.lastError());
-  }
-  transport.close();
-  return switched;
+  return requestProfiles(devicePath, requests::kProfiles, {}, profiles, error);
 }
 
-QList<BridgeProfileInfo> BridgeDeviceService::readProfiles(deskflow::bridge::CdcTransport &transport)
+bool BridgeDeviceService::readProfiles(
+    deskflow::bridge::CdcTransport &transport, BridgeProfileSet &profiles, QString &error
+)
 {
-  QList<BridgeProfileInfo> profiles;
-  const int total = transport.deviceConfig().totalProfiles;
-  for (int i = 0; i < total; ++i) {
-    deskflow::bridge::DeviceProfile profile;
-    // the firmware answers for every index below the total (with defaults for an unused one),
-    // so a failure means it stopped answering: don't wait out the timeout for each of the rest
-    if (!transport.getProfile(static_cast<uint8_t>(i), profile)) {
-      qWarning() << "Failed to read profile" << i << "from device";
-      break;
-    }
-    profiles.append({i, profileHostname(profile), profile.rotation == 0});
+  QStringList fields;
+  return requests::execute(transport, requests::kProfiles, {}, fields, error) &&
+         decodeProfileSet(fields, profiles, error);
+}
+
+bool BridgeDeviceService::switchProfile(
+    const QString &devicePath, int profileIndex, BridgeProfileSet &profiles, QString &error
+)
+{
+  return requestProfiles(devicePath, requests::kSwitch, {QString::number(profileIndex)}, profiles, error);
+}
+
+bool BridgeDeviceService::saveProfile(
+    const QString &devicePath, int profileIndex, const deskflow::bridge::DeviceProfile &profile,
+    BridgeProfileSet &profiles, QString &error
+)
+{
+  return requestProfiles(
+      devicePath, requests::kSave, {QString::number(profileIndex), requests::encodeProfile(profile)}, profiles, error
+  );
+}
+
+bool BridgeDeviceService::eraseProfile(
+    const QString &devicePath, int profileIndex, BridgeProfileSet &profiles, QString &error
+)
+{
+  return requestProfiles(devicePath, requests::kErase, {QString::number(profileIndex)}, profiles, error);
+}
+
+QList<BridgeProfileInfo> BridgeDeviceService::profileInfos(const BridgeProfileSet &profiles)
+{
+  QList<BridgeProfileInfo> infos;
+  for (qsizetype i = 0; i < profiles.profiles.size(); ++i) {
+    const auto &profile = profiles.profiles.at(i);
+    infos.append({static_cast<int>(i), profileHostname(profile), profile.rotation == 0});
   }
-  return profiles;
+  return infos;
+}
+
+bool BridgeDeviceService::requestProfiles(
+    const QString &devicePath, const QString &command, const QStringList &arguments, BridgeProfileSet &profiles,
+    QString &error
+)
+{
+  QStringList fields;
+  return request(devicePath, command, arguments, fields, error) && decodeProfileSet(fields, profiles, error);
+}
+
+bool BridgeDeviceService::decodeProfileSet(const QStringList &fields, BridgeProfileSet &profiles, QString &error)
+{
+  if (!requests::decodeProfiles(fields, profiles.activeIndex, profiles.profiles)) {
+    error = tr("the device sent an invalid profile list");
+    return false;
+  }
+  return true;
 }
 
 QString BridgeDeviceService::profileHostname(const deskflow::bridge::DeviceProfile &profile)
@@ -198,6 +249,16 @@ bool BridgeDeviceService::isValidDeviceName(const QString &deviceName)
   }
   static QRegularExpression regex(R"(^[a-zA-Z0-9 ._-]+$)");
   return regex.match(deviceName).hasMatch();
+}
+
+void BridgeDeviceService::setSuspended(bool suspended)
+{
+  s_suspended = suspended;
+}
+
+bool BridgeDeviceService::mayOpen(const QString &devicePath)
+{
+  return !s_suspended && BridgeClientProcess::forDevice(devicePath) == nullptr;
 }
 
 } // namespace deskflow::gui

@@ -192,6 +192,8 @@ include_directories(${inc})
 set(BRIDGE_SOURCES
   bridge/BridgePlatformScreen.cpp
   bridge/BridgePlatformScreen.h
+  bridge/BridgeRequests.cpp
+  bridge/BridgeRequests.h
   bridge/CdcTransport.cpp
   bridge/CdcTransport.h
   bridge/HidFrame.cpp

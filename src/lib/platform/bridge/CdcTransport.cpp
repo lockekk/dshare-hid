@@ -33,6 +33,7 @@
 #if defined(Q_OS_UNIX)
 #include <cerrno>
 #include <fcntl.h>
+#include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <termios.h>
 #include <unistd.h>
@@ -319,6 +320,15 @@ bool CdcTransport::open(bool allowInsecure)
   if (m_fd < 0) {
     m_lastError = "Failed to open device: " + std::string(strerror(errno));
     LOG_ERR("CDC: %s", m_lastError.c_str());
+    return false;
+  }
+  // a tty can be opened by any number of processes, which then steal each other's replies;
+  // like a COM port on Windows, let a second open fail (EBUSY) while this one holds it
+  if (ioctl(m_fd, TIOCEXCL) != 0) {
+    m_lastError = "Failed to get exclusive access: " + std::string(strerror(errno));
+    LOG_ERR("CDC: %s", m_lastError.c_str());
+    ::close(m_fd);
+    m_fd = -1;
     return false;
   }
   struct termios tty;
@@ -1085,6 +1095,7 @@ bool CdcTransport::switchProfile(uint8_t index)
     return false;
   }
 
+  m_deviceConfig.activeProfile = index;
   return true;
 }
 

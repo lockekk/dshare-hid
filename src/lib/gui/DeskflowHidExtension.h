@@ -89,6 +89,10 @@ private:
   void loadBridgeClientConfigs();
   void updateBridgeClientDeviceStates();
   void applyProfileScreenBonding(const QString &configPath, int activeProfile);
+  // show and store the device's profiles as a request left them (a switch, the Configure dialog)
+  void applyDeviceProfiles(
+      const QString &devicePath, const QString &configPath, const deskflow::gui::BridgeProfileSet &profiles
+  );
   void stopBridgeClient(const QString &devicePath);
   void stopAllBridgeClients();
   void bridgeClientProcessFinished(const QString &devicePath, int exitCode, QProcess::ExitStatus exitStatus);
@@ -132,9 +136,6 @@ private:
 
   // Set while the firmware tool owns the devices: no bridge client may be started
   bool m_bridgeClientsSuspended = false;
-
-  // Config whose device is switching profile: its bridge client may not be started meanwhile
-  QString m_profileSwitchConfigPath;
 
   // Log toggle feature
   QAction *m_actionShowBridgeLogs = nullptr;

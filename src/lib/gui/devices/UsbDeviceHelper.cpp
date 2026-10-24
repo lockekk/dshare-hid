@@ -4,6 +4,8 @@
 
 #include "UsbDeviceHelper.h"
 
+#include "gui/core/BridgeClientProcess.h"
+#include "gui/core/BridgeDeviceService.h"
 #include "platform/bridge/CdcTransport.h"
 
 #include "base/Log.h"
@@ -174,8 +176,14 @@ QString getPortName(HDEVINFO infoSet, SP_DEVINFO_DATA &infoData)
 QString UsbDeviceHelper::readSerialNumber(const QString &devicePath)
 {
 #if defined(Q_OS_LINUX) || defined(Q_OS_WIN) || defined(Q_OS_MAC)
-  // Read serial number via CDC command from firmware
-  // This ensures we only read when device is not opened by bridge client
+  // Read serial number via CDC command from firmware.  A started bridge client holds the
+  // port exclusively, and it was started for a known serial: answer from that instead.
+  if (const auto *owner = BridgeClientProcess::forDevice(devicePath)) {
+    return owner->serialNumber();
+  }
+  if (!BridgeDeviceService::mayOpen(devicePath)) {
+    return QString();
+  }
 
   LOG_DEBUG("Reading serial number via CDC for device: %s", qPrintable(devicePath));
 
@@ -411,23 +419,23 @@ QMap<QString, QString> UsbDeviceHelper::getConnectedDevices(bool queryDevice)
         }
 
         if (!devicePath.isEmpty()) {
+          // the USB descriptor carries the same serial the firmware reports, so read it from
+          // IOKit (as Linux and Windows read theirs from udev / the registry) and only ask
+          // the firmware, which means opening the port, when it is missing
           QString serialNumber;
-          if (queryDevice) {
-            serialNumber = readSerialNumber(devicePath);
-          }
-          if (serialNumber.isEmpty()) {
-            // Fallback to reading from IOKit if possible (though readSerialNumber tries CDC first)
-            // IOKit serial is kUSBSerialNumberString
-            CFStringRef serialRef = (CFStringRef
-            )IORegistryEntryCreateCFProperty(device, CFSTR(kUSBSerialNumberString), kCFAllocatorDefault, 0);
-            if (serialRef) {
-              const CFIndex kMaxSerial = 256;
-              char serialBuf[kMaxSerial];
-              if (CFStringGetCString(serialRef, serialBuf, kMaxSerial, kCFStringEncodingUTF8)) {
-                serialNumber = QString::fromUtf8(serialBuf);
-              }
-              CFRelease(serialRef);
+          CFStringRef serialRef = (CFStringRef)IORegistryEntryCreateCFProperty(
+              device, CFSTR(kUSBSerialNumberString), kCFAllocatorDefault, 0
+          );
+          if (serialRef) {
+            const CFIndex kMaxSerial = 256;
+            char serialBuf[kMaxSerial];
+            if (CFStringGetCString(serialRef, serialBuf, kMaxSerial, kCFStringEncodingUTF8)) {
+              serialNumber = QString::fromUtf8(serialBuf);
             }
+            CFRelease(serialRef);
+          }
+          if (queryDevice && serialNumber.isEmpty()) {
+            serialNumber = readSerialNumber(devicePath);
           }
           if (serialNumber.isEmpty()) {
             LOG_DEBUG("Device %s has no serial (yet), including for monitoring", qPrintable(devicePath));

@@ -27,13 +27,17 @@
 
 namespace {
 
-// The GUI stops a bridge core by writing "stop" to its stdin (BridgeClientProcess::stop):
-// on Windows QProcess::terminate() can't stop a process without windows, and a kill skips
-// the clean shutdown that releases keys still held on the device.  Read the raw handle,
-// not std::cin, so the blocked read holds no CRT lock that exit() would wait for.
-void quitOnStopCommand(IEventQueue *events)
+// The GUI talks to a bridge core over its stdin, one command per line:
+// - "stop" shuts it down (BridgeClientProcess::stop): on Windows QProcess::terminate() can't
+//   stop a process without windows, and a kill skips the clean shutdown that releases keys
+//   still held on the device.
+// - "req ..." asks it to talk to the device it holds (see platform/bridge/BridgeRequests.h).
+//   The screen carries requests out on the event thread, which owns the transport.
+// Read the raw handle, not std::cin, so the blocked read holds no CRT lock that exit() would
+// wait for.
+void readStdinCommands(IEventQueue *events, std::shared_ptr<deskflow::bridge::requests::Queue> requests)
 {
-  std::thread([events] {
+  std::thread([events, requests] {
     std::string line;
     char c = 0;
     for (;;) {
@@ -55,10 +59,17 @@ void quitOnStopCommand(IEventQueue *events)
         line += c;
         continue;
       }
-      if (line == "stop" || line == "stop\r") {
+      if (!line.empty() && line.back() == '\r') {
+        line.pop_back();
+      }
+      if (line == "stop") {
         LOG_INFO("BridgeClientApp: stop requested, shutting down");
         events->addEvent(Event(EventTypes::Quit));
         return;
+      }
+      if (QString::fromStdString(line).startsWith(deskflow::bridge::requests::kRequest + QLatin1Char(' '))) {
+        requests->push(line);
+        events->addEvent(Event(EventTypes::StreamInputReady, requests.get()));
       }
       line.clear();
     }
@@ -73,6 +84,7 @@ BridgeClientApp::BridgeClientApp(
 )
     : ClientApp(events, processName + "[BRIDGE]"),
       m_transport(transport),
+      m_requests(std::make_shared<deskflow::bridge::requests::Queue>()),
       m_config(config),
       m_screenWidth(screenWidth),
       m_screenHeight(screenHeight)
@@ -83,7 +95,7 @@ BridgeClientApp::BridgeClientApp(
 void BridgeClientApp::initApp()
 {
   ClientApp::initApp();
-  quitOnStopCommand(getEvents());
+  readStdinCommands(getEvents(), m_requests);
 }
 
 deskflow::Computer *BridgeClientApp::createComputer()
@@ -92,7 +104,7 @@ deskflow::Computer *BridgeClientApp::createComputer()
 
   // Create BridgePlatformScreen instead of platform-specific screen
   auto *platformScreen =
-      new deskflow::bridge::BridgePlatformScreen(getEvents(), m_transport, m_screenWidth, m_screenHeight);
+      new deskflow::bridge::BridgePlatformScreen(getEvents(), m_transport, m_requests, m_screenWidth, m_screenHeight);
 
   // Wrap in deskflow::Computer
   return new deskflow::Computer(platformScreen, getEvents());

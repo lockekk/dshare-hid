@@ -52,10 +52,12 @@ std::string hexDump(const uint8_t *data, size_t length, size_t maxBytes = 32)
 } // namespace
 
 BridgePlatformScreen::BridgePlatformScreen(
-    IEventQueue *events, std::shared_ptr<CdcTransport> transport, int32_t screenWidth, int32_t screenHeight
+    IEventQueue *events, std::shared_ptr<CdcTransport> transport, std::shared_ptr<requests::Queue> requests,
+    int32_t screenWidth, int32_t screenHeight
 )
     : PlatformComputer(events),
       m_transport(std::move(transport)),
+      m_requests(std::move(requests)),
       m_screenWidth(screenWidth),
       m_screenHeight(screenHeight),
       m_events(events)
@@ -63,6 +65,12 @@ BridgePlatformScreen::BridgePlatformScreen(
   LOG_INFO("BridgeScreen: initialized screen=%dx%d", m_screenWidth, m_screenHeight);
 
   m_lastCdcCommand = std::chrono::steady_clock::time_point::min();
+
+  if (m_events != nullptr) {
+    m_events->addHandler(deskflow::EventTypes::StreamInputReady, m_requests.get(), [this](const Event &) {
+      handleRequests();
+    });
+  }
 
   m_bluetoothKeepAliveEnabled = Settings::value(Settings::Bridge::BluetoothKeepAlive).toBool();
   if (m_bluetoothKeepAliveEnabled && m_events != nullptr) {
@@ -83,6 +91,7 @@ BridgePlatformScreen::~BridgePlatformScreen()
   stopKeepAliveTimer();
   if (m_events != nullptr) {
     m_events->removeHandler(deskflow::EventTypes::Timer, this);
+    m_events->removeHandler(deskflow::EventTypes::StreamInputReady, m_requests.get());
   }
 }
 
@@ -473,13 +482,7 @@ void BridgePlatformScreen::enter()
       const auto &config = m_transport->deviceConfig();
       DeviceProfile profile;
       if (m_transport->getProfile(config.activeProfile, profile)) {
-        m_scrollSpeed = profile.speed;
-        m_scrollScaleProfile = profile.yScrollScale;
-        m_scrollInvertProfile = (profile.invert != 0);
-        LOG_INFO(
-            "BridgeScreen: loaded profile %d: speed=%d, scale=%d, invert=%d", config.activeProfile, m_scrollSpeed,
-            m_scrollScaleProfile, m_scrollInvertProfile
-        );
+        applyScrollSettings(config.activeProfile, profile);
       } else {
         LOG_WARN("BridgeScreen: failed to load profile %d", config.activeProfile);
       }
@@ -1378,6 +1381,68 @@ void BridgePlatformScreen::sendKeepAliveIfIdle() const
 void BridgePlatformScreen::recordCdcCommand(std::chrono::steady_clock::time_point now) const
 {
   m_lastCdcCommand = now;
+}
+
+void BridgePlatformScreen::handleRequests()
+{
+  for (const auto &line : m_requests->takeAll()) {
+    requests::Request request;
+    if (!requests::parseRequest(QString::fromStdString(line), request)) {
+      LOG_WARN("BridgeScreen: ignoring malformed request: %s", line.c_str());
+      continue;
+    }
+
+    QStringList fields;
+    QString error;
+    const bool ok = requests::execute(*m_transport, request.command, request.arguments, fields, error);
+    if (ok) {
+      recordCdcCommand(); // the firmware counts any frame as Bluetooth keep-alive traffic
+      if (requests::changesActiveProfile(request.command)) {
+        applyActiveProfile();
+      }
+    } else {
+      LOG_WARN("BridgeScreen: request '%s' failed: %s", qPrintable(request.command), qPrintable(error));
+      fields = {error};
+    }
+    // print level: never filtered or prefixed, so the GUI always gets the reply as is
+    LOG_PRINT("%s", qPrintable(requests::formatResponse(request.id, ok, fields)));
+  }
+}
+
+void BridgePlatformScreen::applyActiveProfile()
+{
+  const uint8_t index = m_transport->deviceConfig().activeProfile;
+  DeviceProfile profile;
+  if (!m_transport->getProfile(index, profile)) {
+    LOG_WARN("BridgeScreen: failed to load profile %d", index);
+    return;
+  }
+  applyScrollSettings(index, profile);
+
+  int32_t width = 0;
+  int32_t height = 0;
+  profileScreenSize(profile, width, height);
+  if (width == m_screenWidth && height == m_screenHeight) {
+    return;
+  }
+
+  LOG_INFO("BridgeScreen: profile %d screen=%dx%d", index, width, height);
+  m_screenWidth = width;
+  m_screenHeight = height;
+  getCursorCenter(m_cursorX, m_cursorY);
+  // the client sends the server the new size, so it stays connected through the switch
+  m_events->addEvent(Event(EventTypes::ComputerShapeChanged, getEventTarget()));
+}
+
+void BridgePlatformScreen::applyScrollSettings(uint8_t index, const DeviceProfile &profile)
+{
+  m_scrollSpeed = profile.speed;
+  m_scrollScaleProfile = profile.yScrollScale;
+  m_scrollInvertProfile = (profile.invert != 0);
+  LOG_INFO(
+      "BridgeScreen: loaded profile %d: speed=%d, scale=%d, invert=%d", index, m_scrollSpeed, m_scrollScaleProfile,
+      m_scrollInvertProfile
+  );
 }
 
 } // namespace deskflow::bridge

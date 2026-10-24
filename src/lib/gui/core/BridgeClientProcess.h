@@ -4,9 +4,12 @@
 
 #pragma once
 
+#include <QByteArray>
+#include <QHash>
 #include <QObject>
 #include <QProcess>
 #include <QRegularExpression>
+#include <QSet>
 #include <QString>
 #include <QStringList>
 
@@ -20,6 +23,7 @@ public:
   struct Config
   {
     QString screenName;
+    QString serialNumber;
     QString devicePath;
     QString configPath;
     QString remoteHost;
@@ -40,6 +44,27 @@ public:
   {
     return m_devicePath;
   }
+  QString serialNumber() const
+  {
+    return m_serialNumber;
+  }
+
+  /**
+   * @brief The started bridge client that owns a device, or nullptr
+   *
+   * From start() until its core has exited, the core holds the device open (exclusively),
+   * so the GUI must ask it instead of opening the port.
+   */
+  static BridgeClientProcess *forDevice(const QString &devicePath);
+
+  /**
+   * @brief Have the core carry out a device request (see platform/bridge/BridgeRequests.h)
+   *
+   * Blocks until the reply arrives, the core stops, or the request times out.
+   * @param fields The reply's fields, on success
+   * @param error Why it failed, otherwise
+   */
+  bool request(const QString &command, const QStringList &arguments, QStringList &fields, QString &error);
 
 Q_SIGNALS:
   void connectionEstablished();
@@ -55,11 +80,31 @@ private Q_SLOTS:
   void onFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
 private:
+  struct Response
+  {
+    bool ok = false;
+    QStringList fields;
+  };
+
+  void readLines(QByteArray &buffer, const QByteArray &data);
   void parseLine(const QString &line);
+  void parseDeferredLines();
+  void releaseDevice();
 
   QString m_devicePath;
+  QString m_serialNumber;
   QProcess *m_process = nullptr;
   bool m_showLogs = false;
+
+  // a read can end mid-line, and each channel has its own partial line
+  QByteArray m_stdoutBuffer;
+  QByteArray m_stderrBuffer;
+
+  quint64 m_lastRequestId = 0;
+  QSet<quint64> m_waitingRequests;
+  QHash<quint64, Response> m_responses;
+  int m_requestDepth = 0;      // requests waiting for their reply
+  QStringList m_deferredLines; // other lines that arrived meanwhile
 
   static const QRegularExpression s_connectedRegex;
   static const QRegularExpression s_deviceNameRegex;

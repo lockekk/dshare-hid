@@ -5,6 +5,7 @@
 #pragma once
 
 #include "deskflow/ClientApp.h"
+#include "platform/bridge/BridgeRequests.h"
 #include "platform/bridge/CdcTransport.h"
 
 #include <cstdint>
@@ -77,6 +78,7 @@ protected:
 
 private:
   std::shared_ptr<deskflow::bridge::CdcTransport> m_transport;
+  std::shared_ptr<deskflow::bridge::requests::Queue> m_requests; // from the GUI, via stdin
   deskflow::bridge::FirmwareConfig m_config;
   int32_t m_screenWidth = 0;
   int32_t m_screenHeight = 0;

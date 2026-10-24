@@ -1,13 +1,11 @@
 #pragma once
 
+#include "platform/bridge/CdcTransport.h"
+
 #include <QList>
 #include <QObject>
 #include <QString>
-
-namespace deskflow::bridge {
-struct DeviceProfile;
-class CdcTransport;
-} // namespace deskflow::bridge
+#include <QStringList>
 
 namespace deskflow {
 namespace gui {
@@ -20,6 +18,15 @@ struct BridgeProfileInfo
   int index = 0;
   QString hostname;
   bool portrait = false;
+};
+
+/**
+ * @brief All of the device's profiles, by index, and which one is active
+ */
+struct BridgeProfileSet
+{
+  int activeIndex = -1;
+  QList<deskflow::bridge::DeviceProfile> profiles;
 };
 
 /**
@@ -61,17 +68,37 @@ public:
   bool fetchFirmwareDeviceName(const QString &devicePath, QString &outName);
 
   /**
-   * @brief Make another profile the device's active one.
-   * @param devicePath Path to the USB CDC device; no bridge client may hold it open.
-   * @param profileIndex Profile index.
-   * @return True if the device switched.
+   * @brief Carry out a device request (see platform/bridge/BridgeRequests.h) through the
+   * device's owner: its started bridge client, or the GUI itself when there is none.
+   * @param fields The reply's fields, on success.
+   * @param error Why it failed, otherwise.
    */
-  bool switchProfile(const QString &devicePath, int profileIndex);
+  static bool request(
+      const QString &devicePath, const QString &command, const QStringList &arguments, QStringList &fields,
+      QString &error
+  );
 
   /**
-   * @brief Read all of the device's profiles over an already open transport.
+   * @brief Profile requests, through the device's owner (see request()). Each one answers
+   * with the device's profiles as they are afterwards.
    */
-  static QList<BridgeProfileInfo> readProfiles(deskflow::bridge::CdcTransport &transport);
+  static bool readProfiles(const QString &devicePath, BridgeProfileSet &profiles, QString &error);
+  static bool switchProfile(const QString &devicePath, int profileIndex, BridgeProfileSet &profiles, QString &error);
+  static bool saveProfile(
+      const QString &devicePath, int profileIndex, const deskflow::bridge::DeviceProfile &profile,
+      BridgeProfileSet &profiles, QString &error
+  );
+  static bool eraseProfile(const QString &devicePath, int profileIndex, BridgeProfileSet &profiles, QString &error);
+
+  /**
+   * @brief Read all of the device's profiles over a transport the GUI has open itself.
+   */
+  static bool readProfiles(deskflow::bridge::CdcTransport &transport, BridgeProfileSet &profiles, QString &error);
+
+  /**
+   * @brief What the main window shows of each profile.
+   */
+  static QList<BridgeProfileInfo> profileInfos(const BridgeProfileSet &profiles);
 
   /**
    * @brief The profile's hostname, without the padding of its fixed-size field.
@@ -82,6 +109,20 @@ public:
    * @brief Validate if a device name follows the required format.
    */
   static bool isValidDeviceName(const QString &deviceName);
+
+  /**
+   * @brief Hand all devices to the firmware tool (true), or take them back (false)
+   *
+   * The tool is the one exception to the rule that only one owner talks to a device: while
+   * it is open, the GUI opens no device and starts no bridge client.
+   */
+  static void setSuspended(bool suspended);
+
+  /**
+   * @brief Whether the GUI may open the device's port itself: no started bridge client owns
+   * it (the core holds it exclusively) and the firmware tool isn't open
+   */
+  static bool mayOpen(const QString &devicePath);
 
 Q_SIGNALS:
   /**
@@ -100,6 +141,13 @@ Q_SIGNALS:
    * @brief Emitted when an error occurs during hardware interaction.
    */
   void errorOccurred(const QString &devicePath, const QString &error);
+
+private:
+  static bool requestProfiles(
+      const QString &devicePath, const QString &command, const QStringList &arguments, BridgeProfileSet &profiles,
+      QString &error
+  );
+  static bool decodeProfileSet(const QStringList &fields, BridgeProfileSet &profiles, QString &error);
 };
 
 } // namespace gui

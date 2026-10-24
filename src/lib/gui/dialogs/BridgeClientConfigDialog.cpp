@@ -6,6 +6,9 @@
 
 #include "common/Settings.h"
 #include "gui/core/BridgeClientConfigManager.h"
+#include "gui/core/BridgeClientProcess.h"
+#include "gui/core/BridgeDeviceService.h"
+#include "gui/devices/UsbDeviceHelper.h"
 
 #include <QDialogButtonBox>
 #include <QDir>
@@ -350,6 +353,11 @@ void BridgeClientConfigDialog::loadConfig()
   QString screenName = BridgeClientConfigManager::readScreenName(m_configPath);
   m_editScreenName->setText(screenName);
   m_originalScreenName = screenName;
+  // a new screen name renames this config file, which a connected bridge core is using
+  if (BridgeClientProcess::forDevice(m_devicePath) != nullptr) {
+    m_editScreenName->setEnabled(false);
+    m_editScreenName->setToolTip(tr("Disconnect to rename the screen."));
+  }
 
   QString deviceName =
       config.value(Settings::Bridge::DeviceName, Settings::defaultValue(Settings::Bridge::DeviceName)).toString();
@@ -392,25 +400,19 @@ void BridgeClientConfigDialog::loadProfilesFromDevice()
     return;
   }
 
-  deskflow::bridge::CdcTransport transport(m_devicePath);
-  if (!transport.open()) {
+  // through the device's owner: a connected bridge core answers for it
+  BridgeProfileSet profiles;
+  QString error;
+  if (!BridgeDeviceService::readProfiles(m_devicePath, profiles, error) || profiles.profiles.isEmpty()) {
+    qWarning() << "Failed to read profiles from" << m_devicePath << ":" << error;
     m_lblProfileGroupTitle->setText(tr("Profiles (Failed to Open Device)"));
     m_profileGroup->setEnabled(false);
     return;
   }
 
-  m_totalProfiles = 0;
-  m_deviceActiveProfileIndex = -1;
-
-  if (transport.hasDeviceConfig()) {
-    m_totalProfiles = transport.deviceConfig().totalProfiles;
-    m_deviceActiveProfileIndex = transport.deviceConfig().activeProfile;
-  }
-
-  // Safety fallback
-  if (m_totalProfiles == 0)
-    m_totalProfiles = 6;
-  if (m_deviceActiveProfileIndex < 0)
+  m_totalProfiles = static_cast<int>(profiles.profiles.size());
+  m_deviceActiveProfileIndex = profiles.activeIndex;
+  if (m_deviceActiveProfileIndex < 0 || m_deviceActiveProfileIndex >= m_totalProfiles)
     m_deviceActiveProfileIndex = 0; // Default fallback
 
   // Populate Tabs
@@ -419,17 +421,7 @@ void BridgeClientConfigDialog::loadProfilesFromDevice()
 
   for (int i = 0; i < m_totalProfiles; ++i) {
     m_profileTabBar->addTab(QString("Slot %1").arg(i));
-  }
-
-  // Fetch profiles
-  for (int i = 0; i < m_totalProfiles; ++i) {
-    deskflow::bridge::DeviceProfile profile;
-    if (transport.getProfile(i, profile)) {
-      m_profileCache[i] = profile;
-    } else {
-      std::memset(&profile, 0, sizeof(profile));
-      m_profileCache[i] = profile;
-    }
+    m_profileCache[i] = profiles.profiles.at(i);
   }
 
   updateTabLabels();
@@ -551,19 +543,13 @@ void BridgeClientConfigDialog::onProfileSaveClicked()
 
   const auto &p = m_profileCache[m_selectedProfileIndex];
 
-  // Send to Device
-  deskflow::bridge::CdcTransport transport(m_devicePath);
-  if (!transport.open()) {
-    QMessageBox::critical(this, tr("Error"), tr("Failed to open device"));
-    return;
-  }
-
-  if (transport.setProfile(m_selectedProfileIndex, p)) {
+  // Send to Device (a connected bridge core takes on the active profile's changes at once)
+  BridgeProfileSet profiles;
+  QString error;
+  if (BridgeDeviceService::saveProfile(m_devicePath, m_selectedProfileIndex, p, profiles, error)) {
     QMessageBox::information(this, tr("Success"), tr("Profile saved to device."));
   } else {
-    QMessageBox::critical(
-        this, tr("Error"), tr("Failed to save profile: %1").arg(QString::fromStdString(transport.lastError()))
-    );
+    QMessageBox::critical(this, tr("Error"), tr("Failed to save profile: %1").arg(error));
   }
 }
 
@@ -576,13 +562,9 @@ void BridgeClientConfigDialog::onProfileActivateClicked()
     return;
   }
 
-  deskflow::bridge::CdcTransport transport(m_devicePath);
-  if (!transport.open()) {
-    QMessageBox::critical(this, tr("Error"), tr("Failed to open device"));
-    return;
-  }
-
-  if (transport.switchProfile(m_selectedProfileIndex)) {
+  BridgeProfileSet profiles;
+  QString error;
+  if (BridgeDeviceService::switchProfile(m_devicePath, m_selectedProfileIndex, profiles, error)) {
     m_deviceActiveProfileIndex = m_selectedProfileIndex;
     updateTabLabels();
 
@@ -600,9 +582,7 @@ void BridgeClientConfigDialog::onProfileActivateClicked()
     }
     QMessageBox::information(this, tr("Success"), tr("Switched to %1").arg(profileName));
   } else {
-    QMessageBox::critical(
-        this, tr("Error"), tr("Failed to switch profile: %1").arg(QString::fromStdString(transport.lastError()))
-    );
+    QMessageBox::critical(this, tr("Error"), tr("Failed to switch profile: %1").arg(error));
   }
 }
 
@@ -616,26 +596,19 @@ void BridgeClientConfigDialog::onProfileResetClicked()
     return;
   }
 
-  deskflow::bridge::CdcTransport transport(m_devicePath);
-  if (!transport.open()) {
-    QMessageBox::critical(this, tr("Error"), tr("Failed to open device"));
-    return;
-  }
-
-  if (transport.eraseProfile(m_selectedProfileIndex)) {
+  BridgeProfileSet profiles;
+  QString error;
+  if (BridgeDeviceService::eraseProfile(m_devicePath, m_selectedProfileIndex, profiles, error)) {
     QMessageBox::information(this, tr("Success"), tr("Profile erased."));
 
     // Refresh just this profile
-    deskflow::bridge::DeviceProfile profile;
-    if (transport.getProfile(m_selectedProfileIndex, profile)) {
-      m_profileCache[m_selectedProfileIndex] = profile;
+    if (m_selectedProfileIndex < profiles.profiles.size()) {
+      m_profileCache[m_selectedProfileIndex] = profiles.profiles.at(m_selectedProfileIndex);
       updateProfileDetailUI(m_selectedProfileIndex);
     }
 
   } else {
-    QMessageBox::critical(
-        this, tr("Error"), tr("Failed to erase profile: %1").arg(QString::fromStdString(transport.lastError()))
-    );
+    QMessageBox::critical(this, tr("Error"), tr("Failed to erase profile: %1").arg(error));
   }
 }
 
@@ -740,14 +713,7 @@ void BridgeClientConfigDialog::onAccepted()
   QFileInfo currentFileInfo(m_configPath);
   QString currentSn = BridgeClientConfigManager::readSerialNumber(m_configPath);
   if (currentSn.isEmpty() && !m_devicePath.isEmpty()) {
-    deskflow::bridge::CdcTransport transport(m_devicePath);
-    if (transport.open()) {
-      std::string sn;
-      if (transport.fetchSerialNumber(sn)) {
-        currentSn = QString::fromStdString(sn);
-      }
-      transport.close();
-    }
+    currentSn = UsbDeviceHelper::readSerialNumber(m_devicePath);
   }
 
   if (!currentSn.isEmpty()) {

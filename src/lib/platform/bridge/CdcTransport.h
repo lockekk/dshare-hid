@@ -9,6 +9,7 @@
 #include <array>
 #include <cstdint>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <QString>
@@ -63,6 +64,20 @@ struct DeviceProfile
   uint8_t reserved[10];  // reserved for future use, total size is 52 bytes
 };
 #pragma pack(pop)
+
+/**
+ * @brief The screen size a profile gives the bridge client: its resolution, turned to match
+ * its rotation (portrait is taller than wide, landscape wider than tall)
+ */
+inline void profileScreenSize(const DeviceProfile &profile, int32_t &width, int32_t &height)
+{
+  width = profile.screenWidth;
+  height = profile.screenHeight;
+  const bool portrait = (profile.rotation == 0);
+  if (portrait ? (width > height) : (width < height)) {
+    std::swap(width, height);
+  }
+}
 
 /**
  * @brief Firmware-reported configuration structure
@@ -178,7 +193,7 @@ public:
   bool setProfile(uint8_t index, const DeviceProfile &profile);
 
   /**
-   * @brief Switch to a specific profile
+   * @brief Switch to a specific profile (deviceConfig().activeProfile follows it)
    * @param index Profile index
    * @return true if successful
    */

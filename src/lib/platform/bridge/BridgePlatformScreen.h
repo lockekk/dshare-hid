@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "BridgeRequests.h"
 #include "CdcTransport.h"
 #include "deskflow/PlatformComputer.h"
 
@@ -33,7 +34,8 @@ class BridgePlatformScreen : public PlatformComputer
 {
 public:
   BridgePlatformScreen(
-      IEventQueue *events, std::shared_ptr<CdcTransport> transport, int32_t screenWidth, int32_t screenHeight
+      IEventQueue *events, std::shared_ptr<CdcTransport> transport, std::shared_ptr<requests::Queue> requests,
+      int32_t screenWidth, int32_t screenHeight
   );
   ~BridgePlatformScreen() override;
 
@@ -125,7 +127,14 @@ private:
   void stopKeepAliveTimer();
   void sendKeepAliveIfIdle() const;
 
+  // the GUI's device requests (see BridgeRequests.h), answered on stdout
+  void handleRequests();
+  // take on the active profile's screen size and scroll settings after a request changed it
+  void applyActiveProfile();
+  void applyScrollSettings(uint8_t index, const DeviceProfile &profile);
+
   std::shared_ptr<CdcTransport> m_transport;
+  std::shared_ptr<requests::Queue> m_requests;
   int32_t m_screenWidth = 0;
   int32_t m_screenHeight = 0;
   IEventQueue *m_events = nullptr;

@@ -372,14 +372,13 @@ void BridgeClientWidget::refreshButtonStates()
   }
   m_btnConnect->setToolTip(connectTooltip);
 
-  const bool configureEnabled = m_deviceAvailable && !m_isConnected && !m_groupLocked;
+  // while connected, the dialog's device requests go through the running bridge core
+  const bool configureEnabled = m_deviceAvailable && !m_groupLocked;
   m_btnConfigure->setEnabled(configureEnabled);
 
   QString configureTooltip;
   if (!m_deviceAvailable) {
     configureTooltip = tr("Device not connected");
-  } else if (m_isConnected) {
-    configureTooltip = tr("Disconnect before configuring");
   } else if (m_groupLocked) {
     configureTooltip =
         m_groupLockReason.isEmpty() ? tr("This profile is locked because another one is connected") : m_groupLockReason;

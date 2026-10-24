@@ -4,10 +4,25 @@
 
 #include "BridgeClientProcess.h"
 #include "common/Constants.h"
+#include "platform/bridge/BridgeRequests.h"
 #include <QCoreApplication>
 #include <QDebug>
+#include <QElapsedTimer>
+#include <QTimer>
+
+#include <utility>
 
 namespace deskflow::gui {
+
+namespace requests = deskflow::bridge::requests;
+
+namespace {
+// device path -> the started bridge client that owns it (GUI thread only)
+QHash<QString, BridgeClientProcess *> s_deviceOwners;
+
+// reading every profile takes one round trip each; allow for a slow device
+constexpr int kRequestTimeoutMs = 5000;
+} // namespace
 
 const QRegularExpression BridgeClientProcess::s_connectedRegex(
     "connected to server|connected to secure socket|connection established", QRegularExpression::CaseInsensitiveOption
@@ -42,6 +57,8 @@ bool BridgeClientProcess::start(const Config &config)
   }
 
   m_process = new QProcess(this);
+  m_stdoutBuffer.clear();
+  m_stderrBuffer.clear();
   QString appPath = QStringLiteral("%1/%2").arg(QCoreApplication::applicationDirPath(), kCoreBinName);
 
   QStringList args;
@@ -75,6 +92,62 @@ bool BridgeClientProcess::start(const Config &config)
     return false;
   }
 
+  m_serialNumber = config.serialNumber;
+  s_deviceOwners.insert(m_devicePath, this);
+  return true;
+}
+
+BridgeClientProcess *BridgeClientProcess::forDevice(const QString &devicePath)
+{
+  return s_deviceOwners.value(devicePath, nullptr);
+}
+
+void BridgeClientProcess::releaseDevice()
+{
+  m_deferredLines.clear();
+  if (s_deviceOwners.value(m_devicePath) == this) {
+    s_deviceOwners.remove(m_devicePath);
+  }
+}
+
+bool BridgeClientProcess::request(
+    const QString &command, const QStringList &arguments, QStringList &fields, QString &error
+)
+{
+  if (!isStarted()) {
+    error = tr("the bridge client isn't running");
+    return false;
+  }
+
+  const quint64 id = ++m_lastRequestId;
+  m_waitingRequests.insert(id);
+  ++m_requestDepth; // waitForBytesWritten() can already read lines
+  m_process->write((requests::formatRequest(id, command, arguments) + QLatin1Char('\n')).toUtf8());
+  m_process->waitForBytesWritten(1000);
+
+  QElapsedTimer timer;
+  timer.start();
+  while (!m_responses.contains(id) && isStarted() && timer.elapsed() < kRequestTimeoutMs) {
+    m_process->waitForReadyRead(static_cast<int>(kRequestTimeoutMs - timer.elapsed()));
+  }
+  --m_requestDepth;
+  m_waitingRequests.remove(id);
+  if (m_requestDepth == 0 && !m_deferredLines.isEmpty()) {
+    QTimer::singleShot(0, this, &BridgeClientProcess::parseDeferredLines);
+  }
+
+  if (!m_responses.contains(id)) {
+    error = isStarted() ? tr("the bridge client didn't answer") : tr("the bridge client stopped");
+    qWarning() << "Bridge client request" << command << "for" << m_devicePath << "failed:" << error;
+    return false;
+  }
+  const Response response = m_responses.take(id);
+  if (!response.ok) {
+    error = response.fields.value(0);
+    qWarning() << "Bridge client request" << command << "for" << m_devicePath << "failed:" << error;
+    return false;
+  }
+  fields = response.fields;
   return true;
 }
 
@@ -102,6 +175,7 @@ void BridgeClientProcess::stop()
     m_process->deleteLater();
     m_process = nullptr;
   }
+  releaseDevice();
 }
 
 bool BridgeClientProcess::isStarted() const
@@ -119,14 +193,45 @@ void BridgeClientProcess::onReadyRead()
   if (!m_process)
     return;
 
-  QByteArray data = m_process->readAllStandardOutput();
-  data += m_process->readAllStandardError();
+  readLines(m_stdoutBuffer, m_process->readAllStandardOutput());
+  if (m_process) { // a line's signal may have stopped it
+    readLines(m_stderrBuffer, m_process->readAllStandardError());
+  }
+}
 
-  if (data.isEmpty())
-    return;
+void BridgeClientProcess::readLines(QByteArray &buffer, const QByteArray &data)
+{
+  buffer += data;
+  for (qsizetype end = buffer.indexOf('\n'); end >= 0; end = buffer.indexOf('\n')) {
+    const QString line = QString::fromLocal8Bit(buffer.left(end)).trimmed();
+    buffer.remove(0, end + 1);
+    if (line.isEmpty()) {
+      continue;
+    }
 
-  QString output = QString::fromLocal8Bit(data);
-  QStringList lines = output.split('\n', Qt::SkipEmptyParts);
+    quint64 id = 0;
+    bool ok = false;
+    QStringList fields;
+    if (requests::parseResponse(line, id, ok, fields)) {
+      if (m_waitingRequests.contains(id)) { // else it came too late
+        m_responses.insert(id, {ok, fields});
+      }
+      continue;
+    }
+
+    // while a request waits, hold other lines back: their signals could stop this process,
+    // or start another request, in the middle of the wait
+    if (m_requestDepth > 0) {
+      m_deferredLines.append(line);
+      continue;
+    }
+    parseLine(line);
+  }
+}
+
+void BridgeClientProcess::parseDeferredLines()
+{
+  const QStringList lines = std::exchange(m_deferredLines, {});
   for (const QString &line : lines) {
     parseLine(line);
   }
@@ -188,6 +293,7 @@ void BridgeClientProcess::onFinished(int exitCode, QProcess::ExitStatus exitStat
 {
   m_process->deleteLater();
   m_process = nullptr;
+  releaseDevice();
   Q_EMIT finished(exitCode, exitStatus);
 }
 

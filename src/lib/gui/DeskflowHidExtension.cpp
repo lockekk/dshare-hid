@@ -40,7 +40,6 @@
 #include <QMenu>
 #include <QMessageBox>
 #include <QPoint>
-#include <QPointer>
 #include <QProcess>
 #include <QRegularExpression>
 #include <QSettings>
@@ -191,10 +190,12 @@ void DeskflowHidExtension::openEsp32HidTools()
   // bridges below drop) or a retry would start them again while the tool uses the device
   m_bridgeClientsSuspended = true;
   stopAllBridgeClients();
+  BridgeDeviceService::setSuspended(true);
   Esp32HidToolsWidget widget(QString(), m_mainWindow);
   widget.setWindowTitle(tr("ESP32 HID Tools"));
   widget.resize(800, 1000);
   widget.exec();
+  BridgeDeviceService::setSuspended(false);
   m_bridgeClientsSuspended = false;
   resumeUsbMonitoring();
   if (isServerReady()) {
@@ -419,6 +420,10 @@ void DeskflowHidExtension::updateBondedScreenLocations(const ServerConfig &confi
 
 void DeskflowHidExtension::updateBridgeClientDeviceStates()
 {
+  // the firmware tool owns the devices (a retry scan can still fire); it rescans when it closes
+  if (m_bridgeClientsSuspended) {
+    return;
+  }
 
   // Get all currently connected USB CDC devices with their serial numbers
   QMap<QString, QString> connectedDevices = UsbDeviceHelper::getConnectedDevices();
@@ -737,8 +742,7 @@ void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
     bool validHandshake = false;
 
     // fetchFirmwareDeviceName combined with handshake
-    if (!m_bridgeClientManager->clientStateByDevice(device.devicePath) ||
-        !m_bridgeClientManager->clientStateByDevice(device.devicePath)->process) {
+    if (BridgeDeviceService::mayOpen(device.devicePath)) {
       deskflow::bridge::CdcTransport transport(device.devicePath);
 
       // Strict check: we MUST be able to open (handshake) to consider it a valid Deskflow device
@@ -960,10 +964,6 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
     qInfo() << "Not starting bridge client while the firmware tool is open:" << configPath;
     return;
   }
-  if (shouldConnect && configPath == m_profileSwitchConfigPath) {
-    qInfo() << "Not starting bridge client while its device switches profile:" << configPath;
-    return;
-  }
 
   const QString serialNumber = BridgeClientConfigManager::readSerialNumber(configPath);
   if (shouldConnect) {
@@ -1075,11 +1075,13 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
             return;
           }
 
-          uint8_t activeProfile = transport.deviceConfig().activeProfile;
-          deskflow::bridge::DeviceProfile profile;
-          if (transport.getProfile(activeProfile, profile)) {
-            screenWidth = profile.screenWidth;
-            screenHeight = profile.screenHeight;
+          BridgeProfileSet profiles;
+          QString error;
+          if (BridgeDeviceService::readProfiles(transport, profiles, error) && profiles.activeIndex >= 0 &&
+              profiles.activeIndex < profiles.profiles.size()) {
+            const auto &profile = profiles.profiles.at(profiles.activeIndex);
+            // the rule the core also uses when the active profile changes while it runs
+            deskflow::bridge::profileScreenSize(profile, screenWidth, screenHeight);
             screenOrientation = (profile.rotation == 0) ? QStringLiteral("portrait") : QStringLiteral("landscape");
 
             // scroll scale and direction aren't passed on: the bridge core reads them from
@@ -1090,11 +1092,16 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
             // the profile may have been switched since the device was synced on plug-in
             config.setValue(Settings::Bridge::ActiveProfileHostname, BridgeDeviceService::profileHostname(profile));
             config.setValue(Settings::Bridge::ActiveProfileOrientation, screenOrientation);
+
+            if (targetWidget) {
+              targetWidget->setProfiles(BridgeDeviceService::profileInfos(profiles), profiles.activeIndex);
+            }
+          } else {
+            qWarning() << "Failed to read the device's profiles:" << error;
           }
 
           if (targetWidget) {
             targetWidget->setBleConnected(transport.deviceConfig().isBleConnected);
-            targetWidget->setProfiles(BridgeDeviceService::readProfiles(transport), activeProfile);
           }
         }
         transport.close();
@@ -1107,20 +1114,6 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
       }
     }
 
-    const QString orientationLower = screenOrientation.trimmed().toLower();
-    if (orientationLower == QStringLiteral("portrait")) {
-      if (screenWidth > screenHeight) {
-        const int tmp = screenWidth;
-        screenWidth = screenHeight;
-        screenHeight = tmp;
-      }
-    } else if (orientationLower == QStringLiteral("landscape")) {
-      if (screenWidth < screenHeight) {
-        const int tmp = screenWidth;
-        screenWidth = screenHeight;
-        screenHeight = tmp;
-      }
-    }
     QString screenName = BridgeClientConfigManager::readScreenName(configPath);
 
     const QVariant logLevelVariant = config.value(Settings::Log::Level, "INFO");
@@ -1179,6 +1172,7 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
     // Create and start the bridge client process
     BridgeClientProcess::Config bridgeProcConfig;
     bridgeProcConfig.screenName = screenName;
+    bridgeProcConfig.serialNumber = serialNumber;
     bridgeProcConfig.devicePath = devicePath;
     bridgeProcConfig.configPath = configPath;
     bridgeProcConfig.remoteHost = remoteHost;
@@ -1257,28 +1251,60 @@ void DeskflowHidExtension::bridgeClientProfileSwitchRequested(
     const QString &devicePath, const QString &configPath, int profileIndex
 )
 {
-  // the widget only lists profiles while its bridge client runs
-  const auto *state = m_bridgeClientManager->clientState(configPath);
-  if (devicePath.isEmpty() || !state || !state->process || !m_profileSwitchConfigPath.isEmpty()) {
+  if (devicePath.isEmpty()) {
     return;
   }
 
   const QString screenName = BridgeClientConfigManager::readScreenName(configPath);
   qInfo() << "Switching" << screenName << "to profile" << profileIndex;
 
-  // the core holds the port (exclusively on Windows), and it was started with the old profile's
-  // screen size and scroll settings: stop it, switch, then start it again, which reads the new
-  // profile and lets the core report it (applying any bonded screen location).  opening the
-  // port may wait in an event loop, so keep auto-connect from starting the core meanwhile.
-  m_profileSwitchConfigPath = configPath;
-  stopBridgeClient(devicePath);
-  const bool switched = m_bridgeDeviceService->switchProfile(devicePath, profileIndex);
-  m_profileSwitchConfigPath.clear();
+  // the running bridge core switches the device and takes on the new profile's screen size
+  // and scroll settings itself, so the bridge stays connected
+  BridgeProfileSet profiles;
+  QString error;
+  if (!BridgeDeviceService::switchProfile(devicePath, profileIndex, profiles, error)) {
+    if (m_mainWindow) {
+      m_mainWindow->setStatus(tr("Failed to switch profile on %1: %2").arg(screenName, error));
+    }
+    return;
+  }
+  applyDeviceProfiles(devicePath, configPath, profiles);
+}
 
-  bridgeClientConnectToggled(devicePath, configPath, true);
+void DeskflowHidExtension::applyDeviceProfiles(
+    const QString &devicePath, const QString &configPath, const BridgeProfileSet &profiles
+)
+{
+  BridgeClientWidget *widget = m_bridgeClientWidgets.value(configPath, nullptr);
+  if (widget) {
+    widget->setProfiles(BridgeDeviceService::profileInfos(profiles), profiles.activeIndex);
+  }
+  if (profiles.activeIndex < 0 || profiles.activeIndex >= profiles.profiles.size()) {
+    return;
+  }
 
-  if (!switched && m_mainWindow) {
-    m_mainWindow->setStatus(tr("Failed to switch profile on %1").arg(screenName));
+  const auto &profile = profiles.profiles.at(profiles.activeIndex);
+  const bool coreRunning = BridgeClientProcess::forDevice(devicePath) != nullptr;
+  {
+    QSettings cfg(configPath, QSettings::IniFormat);
+    cfg.setValue(Settings::Bridge::ActiveProfileHostname, BridgeDeviceService::profileHostname(profile));
+    cfg.setValue(
+        Settings::Bridge::ActiveProfileOrientation,
+        (profile.rotation == 0) ? QStringLiteral("portrait") : QStringLiteral("landscape")
+    );
+    if (coreRunning) {
+      cfg.setValue("activeProfileIndex", profiles.activeIndex);
+    }
+    cfg.sync();
+  }
+  if (widget) {
+    widget->updateConfig(widget->screenName(), configPath);
+  }
+
+  // as when a starting core reports its profile (onBridgeProcessActivationStatusDetected)
+  if (coreRunning) {
+    m_bridgeClientManager->setActiveProfile(configPath, profiles.activeIndex);
+    applyProfileScreenBonding(configPath, profiles.activeIndex);
   }
 }
 
@@ -1339,9 +1365,23 @@ void DeskflowHidExtension::bridgeClientConfigureClicked(const QString &devicePat
       }
   );
 
-  if (dialog.exec() == QDialog::Accepted) {
-    const QString finalConfigPath = dialog.configPath();
-    BridgeClientWidget *targetWidget = m_bridgeClientWidgets.value(finalConfigPath, nullptr);
+  const bool accepted = (dialog.exec() == QDialog::Accepted);
+  const QString finalConfigPath = dialog.configPath();
+  BridgeClientWidget *targetWidget = m_bridgeClientWidgets.value(finalConfigPath, nullptr);
+
+  // the dialog switches, saves and erases profiles on the device straight away, even if it is
+  // then cancelled: show a running bridge's profiles as they are now
+  if (BridgeClientProcess::forDevice(devicePath) != nullptr) {
+    BridgeProfileSet profiles;
+    QString error;
+    if (BridgeDeviceService::readProfiles(devicePath, profiles, error)) {
+      applyDeviceProfiles(devicePath, finalConfigPath, profiles);
+    } else {
+      qWarning() << "Failed to read the device's profiles:" << error;
+    }
+  }
+
+  if (accepted) {
     if (targetWidget) {
       targetWidget->updateConfig(dialog.screenName(), finalConfigPath);
     }
@@ -1352,39 +1392,16 @@ void DeskflowHidExtension::bridgeClientConfigureClicked(const QString &devicePat
         activeDevicePath = targetWidget->devicePath();
       }
 
-      if (!activeDevicePath.isEmpty()) {
-        QPointer<BridgeClientWidget> widgetPtr(targetWidget);
-        const bool wasConnected = widgetPtr && widgetPtr->isConnected();
-        if (wasConnected) {
-          stopBridgeClient(activeDevicePath);
-        }
-
-        auto applyRename = [this, finalConfigPath, activeDevicePath, widgetPtr, wasConnected,
-                            newName = dialog.deviceName()]() {
-          bool success = m_bridgeDeviceService->applyFirmwareDeviceName(activeDevicePath, newName);
-          // setStatus logic
-          if (success) {
-            using namespace deskflow;
-            QSettings config(finalConfigPath, QSettings::IniFormat);
-            config.setValue(Settings::Bridge::DeviceName, newName);
-            config.sync();
-            if (widgetPtr) {
-              widgetPtr->setDeviceName(newName);
-            }
-          }
-          if (wasConnected && widgetPtr) {
-            QTimer::singleShot(200, this, [this, widgetPtr, finalConfigPath]() {
-              if (widgetPtr) {
-                bridgeClientConnectToggled(widgetPtr->devicePath(), finalConfigPath, true);
-              }
-            });
-          }
-        };
-
-        if (wasConnected) {
-          QTimer::singleShot(500, this, applyRename);
-        } else {
-          applyRename();
+      // a running bridge core sets the name for us (BridgeDeviceService::request), so it
+      // needn't be stopped for this
+      const QString newName = dialog.deviceName();
+      if (!activeDevicePath.isEmpty() && m_bridgeDeviceService->applyFirmwareDeviceName(activeDevicePath, newName)) {
+        using namespace deskflow;
+        QSettings config(finalConfigPath, QSettings::IniFormat);
+        config.setValue(Settings::Bridge::DeviceName, newName);
+        config.sync();
+        if (targetWidget) {
+          targetWidget->setDeviceName(newName);
         }
       }
     }
