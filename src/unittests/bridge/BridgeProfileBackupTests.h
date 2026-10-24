@@ -17,6 +17,7 @@ private Q_SLOTS:
   void rejectsInvalidFile();
   void reportsEveryProblem();
   void fitsDevice();
+  void unusedFileName();
+  void checkCleansProfiles();
   void recognisesUnsetProfiles();
-  void restoreChecksBeforeTheDevice();
 };

@@ -1581,8 +1581,8 @@ void DeskflowHidExtension::bridgeClientConfigureClicked(const QString &devicePat
   const QString finalConfigPath = dialog.configPath();
   BridgeClientWidget *targetWidget = m_bridgeClientWidgets.value(finalConfigPath, nullptr);
 
-  // the dialog switches, saves and erases profiles on the device straight away, even if it is
-  // then cancelled: show a running bridge's profiles as they are now
+  // on OK the dialog erases, saves and switches the device's profiles: show a running bridge's
+  // profiles as they are now
   if (BridgeClientProcess::forDevice(devicePath) != nullptr) {
     BridgeProfileSet profiles;
     QString error;

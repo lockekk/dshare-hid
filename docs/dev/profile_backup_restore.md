@@ -6,16 +6,18 @@ All of this can be built from requests the app already has. It needs no firmware
 
 ## In the app
 
-The Configure dialog has **Backup...** and **Restore...** at the top of its Profiles group. They act on all of the device's profiles, so they sit by the group's title, away from Reset, Save to Device and Activate, which act on the profile shown.
+The Configure dialog has **Backup...** and **Restore...** at the top of its Profiles group. They act on all of the device's profiles, so they sit by the group's title, away from Reset, which acts on the profile shown.
+
+Only Backup reads the device straight away. Everything else in the Profiles group changes the form, and the dialog sends it to the device on OK (see [Saving on OK](#saving-on-ok)): edits, Reset, a restored backup, and the profile shown becoming the active one.
 
 | Part | Where |
 |---|---|
 | File format and its checks | `BridgeProfileBackup` (`src/lib/gui/core/BridgeProfileBackup.h`) |
-| Reading and writing the device | `BridgeDeviceService::backupProfiles()` and `restoreProfiles()` |
-| Buttons, file dialogs, messages | `BridgeClientConfigDialog::onProfileBackupClicked()` and `onProfileRestoreClicked()` |
+| Reading and writing the device | `BridgeDeviceService::backupProfiles()` and `writeProfiles()` |
+| Buttons, file dialogs, messages | `BridgeClientConfigDialog::onProfileBackupClicked()`, `onProfileRestoreClicked()` and `applyProfiles()` (OK) |
 | Tests | `src/unittests/bridge/BridgeProfileBackupTests.cpp` |
 
-A backup holds what is stored on the device. Changes in the dialog that weren't saved to the device aren't included.
+A backup holds what is stored on the device. Changes in the dialog that haven't been sent with OK aren't included.
 
 ## What a backup holds
 
@@ -25,7 +27,7 @@ A backup holds what is stored on the device. Changes in the dialog that weren't 
 | The active profile index | Activation state and profile limit |
 | The device name (optional) | |
 
-After a restore onto a wiped or different device, each host has to forget "Deskflow HID" and pair again, with that host's profile active. The app doesn't say so: its messages stay short and only report what backup and restore did.
+After a restore onto a wiped or different device, each host has to forget "Deskflow HID" and pair again, with that host's profile active. The app doesn't say so for a restore: its messages stay short. It does say so for a Reset, which always removes the profile's pairing.
 
 ## Calls to use
 
@@ -65,21 +67,38 @@ For reference, these map onto the firmware's CDC controls `GET_PROFILE` (0x32), 
 
 ## Restore
 
-1. Read the file and check every value in it (see [Checks before anything is written](#checks-before-anything-is-written)). If anything fails, list the problems and stop. Nothing is sent to the device.
-2. Call `readProfiles()` on the device. Its list's length is the device's profile limit.
-3. **Check the range before you write anything.** If the file has a profile index, or an `active_profile`, at or above the limit, stop and tell the user. A trial device has 2 profiles, so a backup from an activated device with more can't fully fit. Don't write part of it silently.
-4. Ask the user to confirm, listing the backup's hostnames.
-5. For each profile in the file, build a `DeviceProfile` and call `saveProfile(index, …)`:
-   - Set `slot` to the profile's index. The firmware uses `slot` to choose the Bluetooth address and pairing slot for the profile; it always equals the index.
-   - Copy `hostname`, which the checks have limited to 31 ASCII characters, and fill the rest of the field with NULs.
-   - Set `reserved` to zeros.
-   - Compare the profile in the reply with the bytes sent. If they differ, stop: the device didn't store what was written.
-6. Make the backup's active profile active, if the device isn't already on it. Compare the active index from the last `saveProfile()` reply with the file's `active_profile`, and call `switchProfile(active_profile)` only if they differ. Then check the reply's active index.
-7. If the file has `device_name`, put it in the dialog's Device name field, so it's written when the user clicks OK, in the same way as a typed name: firmware, `.conf` file and main window together. If the device isn't activated, the field is disabled, so the name is skipped.
+Restore loads a backup into the dialog. Nothing is sent to the device until OK.
 
-`BridgeDeviceService::restoreProfiles()` does steps 2, 3, 5 and 6. It runs the checks of step 1 again on the backup it is given, whoever built it, and writes only the profiles those checks produce.
+1. Read the file and check every value in it (see [Checks before anything is written](#checks-before-anything-is-written)). If anything fails, list the problems and stop. The form is left as it was.
+2. **Check the range.** If the file has a profile index, or an `active_profile`, at or above the device's profile limit (the number of tabs, from `readProfiles()`), stop and tell the user. A trial device has 2 profiles, so a backup from an activated device with more can't fully fit. Don't load part of it silently.
+3. Put each of the backup's profiles in the form, as an edit of that profile. Profiles not in the backup stay as they are. A Reset not yet sent for one of the backup's profiles is dropped.
+4. Show the tab of the backup's `active_profile`, so OK makes it active.
+5. If the file has `device_name`, put it in the Device name field, so OK sets it like a typed name: firmware, `.conf` file and main window together. If the device isn't activated, the field is disabled, so the name is skipped.
+6. Say how many profiles were loaded, and that OK applies them.
 
-If a write fails part way, nothing can be rolled back. The dialog shows the device's profiles as they are now.
+## Saving on OK
+
+The dialog keeps the device's profiles as it last read them, and notes which profiles the user edits; filling in the form to show a profile isn't an edit. On OK (`applyProfiles()`), once the screen and device names pass their checks:
+
+1. Find the changes: profiles marked by Reset, edited profiles that differ from the device's (for a reset one, from the firmware's default), a profile shown other than the active one, and a new device name. With none, OK just closes.
+2. Check the profiles to save as a restore checks them. If any fails, list the problems and stay open.
+3. List the changes and wait for **Apply**. Cancel keeps the dialog open. The list is short:
+   - Reset Pixel. Its host must pair again manually.
+   - Save Pixel, Ipad air.
+   - Active profile changes to Ipad air.
+   - Device name changes to Desk Bridge.
+4. Make the changes in that order:
+   - Erase each reset profile (`eraseProfile()`). The firmware removes its pairing and its record, so it reads back as the default.
+   - Save the edited profiles and make the profile shown active, with `BridgeDeviceService::writeProfiles()`. For each profile it builds a `DeviceProfile` and calls `saveProfile(index, …)`:
+     - Set `slot` to the profile's index. The firmware uses `slot` to choose the Bluetooth address and pairing slot for the profile; it always equals the index.
+     - Copy `hostname`, which the checks have limited to 31 ASCII characters, and fill the rest of the field with NULs.
+     - Set `reserved` to zeros.
+     - Compare the profile in the reply with the bytes sent. If they differ, stop: the device didn't store what was written.
+
+     Then it calls `switchProfile()` only if the last reply's active index isn't the profile shown, and checks the reply's active index. With nothing to save, the dialog calls `switchProfile()` itself if the active profile changes.
+   - The device name is set after the dialog closes, as before.
+
+`writeProfiles()` runs the checks again on the profiles it is given, whoever built them, and writes only the profiles those checks produce. If a step fails, nothing can be rolled back: the dialog shows the error and stays open with the changes not yet made, and OK tries them again.
 
 ### Checks before anything is written
 
@@ -167,7 +186,11 @@ Check these:
 4. Restoring while a bridge client runs for the device works, and the client takes on the new active profile's screen size.
 5. A file with one bad value, such as `"hid_mode": 2`, is rejected with that problem named, and `backup-profiles` afterwards shows the device unchanged.
 
-The checks themselves are unit-tested in `BridgeProfileBackupTests`, one row per kind of bad value. Configure with `-DBUILD_TESTS=ON` to build it.
+Unit tests, in `src/unittests/bridge/` (configure with `-DBUILD_TESTS=ON` to build them):
+
+- `BridgeProfileBackupTests`: the file format and its checks, one row per kind of bad value.
+- `BridgeDeviceServiceTests`: `backupProfiles()` and `writeProfiles()` against `FakeBridgeDevice`, which answers requests as the firmware does (set through `BridgeDeviceService::setRequestHandler()`).
+- `BridgeClientConfigDialogTests`: the Configure dialog against the same fake: edits, Reset, Backup, Restore and the summary on OK, with each message box and file dialog answered by the test.
 
 ## Re-pairing after an upgrade from firmware before 1.2.1
 

@@ -8,6 +8,8 @@
 
 #include <QByteArray>
 #include <QCoreApplication>
+#include <QDate>
+#include <QDir>
 #include <QMap>
 #include <QString>
 #include <QStringList>
@@ -53,6 +55,14 @@ public:
   static bool fromJson(const QByteArray &json, BridgeProfileBackup &backup, QStringList &problems);
 
   /**
+   * @brief Check the backup as fromJson() checks a file, whoever made it
+   * @param checked The backup as a file gives it: each profile's slot its index, and the bytes
+   * a file has no value for zero
+   * @param problems What is wrong with it, otherwise
+   */
+  bool check(BridgeProfileBackup &checked, QStringList &problems) const;
+
+  /**
    * @brief Whether every profile, and the active one, is within a device's profiles
    * @param problems Which aren't, otherwise
    */
@@ -63,6 +73,18 @@ public:
    * an unset profile, or the all-zero profile shown when an older firmware can't read one
    */
   static bool isUnset(int index, const deskflow::bridge::DeviceProfile &profile);
+
+  /**
+   * @brief What the firmware returns for a profile it has no record of, as after a reset
+   */
+  static deskflow::bridge::DeviceProfile unsetProfile(int index);
+
+  /**
+   * @brief A backup's file name in the folder that no file has yet: macOS's save panel always
+   * asks before replacing a file
+   * @return "<screen name>-profiles-<yyyyMMdd>.json", or "...-2.json", "...-3.json" and on
+   */
+  static QString unusedFileName(const QDir &folder, const QString &screenName, const QDate &date);
 };
 
 } // namespace deskflow::gui

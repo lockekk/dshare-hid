@@ -29,3 +29,21 @@ create_test(
   SOURCE BridgeProfileBackupTests.cpp
   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
 )
+
+# the device requests behind backup, restore and the Configure dialog's OK
+# (gui/core/BridgeDeviceService.h), against a fake device
+create_test(
+  NAME BridgeDeviceServiceTests
+  DEPENDS gui
+  SOURCE BridgeDeviceServiceTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
+)
+
+# the Configure dialog's profiles: edits, Reset, Backup, Restore and OK
+# (gui/dialogs/BridgeClientConfigDialog.h), against a fake device
+create_test(
+  NAME BridgeClientConfigDialogTests
+  DEPENDS gui
+  SOURCE BridgeClientConfigDialogTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
+)

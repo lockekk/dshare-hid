@@ -13,6 +13,7 @@
 #include <QTimer>
 
 #include <cstring>
+#include <utility>
 
 namespace deskflow::gui {
 
@@ -21,6 +22,7 @@ namespace requests = deskflow::bridge::requests;
 namespace {
 
 bool s_suspended = false;
+BridgeDeviceService::RequestHandler s_requestHandler;
 
 // Attempt to open the transport with retries (macOS port readiness can be tricky)
 bool openWithRetries(deskflow::bridge::CdcTransport &transport, const QString &devicePath)
@@ -157,6 +159,9 @@ bool BridgeDeviceService::request(
     const QString &devicePath, const QString &command, const QStringList &arguments, QStringList &fields, QString &error
 )
 {
+  if (s_requestHandler) {
+    return s_requestHandler(devicePath, command, arguments, fields, error);
+  }
   if (auto *owner = BridgeClientProcess::forDevice(devicePath)) {
     return owner->request(command, arguments, fields, error);
   }
@@ -230,18 +235,18 @@ bool BridgeDeviceService::backupProfiles(const QString &devicePath, BridgeProfil
   return true;
 }
 
-bool BridgeDeviceService::restoreProfiles(
-    const QString &devicePath, const BridgeProfileBackup &backup, QList<int> &restored, BridgeProfileSet &profiles,
+bool BridgeDeviceService::writeProfiles(
+    const QString &devicePath, const BridgeProfileBackup &backup, QList<int> &written, BridgeProfileSet &profiles,
     QString &error
 )
 {
-  restored.clear();
+  written.clear();
 
   // the last check before the device, whoever made the backup: write the profiles as a backup
   // file gives them, every value checked and the rest of each profile zero
   BridgeProfileBackup checked;
   QStringList problems;
-  if (!BridgeProfileBackup::fromJson(backup.toJson(), checked, problems)) {
+  if (!backup.check(checked, problems)) {
     error = problems.join(QLatin1Char(' '));
     return false;
   }
@@ -259,7 +264,7 @@ bool BridgeDeviceService::restoreProfiles(
       error = tr("failed to write profile %1: %2").arg(it.key()).arg(error);
       return false;
     }
-    restored.append(it.key());
+    written.append(it.key());
 
     // the reply has the profile as the device stored it
     if (it.key() >= profiles.profiles.size() ||
@@ -328,6 +333,11 @@ bool BridgeDeviceService::isValidDeviceName(const QString &deviceName)
   }
   static QRegularExpression regex(R"(^[a-zA-Z0-9 ._-]+$)");
   return regex.match(deviceName).hasMatch();
+}
+
+void BridgeDeviceService::setRequestHandler(RequestHandler handler)
+{
+  s_requestHandler = std::move(handler);
 }
 
 void BridgeDeviceService::setSuspended(bool suspended)

@@ -38,6 +38,9 @@
 #include <QUrl>
 #include <QVBoxLayout>
 
+#include <algorithm>
+#include <cstring>
+
 #include "gui/MainWindow.h"
 #include "gui/config/ServerConfig.h"
 #include "platform/bridge/CdcTransport.h"
@@ -48,16 +51,16 @@ namespace {
 constexpr auto kLandscapeIconPath = ":/bridge-client/client/orientation_landscape.svg";
 constexpr auto kPortraitIconPath = ":/bridge-client/client/orientation_portrait.svg";
 
-// the problems, one per line, to follow a message
-QString problemList(const QStringList &problems)
+// the lines, one per bullet, to follow a message
+QString bulletList(const QStringList &items)
 {
   constexpr int kShown = 10;
   QStringList lines;
-  for (qsizetype i = 0; i < problems.size() && i < kShown; ++i) {
-    lines.append(QStringLiteral("• ") + problems.at(i));
+  for (qsizetype i = 0; i < items.size() && i < kShown; ++i) {
+    lines.append(QStringLiteral("• ") + items.at(i));
   }
-  if (problems.size() > kShown) {
-    lines.append(BridgeClientConfigDialog::tr("and %n more", nullptr, static_cast<int>(problems.size() - kShown)));
+  if (items.size() > kShown) {
+    lines.append(BridgeClientConfigDialog::tr("and %1 more").arg(items.size() - kShown));
   }
   return QStringLiteral("\n\n") + lines.join(QLatin1Char('\n'));
 }
@@ -76,6 +79,11 @@ void showInFileManager(const QString &path)
   if (!shown) {
     QDesktopServices::openUrl(QUrl::fromLocalFile(QFileInfo(path).absolutePath()));
   }
+}
+// the profile's hostname, or "Slot N" for none, as its tab shows it
+QString profileLabel(int index, const deskflow::bridge::DeviceProfile &profile)
+{
+  return BridgeProfileInfo{index, BridgeDeviceService::profileHostname(profile)}.label();
 }
 } // namespace
 
@@ -96,6 +104,7 @@ BridgeClientConfigDialog::BridgeClientConfigDialog(
   // Screen Name
   auto *lblScreenName = new QLabel(tr("Screen Name:"), this);
   m_editScreenName = new QLineEdit(this);
+  m_editScreenName->setObjectName(QStringLiteral("screenName"));
   m_editScreenName->setMinimumHeight(30);
   // same rule as the computer name in MainWindow (m_nameRegEx)
   m_editScreenName->setValidator(
@@ -108,6 +117,7 @@ BridgeClientConfigDialog::BridgeClientConfigDialog(
   // Device Name
   auto *lblDeviceName = new QLabel(tr("Device name:"), this);
   m_editDeviceName = new QLineEdit(this);
+  m_editDeviceName->setObjectName(QStringLiteral("deviceName"));
   m_editDeviceName->setMaxLength(22);
   m_editDeviceName->setValidator(new QRegularExpressionValidator(
       QRegularExpression(QStringLiteral("^[A-Za-z0-9 _\\-\\.]{0,22}$")), m_editDeviceName
@@ -170,9 +180,12 @@ void BridgeClientConfigDialog::setupProfileUI(QVBoxLayout *mainLayout)
   // the buttons for the profile shown
   auto *titleLayout = new QHBoxLayout();
   m_lblProfileGroupTitle = new QLabel(tr("Profiles (Device)"), this);
+  m_lblProfileGroupTitle->setObjectName(QStringLiteral("profileTitle"));
   m_btnProfileBackup = new QPushButton(tr("Backup..."), this);
+  m_btnProfileBackup->setObjectName(QStringLiteral("profileBackup"));
   m_btnProfileBackup->setToolTip(tr("Save the device's profiles to a file."));
   m_btnProfileRestore = new QPushButton(tr("Restore..."), this);
+  m_btnProfileRestore->setObjectName(QStringLiteral("profileRestore"));
   m_btnProfileRestore->setToolTip(tr("Load profiles from a backup file."));
   connect(m_btnProfileBackup, &QPushButton::clicked, this, &BridgeClientConfigDialog::onProfileBackupClicked);
   connect(m_btnProfileRestore, &QPushButton::clicked, this, &BridgeClientConfigDialog::onProfileRestoreClicked);
@@ -185,6 +198,7 @@ void BridgeClientConfigDialog::setupProfileUI(QVBoxLayout *mainLayout)
 
   // Tab Bar for Profile Selection
   m_profileTabBar = new QTabBar(this);
+  m_profileTabBar->setObjectName(QStringLiteral("profileTabs"));
   m_profileTabBar->setShape(QTabBar::RoundedNorth);
   m_profileTabBar->setDrawBase(false); // We don't have a widget below it directly attached style-wise
   connect(m_profileTabBar, &QTabBar::currentChanged, this, &BridgeClientConfigDialog::onProfileTabChanged);
@@ -218,6 +232,7 @@ void BridgeClientConfigDialog::setupProfileUI(QVBoxLayout *mainLayout)
   {
     auto *l = createHBox();
     m_editProfileName = new QLineEdit(this);
+    m_editProfileName->setObjectName(QStringLiteral("profileHostname"));
     m_editProfileName->setMaxLength(31); // 32 chars including null
     m_editProfileName->setValidator(new QRegularExpressionValidator(
         QRegularExpression(QStringLiteral("^[A-Za-z0-9 _\\-\\.]{0,31}$")), m_editProfileName
@@ -251,6 +266,7 @@ void BridgeClientConfigDialog::setupProfileUI(QVBoxLayout *mainLayout)
   {
     auto *l = createHBox();
     m_spinProfileWidth = new QSpinBox(this);
+    m_spinProfileWidth->setObjectName(QStringLiteral("profileWidth"));
     m_spinProfileWidth->setRange(100, 10000);
     m_spinProfileWidth->setMinimumWidth(100);
     l->addWidget(m_spinProfileWidth);
@@ -263,6 +279,7 @@ void BridgeClientConfigDialog::setupProfileUI(QVBoxLayout *mainLayout)
   }
 
   m_spinProfileHeight = new QSpinBox(this);
+  m_spinProfileHeight->setObjectName(QStringLiteral("profileHeight"));
   m_spinProfileHeight->setRange(100, 10000);
   m_spinProfileHeight->setMinimumWidth(100);
 
@@ -278,6 +295,7 @@ void BridgeClientConfigDialog::setupProfileUI(QVBoxLayout *mainLayout)
 
   // Portrait (Left)
   m_radioProfilePortrait = new QRadioButton(this);
+  m_radioProfilePortrait->setObjectName(QStringLiteral("profilePortrait"));
   m_radioProfilePortrait->setToolTip(tr("Portrait"));
 
   m_lblIconPortrait = new QLabel(this);
@@ -288,6 +306,7 @@ void BridgeClientConfigDialog::setupProfileUI(QVBoxLayout *mainLayout)
 
   // Landscape (Right)
   m_radioProfileLandscape = new QRadioButton(this);
+  m_radioProfileLandscape->setObjectName(QStringLiteral("profileLandscape"));
   m_radioProfileLandscape->setToolTip(tr("Landscape"));
 
   m_lblIconLandscape = new QLabel(this);
@@ -330,9 +349,11 @@ void BridgeClientConfigDialog::setupProfileUI(QVBoxLayout *mainLayout)
   // HID Mode
   m_profileHidModeGroup = new QButtonGroup(this);
   m_radioProfileCombo = new QRadioButton(tr("Keyboard + Mouse"), this);
+  m_radioProfileCombo->setObjectName(QStringLiteral("profileCombo"));
   m_radioProfileCombo->setMinimumWidth(180); // Fix alignment for 2nd column
 
   m_radioProfileMouseOnly = new QRadioButton(tr("Mouse Only"), this);
+  m_radioProfileMouseOnly->setObjectName(QStringLiteral("profileMouseOnly"));
 
   m_profileHidModeGroup->addButton(m_radioProfileCombo, 0);
   m_profileHidModeGroup->addButton(m_radioProfileMouseOnly, 1);
@@ -355,6 +376,7 @@ void BridgeClientConfigDialog::setupProfileUI(QVBoxLayout *mainLayout)
   {
     auto *spinLayout = createHBox();
     m_spinScrollScale = new QDoubleSpinBox(this);
+    m_spinScrollScale->setObjectName(QStringLiteral("profileScrollScale"));
     m_spinScrollScale->setRange(0.1, 10.0);
     m_spinScrollScale->setSingleStep(0.1);
     m_spinScrollScale->setDecimals(1);
@@ -366,6 +388,7 @@ void BridgeClientConfigDialog::setupProfileUI(QVBoxLayout *mainLayout)
   scrollLayout->addSpacing(10);
 
   m_checkInvertScroll = new QCheckBox(tr("Invert direction"), this);
+  m_checkInvertScroll->setObjectName(QStringLiteral("profileInvertScroll"));
   m_checkInvertScroll->setMinimumWidth(150);
   scrollLayout->addWidget(m_checkInvertScroll);
   scrollLayout->addStretch();
@@ -374,20 +397,29 @@ void BridgeClientConfigDialog::setupProfileUI(QVBoxLayout *mainLayout)
 
   groupLayout->addLayout(detailsLayout);
 
+  // changes go to the device on OK, which also makes the profile shown active: note the
+  // profiles the user edits, but not the form being filled in to show a profile
+  const auto noteEdit = [this] {
+    if (!m_showingProfile && m_selectedProfileIndex >= 0)
+      m_editedProfiles.insert(m_selectedProfileIndex);
+  };
+  connect(m_editProfileName, &QLineEdit::textChanged, this, noteEdit);
+  connect(m_spinProfileWidth, &QSpinBox::valueChanged, this, noteEdit);
+  connect(m_spinProfileHeight, &QSpinBox::valueChanged, this, noteEdit);
+  connect(m_profileOrientationGroup, &QButtonGroup::idToggled, this, noteEdit);
+  connect(m_profileHidModeGroup, &QButtonGroup::idToggled, this, noteEdit);
+  connect(m_spinScrollScale, &QDoubleSpinBox::valueChanged, this, noteEdit);
+  connect(m_checkInvertScroll, &QCheckBox::toggled, this, noteEdit);
+
   // Buttons
   auto *btnLayout = new QHBoxLayout();
-  m_btnProfileSave = new QPushButton(tr("Save to Device"), this);
-  m_btnProfileActivate = new QPushButton(tr("Activate"), this);
   m_btnProfileReset = new QPushButton(tr("Reset"), this);
+  m_btnProfileReset->setObjectName(QStringLiteral("profileReset"));
 
-  connect(m_btnProfileSave, &QPushButton::clicked, this, &BridgeClientConfigDialog::onProfileSaveClicked);
-  connect(m_btnProfileActivate, &QPushButton::clicked, this, &BridgeClientConfigDialog::onProfileActivateClicked);
   connect(m_btnProfileReset, &QPushButton::clicked, this, &BridgeClientConfigDialog::onProfileResetClicked);
 
   btnLayout->addWidget(m_btnProfileReset);
   btnLayout->addStretch();
-  btnLayout->addWidget(m_btnProfileSave);
-  btnLayout->addWidget(m_btnProfileActivate);
 
   groupLayout->addLayout(btnLayout);
 
@@ -485,6 +517,10 @@ void BridgeClientConfigDialog::showProfiles(const BridgeProfileSet &profiles)
       m_profileTabBar->addTab(QString("Slot %1").arg(i));
       m_profileCache[i] = profiles.profiles.at(i);
     }
+    m_deviceProfiles.clear();
+    rememberDeviceProfiles(profiles);
+    m_editedProfiles.clear();
+    m_resetProfiles.clear();
 
     // Select the active profile tab by default
     m_profileTabBar->setCurrentIndex(m_deviceActiveProfileIndex);
@@ -496,6 +532,104 @@ void BridgeClientConfigDialog::showProfiles(const BridgeProfileSet &profiles)
 
   m_selectedProfileIndex = m_deviceActiveProfileIndex;
   updateProfileDetailUI(m_selectedProfileIndex);
+}
+
+void BridgeClientConfigDialog::rememberDeviceProfiles(const BridgeProfileSet &profiles)
+{
+  for (qsizetype i = 0; i < profiles.profiles.size(); ++i) {
+    m_deviceProfiles[static_cast<int>(i)] = profiles.profiles.at(i);
+  }
+}
+
+bool BridgeClientConfigDialog::applyProfiles()
+{
+  if (m_selectedProfileIndex < 0 || m_selectedProfileIndex >= m_totalProfiles)
+    return true; // the device's profiles weren't read
+
+  saveUiToCache(m_selectedProfileIndex);
+
+  // the profiles the user changed, if they differ from what the device has (a reset profile's
+  // default once erased); the one shown becomes the active one
+  BridgeProfileBackup edits;
+  edits.activeProfile = m_selectedProfileIndex;
+  for (int index : std::as_const(m_editedProfiles)) {
+    const auto edited = m_profileCache.value(index);
+    const auto stored =
+        m_resetProfiles.contains(index) ? BridgeProfileBackup::unsetProfile(index) : m_deviceProfiles.value(index);
+    if (std::memcmp(&edited, &stored, sizeof(edited)) != 0)
+      edits.profiles.insert(index, edited);
+  }
+  QList<int> resets = m_resetProfiles.values();
+  std::sort(resets.begin(), resets.end());
+
+  // the checks of a restore, so a profile is never saved that a backup couldn't hold
+  BridgeProfileBackup checked;
+  QStringList problems;
+  if (!edits.profiles.isEmpty() && !edits.check(checked, problems)) {
+    QMessageBox::warning(this, tr("Invalid Input"), tr("Please fix these profiles first:") + bulletList(problems));
+    return false;
+  }
+
+  // in the order they are made: erase, save, switch, then the rename (DeskflowHidExtension)
+  QStringList changes;
+  for (int index : std::as_const(resets)) {
+    changes.append(
+        tr("Reset %1. Its host must pair again manually.").arg(profileLabel(index, m_deviceProfiles.value(index)))
+    );
+  }
+  QStringList saved;
+  for (auto it = edits.profiles.cbegin(); it != edits.profiles.cend(); ++it) {
+    saved.append(profileLabel(it.key(), it.value()));
+  }
+  if (!saved.isEmpty())
+    changes.append(tr("Save %1.").arg(saved.join(QStringLiteral(", "))));
+  if (m_selectedProfileIndex != m_deviceActiveProfileIndex) {
+    changes.append(tr("Active profile changes to %1.")
+                       .arg(profileLabel(m_selectedProfileIndex, m_profileCache.value(m_selectedProfileIndex))));
+  }
+  if (deviceNameChanged())
+    changes.append(tr("Device name changes to %1.").arg(deviceName()));
+
+  if (changes.isEmpty())
+    return true;
+  if (QMessageBox::question(
+          this, tr("Apply Changes"), tr("Apply these changes to the device?") + bulletList(changes),
+          QMessageBox::Apply | QMessageBox::Cancel, QMessageBox::Apply
+      ) != QMessageBox::Apply) {
+    return false;
+  }
+
+  // a connected bridge core takes on the active profile at once
+  BridgeProfileSet profiles;
+  QString error;
+  bool ok = true;
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+  for (int index : std::as_const(resets)) {
+    ok = BridgeDeviceService::eraseProfile(m_devicePath, index, profiles, error);
+    if (!ok)
+      break;
+    m_resetProfiles.remove(index);
+    rememberDeviceProfiles(profiles);
+    m_deviceActiveProfileIndex = profiles.activeIndex;
+  }
+  if (ok && !edits.profiles.isEmpty()) {
+    QList<int> written;
+    ok = BridgeDeviceService::writeProfiles(m_devicePath, edits, written, profiles, error);
+  } else if (ok && m_selectedProfileIndex != m_deviceActiveProfileIndex) {
+    ok = BridgeDeviceService::switchProfile(m_devicePath, m_selectedProfileIndex, profiles, error);
+  }
+  QApplication::restoreOverrideCursor();
+  if (!ok) {
+    QMessageBox::critical(this, tr("Error"), tr("Failed to update the device: %1").arg(error));
+    return false;
+  }
+
+  if (!profiles.profiles.isEmpty()) {
+    rememberDeviceProfiles(profiles);
+    m_deviceActiveProfileIndex = profiles.activeIndex;
+  }
+  m_editedProfiles.clear();
+  return true;
 }
 
 void BridgeClientConfigDialog::onProfileTabChanged(int index)
@@ -530,7 +664,10 @@ void BridgeClientConfigDialog::saveUiToCache(int index)
   p.hidMode = m_radioProfileMouseOnly->isChecked() ? 1 : 0;
   p.slot = index;
   p.invert = m_checkInvertScroll->isChecked() ? 1 : 0;
-  p.yScrollScale = static_cast<uint8_t>(qRound(m_spinScrollScale->value() * 10)); // e.g. 0.3 * 10 is 2.999...
+  // e.g. 0.3 * 10 is 2.999...; 0, the firmware's default, is shown as 1.0, so keep it as it is
+  const auto scale = static_cast<uint8_t>(qRound(m_spinScrollScale->value() * 10));
+  if (!(p.yScrollScale == 0 && scale == 10))
+    p.yScrollScale = scale;
 }
 
 void BridgeClientConfigDialog::updateTabLabels()
@@ -571,6 +708,7 @@ void BridgeClientConfigDialog::updateProfileDetailUI(int index)
 
   // Block signals to prevent potential loops if we had them (not critical here but good practice)
   const bool blocked = blockSignals(true);
+  m_showingProfile = true; // filling in the form isn't an edit
 
   m_editProfileName->setText(QString::fromUtf8(nameBytes));
   m_spinProfileWidth->setValue(p.screenWidth);
@@ -591,86 +729,21 @@ void BridgeClientConfigDialog::updateProfileDetailUI(int index)
   m_spinScrollScale->setValue(scale);
   m_checkInvertScroll->setChecked(p.invert != 0);
 
+  m_showingProfile = false;
   blockSignals(blocked);
-}
-
-void BridgeClientConfigDialog::onProfileSaveClicked()
-{
-  if (m_selectedProfileIndex < 0 || m_selectedProfileIndex >= m_totalProfiles)
-    return;
-
-  // Ensure current UI state is captured
-  saveUiToCache(m_selectedProfileIndex);
-
-  const auto &p = m_profileCache[m_selectedProfileIndex];
-
-  // Send to Device (a connected bridge core takes on the active profile's changes at once)
-  BridgeProfileSet profiles;
-  QString error;
-  if (BridgeDeviceService::saveProfile(m_devicePath, m_selectedProfileIndex, p, profiles, error)) {
-    QMessageBox::information(this, tr("Success"), tr("Profile saved to device."));
-  } else {
-    QMessageBox::critical(this, tr("Error"), tr("Failed to save profile: %1").arg(error));
-  }
-}
-
-void BridgeClientConfigDialog::onProfileActivateClicked()
-{
-  if (m_selectedProfileIndex < 0)
-    return;
-
-  if (m_selectedProfileIndex == m_deviceActiveProfileIndex) {
-    return;
-  }
-
-  BridgeProfileSet profiles;
-  QString error;
-  if (BridgeDeviceService::switchProfile(m_devicePath, m_selectedProfileIndex, profiles, error)) {
-    m_deviceActiveProfileIndex = m_selectedProfileIndex;
-    updateTabLabels();
-
-    QString profileName = QString("Slot %1").arg(m_selectedProfileIndex);
-    if (m_profileCache.contains(m_selectedProfileIndex)) {
-      const auto &p = m_profileCache[m_selectedProfileIndex];
-      QByteArray nameBytes(p.hostname, sizeof(p.hostname));
-      int nullPos = nameBytes.indexOf('\0');
-      if (nullPos >= 0)
-        nameBytes.truncate(nullPos);
-      QString name = QString::fromUtf8(nameBytes);
-      if (!name.isEmpty()) {
-        profileName = name;
-      }
-    }
-    QMessageBox::information(this, tr("Success"), tr("Switched to %1").arg(profileName));
-  } else {
-    QMessageBox::critical(this, tr("Error"), tr("Failed to switch profile: %1").arg(error));
-  }
 }
 
 void BridgeClientConfigDialog::onProfileResetClicked()
 {
-  if (m_selectedProfileIndex < 0)
+  if (m_selectedProfileIndex < 0 || m_selectedProfileIndex >= m_totalProfiles)
     return;
 
-  if (QMessageBox::question(this, tr("Confirm Reset"), tr("Are you sure you want to reset and erase this profile?")) !=
-      QMessageBox::Yes) {
-    return;
-  }
-
-  BridgeProfileSet profiles;
-  QString error;
-  if (BridgeDeviceService::eraseProfile(m_devicePath, m_selectedProfileIndex, profiles, error)) {
-    QMessageBox::information(this, tr("Success"), tr("Profile erased."));
-
-    // Refresh just this profile
-    if (m_selectedProfileIndex < profiles.profiles.size()) {
-      m_profileCache[m_selectedProfileIndex] = profiles.profiles.at(m_selectedProfileIndex);
-      updateProfileDetailUI(m_selectedProfileIndex);
-    }
-
-  } else {
-    QMessageBox::critical(this, tr("Error"), tr("Failed to erase profile: %1").arg(error));
-  }
+  // erased on OK; until then the form shows the profile as it will be
+  m_resetProfiles.insert(m_selectedProfileIndex);
+  m_editedProfiles.remove(m_selectedProfileIndex);
+  m_profileCache[m_selectedProfileIndex] = BridgeProfileBackup::unsetProfile(m_selectedProfileIndex);
+  updateProfileDetailUI(m_selectedProfileIndex);
+  updateTabLabels();
 }
 
 void BridgeClientConfigDialog::onProfileBackupClicked()
@@ -691,21 +764,14 @@ void BridgeClientConfigDialog::onProfileBackupClicked()
   BridgeProfileBackup check;
   QStringList problems;
   if (!BridgeProfileBackup::fromJson(json, check, problems)) {
-    QMessageBox::warning(this, tr("Backup Profiles"), tr("Please fix these profiles first:") + problemList(problems));
+    QMessageBox::warning(this, tr("Backup Profiles"), tr("Please fix these profiles first:") + bulletList(problems));
     return;
   }
 
-  QString stem = m_editScreenName->text().trimmed();
-  if (stem.isEmpty())
-    stem = QStringLiteral("bridge");
-  // a name not taken yet: macOS's save panel always asks before replacing a file
-  const QDir documents(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
-  const QString baseName =
-      QStringLiteral("%1-profiles-%2").arg(stem, QDate::currentDate().toString(QStringLiteral("yyyyMMdd")));
-  QString suggested = documents.filePath(baseName + QStringLiteral(".json"));
-  for (int suffix = 2; QFile::exists(suggested); ++suffix) {
-    suggested = documents.filePath(QStringLiteral("%1-%2.json").arg(baseName).arg(suffix));
-  }
+  const QString suggested = BridgeProfileBackup::unusedFileName(
+      QDir(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)), m_editScreenName->text(),
+      QDate::currentDate()
+  );
   const QString path =
       QFileDialog::getSaveFileName(this, tr("Backup Profiles"), suggested, tr("Profile backups (*.json)"));
   if (path.isEmpty())
@@ -723,7 +789,7 @@ void BridgeClientConfigDialog::onProfileBackupClicked()
   const QString folderUrl = QUrl::fromLocalFile(QFileInfo(path).absolutePath()).toString(QUrl::FullyEncoded);
   QMessageBox box(
       QMessageBox::Information, tr("Backup Profiles"),
-      tr("Saved %n profile(s) to:", nullptr, static_cast<int>(backup.profiles.size())).toHtmlEscaped() +
+      tr("Backup saved to:").toHtmlEscaped() +
           QStringLiteral("<br><a href=\"%1\">%2</a>").arg(folderUrl, QDir::toNativeSeparators(path).toHtmlEscaped()),
       QMessageBox::Ok, this
   );
@@ -756,55 +822,36 @@ void BridgeClientConfigDialog::onProfileRestoreClicked()
   const QByteArray json = file.read(BridgeProfileBackup::kMaxFileSize + 1);
   file.close();
 
-  // nothing goes to the device unless every value in the file is valid and fits the device
+  // nothing reaches the form unless every value in the file is valid and fits the device
   BridgeProfileBackup backup;
   QStringList problems;
   if (!BridgeProfileBackup::fromJson(json, backup, problems) || !backup.fitsDevice(m_totalProfiles, problems)) {
-    QMessageBox::warning(this, tr("Restore Profiles"), tr("This file can't be restored:") + problemList(problems));
+    QMessageBox::warning(this, tr("Restore Profiles"), tr("This file can't be restored:") + bulletList(problems));
     return;
   }
 
-  QStringList hostnames;
-  for (const auto &profile : std::as_const(backup.profiles)) {
-    hostnames.append(BridgeDeviceService::profileHostname(profile));
-  }
-  const int count = static_cast<int>(backup.profiles.size());
-  if (QMessageBox::question(
-          this, tr("Restore Profiles"),
-          tr("Restore %n profile(s) to the device?", nullptr, count) + QStringLiteral("\n\n") +
-              hostnames.join(QStringLiteral(", "))
-      ) != QMessageBox::Yes) {
-    return;
+  // into the form, for OK to save; profiles not in the backup stay as they are
+  saveUiToCache(m_selectedProfileIndex);
+  for (auto it = backup.profiles.cbegin(); it != backup.profiles.cend(); ++it) {
+    m_profileCache[it.key()] = it.value();
+    m_editedProfiles.insert(it.key());
+    m_resetProfiles.remove(it.key());
   }
 
-  QList<int> restored;
-  BridgeProfileSet profiles;
-  QString error;
-  QApplication::setOverrideCursor(Qt::WaitCursor);
-  const bool ok = BridgeDeviceService::restoreProfiles(m_devicePath, backup, restored, profiles, error);
-  QApplication::restoreOverrideCursor();
-
-  if (!ok) {
-    // show what the device has now, if some of the backup reached it
-    BridgeProfileSet current;
-    QString readError;
-    if (!restored.isEmpty() && BridgeDeviceService::readProfiles(m_devicePath, current, readError) &&
-        !current.profiles.isEmpty()) {
-      showProfiles(current);
-    }
-    QMessageBox::critical(this, tr("Restore Profiles"), tr("Restore failed: %1").arg(error));
-    return;
+  // the backup's active profile is shown, so OK makes it active
+  {
+    const QSignalBlocker blocker(m_profileTabBar);
+    m_profileTabBar->setCurrentIndex(backup.activeProfile);
   }
+  m_selectedProfileIndex = backup.activeProfile;
+  updateProfileDetailUI(m_selectedProfileIndex);
+  updateTabLabels();
 
-  showProfiles(profiles);
-
-  // the name is set on OK, like a typed one; a device that isn't activated keeps its name
-  QString message = tr("Restored %n profile(s).", nullptr, count);
-  if (!backup.deviceName.isEmpty() && backup.deviceName != deviceName() && m_editDeviceName->isEnabled()) {
+  // the name too, set on OK like a typed one; a device that isn't activated keeps its name
+  if (!backup.deviceName.isEmpty() && m_editDeviceName->isEnabled())
     m_editDeviceName->setText(backup.deviceName);
-    message += QStringLiteral("\n\n") + tr("Click OK to also set the device name to \"%1\".").arg(backup.deviceName);
-  }
-  QMessageBox::information(this, tr("Restore Profiles"), message);
+
+  QMessageBox::information(this, tr("Restore Profiles"), tr("Backup loaded. Click OK to apply."));
 }
 
 void BridgeClientConfigDialog::saveConfig()
@@ -926,6 +973,10 @@ void BridgeClientConfigDialog::onAccepted()
         return; // Abort save
       }
     }
+  }
+
+  if (!applyProfiles()) {
+    return;
   }
 
   saveConfig();

@@ -7,9 +7,11 @@
 #include "gui/core/BridgeDeviceService.h"
 #include "gui/core/BridgeProfileBackup.h"
 
+#include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QTemporaryDir>
 
 #include <cstdio>
 #include <cstring>
@@ -302,17 +304,69 @@ void BridgeProfileBackupTests::fitsDevice()
   QVERIFY(backup.fitsDevice(2, problems)); // profiles 0 and 1, active 1
   QVERIFY(problems.isEmpty());
   QVERIFY(!backup.fitsDevice(1, problems));
-  QCOMPARE(problems.size(), qsizetype(2)); // no profile 1 to write, nor to make active
+  // no profile 1 to write, nor to make active
+  QCOMPARE(problems, (QStringList{"This device has no profile 1.", "This device has no profile 1 to make active."}));
 
   QVERIFY(BridgeProfileBackup::fromJson(backupOf({validProfile(0)}, 3), backup, problems));
   QVERIFY(!backup.fitsDevice(2, problems));
-  QCOMPARE(problems.size(), qsizetype(1));
-  QVERIFY(problems.at(0).contains("3"));
+  QCOMPARE(problems, QStringList{"This device has no profile 3 to make active."});
+}
+
+void BridgeProfileBackupTests::unusedFileName()
+{
+  QTemporaryDir dir;
+  QVERIFY(dir.isValid());
+  const QDir folder(dir.path());
+  const QDate date(2026, 10, 25);
+
+  const QString first = BridgeProfileBackup::unusedFileName(folder, QStringLiteral("Bridge-TEST"), date);
+  QCOMPARE(first, folder.filePath("Bridge-TEST-profiles-20261025.json"));
+
+  // a name already taken gets a number
+  QVERIFY(QFile(first).open(QIODevice::WriteOnly));
+  const QString second = BridgeProfileBackup::unusedFileName(folder, QStringLiteral("Bridge-TEST"), date);
+  QCOMPARE(second, folder.filePath("Bridge-TEST-profiles-20261025-2.json"));
+  QVERIFY(QFile(second).open(QIODevice::WriteOnly));
+  QCOMPARE(
+      BridgeProfileBackup::unusedFileName(folder, QStringLiteral("Bridge-TEST"), date),
+      folder.filePath("Bridge-TEST-profiles-20261025-3.json")
+  );
+
+  // a screen name of nothing but spaces
+  QCOMPARE(
+      BridgeProfileBackup::unusedFileName(folder, QStringLiteral("  "), date),
+      folder.filePath("bridge-profiles-20261025.json")
+  );
+}
+
+void BridgeProfileBackupTests::checkCleansProfiles()
+{
+  // as the Configure dialog's form leaves a profile: a stale slot, and bytes it never sets
+  DeviceProfile edited = makeProfile(3, "Work Laptop", 2560, 1600);
+  edited.slot = 0;
+  std::memset(edited.reserved, 0xAB, sizeof(edited.reserved));
+  edited.hostname[sizeof(edited.hostname) - 1] = 'x'; // past the hostname's NUL
+
+  BridgeProfileBackup edits;
+  edits.activeProfile = 0;
+  edits.profiles.insert(3, edited);
+
+  BridgeProfileBackup checked;
+  QStringList problems;
+  QVERIFY2(edits.check(checked, problems), qPrintable(problems.join('\n')));
+  QVERIFY(sameProfile(checked.profiles.value(3), makeProfile(3, "Work Laptop", 2560, 1600)));
+
+  // a hostname cleared in the form is refused
+  std::memset(edited.hostname, 0, sizeof(edited.hostname));
+  edits.profiles.insert(3, edited);
+  QVERIFY(!edits.check(checked, problems));
+  QVERIFY2(problems.join('\n').contains("Profile 3: the hostname"), qPrintable(problems.join('\n')));
 }
 
 void BridgeProfileBackupTests::recognisesUnsetProfiles()
 {
   QVERIFY(BridgeProfileBackup::isUnset(4, unsetProfile(4)));
+  QVERIFY(sameProfile(BridgeProfileBackup::unsetProfile(4), unsetProfile(4)));
 
   DeviceProfile zero;
   std::memset(&zero, 0, sizeof(zero));
@@ -324,25 +378,6 @@ void BridgeProfileBackupTests::recognisesUnsetProfiles()
   DeviceProfile changed = unsetProfile(4);
   changed.yScrollScale = 10;
   QVERIFY(!BridgeProfileBackup::isUnset(4, changed));
-}
-
-void BridgeProfileBackupTests::restoreChecksBeforeTheDevice()
-{
-  // made by hand, not read from a file
-  BridgeProfileBackup backup;
-  backup.activeProfile = 0;
-  backup.profiles.insert(0, makeProfile(0, "Pixel", 1080, 2424));
-  backup.profiles[0].hidMode = 7;
-
-  QList<int> restored;
-  BridgeProfileSet profiles;
-  QString error;
-  QVERIFY(
-      !BridgeDeviceService::restoreProfiles(QStringLiteral("/dev/no-such-bridge"), backup, restored, profiles, error)
-  );
-  // refused for the value, before opening the device (which would fail differently)
-  QVERIFY2(error.contains("\"hid_mode\""), qPrintable(error));
-  QVERIFY(restored.isEmpty());
 }
 
 QTEST_GUILESS_MAIN(BridgeProfileBackupTests)

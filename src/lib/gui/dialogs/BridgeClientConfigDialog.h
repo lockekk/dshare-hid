@@ -11,6 +11,7 @@
 #include <QMap> // Added
 #include <QPushButton>
 #include <QRadioButton>
+#include <QSet>
 #include <QSpinBox>
 #include <QTabBar> // Added
 #include <QVBoxLayout>
@@ -48,8 +49,6 @@ Q_SIGNALS:
 private Q_SLOTS:
   void onAccepted();
 
-  void onProfileSaveClicked();
-  void onProfileActivateClicked();
   void onProfileResetClicked();
   void onProfileBackupClicked();
   void onProfileRestoreClicked();
@@ -61,6 +60,8 @@ private:
   void setupProfileUI(QVBoxLayout *mainLayout);
   void loadProfilesFromDevice();
   void showProfiles(const BridgeProfileSet &profiles);
+  void rememberDeviceProfiles(const BridgeProfileSet &profiles);
+  bool applyProfiles();
   void updateProfileDetailUI(int index);
 
   QString m_configPath;
@@ -92,8 +93,6 @@ private:
   QRadioButton *m_radioProfileCombo = nullptr;
   QRadioButton *m_radioProfileMouseOnly = nullptr;
 
-  QPushButton *m_btnProfileSave = nullptr;
-  QPushButton *m_btnProfileActivate = nullptr;
   QPushButton *m_btnProfileReset = nullptr;
   QPushButton *m_btnProfileBackup = nullptr;
   QPushButton *m_btnProfileRestore = nullptr;
@@ -105,6 +104,12 @@ private:
   QMap<int, deskflow::bridge::DeviceProfile> m_profileCache;
   int m_selectedProfileIndex = -1;     // Currently viewed/edited in UI
   int m_deviceActiveProfileIndex = -1; // Truly active on device
+  // the profiles as the device has them, and those the user changed in the form or reset
+  // (saved and erased on OK)
+  QMap<int, deskflow::bridge::DeviceProfile> m_deviceProfiles;
+  QSet<int> m_editedProfiles;
+  QSet<int> m_resetProfiles; // erased on OK
+  bool m_showingProfile = false;
   int m_totalProfiles = 0;
 
   void onProfileTabChanged(int index);

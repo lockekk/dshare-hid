@@ -7,6 +7,8 @@
 #include <QString>
 #include <QStringList>
 
+#include <functional>
+
 namespace deskflow {
 namespace gui {
 
@@ -86,6 +88,17 @@ public:
       QString &error
   );
 
+  using RequestHandler = std::function<bool(
+      const QString &devicePath, const QString &command, const QStringList &arguments, QStringList &fields,
+      QString &error
+  )>;
+
+  /**
+   * @brief For tests: carry out every request (see request()) with this instead of the device's
+   * owner, until it is set back to none
+   */
+  static void setRequestHandler(RequestHandler handler);
+
   /**
    * @brief Profile requests, through the device's owner (see request()). Each one answers
    * with the device's profiles as they are afterwards.
@@ -104,16 +117,18 @@ public:
   static bool backupProfiles(const QString &devicePath, BridgeProfileBackup &backup, QString &error);
 
   /**
-   * @brief Write a backup's profiles to the device, then make its active profile active
+   * @brief Write profiles to the device, then make the backup's active profile active
    *
-   * The backup is checked again as a backup file would be (BridgeProfileBackup::fromJson()),
-   * so nothing is written unless every value is valid and all of it fits the device, and each
-   * profile must read back as it was written.  The backup's device name is left to the caller.
-   * @param restored The indexes of the profiles written, also when it stops part way
+   * The Configure dialog saves its changes on OK this way, a restored backup's among them.  The
+   * backup is checked again as a backup file would be (BridgeProfileBackup::check()), so
+   * nothing is written unless every value is valid and all of it fits the device.  Each
+   * profile must read back as it was written, and the switch happens only if need be.  The
+   * backup's device name is left to the caller.
+   * @param written The indexes of the profiles written, also when it stops part way
    * @param profiles The device's profiles afterwards, on success
    */
-  static bool restoreProfiles(
-      const QString &devicePath, const BridgeProfileBackup &backup, QList<int> &restored, BridgeProfileSet &profiles,
+  static bool writeProfiles(
+      const QString &devicePath, const BridgeProfileBackup &backup, QList<int> &written, BridgeProfileSet &profiles,
       QString &error
   );
 

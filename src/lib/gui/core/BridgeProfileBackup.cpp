@@ -6,6 +6,7 @@
 
 #include "gui/core/BridgeDeviceService.h"
 
+#include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -264,26 +265,48 @@ bool BridgeProfileBackup::fromJson(const QByteArray &json, BridgeProfileBackup &
   return true;
 }
 
+bool BridgeProfileBackup::check(BridgeProfileBackup &checked, QStringList &problems) const
+{
+  return fromJson(toJson(), checked, problems);
+}
+
 bool BridgeProfileBackup::fitsDevice(int profileCount, QStringList &problems) const
 {
   problems.clear();
   for (auto it = profiles.cbegin(); it != profiles.cend(); ++it) {
     if (it.key() >= profileCount) {
-      problems.append(
-          tr("This device has %n profile(s), so it has no profile %1.", nullptr, profileCount).arg(it.key())
-      );
+      problems.append(tr("This device has no profile %1.").arg(it.key()));
     }
   }
   if (activeProfile >= profileCount) {
-    problems.append(tr("This device has %n profile(s), so profile %1 can't be made active.", nullptr, profileCount)
-                        .arg(activeProfile));
+    problems.append(tr("This device has no profile %1 to make active.").arg(activeProfile));
   }
   return problems.isEmpty();
 }
 
 bool BridgeProfileBackup::isUnset(int index, const DeviceProfile &profile)
 {
-  // what device_config_get_profile() in the firmware returns for a profile it has no record of
+  const DeviceProfile unset = unsetProfile(index);
+  DeviceProfile zero;
+  std::memset(&zero, 0, sizeof(zero));
+
+  return std::memcmp(&profile, &unset, sizeof(profile)) == 0 || std::memcmp(&profile, &zero, sizeof(profile)) == 0;
+}
+
+QString BridgeProfileBackup::unusedFileName(const QDir &folder, const QString &screenName, const QDate &date)
+{
+  const QString stem = screenName.trimmed().isEmpty() ? QStringLiteral("bridge") : screenName.trimmed();
+  const QString baseName = QStringLiteral("%1-profiles-%2").arg(stem, date.toString(QStringLiteral("yyyyMMdd")));
+  QString path = folder.filePath(baseName + QStringLiteral(".json"));
+  for (int suffix = 2; QFile::exists(path); ++suffix) {
+    path = folder.filePath(QStringLiteral("%1-%2.json").arg(baseName).arg(suffix));
+  }
+  return path;
+}
+
+DeviceProfile BridgeProfileBackup::unsetProfile(int index)
+{
+  // device_config_get_profile() in the firmware
   DeviceProfile unset;
   std::memset(&unset, 0, sizeof(unset));
   std::snprintf(unset.hostname, sizeof(unset.hostname), "Slot %d", index);
@@ -291,11 +314,7 @@ bool BridgeProfileBackup::isUnset(int index, const DeviceProfile &profile)
   unset.screenWidth = 1080;
   unset.screenHeight = 2424;
   unset.speed = 30;
-
-  DeviceProfile zero;
-  std::memset(&zero, 0, sizeof(zero));
-
-  return std::memcmp(&profile, &unset, sizeof(profile)) == 0 || std::memcmp(&profile, &zero, sizeof(profile)) == 0;
+  return unset;
 }
 
 } // namespace deskflow::gui
