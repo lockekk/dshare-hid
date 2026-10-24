@@ -37,11 +37,17 @@
  * A profile travels as the hex of its DeviceProfile bytes and a name as the hex of its UTF-8,
  * so no field contains a space.  While no core runs, the GUI carries out the same commands on
  * the device itself (execute()), so both ways answer alike.
+ *
+ * Unasked, the core also tells the GUI when the server's cursor enters or leaves the bridge's
+ * computer, which the profile shortcuts switch (see gui/core/BridgeProfileShortcuts):
+ *
+ *   core -> GUI:  @bridge-focus in|out
  */
 namespace deskflow::bridge::requests {
 
 inline const QString kRequest = QStringLiteral("req");
 inline const QString kResponse = QStringLiteral("@bridge-rsp");
+inline const QString kFocus = QStringLiteral("@bridge-focus");
 
 inline const QString kProfiles = QStringLiteral("profiles");
 inline const QString kSwitch = QStringLiteral("switch");
@@ -63,6 +69,9 @@ bool parseRequest(const QString &line, Request &request);
 /// on failure, fields holds just the error message
 QString formatResponse(quint64 id, bool ok, const QStringList &fields);
 bool parseResponse(const QString &line, quint64 &id, bool &ok, QStringList &fields);
+
+QString formatFocus(bool entered);
+bool parseFocus(const QString &line, bool &entered);
 
 /**
  * @brief Carry out a command on an open transport

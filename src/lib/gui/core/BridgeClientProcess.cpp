@@ -240,6 +240,12 @@ void BridgeClientProcess::readLines(QByteArray &buffer, const QByteArray &data)
       continue;
     }
 
+    // only recorded, so it needn't wait for a request
+    if (bool entered = false; requests::parseFocus(line, entered)) {
+      Q_EMIT focusChanged(entered);
+      continue;
+    }
+
     // while a request waits, hold other lines back: their signals could stop this process,
     // or start another request, in the middle of the wait
     if (m_requestDepth > 0) {

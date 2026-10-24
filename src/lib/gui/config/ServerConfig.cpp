@@ -11,6 +11,7 @@
 #include "common/Hotkey.h"
 #include "common/Settings.h"
 #include "gui/core/BridgeClientConfigManager.h"
+#include "gui/core/BridgeProfileShortcuts.h"
 
 #include <QAbstractButton>
 #include <QPushButton>
@@ -178,6 +179,8 @@ QTextStream &operator<<(QTextStream &outStream, const ServerConfig &config)
 
   for (const Hotkey &hotkey : config.hotkeys())
     outStream << hotkey;
+
+  deskflow::gui::BridgeProfileShortcuts::writeHotkeys(outStream); // DShare-HID
 
   outStream << "end" << Qt::endl << Qt::endl;
 

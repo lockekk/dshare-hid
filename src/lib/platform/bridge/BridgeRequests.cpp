@@ -15,6 +15,8 @@ namespace {
 
 const QString kOk = QStringLiteral("ok");
 const QString kError = QStringLiteral("error");
+const QString kIn = QStringLiteral("in");
+const QString kOut = QStringLiteral("out");
 
 QString transportError(const CdcTransport &transport)
 {
@@ -135,6 +137,25 @@ bool parseResponse(const QString &line, quint64 &id, bool &ok, QStringList &fiel
     return true;
   }
   return false;
+}
+
+QString formatFocus(bool entered)
+{
+  return QStringLiteral("%1 %2").arg(kFocus, entered ? kIn : kOut);
+}
+
+bool parseFocus(const QString &line, bool &entered)
+{
+  const qsizetype start = line.indexOf(kFocus);
+  if (start < 0) {
+    return false;
+  }
+  const QStringList parts = line.mid(start).split(QLatin1Char(' '), Qt::SkipEmptyParts);
+  if (parts.size() != 2 || parts.at(0) != kFocus || (parts.at(1) != kIn && parts.at(1) != kOut)) {
+    return false;
+  }
+  entered = (parts.at(1) == kIn);
+  return true;
 }
 
 bool execute(

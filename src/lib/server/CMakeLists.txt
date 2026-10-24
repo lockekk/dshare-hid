@@ -6,6 +6,8 @@
 add_library(server STATIC
   BaseClientProxy.cpp
   BaseClientProxy.h
+  BridgeProfileAction.cpp
+  BridgeProfileAction.h
   ClientListener.cpp
   ClientListener.h
   ClientProxy.cpp

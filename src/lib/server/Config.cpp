@@ -14,6 +14,7 @@
 #include "deskflow/KeyTypes.h"
 #include "deskflow/OptionTypes.h"
 #include "net/SocketException.h"
+#include "server/BridgeProfileAction.h"
 #include "server/Server.h"
 
 #include <assert.h>
@@ -949,6 +950,16 @@ void Config::parseAction(
     }
 
     action = new InputFilter::KeyboardBroadcastAction(m_events, mode, computers);
+  }
+
+  // DShare-HID: switch a bridge client's device to a profile (see BridgeProfileAction)
+  else if (name == BridgeProfileAction::kName) {
+    int position = 0;
+    if (args.size() != 1 || !BridgeProfileAction::parsePosition(args[0], position)) {
+      throw ServerConfigReadException(s, "syntax for action: switchBridgeProfile(1-6)");
+    }
+
+    action = new BridgeProfileAction(position);
   }
 
   else {

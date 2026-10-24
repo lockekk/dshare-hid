@@ -13,6 +13,7 @@
 #include "common/PlatformInfo.h"
 #include "common/Settings.h"
 #include "gui/core/BridgeClientConfigManager.h"
+#include "gui/core/BridgeProfileShortcuts.h"
 #include "gui/core/CoreProcess.h"
 #include "gui/devices/UsbDeviceHelper.h"
 #include "gui/dialogs/BridgeClientConfigDialog.h"
@@ -35,6 +36,7 @@
 
 #include "gui/core/BridgeClientProcess.h"
 #include <QCoreApplication>
+#include <QActionGroup>
 #include <QDebug>
 #include <QEventLoop>
 #include <QGridLayout>
@@ -128,6 +130,9 @@ void DeskflowHidExtension::setup()
   connect(m_actionShowBridgeLogs, &QAction::toggled, this, &DeskflowHidExtension::toggleShowBridgeLogs);
   m_mainWindow->m_menuView->addAction(m_actionShowBridgeLogs);
 
+  setupProfileShortcutsMenu();
+  setupTrayProfileMenus();
+
   loadBridgeClientConfigs();
 
   // Connect to server process state/connection signals
@@ -147,6 +152,12 @@ void DeskflowHidExtension::setup()
     );
     // Query initial state
     onServerConnectionStateChanged(m_mainWindow->m_coreProcess.connectionState());
+
+    // queued: the switch waits for the device, which shouldn't hold up the core's IPC
+    connect(
+        &m_mainWindow->m_coreProcess, &CoreProcess::bridgeProfileHotkey, this,
+        &DeskflowHidExtension::bridgeProfileHotkeyPressed, Qt::QueuedConnection
+    );
   }
 
   // Check initially connected devices
@@ -276,6 +287,7 @@ void DeskflowHidExtension::loadBridgeClientConfigs()
         widget, &BridgeClientWidget::profileSwitchRequested, this,
         &DeskflowHidExtension::bridgeClientProfileSwitchRequested
     );
+    connect(widget, &BridgeClientWidget::profilesChanged, this, &DeskflowHidExtension::refreshTrayProfileMenus);
 
     connect(widget, &BridgeClientWidget::refreshDevicesRequested, this, [this]() {
       this->updateBridgeClientDeviceStates();
@@ -812,6 +824,7 @@ void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
         widget, &BridgeClientWidget::profileSwitchRequested, this,
         &DeskflowHidExtension::bridgeClientProfileSwitchRequested
     );
+    connect(widget, &BridgeClientWidget::profilesChanged, this, &DeskflowHidExtension::refreshTrayProfileMenus);
 
     connect(widget, &BridgeClientWidget::refreshDevicesRequested, this, [this]() {
       this->updateBridgeClientDeviceStates();
@@ -1099,6 +1112,7 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
             // the profile may have been switched since the device was synced on plug-in
             config.setValue(Settings::Bridge::ActiveProfileHostname, BridgeDeviceService::profileHostname(profile));
             config.setValue(Settings::Bridge::ActiveProfileOrientation, screenOrientation);
+            config.setValue(Settings::Bridge::ProfileCount, profiles.profiles.size()); // the shortcuts cover them
 
             if (targetWidget) {
               targetWidget->setProfiles(BridgeDeviceService::profileInfos(profiles), profiles.activeIndex);
@@ -1215,6 +1229,9 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
     connect(process, &BridgeClientProcess::profilesReported, this, [this, devicePath](const QStringList &fields) {
       onBridgeProcessProfilesReported(devicePath, fields);
     });
+    connect(process, &BridgeClientProcess::focusChanged, this, [this, devicePath](bool entered) {
+      onBridgeProcessFocusChanged(devicePath, entered);
+    });
     connect(
         process, &BridgeClientProcess::finished, this,
         [this, devicePath](int exitCode, QProcess::ExitStatus exitStatus) {
@@ -1266,19 +1283,201 @@ void DeskflowHidExtension::bridgeClientProfileSwitchRequested(
   }
 
   const QString screenName = BridgeClientConfigManager::readScreenName(configPath);
+  // the wait lets another click or shortcut in, whose reply could then be applied first
+  if (m_switchingProfile) {
+    qInfo() << "Not switching" << screenName << "to profile" << profileIndex << "while another switch waits";
+    return;
+  }
   qInfo() << "Switching" << screenName << "to profile" << profileIndex;
 
   // the running bridge core switches the device and takes on the new profile's screen size
   // and scroll settings itself, so the bridge stays connected
   BridgeProfileSet profiles;
   QString error;
-  if (!BridgeDeviceService::switchProfile(devicePath, profileIndex, profiles, error)) {
+  m_switchingProfile = true;
+  const bool switched = BridgeDeviceService::switchProfile(devicePath, profileIndex, profiles, error);
+  m_switchingProfile = false;
+  if (!switched) {
     if (m_mainWindow) {
       m_mainWindow->setStatus(tr("Failed to switch profile on %1: %2").arg(screenName, error));
     }
     return;
   }
   applyDeviceProfiles(devicePath, configPath, profiles);
+}
+
+void DeskflowHidExtension::bridgeProfileHotkeyPressed(int position)
+{
+  // the bridge client the cursor is on, or else the only one connected
+  QList<BridgeClientWidget *> connected;
+  BridgeClientWidget *target = nullptr;
+  for (BridgeClientWidget *widget : std::as_const(m_bridgeClientWidgets)) {
+    if (!widget->isConnected() || widget->profiles().isEmpty()) {
+      continue;
+    }
+    connected.append(widget);
+    if (!m_focusedBridgeDevicePath.isEmpty() && widget->devicePath() == m_focusedBridgeDevicePath) {
+      target = widget;
+    }
+  }
+  if (!target && connected.size() == 1) {
+    target = connected.first();
+  }
+
+  if (!target) {
+    qInfo() << "Profile shortcut" << position << "pressed, but no bridge client to switch:" << connected.size()
+            << "connected";
+    if (m_mainWindow && !connected.isEmpty()) {
+      m_mainWindow->setStatus(tr("Several bridge clients are connected: move the cursor onto the one to switch"));
+    }
+    return;
+  }
+
+  const auto &profiles = target->profiles();
+  if (position < 1 || position > profiles.size()) {
+    if (m_mainWindow) {
+      m_mainWindow->setStatus(tr("%1 has no profile %2").arg(target->screenName()).arg(position));
+    }
+    return;
+  }
+  const int profileIndex = profiles.at(position - 1).index;
+  if (profileIndex != target->activeProfileIndex()) {
+    bridgeClientProfileSwitchRequested(target->devicePath(), target->configPath(), profileIndex);
+  }
+}
+
+void DeskflowHidExtension::onBridgeProcessFocusChanged(const QString &devicePath, bool entered)
+{
+  if (entered) {
+    m_focusedBridgeDevicePath = devicePath;
+  } else if (m_focusedBridgeDevicePath == devicePath) {
+    m_focusedBridgeDevicePath.clear();
+  }
+}
+
+void DeskflowHidExtension::setupTrayProfileMenus()
+{
+  QMenu *trayMenu = m_mainWindow->m_trayIcon->contextMenu();
+  if (!trayMenu) {
+    return;
+  }
+
+  // under the window's items (Open), before the separator above Quit
+  const QList<QAction *> actions = trayMenu->actions();
+  const qsizetype quit = actions.indexOf(m_mainWindow->m_actionTrayQuit);
+  if (quit > 0 && actions.at(quit - 1)->isSeparator()) {
+    m_trayProfileAnchor = actions.at(quit - 1);
+  } else if (quit >= 0) {
+    m_trayProfileAnchor = actions.at(quit);
+  }
+  m_trayProfileSeparator = trayMenu->insertSeparator(m_trayProfileAnchor);
+  m_trayProfileSeparator->setVisible(false);
+}
+
+void DeskflowHidExtension::refreshTrayProfileMenus()
+{
+  QMenu *trayMenu = m_trayProfileSeparator ? m_mainWindow->m_trayIcon->contextMenu() : nullptr;
+  if (!trayMenu) {
+    return;
+  }
+
+  // a switch from the tray refreshes it while its item may still be emitting, so the old
+  // submenus are deleted later rather than now
+  for (QMenu *menu : std::as_const(m_trayProfileMenus)) {
+    trayMenu->removeAction(menu->menuAction());
+    menu->deleteLater();
+  }
+  m_trayProfileMenus.clear();
+
+  for (const BridgeClientWidget *widget : std::as_const(m_bridgeClientWidgets)) {
+    const auto &profiles = widget->profiles();
+    if (!widget->isConnected() || profiles.isEmpty()) {
+      continue;
+    }
+
+    auto *menu = new QMenu(widget->screenName(), trayMenu);
+    auto *group = new QActionGroup(menu);
+    for (qsizetype i = 0; i < profiles.size(); ++i) {
+      const BridgeProfileInfo &profile = profiles.at(i);
+      const bool active = (profile.index == widget->activeProfileIndex());
+
+      QAction *action = menu->addAction(profile.label());
+      action->setCheckable(true);
+      action->setChecked(active);
+      group->addAction(action);
+      // shown only: the server owns the shortcuts, and they're pressed outside this menu
+      action->setShortcut(BridgeProfileShortcuts::shortcut(static_cast<int>(i) + 1));
+      action->setShortcutContext(Qt::WidgetShortcut);
+
+      if (!active) {
+        connect(
+            action, &QAction::triggered, this,
+            [this, devicePath = widget->devicePath(), configPath = widget->configPath(), index = profile.index] {
+              // once the menu is done with the item: the switch rebuilds the menu, and on
+              // failure the rebuild puts the check mark back on the active profile
+              QTimer::singleShot(0, this, [this, devicePath, configPath, index] {
+                bridgeClientProfileSwitchRequested(devicePath, configPath, index);
+                refreshTrayProfileMenus();
+              });
+            }
+        );
+      }
+    }
+
+    trayMenu->insertMenu(m_trayProfileAnchor, menu);
+    m_trayProfileMenus.append(menu);
+  }
+
+  m_trayProfileSeparator->setVisible(!m_trayProfileMenus.isEmpty());
+}
+
+void DeskflowHidExtension::setupProfileShortcutsMenu()
+{
+  auto *menu = new QMenu(tr("Bridge Profile Shortcuts"), m_mainWindow);
+  auto *group = new QActionGroup(menu);
+  const QString current = BridgeProfileShortcuts::choice();
+
+  const auto addChoice = [menu, group, &current](const QString &text, const QString &choice) {
+    QAction *action = menu->addAction(text);
+    action->setCheckable(true);
+    action->setChecked(choice == current);
+    action->setData(choice);
+    group->addAction(action);
+  };
+  for (const QString &choice : BridgeProfileShortcuts::choices()) {
+    addChoice(BridgeProfileShortcuts::describe(choice), choice);
+  }
+  menu->addSeparator();
+  addChoice(tr("Off"), BridgeProfileShortcuts::kOff);
+
+  connect(group, &QActionGroup::triggered, this, [this](const QAction *action) {
+    setProfileShortcuts(action->data().toString());
+  });
+  // the shortcuts cover as many profiles as the devices have, which a connect may change
+  connect(menu, &QMenu::aboutToShow, menu, [group] {
+    for (QAction *action : group->actions()) {
+      if (const QString choice = action->data().toString(); choice != BridgeProfileShortcuts::kOff) {
+        action->setText(BridgeProfileShortcuts::describe(choice));
+      }
+    }
+  });
+  m_mainWindow->m_menuEdit->addMenu(menu);
+}
+
+void DeskflowHidExtension::setProfileShortcuts(const QString &choice)
+{
+  if (choice == BridgeProfileShortcuts::choice()) {
+    return;
+  }
+  BridgeProfileShortcuts::setChoice(choice);
+  refreshTrayProfileMenus();
+
+  // the server registers the hotkeys of the configuration it starts with, so restart it, as
+  // after the Configure Server dialog
+  auto &coreProcess = m_mainWindow->m_coreProcess;
+  if (coreProcess.isStarted() && coreProcess.mode() == Settings::CoreMode::Server) {
+    coreProcess.restart();
+  }
 }
 
 void DeskflowHidExtension::applyDeviceProfiles(
@@ -1302,6 +1501,7 @@ void DeskflowHidExtension::applyDeviceProfiles(
         Settings::Bridge::ActiveProfileOrientation,
         (profile.rotation == 0) ? QStringLiteral("portrait") : QStringLiteral("landscape")
     );
+    cfg.setValue(Settings::Bridge::ProfileCount, profiles.profiles.size()); // the shortcuts cover them
     if (coreRunning) {
       cfg.setValue("activeProfileIndex", profiles.activeIndex);
     }
@@ -1622,6 +1822,7 @@ void DeskflowHidExtension::bridgeClientProcessFinished(
 {
   // ...
   m_bridgeClientManager->handleConnectionFinished(devicePath);
+  onBridgeProcessFocusChanged(devicePath, false);
 
   const auto *state = m_bridgeClientManager->clientStateByDevice(devicePath);
   if (state) {
@@ -1731,6 +1932,7 @@ void DeskflowHidExtension::stopBridgeClient(const QString &devicePath)
     }
     m_bridgeClientManager->handleConnectionFinished(devicePath);
   }
+  onBridgeProcessFocusChanged(devicePath, false);
 
   if (!configPath.isEmpty()) {
     if (auto *w = m_bridgeClientWidgets.value(configPath)) {

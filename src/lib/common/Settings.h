@@ -139,6 +139,8 @@ public:
     inline static const auto BluetoothKeepAlive = QStringLiteral("bridge/bluetoothKeepAlive");
     inline static const auto AutoConnect = QStringLiteral("bridge/autoConnect");
     inline static const auto ShowLogs = QStringLiteral("bridge/showLogs");
+    inline static const auto ProfileShortcuts = QStringLiteral("bridge/profileShortcuts");
+    inline static const auto ProfileCount = QStringLiteral("bridge/profileCount");
   };
 
   struct Computer
@@ -378,6 +380,8 @@ private:
     , Bridge::BluetoothKeepAlive
     , Bridge::AutoConnect
     , Bridge::ShowLogs
+    , Bridge::ProfileShortcuts
+    , Bridge::ProfileCount
   };
 
   // When checking the default values this list contains the ones that default to false.

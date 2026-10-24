@@ -18,6 +18,12 @@ struct BridgeProfileInfo
   int index = 0;
   QString hostname;
   bool portrait = false;
+
+  /// the hostname, or "Slot N" for an unused slot (as the Configure dialog's profile tabs)
+  QString label() const
+  {
+    return hostname.isEmpty() ? QStringLiteral("Slot %1").arg(index) : hostname;
+  }
 };
 
 /**

@@ -173,6 +173,7 @@ void BridgeClientWidget::updateConfig(const QString &screenName, const QString &
   refreshActivationStateLabel();
   refreshDeviceNameLabel();
   refreshOrientationLabel();
+  Q_EMIT profilesChanged(); // they are listed under the screen name
 }
 
 void BridgeClientWidget::setActivationState(const QString &activationState)
@@ -256,8 +257,7 @@ void BridgeClientWidget::refreshProfileButtons()
 
     const BridgeProfileInfo &profile = m_profiles.at(i);
     const bool active = (profile.index == m_activeProfileIndex);
-    // same fallback as the Configure dialog's profile tabs
-    const QString name = profile.hostname.isEmpty() ? QStringLiteral("Slot %1").arg(profile.index) : profile.hostname;
+    const QString name = profile.label();
 
     button->setText(button->fontMetrics().elidedText(name, Qt::ElideRight, kProfileNameMaxWidth));
     button->setToolTip(active ? tr("Active profile: %1").arg(name) : tr("Switch to profile: %1").arg(name));
@@ -274,6 +274,8 @@ void BridgeClientWidget::refreshProfileButtons()
   const bool showProfiles = m_isConnected && !m_profiles.isEmpty();
   m_profileRow->setVisible(showProfiles);
   m_activeHostnameLabel->setVisible(!showProfiles);
+
+  Q_EMIT profilesChanged();
 }
 
 void BridgeClientWidget::refreshActivationStateLabel()

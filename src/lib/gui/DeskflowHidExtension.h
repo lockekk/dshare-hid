@@ -5,6 +5,7 @@
 #pragma once
 
 #include <QHash>
+#include <QList>
 #include <QMap>
 #include <QObject>
 #include <QProcess>
@@ -28,6 +29,7 @@ class BridgeClientWidget;
 
 class MainWindow; // The main window class
 class QAction;
+class QMenu;
 class QSettings;
 
 class DeskflowHidExtension : public QObject
@@ -67,6 +69,8 @@ private Q_SLOTS:
   void bridgeClientConnectToggled(const QString &devicePath, const QString &configPath, bool shouldConnect);
   void bridgeClientConfigureClicked(const QString &devicePath, const QString &configPath);
   void bridgeClientProfileSwitchRequested(const QString &devicePath, const QString &configPath, int profileIndex);
+  // a profile shortcut, passed on by the server (see BridgeProfileShortcuts)
+  void bridgeProfileHotkeyPressed(int position);
 
   // Slots for BridgeClientProcess signals
   void onBridgeProcessLogAvailable(const QString &devicePath, const QString &line);
@@ -77,6 +81,7 @@ private Q_SLOTS:
   void onBridgeProcessBleStatusDetected(const QString &devicePath, bool connected);
   void onBridgeProcessHandshakeFailed(const QString &devicePath, const QString &reason);
   void onBridgeProcessProfilesReported(const QString &devicePath, const QStringList &fields);
+  void onBridgeProcessFocusChanged(const QString &devicePath, bool entered);
 
   void onBridgeDeviceConfigSynced(const QString &configPath, int activeProfile);
 
@@ -94,6 +99,11 @@ private:
   void applyDeviceProfiles(
       const QString &devicePath, const QString &configPath, const deskflow::gui::BridgeProfileSet &profiles
   );
+  // the tray menu lists each connected bridge client's profiles, which switch to them
+  void setupTrayProfileMenus();
+  void refreshTrayProfileMenus();
+  void setupProfileShortcutsMenu();
+  void setProfileShortcuts(const QString &choice);
   void stopBridgeClient(const QString &devicePath);
   void stopAllBridgeClients();
   void bridgeClientProcessFinished(const QString &devicePath, int exitCode, QProcess::ExitStatus exitStatus);
@@ -141,4 +151,16 @@ private:
   // Log toggle feature
   QAction *m_actionShowBridgeLogs = nullptr;
   bool m_showBridgeLogs = false;
+
+  // Set while a profile switch waits for the device: another one would race it
+  bool m_switchingProfile = false;
+
+  // Device of the bridge client the server's cursor is on, if any: the profile shortcuts
+  // switch that one
+  QString m_focusedBridgeDevicePath;
+
+  // Tray menu: a submenu per connected bridge client, between this separator and the anchor
+  QAction *m_trayProfileSeparator = nullptr;
+  QAction *m_trayProfileAnchor = nullptr;
+  QList<QMenu *> m_trayProfileMenus;
 };

@@ -141,6 +141,18 @@ public:
   void setProfiles(const QList<BridgeProfileInfo> &profiles, int activeIndex);
 
   /**
+   * @brief The device's profiles while connected (empty otherwise), and the active one's index
+   */
+  const QList<BridgeProfileInfo> &profiles() const
+  {
+    return m_profiles;
+  }
+  int activeProfileIndex() const
+  {
+    return m_activeProfileIndex;
+  }
+
+  /**
    * @brief Enable/disable controls when another config with the same serial is active
    * @param locked true to disable controls, false to allow interaction
    * @param reason Optional tooltip that explains why the controls are disabled
@@ -165,6 +177,8 @@ Q_SIGNALS:
   Q_SIGNAL void connectToggled(const QString &devicePath, const QString &configPath, bool shouldConnect);
   Q_SIGNAL void configureClicked(const QString &devicePath, const QString &configPath);
   Q_SIGNAL void profileSwitchRequested(const QString &devicePath, const QString &configPath, int profileIndex);
+  /// the profiles shown, the active one, or the screen name they're shown under changed
+  Q_SIGNAL void profilesChanged();
   Q_SIGNAL void refreshDevicesRequested();
 
 protected:

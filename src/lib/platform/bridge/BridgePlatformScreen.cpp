@@ -473,6 +473,7 @@ void BridgePlatformScreen::disable()
 void BridgePlatformScreen::enter()
 {
   LOG_DEBUG("BridgeScreen: enter");
+  LOG_PRINT("%s", qPrintable(requests::formatFocus(true)));
   resetMouseAccumulator();
   if (m_transport != nullptr && !m_transport->open()) {
     LOG_WARN("BridgeScreen: failed to open transport on enter (%s)", m_transport->lastError().c_str());
@@ -499,6 +500,7 @@ bool BridgePlatformScreen::canLeave()
 void BridgePlatformScreen::leave()
 {
   LOG_DEBUG("BridgeScreen: leave");
+  LOG_PRINT("%s", qPrintable(requests::formatFocus(false)));
   fakeAllKeysUp();
 }
 

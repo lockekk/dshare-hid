@@ -73,6 +73,8 @@ Q_SIGNALS:
   void deviceNameDetected(const QString &name);
   void activationStatusDetected(const QString &state, int profileIndex);
   void bleStatusDetected(bool connected);
+  /// the server's cursor entered (true) or left the bridge's computer
+  void focusChanged(bool entered);
   void handshakeFailed(const QString &reason);
   void logAvailable(const QString &line);
   void finished(int exitCode, QProcess::ExitStatus exitStatus);
