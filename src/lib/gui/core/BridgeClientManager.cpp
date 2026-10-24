@@ -3,17 +3,76 @@
  */
 
 #include "BridgeClientManager.h"
+#include "BridgeClientConfigManager.h"
+
 #include <QDebug>
+#include <QGuiApplication>
+#include <QPainter>
+#include <QPalette>
 #include <QTimer>
 
 namespace deskflow::gui {
 
+namespace {
+// the plugged-in badge: a green dot in the icon's bottom right corner, ringed in the
+// background color so it stands off the icon
+constexpr qreal kBadgeDiameter = 18;
+constexpr qreal kBadgeRing = 2;
+constexpr qreal kBadgeMargin = 4;
+const QColor kBadgeColor(0x34, 0xc7, 0x59);
+} // namespace
+
+BridgeClientManager *BridgeClientManager::s_instance = nullptr;
+
 BridgeClientManager::BridgeClientManager(QObject *parent) : QObject(parent)
 {
+  s_instance = this;
 }
 
 BridgeClientManager::~BridgeClientManager()
 {
+  if (s_instance == this) {
+    s_instance = nullptr;
+  }
+}
+
+bool BridgeClientManager::isPluggedIn(const QString &computerName)
+{
+  if (!s_instance) {
+    return false;
+  }
+  for (const BridgeClientState &state : std::as_const(s_instance->m_clients)) {
+    if (state.isAvailable && BridgeClientConfigManager::readScreenName(state.configPath) == computerName) {
+      return true;
+    }
+  }
+  return false;
+}
+
+QPixmap BridgeClientManager::layoutPixmap(const QString &computerName, const QPixmap &pixmap)
+{
+  if (pixmap.isNull() || !isPluggedIn(computerName)) {
+    return pixmap;
+  }
+
+  QPixmap badged = pixmap;
+  const QSizeF size = badged.deviceIndependentSize();
+  const QRectF dot(
+      size.width() - kBadgeDiameter - kBadgeMargin, size.height() - kBadgeDiameter - kBadgeMargin, kBadgeDiameter,
+      kBadgeDiameter
+  );
+
+  QPainter painter(&badged);
+  painter.setRenderHint(QPainter::Antialiasing);
+  painter.setPen(QPen(QGuiApplication::palette().color(QPalette::Base), kBadgeRing));
+  painter.setBrush(kBadgeColor);
+  painter.drawEllipse(dot);
+  return badged;
+}
+
+QString BridgeClientManager::layoutToolTip(const QString &computerName)
+{
+  return isPluggedIn(computerName) ? tr("<br>Device plugged in") : QString();
 }
 
 void BridgeClientManager::addClientConfig(const QString &configPath)

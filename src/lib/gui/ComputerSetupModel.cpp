@@ -11,6 +11,7 @@
 #include "common/Constants.h"
 #include "gui/config/Computer.h"
 #include "gui/core/BridgeClientConfigManager.h"
+#include "gui/core/BridgeClientManager.h"
 
 #include <QIODevice>
 #include <QIcon>
@@ -51,13 +52,15 @@ QVariant ComputerSetupModel::data(const QModelIndex &index, int role) const
 
   switch (role) {
   case Qt::DecorationRole:
-    return computer(index).pixmap();
+    // DShare-HID: a bridge client whose device is plugged in has a badge
+    return deskflow::gui::BridgeClientManager::layoutPixmap(computer(index).name(), computer(index).pixmap());
 
   case Qt::ToolTipRole:
     return QString(tr("<center>Computer: <b>%1</b></center>"
                       "<br>Double click to edit settings"
                       "<br>Drag computer to the trashcan to remove it"))
-        .arg(computer(index).name());
+        .arg(computer(index).name())
+        .append(deskflow::gui::BridgeClientManager::layoutToolTip(computer(index).name())); // DShare-HID
 
   case Qt::DisplayRole:
     // DShare-HID: a bridge client shows its device's name (the tooltip keeps the screen name)

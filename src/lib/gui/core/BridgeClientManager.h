@@ -7,6 +7,7 @@
 #include <QList>
 #include <QMap>
 #include <QObject>
+#include <QPixmap>
 #include <QSet>
 #include <QString>
 
@@ -65,6 +66,14 @@ public:
   const BridgeClientState *clientState(const QString &configPath) const;
   const BridgeClientState *clientStateByDevice(const QString &devicePath) const;
 
+  /**
+   * @brief How the server layout shows a computer: a bridge client whose device is plugged in
+   * gets a badge on its icon and a line in its tooltip; other computers are left as they are
+   * @param computerName The computer's screen name
+   */
+  static QPixmap layoutPixmap(const QString &computerName, const QPixmap &pixmap);
+  static QString layoutToolTip(const QString &computerName);
+
   // Locks
   bool acquireSerialLock(const QString &serial, const QString &configPath);
   void releaseSerialLock(const QString &serial, const QString &configPath);
@@ -74,6 +83,10 @@ Q_SIGNALS:
   void clientUpdated(const QString &configPath);
 
 private:
+  static bool isPluggedIn(const QString &computerName);
+
+  static BridgeClientManager *s_instance; // the GUI's one manager, which the layout asks
+
   QMap<QString, BridgeClientState> m_clients;  // configPath -> State
   QMap<QString, QString> m_serialToConfigLock; // serial -> configPath
   QMap<QString, QString> m_deviceToConfig;     // devicePath -> configPath
