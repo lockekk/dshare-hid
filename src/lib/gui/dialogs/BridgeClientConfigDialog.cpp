@@ -477,7 +477,7 @@ void BridgeClientConfigDialog::saveUiToCache(int index)
   p.hidMode = m_radioProfileMouseOnly->isChecked() ? 1 : 0;
   p.slot = index;
   p.invert = m_checkInvertScroll->isChecked() ? 1 : 0;
-  p.yScrollScale = static_cast<uint8_t>(m_spinScrollScale->value() * 10);
+  p.yScrollScale = static_cast<uint8_t>(qRound(m_spinScrollScale->value() * 10)); // e.g. 0.3 * 10 is 2.999...
 }
 
 void BridgeClientConfigDialog::updateTabLabels()
@@ -533,7 +533,8 @@ void BridgeClientConfigDialog::updateProfileDetailUI(int index)
   else
     m_radioProfileCombo->setChecked(true);
 
-  double scale = (p.yScrollScale == 0) ? 0.1 : static_cast<double>(p.yScrollScale) / 10.0;
+  // 0 is the firmware's default and means 1.0 (see BridgePlatformScreen::applyClientScrollModifier)
+  double scale = (p.yScrollScale == 0) ? 1.0 : static_cast<double>(p.yScrollScale) / 10.0;
   m_spinScrollScale->setValue(scale);
   m_checkInvertScroll->setChecked(p.invert != 0);
 

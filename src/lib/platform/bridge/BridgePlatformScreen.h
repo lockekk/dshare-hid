@@ -157,8 +157,10 @@ private:
   // Scroll accumulation
   mutable int32_t m_wheelAccumulatorX = 0;
   mutable int32_t m_wheelAccumulatorY = 0;
-  uint8_t m_scrollSpeed = 120;        // Default speed
-  uint8_t m_scrollScaleProfile = 0;   // 0-100 from profile
+  // profile "speed": the firmware marks it deprecated and the dialog no longer edits it,
+  // but it is still each profile's base sensitivity (firmware default 30), so keep it
+  uint8_t m_scrollSpeed = 120;
+  uint8_t m_scrollScaleProfile = 0;   // tenths from profile; 0 = default (1.0)
   bool m_scrollInvertProfile = false; // from profile
 };
 

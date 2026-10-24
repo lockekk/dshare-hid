@@ -13,6 +13,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cmath>
 #include <cstring>
 #include <iomanip>
 #include <sstream>
@@ -225,11 +226,12 @@ void BridgePlatformScreen::fakeMouseWheel(ScrollDelta delta) const
     return;
   }
 
-  const ScrollDelta correctedDelta = applyClientScrollModifier(delta);
-  int32_t yDelta = correctedDelta.y;
-
+  // the server sends 120 per wheel notch.  apply the profile's speed before its scale so
+  // small (trackpad) deltas at low scales aren't rounded away.
   int32_t speed = (m_scrollSpeed > 0) ? m_scrollSpeed : 120;
-  m_wheelAccumulatorY += (yDelta * speed);
+  ScrollDelta spedDelta = delta;
+  spedDelta.y = delta.y * speed;
+  m_wheelAccumulatorY += applyClientScrollModifier(spedDelta).y;
 
   constexpr int32_t kStepThreshold = 14400;
   int8_t steps = static_cast<int8_t>(m_wheelAccumulatorY / kStepThreshold);
@@ -522,10 +524,12 @@ ScrollDelta BridgePlatformScreen::applyClientScrollModifier(const ScrollDelta ra
 {
   ScrollDelta correctedDelta = rawDelta;
 
-  // Decoding scale: 0 -> 0.1, otherwise value / 10.0
-  double scale = (m_scrollScaleProfile == 0) ? 0.1 : static_cast<double>(m_scrollScaleProfile) / 10.0;
+  // the profile stores the scale in tenths (1-100 = 0.1-10.0).  0 is the firmware's
+  // default, "let the host decide", which is 1.0 like the client's own yScrollScale.
+  double scale = (m_scrollScaleProfile == 0) ? 1.0 : static_cast<double>(m_scrollScaleProfile) / 10.0;
 
-  correctedDelta.y = static_cast<int32_t>(m_scrollInvertProfile ? correctedDelta.y * -scale : correctedDelta.y * scale);
+  correctedDelta.y =
+      static_cast<int32_t>(std::lround(m_scrollInvertProfile ? rawDelta.y * -scale : rawDelta.y * scale));
 
   return correctedDelta;
 }
