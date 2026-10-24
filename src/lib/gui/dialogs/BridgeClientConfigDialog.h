@@ -35,8 +35,6 @@ public:
     return m_configPath;
   }
 
-  double yScrollScale() const;
-  bool invertScroll() const;
   QString deviceName() const;
   bool deviceNameChanged() const;
   bool bluetoothKeepAlive() const;

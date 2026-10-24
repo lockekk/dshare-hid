@@ -86,11 +86,7 @@ QString BridgeClientConfigManager::createDefaultConfig(const QString &serialNumb
   config.setValue(Settings::Bridge::SerialNumber, serialNumber);
   config.setValue(Settings::Bridge::BluetoothKeepAlive, Settings::defaultValue(Settings::Bridge::BluetoothKeepAlive));
 
-  // [client] section
-  config.setValue(
-      Settings::Client::InvertScrollDirection, Settings::defaultValue(Settings::Client::InvertScrollDirection)
-  );
-  config.setValue(Settings::Client::YScrollScale, Settings::defaultValue(Settings::Client::YScrollScale));
+  // [client] section (scroll scale and direction come from the device profile)
   config.setValue(Settings::Client::LanguageSync, true);
 
   // [core] section

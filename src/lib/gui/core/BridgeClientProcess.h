@@ -27,8 +27,6 @@ public:
     QString logLevel;
     int screenWidth;
     int screenHeight;
-    double yScrollScale;
-    bool invertScroll;
   };
 
   explicit BridgeClientProcess(const QString &devicePath, QObject *parent = nullptr);

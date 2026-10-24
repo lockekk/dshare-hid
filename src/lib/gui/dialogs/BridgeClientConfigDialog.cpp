@@ -829,16 +829,6 @@ QString BridgeClientConfigDialog::screenName() const
   return m_editScreenName->text();
 }
 
-bool BridgeClientConfigDialog::invertScroll() const
-{
-  return m_checkInvertScroll->isChecked();
-}
-
-double BridgeClientConfigDialog::yScrollScale() const
-{
-  return m_spinScrollScale->value();
-}
-
 bool BridgeClientConfigDialog::eventFilter(QObject *watched, QEvent *event)
 {
   if (event->type() == QEvent::MouseButtonRelease) {
