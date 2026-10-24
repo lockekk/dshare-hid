@@ -1,10 +1,26 @@
 #pragma once
 
+#include <QList>
 #include <QObject>
 #include <QString>
 
+namespace deskflow::bridge {
+struct DeviceProfile;
+class CdcTransport;
+} // namespace deskflow::bridge
+
 namespace deskflow {
 namespace gui {
+
+/**
+ * @brief One of the device's profiles, as the main window lists it
+ */
+struct BridgeProfileInfo
+{
+  int index = 0;
+  QString hostname;
+  bool portrait = false;
+};
 
 /**
  * @brief Service class to handle direct interactions with Bridge HID devices.
@@ -43,6 +59,24 @@ public:
    * @return True if successful.
    */
   bool fetchFirmwareDeviceName(const QString &devicePath, QString &outName);
+
+  /**
+   * @brief Make another profile the device's active one.
+   * @param devicePath Path to the USB CDC device; no bridge client may hold it open.
+   * @param profileIndex Profile index.
+   * @return True if the device switched.
+   */
+  bool switchProfile(const QString &devicePath, int profileIndex);
+
+  /**
+   * @brief Read all of the device's profiles over an already open transport.
+   */
+  static QList<BridgeProfileInfo> readProfiles(deskflow::bridge::CdcTransport &transport);
+
+  /**
+   * @brief The profile's hostname, without the padding of its fixed-size field.
+   */
+  static QString profileHostname(const deskflow::bridge::DeviceProfile &profile);
 
   /**
    * @brief Validate if a device name follows the required format.

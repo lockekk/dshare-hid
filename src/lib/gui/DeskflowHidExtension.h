@@ -66,6 +66,7 @@ private Q_SLOTS:
   void usbDeviceDisconnected(const deskflow::gui::UsbDeviceInfo &device);
   void bridgeClientConnectToggled(const QString &devicePath, const QString &configPath, bool shouldConnect);
   void bridgeClientConfigureClicked(const QString &devicePath, const QString &configPath);
+  void bridgeClientProfileSwitchRequested(const QString &devicePath, const QString &configPath, int profileIndex);
 
   // Slots for BridgeClientProcess signals
   void onBridgeProcessLogAvailable(const QString &devicePath, const QString &line);
@@ -131,6 +132,9 @@ private:
 
   // Set while the firmware tool owns the devices: no bridge client may be started
   bool m_bridgeClientsSuspended = false;
+
+  // Config whose device is switching profile: its bridge client may not be started meanwhile
+  QString m_profileSwitchConfigPath;
 
   // Log toggle feature
   QAction *m_actionShowBridgeLogs = nullptr;

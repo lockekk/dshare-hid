@@ -8,13 +8,37 @@
 #include "common/Settings.h"
 
 #include <QHBoxLayout>
+#include <QIcon>
 #include <QMessageBox>
+#include <QPainter>
+#include <QPixmap>
 #include <QSettings>
 #include <QSignalBlocker>
+#include <QToolButton>
 
 namespace {
 constexpr auto kLandscapeIconPath = ":/bridge-client/client/orientation_landscape.svg";
 constexpr auto kPortraitIconPath = ":/bridge-client/client/orientation_portrait.svg";
+
+constexpr int kProfileIconSize = 16;
+constexpr int kProfileNameMaxWidth = 120;
+constexpr auto kProfileStyle = "QToolButton { border: 1px solid palette(mid); border-radius: 4px; padding: 2px 6px; }"
+                               "QToolButton:hover { border-color: palette(highlight); }";
+constexpr auto kActiveProfileStyle =
+    "QToolButton { border: 1px solid palette(highlight); border-radius: 4px; padding: 2px 6px;"
+    " background-color: palette(highlight); color: palette(highlighted-text); }";
+
+// the orientation icons are drawn in a single dark color, so repaint them in the button's text
+// color: otherwise they vanish on the highlighted button and in dark mode
+QIcon tintedIcon(const QString &path, const QColor &color, qreal devicePixelRatio)
+{
+  QPixmap pixmap = QIcon(path).pixmap(QSize(kProfileIconSize, kProfileIconSize), devicePixelRatio);
+  QPainter painter(&pixmap);
+  painter.setCompositionMode(QPainter::CompositionMode_SourceIn);
+  painter.fillRect(pixmap.rect(), color);
+  painter.end();
+  return QIcon(pixmap);
+}
 } // namespace
 
 namespace deskflow::gui {
@@ -77,8 +101,17 @@ BridgeClientWidget::BridgeClientWidget(
   layout->addWidget(m_btnConnect);
   layout->addWidget(m_btnConfigure);
 
+  // Profile buttons, right of the device name: filled in by setProfiles() once connected
+  m_profileRow = new QWidget(this);
+  m_profileLayout = new QHBoxLayout(m_profileRow);
+  m_profileLayout->setContentsMargins(0, 0, 0, 0);
+  m_profileLayout->setSpacing(6);
+  m_profileLayout->addStretch();
+  m_profileRow->setVisible(false);
+
   layout->addSpacing(12);
   layout->addWidget(m_deviceNameLabel);        // Removed stretch, will share with hostname
+  layout->addWidget(m_profileRow, 1);          // replaces the hostname while shown, so takes its stretch
   layout->addWidget(m_activeHostnameLabel, 1); // Give stretch to hostname
   layout->addWidget(m_activationStateLabel);
   layout->addWidget(m_orientationLabel);
@@ -105,9 +138,14 @@ void BridgeClientWidget::setConnected(bool connected)
   }
   m_btnConnect->setText(connected ? tr("Disconnect") : tr("Connect"));
 
+  if (!connected) {
+    m_profiles.clear();
+  }
+
   updateActivationVisibility();
   setActiveHostname(m_activeHostname);
   refreshButtonStates();
+  refreshProfileButtons();
 }
 
 void BridgeClientWidget::resetConnectionStatus()
@@ -182,6 +220,60 @@ void BridgeClientWidget::setBleConnected(bool connected)
 
   m_isBleConnected = connected;
   setActiveHostname(m_activeHostname);
+}
+
+void BridgeClientWidget::setProfiles(const QList<BridgeProfileInfo> &profiles, int activeIndex)
+{
+  m_profiles = profiles;
+  m_activeProfileIndex = activeIndex;
+  refreshProfileButtons();
+}
+
+void BridgeClientWidget::refreshProfileButtons()
+{
+  // buttons are reused rather than recreated: switching disconnects this widget, which clears
+  // the profiles while the clicked button is still emitting
+  while (m_profileButtons.size() < m_profiles.size()) {
+    auto *button = new QToolButton(m_profileRow);
+    button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    button->setIconSize(QSize(kProfileIconSize, kProfileIconSize));
+    const int position = m_profileButtons.size();
+    connect(button, &QToolButton::clicked, this, [this, position]() {
+      if (position < m_profiles.size() && m_profiles.at(position).index != m_activeProfileIndex) {
+        Q_EMIT profileSwitchRequested(m_devicePath, m_configPath, m_profiles.at(position).index);
+      }
+    });
+    m_profileLayout->insertWidget(m_profileLayout->count() - 1, button); // before the stretch
+    m_profileButtons.append(button);
+  }
+
+  for (int i = 0; i < m_profileButtons.size(); ++i) {
+    QToolButton *button = m_profileButtons.at(i);
+    if (i >= m_profiles.size()) {
+      button->hide();
+      continue;
+    }
+
+    const BridgeProfileInfo &profile = m_profiles.at(i);
+    const bool active = (profile.index == m_activeProfileIndex);
+    // same fallback as the Configure dialog's profile tabs
+    const QString name = profile.hostname.isEmpty() ? QStringLiteral("Slot %1").arg(profile.index) : profile.hostname;
+
+    button->setText(button->fontMetrics().elidedText(name, Qt::ElideRight, kProfileNameMaxWidth));
+    button->setToolTip(active ? tr("Active profile: %1").arg(name) : tr("Switch to profile: %1").arg(name));
+    button->setIcon(tintedIcon(
+        QString::fromLatin1(profile.portrait ? kPortraitIconPath : kLandscapeIconPath),
+        palette().color(active ? QPalette::HighlightedText : QPalette::ButtonText), devicePixelRatioF()
+    ));
+    button->setStyleSheet(QString::fromLatin1(active ? kActiveProfileStyle : kProfileStyle));
+    button->setCursor(active ? Qt::ArrowCursor : Qt::PointingHandCursor);
+    button->show();
+  }
+
+  // the highlighted button names the active profile, so the hostname label would only repeat it
+  const bool showProfiles = m_isConnected && !m_profiles.isEmpty();
+  m_profileRow->setVisible(showProfiles);
+  m_activeHostnameLabel->setVisible(!showProfiles);
 }
 
 void BridgeClientWidget::refreshActivationStateLabel()
@@ -301,7 +393,11 @@ void BridgeClientWidget::onConnectToggled(bool checked)
 {
   m_isConnected = checked;
   m_btnConnect->setText(checked ? tr("Disconnect") : tr("Connect"));
+  if (!checked) {
+    m_profiles.clear();
+  }
   refreshButtonStates();
+  refreshProfileButtons();
 
   Q_EMIT connectToggled(m_devicePath, m_configPath, checked);
 }
@@ -316,6 +412,8 @@ void BridgeClientWidget::changeEvent(QEvent *event)
   QGroupBox::changeEvent(event);
   if (event->type() == QEvent::LanguageChange) {
     retranslateUi();
+  } else if (event->type() == QEvent::PaletteChange) {
+    refreshProfileButtons(); // icon colors follow the palette (e.g. a dark mode switch)
   }
 }
 
@@ -328,6 +426,7 @@ void BridgeClientWidget::retranslateUi()
   refreshActivationStateLabel();
   refreshButtonStates();
   refreshOrientationLabel();
+  refreshProfileButtons();
 }
 
 } // namespace deskflow::gui

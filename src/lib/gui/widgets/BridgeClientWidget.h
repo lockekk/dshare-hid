@@ -4,10 +4,16 @@
 
 #pragma once
 
+#include "gui/core/BridgeDeviceService.h"
+
 #include <QGroupBox>
 #include <QLabel>
+#include <QList>
 #include <QPushButton>
 #include <QString>
+
+class QHBoxLayout;
+class QToolButton;
 
 namespace deskflow::gui {
 
@@ -21,6 +27,7 @@ class Esp32HidToolsWidget;
  * - Group box with screen name from config
  * - Connect button (toggleable - connected/disconnected)
  * - Configure button (opens config dialog)
+ * - While connected, the device's profiles (right of the device name) as buttons that switch to them
  */
 class BridgeClientWidget : public QGroupBox
 {
@@ -127,6 +134,13 @@ public:
   void setBleConnected(bool connected);
 
   /**
+   * @brief Show the device's profiles, the active one highlighted (cleared on disconnect)
+   * @param profiles Profiles read from the device
+   * @param activeIndex Index of the device's active profile
+   */
+  void setProfiles(const QList<BridgeProfileInfo> &profiles, int activeIndex);
+
+  /**
    * @brief Enable/disable controls when another config with the same serial is active
    * @param locked true to disable controls, false to allow interaction
    * @param reason Optional tooltip that explains why the controls are disabled
@@ -150,6 +164,7 @@ Q_SIGNALS:
    */
   Q_SIGNAL void connectToggled(const QString &devicePath, const QString &configPath, bool shouldConnect);
   Q_SIGNAL void configureClicked(const QString &devicePath, const QString &configPath);
+  Q_SIGNAL void profileSwitchRequested(const QString &devicePath, const QString &configPath, int profileIndex);
   Q_SIGNAL void refreshDevicesRequested();
 
 protected:
@@ -165,6 +180,7 @@ private:
   void refreshDeviceNameLabel();
   void refreshOrientationLabel();
   void refreshButtonStates();
+  void refreshProfileButtons();
   void retranslateUi();
 
   QString m_screenName;
@@ -189,6 +205,12 @@ private:
   QString m_orientation;
   QLabel *m_orientationLabel = nullptr;
   bool m_isBleConnected = false;
+
+  QWidget *m_profileRow = nullptr;
+  QHBoxLayout *m_profileLayout = nullptr;
+  QList<QToolButton *> m_profileButtons;
+  QList<BridgeProfileInfo> m_profiles;
+  int m_activeProfileIndex = -1;
 };
 
 } // namespace deskflow::gui

@@ -270,6 +270,10 @@ void DeskflowHidExtension::loadBridgeClientConfigs()
     // Connect signals
     connect(widget, &BridgeClientWidget::connectToggled, this, &DeskflowHidExtension::bridgeClientConnectToggled);
     connect(widget, &BridgeClientWidget::configureClicked, this, &DeskflowHidExtension::bridgeClientConfigureClicked);
+    connect(
+        widget, &BridgeClientWidget::profileSwitchRequested, this,
+        &DeskflowHidExtension::bridgeClientProfileSwitchRequested
+    );
 
     connect(widget, &BridgeClientWidget::refreshDevicesRequested, this, [this]() {
       this->updateBridgeClientDeviceStates();
@@ -799,6 +803,10 @@ void DeskflowHidExtension::usbDeviceConnected(const UsbDeviceInfo &device)
 
     connect(widget, &BridgeClientWidget::connectToggled, this, &DeskflowHidExtension::bridgeClientConnectToggled);
     connect(widget, &BridgeClientWidget::configureClicked, this, &DeskflowHidExtension::bridgeClientConfigureClicked);
+    connect(
+        widget, &BridgeClientWidget::profileSwitchRequested, this,
+        &DeskflowHidExtension::bridgeClientProfileSwitchRequested
+    );
 
     connect(widget, &BridgeClientWidget::refreshDevicesRequested, this, [this]() {
       this->updateBridgeClientDeviceStates();
@@ -952,6 +960,10 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
     qInfo() << "Not starting bridge client while the firmware tool is open:" << configPath;
     return;
   }
+  if (shouldConnect && configPath == m_profileSwitchConfigPath) {
+    qInfo() << "Not starting bridge client while its device switches profile:" << configPath;
+    return;
+  }
 
   const QString serialNumber = BridgeClientConfigManager::readSerialNumber(configPath);
   if (shouldConnect) {
@@ -1074,13 +1086,22 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
             // the active profile itself (BridgePlatformScreen::enter)
             qInfo() << "Using device profile resolution:" << screenWidth << "x" << screenHeight
                     << "orientation:" << screenOrientation;
+
+            // the profile may have been switched since the device was synced on plug-in
+            config.setValue(Settings::Bridge::ActiveProfileHostname, BridgeDeviceService::profileHostname(profile));
+            config.setValue(Settings::Bridge::ActiveProfileOrientation, screenOrientation);
           }
 
           if (targetWidget) {
             targetWidget->setBleConnected(transport.deviceConfig().isBleConnected);
+            targetWidget->setProfiles(BridgeDeviceService::readProfiles(transport), activeProfile);
           }
         }
         transport.close();
+
+        if (targetWidget) {
+          targetWidget->updateConfig(targetWidget->screenName(), configPath);
+        }
       } else {
         qWarning() << "Failed to fetch profile resolution from device, using defaults";
       }
@@ -1229,6 +1250,35 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
   } else {
     // Stop bridge client process
     stopBridgeClient(devicePath);
+  }
+}
+
+void DeskflowHidExtension::bridgeClientProfileSwitchRequested(
+    const QString &devicePath, const QString &configPath, int profileIndex
+)
+{
+  // the widget only lists profiles while its bridge client runs
+  const auto *state = m_bridgeClientManager->clientState(configPath);
+  if (devicePath.isEmpty() || !state || !state->process || !m_profileSwitchConfigPath.isEmpty()) {
+    return;
+  }
+
+  const QString screenName = BridgeClientConfigManager::readScreenName(configPath);
+  qInfo() << "Switching" << screenName << "to profile" << profileIndex;
+
+  // the core holds the port (exclusively on Windows), and it was started with the old profile's
+  // screen size and scroll settings: stop it, switch, then start it again, which reads the new
+  // profile and lets the core report it (applying any bonded screen location).  opening the
+  // port may wait in an event loop, so keep auto-connect from starting the core meanwhile.
+  m_profileSwitchConfigPath = configPath;
+  stopBridgeClient(devicePath);
+  const bool switched = m_bridgeDeviceService->switchProfile(devicePath, profileIndex);
+  m_profileSwitchConfigPath.clear();
+
+  bridgeClientConnectToggled(devicePath, configPath, true);
+
+  if (!switched && m_mainWindow) {
+    m_mainWindow->setStatus(tr("Failed to switch profile on %1").arg(screenName));
   }
 }
 
