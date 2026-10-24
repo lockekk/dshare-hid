@@ -56,6 +56,15 @@ public:
   static QString readSerialNumber(const QString &configPath);
 
   /**
+   * @brief The name to show for a computer: for a bridge client, its device's name, which
+   * reads better than its screen name (Bridge-<address>); the computer's name otherwise
+   *
+   * When bridge clients' devices share a name, the screen name is added to tell them apart.
+   * @param computerName Screen name of the computer
+   */
+  static QString displayName(const QString &computerName);
+
+  /**
    * @brief Get all bridge client config files
    * @return List of absolute paths to all .conf files in bridge-clients directory
    */

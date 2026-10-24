@@ -173,7 +173,7 @@ void BridgeClientWidget::updateConfig(const QString &screenName, const QString &
   refreshActivationStateLabel();
   refreshDeviceNameLabel();
   refreshOrientationLabel();
-  Q_EMIT profilesChanged(); // they are listed under the screen name
+  Q_EMIT profilesChanged(); // they are listed under the device's name, or the screen name
 }
 
 void BridgeClientWidget::setActivationState(const QString &activationState)
@@ -194,9 +194,13 @@ void BridgeClientWidget::setActivationState(const QString &activationState)
 void BridgeClientWidget::setDeviceName(const QString &deviceName)
 {
   const QString trimmed = deviceName.trimmed();
+  const bool changed = (trimmed != m_deviceName);
   m_deviceName = trimmed;
   const QString display = trimmed.isEmpty() ? tr("--") : trimmed;
   m_deviceNameLabel->setText(display);
+  if (changed) {
+    Q_EMIT profilesChanged(); // they are listed under the device's name
+  }
 }
 
 void BridgeClientWidget::setActiveHostname(const QString &hostname)

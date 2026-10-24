@@ -1336,7 +1336,9 @@ void DeskflowHidExtension::bridgeProfileHotkeyPressed(int position)
   const auto &profiles = target->profiles();
   if (position < 1 || position > profiles.size()) {
     if (m_mainWindow) {
-      m_mainWindow->setStatus(tr("%1 has no profile %2").arg(target->screenName()).arg(position));
+      m_mainWindow->setStatus(
+          tr("%1 has no profile %2").arg(BridgeClientConfigManager::displayName(target->screenName())).arg(position)
+      );
     }
     return;
   }
@@ -1395,7 +1397,7 @@ void DeskflowHidExtension::refreshTrayProfileMenus()
       continue;
     }
 
-    auto *menu = new QMenu(widget->screenName(), trayMenu);
+    auto *menu = new QMenu(BridgeClientConfigManager::displayName(widget->screenName()), trayMenu);
     auto *group = new QActionGroup(menu);
     for (qsizetype i = 0; i < profiles.size(); ++i) {
       const BridgeProfileInfo &profile = profiles.at(i);
@@ -1728,14 +1730,14 @@ void DeskflowHidExtension::onBridgeProcessDeviceNameDetected(const QString &devi
   qInfo() << "Bridge client detected device name:" << deviceName;
   for (auto it = m_bridgeClientWidgets.begin(); it != m_bridgeClientWidgets.end(); ++it) {
     if (it.value()->devicePath() == devicePath) {
-      it.value()->setDeviceName(deviceName);
-
+      // stored first: the tray menu reads it when the widget reports the change
       {
         QSettings cfg(it.key(), QSettings::IniFormat);
         cfg.setValue(Settings::Bridge::DeviceName, deviceName);
         cfg.sync();
         it.value()->setActiveHostname(cfg.value(Settings::Bridge::ActiveProfileHostname).toString());
       }
+      it.value()->setDeviceName(deviceName);
       break;
     }
   }

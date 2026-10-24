@@ -10,6 +10,7 @@
 
 #include "common/Constants.h"
 #include "gui/config/Computer.h"
+#include "gui/core/BridgeClientConfigManager.h"
 
 #include <QIODevice>
 #include <QIcon>
@@ -59,7 +60,8 @@ QVariant ComputerSetupModel::data(const QModelIndex &index, int role) const
         .arg(computer(index).name());
 
   case Qt::DisplayRole:
-    return computer(index).name();
+    // DShare-HID: a bridge client shows its device's name (the tooltip keeps the screen name)
+    return deskflow::gui::BridgeClientConfigManager::displayName(computer(index).name());
 
   default:
     break;

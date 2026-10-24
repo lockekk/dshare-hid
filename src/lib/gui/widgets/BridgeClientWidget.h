@@ -177,7 +177,7 @@ Q_SIGNALS:
   Q_SIGNAL void connectToggled(const QString &devicePath, const QString &configPath, bool shouldConnect);
   Q_SIGNAL void configureClicked(const QString &devicePath, const QString &configPath);
   Q_SIGNAL void profileSwitchRequested(const QString &devicePath, const QString &configPath, int profileIndex);
-  /// the profiles shown, the active one, or the screen name they're shown under changed
+  /// the profiles shown, the active one, or the names they're shown under changed
   Q_SIGNAL void profilesChanged();
   Q_SIGNAL void refreshDevicesRequested();
 

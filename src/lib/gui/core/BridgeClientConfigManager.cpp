@@ -136,6 +136,25 @@ QString BridgeClientConfigManager::readSerialNumber(const QString &configPath)
   return config.value(Settings::Bridge::SerialNumber).toString();
 }
 
+QString BridgeClientConfigManager::displayName(const QString &computerName)
+{
+  QString deviceName;
+  QStringList deviceNames; // every bridge client's
+  for (const QString &configPath : getAllConfigFiles()) {
+    const QSettings config(configPath, QSettings::IniFormat);
+    const QString name = config.value(Settings::Bridge::DeviceName).toString().trimmed();
+    deviceNames.append(name);
+    if (readScreenName(configPath) == computerName) {
+      deviceName = name;
+    }
+  }
+
+  if (deviceName.isEmpty()) {
+    return computerName;
+  }
+  return deviceNames.count(deviceName) > 1 ? QStringLiteral("%1 (%2)").arg(deviceName, computerName) : deviceName;
+}
+
 QStringList BridgeClientConfigManager::getAllConfigFiles()
 {
   QString dir = bridgeClientsDir();
