@@ -83,6 +83,30 @@ void BridgeClientManager::removeClientConfig(const QString &configPath)
   }
 }
 
+void BridgeClientManager::renameClientConfig(const QString &oldConfigPath, const QString &newConfigPath)
+{
+  if (oldConfigPath == newConfigPath || !m_clients.contains(oldConfigPath) || m_clients.contains(newConfigPath)) {
+    return;
+  }
+
+  BridgeClientState state = m_clients.take(oldConfigPath);
+  state.configPath = newConfigPath;
+  m_clients.insert(newConfigPath, state);
+
+  for (auto it = m_deviceToConfig.begin(); it != m_deviceToConfig.end(); ++it) {
+    if (it.value() == oldConfigPath) {
+      it.value() = newConfigPath;
+    }
+  }
+  for (auto it = m_serialToConfigLock.begin(); it != m_serialToConfigLock.end(); ++it) {
+    if (it.value() == oldConfigPath) {
+      it.value() = newConfigPath;
+    }
+  }
+
+  Q_EMIT clientUpdated(newConfigPath);
+}
+
 void BridgeClientManager::setDeviceAvailable(const QString &devicePath, const QString &serialNumber, bool available)
 {
   // Find all configs that use this serial number or device path

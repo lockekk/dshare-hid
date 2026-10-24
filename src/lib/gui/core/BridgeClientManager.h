@@ -39,6 +39,8 @@ public:
 
   void addClientConfig(const QString &configPath);
   void removeClientConfig(const QString &configPath);
+  // Move a client's state (device, serial lock, process, ...) to its renamed config file
+  void renameClientConfig(const QString &oldConfigPath, const QString &newConfigPath);
   void setClientDevice(const QString &configPath, const QString &devicePath, const QString &serialNumber);
   void setActiveProfile(const QString &configPath, int activeProfile);
 

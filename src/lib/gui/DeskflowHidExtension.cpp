@@ -1271,6 +1271,16 @@ void DeskflowHidExtension::bridgeClientConfigureClicked(const QString &devicePat
           m_bridgeClientWidgets.remove(oldConfigPath);
           m_bridgeClientWidgets[newConfigPath] = widget;
 
+          // the manager is keyed by config path too: without this, the bridge started next
+          // under the new path is never recorded, so Disconnect and server stop can't stop it
+          m_bridgeClientManager->renameClientConfig(oldConfigPath, newConfigPath);
+          for (auto resumeIt = m_resumeConnectionAfterServerRestart.begin();
+               resumeIt != m_resumeConnectionAfterServerRestart.end(); ++resumeIt) {
+            if (resumeIt.value() == oldConfigPath) {
+              resumeIt.value() = newConfigPath;
+            }
+          }
+
           if (oldScreenName != newScreenName) {
             // Stop old bridge process if it's running
             if (m_bridgeClientManager->clientStateByDevice(devicePath) &&
