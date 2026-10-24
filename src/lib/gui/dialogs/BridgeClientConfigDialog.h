@@ -19,6 +19,8 @@
 
 namespace deskflow::gui {
 
+struct BridgeProfileSet;
+
 class BridgeClientConfigDialog : public QDialog
 {
   Q_OBJECT
@@ -49,6 +51,8 @@ private Q_SLOTS:
   void onProfileSaveClicked();
   void onProfileActivateClicked();
   void onProfileResetClicked();
+  void onProfileBackupClicked();
+  void onProfileRestoreClicked();
 
 private:
   void loadConfig();
@@ -56,6 +60,7 @@ private:
   QString renameConfigFile(const QString &newScreenName);
   void setupProfileUI(QVBoxLayout *mainLayout);
   void loadProfilesFromDevice();
+  void showProfiles(const BridgeProfileSet &profiles);
   void updateProfileDetailUI(int index);
 
   QString m_configPath;
@@ -90,6 +95,8 @@ private:
   QPushButton *m_btnProfileSave = nullptr;
   QPushButton *m_btnProfileActivate = nullptr;
   QPushButton *m_btnProfileReset = nullptr;
+  QPushButton *m_btnProfileBackup = nullptr;
+  QPushButton *m_btnProfileRestore = nullptr;
   QCheckBox *m_checkBondLocation = nullptr;
 
   QString m_originalDeviceName;

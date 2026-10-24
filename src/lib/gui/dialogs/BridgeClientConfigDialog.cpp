@@ -8,11 +8,17 @@
 #include "gui/core/BridgeClientConfigManager.h"
 #include "gui/core/BridgeClientProcess.h"
 #include "gui/core/BridgeDeviceService.h"
+#include "gui/core/BridgeProfileBackup.h"
 #include "gui/devices/UsbDeviceHelper.h"
 
+#include <QApplication>
+#include <QDate>
+#include <QDesktopServices>
 #include <QDialogButtonBox>
 #include <QDir>
 #include <QEvent>
+#include <QFile>
+#include <QFileDialog>
 #include <QFileInfo>
 #include <QFormLayout>
 #include <QGridLayout>
@@ -20,24 +26,58 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QMessageBox>
+#include <QProcess>
 #include <QPushButton>
 #include <QRegularExpression>
 #include <QRegularExpressionValidator>
+#include <QSaveFile>
 #include <QSettings>
+#include <QStandardPaths>
 #include <QTabBar>
 #include <QTimer>
+#include <QUrl>
 #include <QVBoxLayout>
 
 #include "gui/MainWindow.h"
 #include "gui/config/ServerConfig.h"
 #include "platform/bridge/CdcTransport.h"
 
+using namespace deskflow::gui;
+
 namespace {
 constexpr auto kLandscapeIconPath = ":/bridge-client/client/orientation_landscape.svg";
 constexpr auto kPortraitIconPath = ":/bridge-client/client/orientation_portrait.svg";
-} // namespace
 
-using namespace deskflow::gui;
+// the problems, one per line, to follow a message
+QString problemList(const QStringList &problems)
+{
+  constexpr int kShown = 10;
+  QStringList lines;
+  for (qsizetype i = 0; i < problems.size() && i < kShown; ++i) {
+    lines.append(QStringLiteral("• ") + problems.at(i));
+  }
+  if (problems.size() > kShown) {
+    lines.append(BridgeClientConfigDialog::tr("and %n more", nullptr, static_cast<int>(problems.size() - kShown)));
+  }
+  return QStringLiteral("\n\n") + lines.join(QLatin1Char('\n'));
+}
+
+// select the file in Finder or Explorer; other desktops have no common way to, so open its folder
+void showInFileManager(const QString &path)
+{
+  bool shown = false;
+#if defined(Q_OS_MACOS)
+  shown = QProcess::startDetached(QStringLiteral("open"), {QStringLiteral("-R"), path});
+#elif defined(Q_OS_WIN)
+  shown = QProcess::startDetached(
+      QStringLiteral("explorer.exe"), {QStringLiteral("/select,"), QDir::toNativeSeparators(path)}
+  );
+#endif
+  if (!shown) {
+    QDesktopServices::openUrl(QUrl::fromLocalFile(QFileInfo(path).absolutePath()));
+  }
+}
+} // namespace
 
 BridgeClientConfigDialog::BridgeClientConfigDialog(
     const QString &configPath, const QString &devicePath, QWidget *parent
@@ -126,8 +166,22 @@ void BridgeClientConfigDialog::setupProfileUI(QVBoxLayout *mainLayout)
   m_profileGroup = new QGroupBox(this);
   auto *groupLayout = new QVBoxLayout(m_profileGroup);
 
+  // backup and restore act on all of the profiles, so they sit by the title rather than with
+  // the buttons for the profile shown
+  auto *titleLayout = new QHBoxLayout();
   m_lblProfileGroupTitle = new QLabel(tr("Profiles (Device)"), this);
-  groupLayout->addWidget(m_lblProfileGroupTitle);
+  m_btnProfileBackup = new QPushButton(tr("Backup..."), this);
+  m_btnProfileBackup->setToolTip(tr("Save the device's profiles to a file."));
+  m_btnProfileRestore = new QPushButton(tr("Restore..."), this);
+  m_btnProfileRestore->setToolTip(tr("Load profiles from a backup file."));
+  connect(m_btnProfileBackup, &QPushButton::clicked, this, &BridgeClientConfigDialog::onProfileBackupClicked);
+  connect(m_btnProfileRestore, &QPushButton::clicked, this, &BridgeClientConfigDialog::onProfileRestoreClicked);
+
+  titleLayout->addWidget(m_lblProfileGroupTitle);
+  titleLayout->addStretch();
+  titleLayout->addWidget(m_btnProfileBackup);
+  titleLayout->addWidget(m_btnProfileRestore);
+  groupLayout->addLayout(titleLayout);
 
   // Tab Bar for Profile Selection
   m_profileTabBar = new QTabBar(this);
@@ -410,29 +464,36 @@ void BridgeClientConfigDialog::loadProfilesFromDevice()
     return;
   }
 
+  showProfiles(profiles);
+}
+
+void BridgeClientConfigDialog::showProfiles(const BridgeProfileSet &profiles)
+{
   m_totalProfiles = static_cast<int>(profiles.profiles.size());
   m_deviceActiveProfileIndex = profiles.activeIndex;
   if (m_deviceActiveProfileIndex < 0 || m_deviceActiveProfileIndex >= m_totalProfiles)
     m_deviceActiveProfileIndex = 0; // Default fallback
 
-  // Populate Tabs
-  while (m_profileTabBar->count() > 0)
-    m_profileTabBar->removeTab(0);
+  // Populate Tabs (blocked: changing tabs would save the form over the profiles being replaced)
+  {
+    const QSignalBlocker blocker(m_profileTabBar);
+    while (m_profileTabBar->count() > 0)
+      m_profileTabBar->removeTab(0);
 
-  for (int i = 0; i < m_totalProfiles; ++i) {
-    m_profileTabBar->addTab(QString("Slot %1").arg(i));
-    m_profileCache[i] = profiles.profiles.at(i);
+    m_profileCache.clear();
+    for (int i = 0; i < m_totalProfiles; ++i) {
+      m_profileTabBar->addTab(QString("Slot %1").arg(i));
+      m_profileCache[i] = profiles.profiles.at(i);
+    }
+
+    // Select the active profile tab by default
+    m_profileTabBar->setCurrentIndex(m_deviceActiveProfileIndex);
   }
 
   updateTabLabels();
 
   m_profileGroup->setEnabled(true);
 
-  // Select the active profile tab by default
-  {
-    const QSignalBlocker blocker(m_profileTabBar);
-    m_profileTabBar->setCurrentIndex(m_deviceActiveProfileIndex);
-  }
   m_selectedProfileIndex = m_deviceActiveProfileIndex;
   updateProfileDetailUI(m_selectedProfileIndex);
 }
@@ -610,6 +671,140 @@ void BridgeClientConfigDialog::onProfileResetClicked()
   } else {
     QMessageBox::critical(this, tr("Error"), tr("Failed to erase profile: %1").arg(error));
   }
+}
+
+void BridgeClientConfigDialog::onProfileBackupClicked()
+{
+  BridgeProfileBackup backup;
+  QString error;
+  if (!BridgeDeviceService::backupProfiles(m_devicePath, backup, error)) {
+    QMessageBox::critical(this, tr("Backup Profiles"), tr("Failed to read the profiles: %1").arg(error));
+    return;
+  }
+  if (backup.profiles.isEmpty()) {
+    QMessageBox::information(this, tr("Backup Profiles"), tr("This device has no profiles to backup."));
+    return;
+  }
+
+  // only save a file that restore will take
+  const QByteArray json = backup.toJson();
+  BridgeProfileBackup check;
+  QStringList problems;
+  if (!BridgeProfileBackup::fromJson(json, check, problems)) {
+    QMessageBox::warning(this, tr("Backup Profiles"), tr("Please fix these profiles first:") + problemList(problems));
+    return;
+  }
+
+  QString stem = m_editScreenName->text().trimmed();
+  if (stem.isEmpty())
+    stem = QStringLiteral("bridge");
+  // a name not taken yet: macOS's save panel always asks before replacing a file
+  const QDir documents(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
+  const QString baseName =
+      QStringLiteral("%1-profiles-%2").arg(stem, QDate::currentDate().toString(QStringLiteral("yyyyMMdd")));
+  QString suggested = documents.filePath(baseName + QStringLiteral(".json"));
+  for (int suffix = 2; QFile::exists(suggested); ++suffix) {
+    suggested = documents.filePath(QStringLiteral("%1-%2.json").arg(baseName).arg(suffix));
+  }
+  const QString path =
+      QFileDialog::getSaveFileName(this, tr("Backup Profiles"), suggested, tr("Profile backups (*.json)"));
+  if (path.isEmpty())
+    return;
+
+  QSaveFile file(path);
+  if (!file.open(QIODevice::WriteOnly) || file.write(json) != json.size() || !file.commit()) {
+    QMessageBox::critical(
+        this, tr("Backup Profiles"), tr("Failed to save %1: %2").arg(QDir::toNativeSeparators(path), file.errorString())
+    );
+    return;
+  }
+
+  // the path is a link to the file in the file manager
+  const QString folderUrl = QUrl::fromLocalFile(QFileInfo(path).absolutePath()).toString(QUrl::FullyEncoded);
+  QMessageBox box(
+      QMessageBox::Information, tr("Backup Profiles"),
+      tr("Saved %n profile(s) to:", nullptr, static_cast<int>(backup.profiles.size())).toHtmlEscaped() +
+          QStringLiteral("<br><a href=\"%1\">%2</a>").arg(folderUrl, QDir::toNativeSeparators(path).toHtmlEscaped()),
+      QMessageBox::Ok, this
+  );
+  box.setTextFormat(Qt::RichText);
+  box.setTextInteractionFlags(Qt::TextBrowserInteraction);
+  box.setOption(QMessageBox::Option::DontUseNativeDialog); // a native alert shows no links
+  // select the file rather than only open its folder, as the label would by itself
+  if (auto *label = box.findChild<QLabel *>(QStringLiteral("qt_msgbox_label"))) {
+    label->setOpenExternalLinks(false);
+    connect(label, &QLabel::linkActivated, &box, [path] { showInFileManager(path); });
+  }
+  box.exec();
+}
+
+void BridgeClientConfigDialog::onProfileRestoreClicked()
+{
+  const QString path = QFileDialog::getOpenFileName(
+      this, tr("Restore Profiles"), QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation),
+      tr("Profile backups (*.json);;All files (*)")
+  );
+  if (path.isEmpty())
+    return;
+  const QString fileName = QDir::toNativeSeparators(path);
+
+  QFile file(path);
+  if (!file.open(QIODevice::ReadOnly)) {
+    QMessageBox::critical(this, tr("Restore Profiles"), tr("Failed to open %1: %2").arg(fileName, file.errorString()));
+    return;
+  }
+  const QByteArray json = file.read(BridgeProfileBackup::kMaxFileSize + 1);
+  file.close();
+
+  // nothing goes to the device unless every value in the file is valid and fits the device
+  BridgeProfileBackup backup;
+  QStringList problems;
+  if (!BridgeProfileBackup::fromJson(json, backup, problems) || !backup.fitsDevice(m_totalProfiles, problems)) {
+    QMessageBox::warning(this, tr("Restore Profiles"), tr("This file can't be restored:") + problemList(problems));
+    return;
+  }
+
+  QStringList hostnames;
+  for (const auto &profile : std::as_const(backup.profiles)) {
+    hostnames.append(BridgeDeviceService::profileHostname(profile));
+  }
+  const int count = static_cast<int>(backup.profiles.size());
+  if (QMessageBox::question(
+          this, tr("Restore Profiles"),
+          tr("Restore %n profile(s) to the device?", nullptr, count) + QStringLiteral("\n\n") +
+              hostnames.join(QStringLiteral(", "))
+      ) != QMessageBox::Yes) {
+    return;
+  }
+
+  QList<int> restored;
+  BridgeProfileSet profiles;
+  QString error;
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+  const bool ok = BridgeDeviceService::restoreProfiles(m_devicePath, backup, restored, profiles, error);
+  QApplication::restoreOverrideCursor();
+
+  if (!ok) {
+    // show what the device has now, if some of the backup reached it
+    BridgeProfileSet current;
+    QString readError;
+    if (!restored.isEmpty() && BridgeDeviceService::readProfiles(m_devicePath, current, readError) &&
+        !current.profiles.isEmpty()) {
+      showProfiles(current);
+    }
+    QMessageBox::critical(this, tr("Restore Profiles"), tr("Restore failed: %1").arg(error));
+    return;
+  }
+
+  showProfiles(profiles);
+
+  // the name is set on OK, like a typed one; a device that isn't activated keeps its name
+  QString message = tr("Restored %n profile(s).", nullptr, count);
+  if (!backup.deviceName.isEmpty() && backup.deviceName != deviceName() && m_editDeviceName->isEnabled()) {
+    m_editDeviceName->setText(backup.deviceName);
+    message += QStringLiteral("\n\n") + tr("Click OK to also set the device name to \"%1\".").arg(backup.deviceName);
+  }
+  QMessageBox::information(this, tr("Restore Profiles"), message);
 }
 
 void BridgeClientConfigDialog::saveConfig()

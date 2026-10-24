@@ -21,3 +21,11 @@ create_test(
   SOURCE BridgeProfileActionTests.cpp
   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/server"
 )
+
+# the profile backup file (gui/core/BridgeProfileBackup.h)
+create_test(
+  NAME BridgeProfileBackupTests
+  DEPENDS gui
+  SOURCE BridgeProfileBackupTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
+)

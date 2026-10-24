@@ -10,6 +10,8 @@
 namespace deskflow {
 namespace gui {
 
+class BridgeProfileBackup;
+
 /**
  * @brief One of the device's profiles, as the main window lists it
  */
@@ -95,6 +97,25 @@ public:
       BridgeProfileSet &profiles, QString &error
   );
   static bool eraseProfile(const QString &devicePath, int profileIndex, BridgeProfileSet &profiles, QString &error);
+
+  /**
+   * @brief Read the device's profiles that were set, and its name, for a backup file
+   */
+  static bool backupProfiles(const QString &devicePath, BridgeProfileBackup &backup, QString &error);
+
+  /**
+   * @brief Write a backup's profiles to the device, then make its active profile active
+   *
+   * The backup is checked again as a backup file would be (BridgeProfileBackup::fromJson()),
+   * so nothing is written unless every value is valid and all of it fits the device, and each
+   * profile must read back as it was written.  The backup's device name is left to the caller.
+   * @param restored The indexes of the profiles written, also when it stops part way
+   * @param profiles The device's profiles afterwards, on success
+   */
+  static bool restoreProfiles(
+      const QString &devicePath, const BridgeProfileBackup &backup, QList<int> &restored, BridgeProfileSet &profiles,
+      QString &error
+  );
 
   /**
    * @brief Read all of the device's profiles over a transport the GUI has open itself.

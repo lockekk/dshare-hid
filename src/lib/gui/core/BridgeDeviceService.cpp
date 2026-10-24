@@ -2,6 +2,7 @@
 #include "common/Settings.h"
 #include "gui/core/BridgeClientConfigManager.h"
 #include "gui/core/BridgeClientProcess.h"
+#include "gui/core/BridgeProfileBackup.h"
 #include "platform/bridge/BridgeRequests.h"
 #include "platform/bridge/CdcTransport.h"
 #include <QDebug>
@@ -10,6 +11,8 @@
 #include <QRegularExpression>
 #include <QSettings>
 #include <QTimer>
+
+#include <cstring>
 
 namespace deskflow::gui {
 
@@ -204,6 +207,80 @@ bool BridgeDeviceService::eraseProfile(
 )
 {
   return requestProfiles(devicePath, requests::kErase, {QString::number(profileIndex)}, profiles, error);
+}
+
+bool BridgeDeviceService::backupProfiles(const QString &devicePath, BridgeProfileBackup &backup, QString &error)
+{
+  BridgeProfileSet profiles;
+  if (!readProfiles(devicePath, profiles, error)) {
+    return false;
+  }
+
+  // a backup needn't have the name: without it, the profiles are still worth saving
+  QString name;
+  QStringList fields;
+  QString nameError;
+  if (request(devicePath, requests::kGetName, {}, fields, nameError)) {
+    name = requests::decodeText(fields.value(0));
+  } else {
+    qWarning() << "Failed to read the name of" << devicePath << "for its backup:" << nameError;
+  }
+
+  backup = BridgeProfileBackup::fromDevice(profiles, name);
+  return true;
+}
+
+bool BridgeDeviceService::restoreProfiles(
+    const QString &devicePath, const BridgeProfileBackup &backup, QList<int> &restored, BridgeProfileSet &profiles,
+    QString &error
+)
+{
+  restored.clear();
+
+  // the last check before the device, whoever made the backup: write the profiles as a backup
+  // file gives them, every value checked and the rest of each profile zero
+  BridgeProfileBackup checked;
+  QStringList problems;
+  if (!BridgeProfileBackup::fromJson(backup.toJson(), checked, problems)) {
+    error = problems.join(QLatin1Char(' '));
+    return false;
+  }
+
+  if (!readProfiles(devicePath, profiles, error)) {
+    return false;
+  }
+  if (!checked.fitsDevice(static_cast<int>(profiles.profiles.size()), problems)) {
+    error = problems.join(QLatin1Char(' '));
+    return false;
+  }
+
+  for (auto it = checked.profiles.cbegin(); it != checked.profiles.cend(); ++it) {
+    if (!saveProfile(devicePath, it.key(), it.value(), profiles, error)) {
+      error = tr("failed to write profile %1: %2").arg(it.key()).arg(error);
+      return false;
+    }
+    restored.append(it.key());
+
+    // the reply has the profile as the device stored it
+    if (it.key() >= profiles.profiles.size() ||
+        std::memcmp(&profiles.profiles.at(it.key()), &it.value(), sizeof(deskflow::bridge::DeviceProfile)) != 0) {
+      error = tr("profile %1 didn't read back as it was written").arg(it.key());
+      return false;
+    }
+  }
+
+  // switching re-applies the profile, which reconnects the host, so only switch if need be
+  if (profiles.activeIndex != checked.activeProfile) {
+    if (!switchProfile(devicePath, checked.activeProfile, profiles, error)) {
+      error = tr("failed to make profile %1 active: %2").arg(checked.activeProfile).arg(error);
+      return false;
+    }
+    if (profiles.activeIndex != checked.activeProfile) {
+      error = tr("the device didn't make profile %1 active").arg(checked.activeProfile);
+      return false;
+    }
+  }
+  return true;
 }
 
 QList<BridgeProfileInfo> BridgeDeviceService::profileInfos(const BridgeProfileSet &profiles)
