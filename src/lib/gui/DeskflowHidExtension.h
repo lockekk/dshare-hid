@@ -129,6 +129,9 @@ private:
 
   bool m_isSessionLocked = false;
 
+  // Set while the firmware tool owns the devices: no bridge client may be started
+  bool m_bridgeClientsSuspended = false;
+
   // Log toggle feature
   QAction *m_actionShowBridgeLogs = nullptr;
   bool m_showBridgeLogs = false;

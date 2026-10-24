@@ -187,12 +187,19 @@ void DeskflowHidExtension::openEsp32HidTools()
 {
 #if DESKFLOW_HID_ENABLE_ESP32_HID_TOOLS
   pauseUsbMonitoring();
+  // the dialog runs its own event loop: without this, the server's Listening (sent as the
+  // bridges below drop) or a retry would start them again while the tool uses the device
+  m_bridgeClientsSuspended = true;
   stopAllBridgeClients();
   Esp32HidToolsWidget widget(QString(), m_mainWindow);
   widget.setWindowTitle(tr("ESP32 HID Tools"));
   widget.resize(800, 1000);
   widget.exec();
+  m_bridgeClientsSuspended = false;
   resumeUsbMonitoring();
+  if (isServerReady()) {
+    processConnectionRequests();
+  }
   if (m_mainWindow) {
     m_mainWindow->setStatus(tr("Ready"));
   }
@@ -941,6 +948,11 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
   qDebug() << "Bridge client connect toggled:"
            << "device:" << devicePath << "config:" << configPath << "connect:" << shouldConnect;
 
+  if (shouldConnect && m_bridgeClientsSuspended) {
+    qInfo() << "Not starting bridge client while the firmware tool is open:" << configPath;
+    return;
+  }
+
   const QString serialNumber = BridgeClientConfigManager::readSerialNumber(configPath);
   if (shouldConnect) {
     m_bridgeClientManager->setManuallyDisconnected(serialNumber, false);
@@ -1554,6 +1566,11 @@ void DeskflowHidExtension::bridgeClientProcessFinished(
           if (m_mainWindow) {
             m_mainWindow->setStatus(tr("Device disconnected."));
           }
+          return;
+        }
+
+        // Stopped for the firmware tool: openEsp32HidTools() restarts it when the tool closes
+        if (m_bridgeClientsSuspended) {
           return;
         }
 
