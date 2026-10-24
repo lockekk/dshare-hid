@@ -62,6 +62,9 @@ void BridgeClientApp::handleComputerError() const
 void BridgeClientApp::handleClientConnected()
 {
   ClientApp::handleClientConnected();
+  // the GUI cancels its connect timeout when it sees this line (s_connectedRegex);
+  // ClientApp only logs it at debug level, and without TLS nothing else matches
+  LOG_INFO("BridgeClientApp: connected to server");
   LOG_INFO("BridgeClientApp: Pre-connecting to bridge device...");
   if (m_transport && !m_transport->open()) {
     LOG_WARN("BridgeClientApp: Failed to pre-connect to bridge device (%s)", m_transport->lastError().c_str());
