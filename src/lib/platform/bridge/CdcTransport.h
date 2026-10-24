@@ -256,6 +256,7 @@ private:
   bool writeAll(const uint8_t *data, size_t length);
   bool readFrame(uint8_t &type, uint8_t &flags, std::vector<uint8_t> &payload, int timeoutMs);
   void resetState();
+  void discardInput();
   bool ensureOpen(bool allowInsecure = false);
 
   QString m_devicePath;

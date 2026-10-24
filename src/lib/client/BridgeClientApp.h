@@ -40,7 +40,7 @@ public:
       const deskflow::bridge::FirmwareConfig &config, int32_t screenWidth, int32_t screenHeight
   );
 
-  ~BridgeClientApp() override = default;
+  ~BridgeClientApp() override;
 
   // Override createComputer to return BridgePlatformScreen
   deskflow::Computer *createComputer() override;

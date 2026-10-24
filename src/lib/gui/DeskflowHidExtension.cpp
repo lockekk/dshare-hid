@@ -22,6 +22,7 @@
 #endif
 
 // #include "platform/bridge/Activation.h"
+#include "platform/bridge/BridgeRequests.h"
 #include "platform/bridge/CdcTransport.h"
 
 #if defined(Q_OS_LINUX)
@@ -1019,6 +1020,12 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
       }
     }
 
+    // a bridge client the manager lost track of would still hold the device open
+    if (auto *owner = BridgeClientProcess::forDevice(devicePath)) {
+      qWarning() << "Stopping a bridge client that still holds" << devicePath;
+      owner->stop();
+    }
+
     if (!m_bridgeClientManager->acquireSerialLock(serialNumber, configPath)) {
       qWarning() << "Failed to acquire lock for serial:" << serialNumber;
       if (m_mainWindow) {
@@ -1204,6 +1211,9 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
     });
     connect(process, &BridgeClientProcess::handshakeFailed, this, [this, devicePath](const QString &reason) {
       onBridgeProcessHandshakeFailed(devicePath, reason);
+    });
+    connect(process, &BridgeClientProcess::profilesReported, this, [this, devicePath](const QStringList &fields) {
+      onBridgeProcessProfilesReported(devicePath, fields);
     });
     connect(
         process, &BridgeClientProcess::finished, this,
@@ -1403,6 +1413,8 @@ void DeskflowHidExtension::bridgeClientConfigureClicked(const QString &devicePat
         if (targetWidget) {
           targetWidget->setDeviceName(newName);
         }
+      } else if (m_mainWindow) {
+        m_mainWindow->setStatus(tr("Failed to rename the device to %1").arg(newName));
       }
     }
   }
@@ -1561,6 +1573,21 @@ void DeskflowHidExtension::onBridgeProcessBleStatusDetected(const QString &devic
     if (it.value()->devicePath() == devicePath) {
       it.value()->setBleConnected(connected);
       break;
+    }
+  }
+}
+
+void DeskflowHidExtension::onBridgeProcessProfilesReported(const QString &devicePath, const QStringList &fields)
+{
+  // a switch, save or erase that the GUI gave up waiting for has been carried out after all
+  BridgeProfileSet profiles;
+  if (!deskflow::bridge::requests::decodeProfiles(fields, profiles.activeIndex, profiles.profiles)) {
+    return;
+  }
+  for (auto it = m_bridgeClientWidgets.cbegin(); it != m_bridgeClientWidgets.cend(); ++it) {
+    if (it.value()->devicePath() == devicePath) {
+      applyDeviceProfiles(devicePath, it.key(), profiles);
+      return;
     }
   }
 }

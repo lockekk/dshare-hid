@@ -17,5 +17,6 @@ private Q_SLOTS:
   void profilesReply();
   void textRoundTrip();
   void queueHandsOverOnce();
+  void queuePostsUntilClosed();
   void screenSizeFollowsRotation();
 };

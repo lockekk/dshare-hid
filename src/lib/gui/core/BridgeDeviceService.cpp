@@ -22,15 +22,17 @@ bool s_suspended = false;
 // Attempt to open the transport with retries (macOS port readiness can be tricky)
 bool openWithRetries(deskflow::bridge::CdcTransport &transport, const QString &devicePath)
 {
-  if (!BridgeDeviceService::mayOpen(devicePath)) {
-    qDebug() << "Not opening device" << devicePath << "while a bridge client or the firmware tool owns it";
-    return false;
-  }
   for (int retry = 0; retry < 3; ++retry) {
+    // checked each time: the wait below runs the event loop, which can start a bridge client
+    if (!BridgeDeviceService::mayOpen(devicePath)) {
+      qDebug() << "Not opening device" << devicePath << "while a bridge client or the firmware tool owns it";
+      return false;
+    }
     if (transport.open()) {
       return true;
     }
     qWarning() << "Failed to open device" << devicePath << "(attempt" << (retry + 1) << "/3)";
+    transport.close(); // a failed handshake leaves the port open, and so locked, meanwhile
 
     QEventLoop loop;
     QTimer::singleShot(250, &loop, &QEventLoop::quit);

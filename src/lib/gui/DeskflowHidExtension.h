@@ -76,6 +76,7 @@ private Q_SLOTS:
   void onBridgeProcessActivationStatusDetected(const QString &devicePath, const QString &state, int profileIndex);
   void onBridgeProcessBleStatusDetected(const QString &devicePath, bool connected);
   void onBridgeProcessHandshakeFailed(const QString &devicePath, const QString &reason);
+  void onBridgeProcessProfilesReported(const QString &devicePath, const QStringList &fields);
 
   void onBridgeDeviceConfigSynced(const QString &configPath, int activeProfile);
 

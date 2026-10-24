@@ -41,19 +41,37 @@ bool fromHex(const QString &field, QByteArray &bytes)
   return bytes.toHex() == hex.toLower();
 }
 
+// older firmware doesn't report how many profiles it has
+constexpr int kFallbackProfileCount = 6;
+
 bool readProfiles(CdcTransport &transport, QStringList &fields, QString &error)
 {
   const auto &config = transport.deviceConfig();
+  const bool countKnown = config.totalProfiles > 0;
+  const int count = countKnown ? config.totalProfiles : kFallbackProfileCount;
   fields = {QString::number(config.activeProfile)};
-  for (int i = 0; i < config.totalProfiles; ++i) {
+  for (int i = 0; i < count; ++i) {
     DeviceProfile profile;
     if (!transport.getProfile(static_cast<uint8_t>(i), profile)) {
-      error = transportError(transport);
-      return false;
+      if (countKnown) {
+        error = transportError(transport);
+        return false;
+      }
+      std::memset(&profile, 0, sizeof(profile)); // shown as an empty slot
     }
     fields.append(encodeProfile(profile));
   }
   return true;
+}
+
+// the reply to a command that changed the device
+bool readProfilesAfterChange(CdcTransport &transport, QStringList &fields, QString &error)
+{
+  if (readProfiles(transport, fields, error)) {
+    return true;
+  }
+  error = QStringLiteral("the device was changed, but reading its profiles back failed: %1").arg(error);
+  return false;
 }
 
 } // namespace
@@ -138,7 +156,7 @@ bool execute(
       error = transportError(transport);
       return false;
     }
-    return readProfiles(transport, fields, error);
+    return readProfilesAfterChange(transport, fields, error);
   }
 
   if (command == kSave) {
@@ -155,7 +173,7 @@ bool execute(
       error = transportError(transport);
       return false;
     }
-    return readProfiles(transport, fields, error);
+    return readProfilesAfterChange(transport, fields, error);
   }
 
   if (command == kGetName) {
@@ -246,6 +264,20 @@ std::vector<std::string> Queue::takeAll()
 {
   std::scoped_lock lock{m_mutex};
   return std::exchange(m_lines, {});
+}
+
+void Queue::postUnlessClosed(const std::function<void()> &post)
+{
+  std::scoped_lock lock{m_mutex};
+  if (!m_closed) {
+    post();
+  }
+}
+
+void Queue::close()
+{
+  std::scoped_lock lock{m_mutex};
+  m_closed = true;
 }
 
 } // namespace deskflow::bridge::requests

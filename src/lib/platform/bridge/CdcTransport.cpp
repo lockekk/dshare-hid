@@ -316,7 +316,8 @@ bool CdcTransport::open(bool allowInsecure)
   }
 
 #if defined(Q_OS_UNIX)
-  m_fd = ::open(m_devicePath.toUtf8().constData(), O_RDWR | O_NOCTTY | O_NONBLOCK);
+  // close-on-exec: a process the GUI starts (e.g. a bridge core) mustn't inherit the port
+  m_fd = ::open(m_devicePath.toUtf8().constData(), O_RDWR | O_NOCTTY | O_NONBLOCK | O_CLOEXEC);
   if (m_fd < 0) {
     m_lastError = "Failed to open device: " + std::string(strerror(errno));
     LOG_ERR("CDC: %s", m_lastError.c_str());
@@ -437,6 +438,16 @@ void CdcTransport::close()
 bool CdcTransport::isOpen() const
 {
   return m_fd != -1;
+}
+
+void CdcTransport::discardInput()
+{
+  m_rxBuffer.clear();
+#if defined(Q_OS_UNIX)
+  tcflush(m_fd, TCIFLUSH);
+#elif defined(Q_OS_WIN)
+  PurgeComm(reinterpret_cast<HANDLE>(m_fd), PURGE_RXCLEAR);
+#endif
 }
 
 bool CdcTransport::performHandshake(bool allowInsecure)
@@ -618,6 +629,13 @@ bool CdcTransport::sendUsbFrame(uint8_t type, uint8_t flags, const uint8_t *payl
   if (!isOpen()) {
     m_lastError = "Device not open";
     return false;
+  }
+
+  if (type == kUsbFrameTypeControl) {
+    // a control frame gets exactly one reply, and replies don't say what they answer: drop
+    // whatever is left of an earlier one (e.g. one that came after its wait timed out), or
+    // this command would take that reply as its own
+    discardInput();
   }
 
   std::vector<uint8_t> frame;

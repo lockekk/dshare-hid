@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <chrono>
 #include <cmath>
+#include <cstdint>
 #include <cstring>
 #include <iomanip>
 #include <sstream>
@@ -1397,12 +1398,13 @@ void BridgePlatformScreen::handleRequests()
     const bool ok = requests::execute(*m_transport, request.command, request.arguments, fields, error);
     if (ok) {
       recordCdcCommand(); // the firmware counts any frame as Bluetooth keep-alive traffic
-      if (requests::changesActiveProfile(request.command)) {
-        applyActiveProfile();
-      }
     } else {
       LOG_WARN("BridgeScreen: request '%s' failed: %s", qPrintable(request.command), qPrintable(error));
       fields = {error};
+    }
+    // even a failed request may have changed the device, e.g. when only reading it back failed
+    if (requests::changesActiveProfile(request.command)) {
+      applyActiveProfile();
     }
     // print level: never filtered or prefixed, so the GUI always gets the reply as is
     LOG_PRINT("%s", qPrintable(requests::formatResponse(request.id, ok, fields)));
@@ -1423,6 +1425,11 @@ void BridgePlatformScreen::applyActiveProfile()
   int32_t height = 0;
   profileScreenSize(profile, width, height);
   if (width == m_screenWidth && height == m_screenHeight) {
+    return;
+  }
+  // the protocol carries the size as int16, and the server drops a client whose size isn't positive
+  if (width <= 0 || height <= 0 || width > INT16_MAX || height > INT16_MAX) {
+    LOG_WARN("BridgeScreen: ignoring profile %d's screen size %dx%d", index, width, height);
     return;
   }
 

@@ -63,13 +63,17 @@ void readStdinCommands(IEventQueue *events, std::shared_ptr<deskflow::bridge::re
         line.pop_back();
       }
       if (line == "stop") {
-        LOG_INFO("BridgeClientApp: stop requested, shutting down");
-        events->addEvent(Event(EventTypes::Quit));
+        requests->postUnlessClosed([events] {
+          LOG_INFO("BridgeClientApp: stop requested, shutting down");
+          events->addEvent(Event(EventTypes::Quit));
+        });
         return;
       }
       if (QString::fromStdString(line).startsWith(deskflow::bridge::requests::kRequest + QLatin1Char(' '))) {
         requests->push(line);
-        events->addEvent(Event(EventTypes::StreamInputReady, requests.get()));
+        requests->postUnlessClosed([events, &requests] {
+          events->addEvent(Event(EventTypes::StreamInputReady, requests.get()));
+        });
       }
       line.clear();
     }
@@ -90,6 +94,11 @@ BridgeClientApp::BridgeClientApp(
       m_screenHeight(screenHeight)
 {
   LOG_INFO("BridgeClientApp: initialized for screen=%dx%d", m_screenWidth, m_screenHeight);
+}
+
+BridgeClientApp::~BridgeClientApp()
+{
+  m_requests->close(); // the stdin reader thread lives on, but the event queue won't
 }
 
 void BridgeClientApp::initApp()

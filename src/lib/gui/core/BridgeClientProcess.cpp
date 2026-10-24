@@ -6,8 +6,8 @@
 #include "common/Constants.h"
 #include "platform/bridge/BridgeRequests.h"
 #include <QCoreApplication>
+#include <QDeadlineTimer>
 #include <QDebug>
-#include <QElapsedTimer>
 #include <QTimer>
 
 #include <utility>
@@ -59,6 +59,7 @@ bool BridgeClientProcess::start(const Config &config)
   m_process = new QProcess(this);
   m_stdoutBuffer.clear();
   m_stderrBuffer.clear();
+  m_abandonedRequests.clear();
   QString appPath = QStringLiteral("%1/%2").arg(QCoreApplication::applicationDirPath(), kCoreBinName);
 
   QStringList args;
@@ -104,7 +105,6 @@ BridgeClientProcess *BridgeClientProcess::forDevice(const QString &devicePath)
 
 void BridgeClientProcess::releaseDevice()
 {
-  m_deferredLines.clear();
   if (s_deviceOwners.value(m_devicePath) == this) {
     s_deviceOwners.remove(m_devicePath);
   }
@@ -118,6 +118,11 @@ bool BridgeClientProcess::request(
     error = tr("the bridge client isn't running");
     return false;
   }
+  if (!m_abandonedRequests.isEmpty()) {
+    // it hasn't answered an earlier request yet: don't block the GUI on it again
+    error = tr("the bridge client isn't answering");
+    return false;
+  }
 
   const quint64 id = ++m_lastRequestId;
   m_waitingRequests.insert(id);
@@ -125,19 +130,24 @@ bool BridgeClientProcess::request(
   m_process->write((requests::formatRequest(id, command, arguments) + QLatin1Char('\n')).toUtf8());
   m_process->waitForBytesWritten(1000);
 
-  QElapsedTimer timer;
-  timer.start();
-  while (!m_responses.contains(id) && isStarted() && timer.elapsed() < kRequestTimeoutMs) {
-    m_process->waitForReadyRead(static_cast<int>(kRequestTimeoutMs - timer.elapsed()));
+  const QDeadlineTimer deadline(kRequestTimeoutMs);
+  while (!m_responses.contains(id) && isStarted() && !deadline.hasExpired()) {
+    m_process->waitForReadyRead(static_cast<int>(deadline.remainingTime()));
   }
   --m_requestDepth;
   m_waitingRequests.remove(id);
-  if (m_requestDepth == 0 && !m_deferredLines.isEmpty()) {
+  if (m_requestDepth == 0 && (!m_deferredLines.isEmpty() || m_pendingExit)) {
     QTimer::singleShot(0, this, &BridgeClientProcess::parseDeferredLines);
   }
 
   if (!m_responses.contains(id)) {
-    error = isStarted() ? tr("the bridge client didn't answer") : tr("the bridge client stopped");
+    if (isStarted()) {
+      // the core still carries it out, so watch for its late reply (readLines)
+      m_abandonedRequests.insert(id, command);
+      error = tr("the bridge client didn't answer");
+    } else {
+      error = tr("the bridge client stopped");
+    }
     qWarning() << "Bridge client request" << command << "for" << m_devicePath << "failed:" << error;
     return false;
   }
@@ -176,6 +186,10 @@ void BridgeClientProcess::stop()
     m_process = nullptr;
   }
   releaseDevice();
+  // stopped on purpose: none of its output or its exit is reported any more
+  m_deferredLines.clear();
+  m_pendingExit.reset();
+  m_abandonedRequests.clear();
 }
 
 bool BridgeClientProcess::isStarted() const
@@ -213,8 +227,15 @@ void BridgeClientProcess::readLines(QByteArray &buffer, const QByteArray &data)
     bool ok = false;
     QStringList fields;
     if (requests::parseResponse(line, id, ok, fields)) {
-      if (m_waitingRequests.contains(id)) { // else it came too late
+      if (m_waitingRequests.contains(id)) {
         m_responses.insert(id, {ok, fields});
+      } else if (
+          const QString command = m_abandonedRequests.take(id);
+          ok && (command == requests::kProfiles || requests::changesActiveProfile(command))
+      ) {
+        // too late for its request, but it still tells what the device is set to now; this
+        // may run inside another request's wait, so report it after that
+        QTimer::singleShot(0, this, [this, fields] { Q_EMIT profilesReported(fields); });
       }
       continue;
     }
@@ -234,6 +255,9 @@ void BridgeClientProcess::parseDeferredLines()
   const QStringList lines = std::exchange(m_deferredLines, {});
   for (const QString &line : lines) {
     parseLine(line);
+  }
+  if (const auto exit = std::exchange(m_pendingExit, std::nullopt)) {
+    Q_EMIT finished(exit->exitCode, exit->exitStatus);
   }
 }
 
@@ -294,7 +318,14 @@ void BridgeClientProcess::onFinished(int exitCode, QProcess::ExitStatus exitStat
   m_process->deleteLater();
   m_process = nullptr;
   releaseDevice();
-  Q_EMIT finished(exitCode, exitStatus);
+  m_abandonedRequests.clear();
+
+  // the core's last lines, which may tell why it quit (e.g. a failed handshake), come
+  // before its exit; inside a request's wait they are held back, so the exit waits too
+  m_pendingExit = Exit{exitCode, exitStatus};
+  if (m_requestDepth == 0) {
+    parseDeferredLines();
+  }
 }
 
 } // namespace deskflow::gui

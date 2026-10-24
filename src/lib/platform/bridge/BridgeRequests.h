@@ -10,6 +10,7 @@
 #include <QString>
 #include <QStringList>
 
+#include <functional>
 #include <mutex>
 #include <string>
 #include <vector>
@@ -91,9 +92,15 @@ public:
   void push(std::string line);
   std::vector<std::string> takeAll();
 
+  /// run post() (which posts an event) unless close() was called: the reader thread can
+  /// outlive the event queue and the log, which the core destroys on exit
+  void postUnlessClosed(const std::function<void()> &post);
+  void close();
+
 private:
   std::mutex m_mutex;
   std::vector<std::string> m_lines;
+  bool m_closed = false;
 };
 
 } // namespace deskflow::bridge::requests

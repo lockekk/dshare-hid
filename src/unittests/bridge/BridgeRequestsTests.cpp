@@ -161,6 +161,17 @@ void BridgeRequestsTests::queueHandsOverOnce()
   QVERIFY(queue.takeAll().empty());
 }
 
+void BridgeRequestsTests::queuePostsUntilClosed()
+{
+  requests::Queue queue;
+  int posted = 0;
+  queue.postUnlessClosed([&posted] { ++posted; });
+  QCOMPARE(posted, 1);
+  queue.close();
+  queue.postUnlessClosed([&posted] { ++posted; });
+  QCOMPARE(posted, 1);
+}
+
 void BridgeRequestsTests::screenSizeFollowsRotation()
 {
   int32_t width = 0;

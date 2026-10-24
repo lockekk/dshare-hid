@@ -13,6 +13,8 @@
 #include <QString>
 #include <QStringList>
 
+#include <optional>
+
 namespace deskflow::gui {
 
 class BridgeClientProcess : public QObject
@@ -75,6 +77,10 @@ Q_SIGNALS:
   void logAvailable(const QString &line);
   void finished(int exitCode, QProcess::ExitStatus exitStatus);
 
+  /// a reply that came after its request gave up, with the device's profiles as they are now
+  /// (see deskflow::bridge::requests::decodeProfiles)
+  void profilesReported(const QStringList &fields);
+
 private Q_SLOTS:
   void onReadyRead();
   void onFinished(int exitCode, QProcess::ExitStatus exitStatus);
@@ -84,6 +90,12 @@ private:
   {
     bool ok = false;
     QStringList fields;
+  };
+
+  struct Exit
+  {
+    int exitCode = 0;
+    QProcess::ExitStatus exitStatus = QProcess::NormalExit;
   };
 
   void readLines(QByteArray &buffer, const QByteArray &data);
@@ -103,8 +115,10 @@ private:
   quint64 m_lastRequestId = 0;
   QSet<quint64> m_waitingRequests;
   QHash<quint64, Response> m_responses;
-  int m_requestDepth = 0;      // requests waiting for their reply
-  QStringList m_deferredLines; // other lines that arrived meanwhile
+  int m_requestDepth = 0;                      // requests waiting for their reply
+  QStringList m_deferredLines;                 // other lines that arrived meanwhile
+  std::optional<Exit> m_pendingExit;           // the core's exit, reported after those lines
+  QHash<quint64, QString> m_abandonedRequests; // id -> command of requests that timed out
 
   static const QRegularExpression s_connectedRegex;
   static const QRegularExpression s_deviceNameRegex;
