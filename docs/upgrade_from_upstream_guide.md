@@ -239,6 +239,7 @@ Use this table to identify which rebranded file corresponds to an upstream file 
     2.  **Do not ask the user** about test renames, deletions, or framework changes — the answer is always "take upstream."
 *   **Rationale**: `run_task.sh` configures every build with `-DSKIP_BUILD_TESTS=ON -DBUILD_TESTS=OFF`, and `src/CMakeLists.txt` wraps `add_subdirectory(unittests)` in `if(BUILD_TESTS)`. The unittests tree is never compiled in any release/dev workflow, so its content cannot affect the shipped artifact.
 *   **Exception**: Only re-engage with unittests changes if `BUILD_TESTS` is intentionally enabled in `run_task.sh`, or if a unittests change somehow leaks into a non-test target (extremely unlikely given the CMake gating).
+*   **Fork tests**: `src/unittests/bridge/` is the fork's own (upstream has no such directory, so it never conflicts). It is hooked in by one line at the end of the subdirectory list in `src/unittests/CMakeLists.txt`, `add_subdirectory(bridge) # dshare-hid`; after taking upstream's version of that file, add the line back.
 
 ### Scenario M: macOS DMG OpenSSL Bundling
 *   **Issue**: Upstream changes anything under `deploy/mac/` (especially `post_bundle_process.cmake.in`, `deploy.cmake`, or `build_universal_openssl.sh`). The DMG bundles a locally-built universal OpenSSL from `deps/openssl-universal/` (gitignored), and the install_name handling for those libs is project-specific.
@@ -408,6 +409,7 @@ never take upstream's), translations, README.md, and docs. See Sections 1–3.
 - `src/apps/deskflow-core/` — CoreArgs.h, CoreArgParser.{cpp,h},
   deskflow-core.cpp (bridge CLI: --link, screen size, --name handling)
 - `src/lib/platform/CMakeLists.txt` (bridge sources, OpenSSLCompat, keyword-form links), `EiComputer.cpp` (shut down on EI disconnect), `MSWindowsWatchdog.cpp`
+- `src/unittests/CMakeLists.txt` — the one line `add_subdirectory(bridge) # dshare-hid`; the fork's own tests live in `src/unittests/bridge/` (see the Scenario L exception)
 
 ### Fork bugfixes (keep; candidates to upstream as PRs)
 - `src/lib/arch/win32/ArchMultithreadWindows.cpp` — recursive-lock deadlock fix
