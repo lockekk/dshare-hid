@@ -54,6 +54,10 @@ BridgeClientConfigDialog::BridgeClientConfigDialog(
   auto *lblScreenName = new QLabel(tr("Screen Name:"), this);
   m_editScreenName = new QLineEdit(this);
   m_editScreenName->setMinimumHeight(30);
+  // same rule as the computer name in MainWindow (m_nameRegEx)
+  m_editScreenName->setValidator(
+      new QRegularExpressionValidator(QRegularExpression(QStringLiteral("^[\\w\\-_\\.]{0,255}$")), m_editScreenName)
+  );
 
   topLayout->addWidget(lblScreenName, 0, 0, Qt::AlignLeft | Qt::AlignVCenter);
   topLayout->addWidget(m_editScreenName, 0, 1);
@@ -709,6 +713,20 @@ void BridgeClientConfigDialog::onAccepted()
 
   if (newScreenName.isEmpty()) {
     QMessageBox::warning(this, tr("Invalid Input"), tr("Screen name cannot be empty."));
+    return;
+  }
+
+  // the bridge core cleans this name (Settings::cleanComputerName) before sending it to the
+  // server, and the server's computer list comes from computer_<name> settings groups, so
+  // only accept names that survive both unchanged (a '/' or '\' splits the group and the
+  // server won't start).  the regex mirrors cleanComputerName.
+  static const QRegularExpression validScreenName(QStringLiteral("^(?![-_.])[\\w\\-.]{1,255}(?<![-_.])$"));
+  if (!validScreenName.match(m_editScreenName->text()).hasMatch()) {
+    QMessageBox::warning(
+        this, tr("Invalid Input"),
+        tr("Screen name can only contain letters, numbers, '-', '_' and '.', and cannot start or end with "
+           "'-', '_' or '.'.")
+    );
     return;
   }
 
