@@ -82,10 +82,22 @@ void BridgeClientProcess::stop()
 {
   if (m_process) {
     m_process->disconnect(this);
-    m_process->terminate();
-    if (!m_process->waitForFinished(1000)) {
-      m_process->kill();
-      m_process->waitForFinished(500);
+    if (m_process->state() != QProcess::NotRunning) {
+      // ask the core to shut down cleanly, which releases keys still held on the device
+      // (BridgeClientApp watches stdin for this).  terminate() is only a fallback: on Windows
+      // it can't stop a process that has no windows, so it would always end in kill().
+      m_process->write("stop\n");
+      m_process->waitForBytesWritten(200);
+      if (m_process->waitForFinished(1000)) {
+        qInfo() << "Bridge client process stopped for" << m_devicePath;
+      } else {
+        qWarning() << "Bridge client process for" << m_devicePath << "didn't stop on request, terminating";
+        m_process->terminate();
+        if (!m_process->waitForFinished(500)) {
+          m_process->kill();
+          m_process->waitForFinished(500);
+        }
+      }
     }
     m_process->deleteLater();
     m_process = nullptr;

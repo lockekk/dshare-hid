@@ -15,6 +15,58 @@
 #include "net/SocketMultiplexer.h"
 #include "platform/bridge/BridgePlatformScreen.h"
 
+#include <string>
+#include <thread>
+
+#if defined(Q_OS_UNIX)
+#include <cerrno>
+#include <unistd.h>
+#elif defined(Q_OS_WIN)
+#include <windows.h>
+#endif
+
+namespace {
+
+// The GUI stops a bridge core by writing "stop" to its stdin (BridgeClientProcess::stop):
+// on Windows QProcess::terminate() can't stop a process without windows, and a kill skips
+// the clean shutdown that releases keys still held on the device.  Read the raw handle,
+// not std::cin, so the blocked read holds no CRT lock that exit() would wait for.
+void quitOnStopCommand(IEventQueue *events)
+{
+  std::thread([events] {
+    std::string line;
+    char c = 0;
+    for (;;) {
+#if defined(Q_OS_UNIX)
+      const ssize_t n = ::read(STDIN_FILENO, &c, 1);
+      if (n < 0 && errno == EINTR) {
+        continue;
+      }
+      if (n != 1) {
+        return; // no stdin, or the GUI closed it: nothing to wait for
+      }
+#elif defined(Q_OS_WIN)
+      DWORD n = 0;
+      if (!ReadFile(GetStdHandle(STD_INPUT_HANDLE), &c, 1, &n, nullptr) || n != 1) {
+        return;
+      }
+#endif
+      if (c != '\n') {
+        line += c;
+        continue;
+      }
+      if (line == "stop" || line == "stop\r") {
+        LOG_INFO("BridgeClientApp: stop requested, shutting down");
+        events->addEvent(Event(EventTypes::Quit));
+        return;
+      }
+      line.clear();
+    }
+  }).detach();
+}
+
+} // namespace
+
 BridgeClientApp::BridgeClientApp(
     IEventQueue *events, const QString &processName, std::shared_ptr<deskflow::bridge::CdcTransport> transport,
     const deskflow::bridge::FirmwareConfig &config, int32_t screenWidth, int32_t screenHeight
@@ -31,6 +83,7 @@ BridgeClientApp::BridgeClientApp(
 void BridgeClientApp::initApp()
 {
   ClientApp::initApp();
+  quitOnStopCommand(getEvents());
 }
 
 deskflow::Computer *BridgeClientApp::createComputer()
