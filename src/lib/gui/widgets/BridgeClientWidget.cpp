@@ -151,7 +151,7 @@ void BridgeClientWidget::setConnected(bool connected)
 void BridgeClientWidget::resetConnectionStatus()
 {
   setActivationState("");
-  setDeviceName("");
+  refreshDeviceNameLabel(); // the saved name, as shown before connecting
   updateActivationVisibility();
 }
 
