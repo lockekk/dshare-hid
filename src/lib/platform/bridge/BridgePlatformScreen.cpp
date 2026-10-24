@@ -61,7 +61,7 @@ BridgePlatformScreen::BridgePlatformScreen(
 {
   LOG_INFO("BridgeScreen: initialized screen=%dx%d", m_screenWidth, m_screenHeight);
 
-  m_lastCdcCommand = std::chrono::steady_clock::now();
+  m_lastCdcCommand = std::chrono::steady_clock::time_point::min();
 
   m_bluetoothKeepAliveEnabled = Settings::value(Settings::Bridge::BluetoothKeepAlive).toBool();
   if (m_bluetoothKeepAliveEnabled && m_events != nullptr) {
@@ -70,6 +70,10 @@ BridgePlatformScreen::BridgePlatformScreen(
       handleKeepAliveTimer(event);
     });
     startKeepAliveTimer();
+    // the firmware drops Bluetooth once no CDC frame has arrived for 90 s, but only after
+    // the first keep-alive has armed that check.  arm it now; afterwards any frame (HID
+    // events included) keeps it fed, so keep-alives are only sent when idle.
+    sendKeepAliveIfIdle();
   }
 }
 
@@ -585,6 +589,7 @@ bool BridgePlatformScreen::sendEvent(HidEventType type, const std::vector<uint8_
     return false;
   }
 
+  recordCdcCommand();
   return true;
 }
 
