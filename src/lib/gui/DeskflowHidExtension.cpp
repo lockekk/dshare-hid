@@ -136,6 +136,15 @@ void DeskflowHidExtension::setup()
         &m_mainWindow->m_coreProcess, &CoreProcess::connectionStateChanged, this,
         &DeskflowHidExtension::onServerConnectionStateChanged
     );
+    // readiness also needs the process to be started (see isServerReady), so re-check
+    // when it is, in case the connection state got there first
+    connect(
+        &m_mainWindow->m_coreProcess, &CoreProcess::processStateChanged, this, [this](CoreProcess::ProcessState state) {
+          if (state == CoreProcess::ProcessState::Started) {
+            onServerConnectionStateChanged(m_mainWindow->m_coreProcess.connectionState());
+          }
+        }
+    );
     // Query initial state
     onServerConnectionStateChanged(m_mainWindow->m_coreProcess.connectionState());
   }
@@ -1567,6 +1576,11 @@ void DeskflowHidExtension::bridgeClientProcessFinished(
             m_mainWindow->setStatus(tr("Connection failed. Retrying auto-connect (%1/3)...").arg(attempts + 1));
           }
           QTimer::singleShot(delay, this, [this, configPath]() {
+            // the server may have stopped or be restarting by now; auto-connect starts this
+            // client again once it is ready (processConnectionRequests)
+            if (!isServerReady()) {
+              return;
+            }
             const auto *innerState = m_bridgeClientManager->clientState(configPath);
             if (auto *widget = m_bridgeClientWidgets.value(configPath)) {
               if (innerState && !innerState->isManuallyDisconnected && innerState->isAvailable) {
@@ -1686,8 +1700,7 @@ bool DeskflowHidExtension::hasActiveBridgeClients() const
 
 void DeskflowHidExtension::onServerConnectionStateChanged(CoreProcess::ConnectionState state)
 {
-  const bool isReady =
-      (state == CoreProcess::ConnectionState::Listening || state == CoreProcess::ConnectionState::Connected);
+  const bool isReady = isServerReady();
   // Connecting state handling (logging only)
   if (state == CoreProcess::ConnectionState::Connecting) {
     qInfo() << "Server is connecting...";
@@ -1704,8 +1717,9 @@ void DeskflowHidExtension::onServerConnectionStateChanged(CoreProcess::Connectio
     // Server explicitly stopped: stop all active bridge clients
     qInfo() << "Server disconnected. Stopping all active bridge clients.";
 
-    // Capture active clients to resume later if this is a restart
-    m_resumeConnectionAfterServerRestart.clear();
+    // Capture active clients to resume later if this is a restart.  Don't clear the list
+    // first: a stopping desktop core reports Disconnected twice (from stop(), then when it
+    // exits), and by the second time the clients have already been stopped.
     for (const QString &configPath : m_bridgeClientManager->configPaths()) {
       const auto *clientState = m_bridgeClientManager->clientState(configPath);
       if (clientState && clientState->process) {
@@ -1750,6 +1764,10 @@ void DeskflowHidExtension::handleHandshakeFailure(
 bool DeskflowHidExtension::isServerReady() const
 {
   if (!m_mainWindow)
+    return false;
+  // a desktop core that is being stopped still reports Listening/Connected over IPC as
+  // its clients drop, so only trust the connection state of a started core
+  if (!m_mainWindow->m_coreProcess.isStarted())
     return false;
   auto state = m_mainWindow->m_coreProcess.connectionState();
   return state == CoreProcess::ConnectionState::Listening || state == CoreProcess::ConnectionState::Connected;
