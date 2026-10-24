@@ -224,9 +224,22 @@ Read the version from the HELLO ACK: `firmware_bcd`, in `FirmwareConfig::firmwar
 
 Development builds before 1.2.1 report 1.0.1 (101). The rule covers them too: they also get the one-time reset when they move to 1.2.1.
 
+### In the app
+
+`BridgeFirmwareNotice` (`src/lib/gui/core/BridgeFirmwareNotice.h`) has the rule. It keeps the last version seen for each serial number in `bridge-firmware.ini`, next to the app's settings. It isn't a `.conf`, which would be taken for a bridge client's config. A version of 0 (factory mode) is ignored, so it doesn't hide the version from before the update.
+
+The version is noted wherever the app reads a HELLO ACK on a device in app mode:
+
+- `BridgeDeviceService::syncDeviceConfig()`: a known device plugged in, at startup, and when the firmware tool closes. A due notice comes out as the `pairingsReset` signal, which the main window shows.
+- `DeskflowHidExtension`: a new device's first handshake, and the one before a bridge client starts.
+- `Esp32HidToolsWidget`: before an update sends the device to factory mode (the "before" version), and when it refreshes the device's state.
+
+The notice names the device as the hosts see it (`BridgeFirmwareNotice::advertisedName()`), in place of "Deskflow HID" below. It shows once whatever is under way is done, such as a device being plugged in. `BridgeFirmwareNoticeTests` covers the rule and the text.
+
 ### Notice text
 
-> Bluetooth pairings were reset. On each phone, tablet or PC, forget "Deskflow HID" in Bluetooth settings, then pair it again on its profile.
+> **Pair Again**
+> Pairings were reset. On each host, forget "Deskflow HID" and pair again with its profile active.
 
 If the notice has room for more detail, give the steps:
 

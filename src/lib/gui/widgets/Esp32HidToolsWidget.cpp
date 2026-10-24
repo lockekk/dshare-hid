@@ -4,6 +4,7 @@
 
 #include "Esp32HidToolsWidget.h"
 #include "base/Log.h"
+#include "gui/core/BridgeFirmwareNotice.h"
 #include <QApplication>
 #include <QClipboard>
 #include <QDateTime>
@@ -1226,6 +1227,15 @@ void Esp32HidToolsWidget::flashFirmware(const std::vector<uint8_t> &firmwareData
         inFactory = true;
         factoryWithoutApp = !cdc.deviceConfig().hasOtaPartition;
       } else {
+        // the version before the update, for the notice to pair the hosts again after 1.2.1:
+        // factory mode reports none
+        std::string serial;
+        if (cdc.hasDeviceConfig() && cdc.fetchSerialNumber(serial)) {
+          const QString notice =
+              BridgeFirmwareNotice::noteHandshake(QString::fromStdString(serial), cdc.deviceConfig());
+          QMetaObject::invokeMethod(this, [this, notice]() { BridgeFirmwareNotice::show(this, notice); });
+        }
+
         // App mode, try switching
         if (cdc.gotoFactory()) {
           log_cb_func("Sent gotoFactory command. Waiting for device to reboot...");
@@ -1412,6 +1422,7 @@ void deskflow::gui::Esp32HidToolsWidget::refreshDeviceState()
       uint8_t totalProfiles;
       bool success;
       QString error;
+      QString pairingNotice;
     } result;
 
     if (openSuccess) {
@@ -1420,6 +1431,7 @@ void deskflow::gui::Esp32HidToolsWidget::refreshDeviceState()
       }
 
       const auto &config = cdc.deviceConfig();
+      result.pairingNotice = BridgeFirmwareNotice::noteHandshake(result.serial, config);
       result.activationState = QString::fromLatin1(config.activationStateString());
       result.stateEnum = config.activationState;
       result.isActivated = (config.activationState == deskflow::bridge::ActivationState::Activated);
@@ -1433,6 +1445,7 @@ void deskflow::gui::Esp32HidToolsWidget::refreshDeviceState()
 
     QMetaObject::invokeMethod(this, [this, result]() {
       setControlsEnabled(true);
+      BridgeFirmwareNotice::show(this, result.pairingNotice);
       if (result.success) {
         m_lineSerial->setText(result.serial);
         m_orderSerialLabel->setText(result.serial);

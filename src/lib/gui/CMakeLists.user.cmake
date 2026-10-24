@@ -7,6 +7,8 @@ set(bridge_sources
     core/BridgeClientProcess.h
     core/BridgeDeviceService.cpp
     core/BridgeDeviceService.h
+    core/BridgeFirmwareNotice.cpp
+    core/BridgeFirmwareNotice.h
     core/BridgeProfileBackup.cpp
     core/BridgeProfileBackup.h
     core/BridgeProfileShortcuts.cpp

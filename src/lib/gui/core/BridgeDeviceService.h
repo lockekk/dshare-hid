@@ -175,6 +175,13 @@ Q_SIGNALS:
   void configSynced(const QString &configPath, int activeProfile);
 
   /**
+   * @brief Emitted when a synced device's firmware has gone to 1.2.1 or above since the app last
+   * saw it, which reset its pairings (see BridgeFirmwareNotice)
+   * @param notice What to tell the user
+   */
+  void pairingsReset(const QString &devicePath, const QString &notice);
+
+  /**
    * @brief Emitted when a device name has been updated in firmware.
    */
   void deviceNameUpdated(const QString &devicePath, const QString &newName);

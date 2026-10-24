@@ -2,6 +2,7 @@
 #include "common/Settings.h"
 #include "gui/core/BridgeClientConfigManager.h"
 #include "gui/core/BridgeClientProcess.h"
+#include "gui/core/BridgeFirmwareNotice.h"
 #include "gui/core/BridgeProfileBackup.h"
 #include "platform/bridge/BridgeRequests.h"
 #include "platform/bridge/CdcTransport.h"
@@ -96,6 +97,12 @@ bool BridgeDeviceService::syncDeviceConfig(
   const char *activationStateStr = transport.deviceConfig().activationStateString();
   QString activationState = QString::fromLatin1(activationStateStr);
 
+  // the firmware it runs, for the notice to pair the hosts again after 1.2.1
+  auto firmware = transport.deviceConfig();
+  firmware.deviceName = deviceName;
+  const QString pairingNotice =
+      BridgeFirmwareNotice::noteHandshake(BridgeClientConfigManager::readSerialNumber(configPath), firmware);
+
   transport.close();
 
   using namespace deskflow;
@@ -117,6 +124,9 @@ bool BridgeDeviceService::syncDeviceConfig(
   qDebug() << "Successfully synced config for" << devicePath << "Activation State:" << activationState;
 
   Q_EMIT configSynced(configPath, static_cast<int>(activeProfile));
+  if (!pairingNotice.isEmpty()) {
+    Q_EMIT pairingsReset(devicePath, pairingNotice);
+  }
 
   return true;
 }

@@ -47,3 +47,11 @@ create_test(
   SOURCE BridgeClientConfigDialogTests.cpp
   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
 )
+
+# the notice to pair the hosts again after firmware 1.2.1 (gui/core/BridgeFirmwareNotice.h)
+create_test(
+  NAME BridgeFirmwareNoticeTests
+  DEPENDS gui
+  SOURCE BridgeFirmwareNoticeTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
+)
