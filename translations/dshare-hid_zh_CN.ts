@@ -3560,6 +3560,10 @@ Install it from the Upgrade tab (Check for Updates, then Flash). If that fails, 
         <source>Vertical Scroll Scale</source>
         <translation type="obsolete">垂直滚动比例</translation>
     </message>
+    <message>
+        <source>This dongle is already set up.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>i18n</name>

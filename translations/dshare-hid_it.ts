@@ -3502,6 +3502,10 @@ Install it from the Upgrade tab (Check for Updates, then Flash). If that fails, 
         <source>Reminder: Press &apos;Boot&apos; button then plugin your ESP32-C3. Click Refresh button to ensure the device is detected.</source>
         <translation>Promemoria: Premi il pulsante &apos;Boot&apos; quindi scollega e ricollega il tuo ESP32-C3. Fai clic sul pulsante Aggiorna per assicurarti che il dispositivo venga rilevato.</translation>
     </message>
+    <message>
+        <source>This dongle is already set up.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>i18n</name>
