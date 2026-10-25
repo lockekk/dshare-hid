@@ -43,12 +43,13 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent), ui{std::make_unique
   ui->lblDescription->setTextFormat(Qt::RichText);
   ui->lblDescription->setOpenExternalLinks(true);
 
-  const QString text =
-      QStringLiteral("%1<br/><br/>"
-                     "Forked from <a href='https://github.com/deskflow/deskflow'>Deskflow</a>. "
-                     "We gratefully acknowledge their work and thank the original contributors.<br/><br/>"
-                     "Support: %2")
-          .arg(kAppDescription, kSupportEmail);
+  const QString text = QStringLiteral("%1<br/><br/>%2<br/><br/>%3")
+                           .arg(
+                               kAppDescription,
+                               tr("Forked from <a href='https://github.com/deskflow/deskflow'>Deskflow</a>. "
+                                  "We gratefully acknowledge their work and thank the original contributors."),
+                               tr("Support: %1").arg(kSupportEmail)
+                           );
 
   ui->lblDescription->setText(text);
 

@@ -3,6 +3,7 @@
  */
 
 #include "Esp32HidToolsWidget.h"
+#include "BridgeClientWidget.h"
 #include "base/Log.h"
 #include "gui/core/BridgeFirmwareNotice.h"
 #include <QApplication>
@@ -67,6 +68,11 @@ const auto kDevBuildContinues = QStringLiteral("Development build: continuing an
 QString firmwareVersionText(uint8_t bcd)
 {
   return QStringLiteral("v%1.%2.%3").arg(bcd / 100).arg((bcd % 100) / 10).arg(bcd % 10);
+}
+
+QString activationStateText(const deskflow::bridge::FirmwareConfig &config)
+{
+  return deskflow::gui::BridgeClientWidget::activationStateText(QString::fromLatin1(config.activationStateString()));
 }
 
 QString kilobytes(size_t bytes)
@@ -925,7 +931,7 @@ Esp32HidToolsWidget::DongleCheck Esp32HidToolsWidget::checkDongle(const std::str
     }
     log(tr("Dongle found: firmware %1, %2, serial %3.")
             .arg(
-                check.version, QString::fromLatin1(config.activationStateString()),
+                check.version, activationStateText(config),
                 serial.empty() ? QStringLiteral("-") : QString::fromStdString(serial)
             ));
   } else if (config.firmwareMode == FirmwareMode::Factory) {
@@ -1047,7 +1053,7 @@ Esp32HidToolsWidget::FactoryFlashCheck Esp32HidToolsWidget::waitForAppAfterFlash
             notice = BridgeFirmwareNotice::noteHandshake(QString::fromStdString(serial), config);
           }
           const QString version = firmwareVersionText(config.firmwareVersionBcd);
-          log(tr("Dongle ready: firmware %1, %2.").arg(version, QString::fromLatin1(config.activationStateString())));
+          log(tr("Dongle ready: firmware %1, %2.").arg(version, activationStateText(config)));
           return {FactoryFlashOutcome::AppStarted, config.activationState, notice, version};
         }
         if (config.firmwareMode == FirmwareMode::Factory) {
@@ -1201,16 +1207,19 @@ void Esp32HidToolsWidget::onCheckUpgrade()
     }
 
     // only the application firmware reports its version: a dongle in update mode takes the update
-    const QString deviceVer = check.version.isEmpty() ? QStringLiteral("Unknown") : check.version;
-    logDetail("version check: latest tag " + latestTag + ", device " + deviceVer.toStdString());
-    bool updateAvailable = check.version.isEmpty();
+    const QString deviceVer = check.version;
+    logDetail(
+        "version check: latest tag " + latestTag + ", device " +
+        (deviceVer.isEmpty() ? std::string("Unknown") : deviceVer.toStdString())
+    );
+    bool updateAvailable = deviceVer.isEmpty();
     if (!updateAvailable) {
-      updateAvailable = parseVersion(latestTag) > parseVersion(check.version.toStdString());
+      updateAvailable = parseVersion(latestTag) > parseVersion(deviceVer.toStdString());
     }
 
     QMetaObject::invokeMethod(this, [this, deviceVer, latestTag, updateAvailable]() {
       const QString latest = QString::fromStdString(latestTag);
-      m_lblCurrentVersion->setText(tr("Current Version: %1").arg(deviceVer));
+      m_lblCurrentVersion->setText(tr("Current Version: %1").arg(deviceVer.isEmpty() ? tr("Unknown") : deviceVer));
       m_lblLatestVersion->setText(tr("Latest Version: %1").arg(latest));
 
       if (!updateAvailable) {
@@ -1219,7 +1228,7 @@ void Esp32HidToolsWidget::onCheckUpgrade()
           return;
         }
         log(kDevBuildContinues);
-      } else if (deviceVer != "Unknown") {
+      } else if (!deviceVer.isEmpty()) {
         log(tr("Update available (%1 > %2).").arg(latest).arg(deviceVer));
       } else {
         log(tr("Update available (Device version unknown)."));
@@ -1435,7 +1444,7 @@ void Esp32HidToolsWidget::updateText()
   m_btnActivate->setText(tr("Activate"));
 
   m_orderOption2->setText(tr("Purchase Full License"));
-  m_orderOption4->setText(tr("Already licensed, but want bump profiles"));
+  m_orderOption4->setText(tr("Upgrade Profile Capacity"));
 
   m_chkManualPayment->setText(tr("I will arrange payment via email"));
   m_btnCopyOrder->setText(tr("Copy content"));
@@ -1510,7 +1519,7 @@ void deskflow::gui::Esp32HidToolsWidget::refreshDeviceState()
       }
 
       const auto &config = cdc.deviceConfig();
-      result.activationState = QString::fromLatin1(config.activationStateString());
+      result.activationState = activationStateText(config);
       result.stateEnum = config.activationState;
       result.isActivated = (config.activationState == deskflow::bridge::ActivationState::Activated);
       result.isFactoryMode = (config.firmwareMode == deskflow::bridge::FirmwareMode::Factory);
@@ -1730,6 +1739,12 @@ deskflow::gui::OrderPrice deskflow::gui::Esp32HidToolsWidget::calculateOrderPric
 {
   double price = 0.0;
   QString priceDesc;
+  QString displayDesc;
+
+  const QString profilesPrice =
+      totalProfiles == 2
+          ? QStringLiteral("$0.00")
+          : QString("$%1").arg(QString::number(totalProfiles == 4 ? m_prices.profile_4 : m_prices.profile_6, 'f', 2));
 
   if (option == 2) { // Full License
     price += m_prices.license;
@@ -1748,18 +1763,14 @@ deskflow::gui::OrderPrice deskflow::gui::Esp32HidToolsWidget::calculateOrderPric
         price = 0; // Safety
     }
 
-    priceDesc = QString("License($%1) + %2 Profiles(%3)")
-                    .arg(QString::number(m_prices.license, 'f', 2))
-                    .arg(totalProfiles)
-                    .arg(
-                        totalProfiles == 2
-                            ? "$0.00"
-                            : (totalProfiles == 4 ? QString("$%1").arg(QString::number(m_prices.profile_4, 'f', 2))
-                                                  : QString("$%1").arg(QString::number(m_prices.profile_6, 'f', 2)))
-                    );
+    const QString license = QString::number(m_prices.license, 'f', 2);
+    priceDesc = QString("License($%1) + %2 Profiles(%3)").arg(license).arg(totalProfiles).arg(profilesPrice);
+    displayDesc = tr("License($%1) + %2 Profiles(%3)").arg(license).arg(totalProfiles).arg(profilesPrice);
 
     if (discount > 0.0) {
-      priceDesc += QString(" - Combo Discount($%1)").arg(QString::number(discount, 'f', 2));
+      const QString amount = QString::number(discount, 'f', 2);
+      priceDesc += QString(" - Combo Discount($%1)").arg(amount);
+      displayDesc = tr("%1 - Combo Discount($%2)").arg(displayDesc, amount);
     }
 
   } else if (option == 4) { // Only Bump Profiles
@@ -1768,17 +1779,11 @@ deskflow::gui::OrderPrice deskflow::gui::Esp32HidToolsWidget::calculateOrderPric
     else if (totalProfiles == 6)
       price += m_prices.profile_6;
 
-    priceDesc = QString("Upgrade profiles to %1 (%2)")
-                    .arg(totalProfiles)
-                    .arg(
-                        totalProfiles == 2
-                            ? "$0.00"
-                            : (totalProfiles == 4 ? QString("$%1").arg(QString::number(m_prices.profile_4, 'f', 2))
-                                                  : QString("$%1").arg(QString::number(m_prices.profile_6, 'f', 2)))
-                    );
+    priceDesc = QString("Upgrade profiles to %1 (%2)").arg(totalProfiles).arg(profilesPrice);
+    displayDesc = tr("Upgrade profiles to %1 (%2)").arg(totalProfiles).arg(profilesPrice);
   }
 
-  return {price, priceDesc};
+  return {price, priceDesc, displayDesc};
 }
 
 void deskflow::gui::Esp32HidToolsWidget::updatePaymentDetails()
@@ -1793,12 +1798,12 @@ void deskflow::gui::Esp32HidToolsWidget::updatePaymentDetails()
   OrderPrice priceInfo = calculateOrderPrice(option, totalProfiles);
 
   if (option == -1) {
-    m_lblPaymentDetails->setText("Select an option");
+    m_lblPaymentDetails->setText(tr("Select an option"));
     return;
   }
 
   m_lblPaymentDetails->setText(
-      QString("Payment Details: %1 = Total $%2 USD").arg(priceInfo.desc, QString::number(priceInfo.price, 'f', 2))
+      tr("Payment Details: %1 = Total $%2 USD").arg(priceInfo.displayDesc, QString::number(priceInfo.price, 'f', 2))
   );
 
   m_lblPaymentOwner->setText(

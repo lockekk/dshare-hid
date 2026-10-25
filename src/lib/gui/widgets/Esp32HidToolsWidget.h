@@ -34,7 +34,8 @@ namespace deskflow::gui {
 struct OrderPrice
 {
   double price;
-  QString desc;
+  QString desc;        // in English: the order email and the PayPal item name are read by the seller
+  QString displayDesc; // the same in the user's language, for the Order tab
 };
 
 struct PriceConfig

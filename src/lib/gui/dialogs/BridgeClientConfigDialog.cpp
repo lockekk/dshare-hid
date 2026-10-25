@@ -688,7 +688,7 @@ void BridgeClientConfigDialog::updateTabLabels()
     }
 
     if (i == m_deviceActiveProfileIndex) {
-      label += " (Active)";
+      label = tr("%1 (Active)").arg(label);
     }
     m_profileTabBar->setTabText(i, label);
   }

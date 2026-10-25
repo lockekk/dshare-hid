@@ -87,7 +87,7 @@ BridgeClientWidget::BridgeClientWidget(
   ); // Make it distinct, maybe? Or just normal. user said "next to", didn't specify style.
 
   // Activation state and orientation labels
-  m_activationStateLabel = new QLabel(tr("unknown"), this);
+  m_activationStateLabel = new QLabel(tr("Unknown"), this);
   m_activationStateLabel->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
   m_activationStateLabel->setMinimumWidth(90);
 
@@ -183,12 +183,30 @@ void BridgeClientWidget::setActivationState(const QString &activationState)
     normalized = Settings::defaultValue(Settings::Bridge::ActivationState).toString();
   }
   m_activationState = normalized;
-  m_activationStateLabel->setText(normalized);
-  m_activationStateLabel->setToolTip(normalized);
+  const QString display = activationStateText(normalized);
+  m_activationStateLabel->setText(display);
+  m_activationStateLabel->setToolTip(display);
 
   m_activationStateLabel->setStyleSheet(QStringLiteral(""));
 
   updateActivationVisibility();
+}
+
+QString BridgeClientWidget::activationStateText(const QString &state)
+{
+  if (state == QLatin1String("Activated")) {
+    return tr("Activated");
+  }
+  if (state == QLatin1String("Free Trial")) {
+    return tr("Free Trial");
+  }
+  if (state == QLatin1String("Unlicensed")) {
+    return tr("Unlicensed");
+  }
+  if (state.compare(QLatin1String("unknown"), Qt::CaseInsensitive) == 0) {
+    return tr("Unknown");
+  }
+  return state;
 }
 
 void BridgeClientWidget::setDeviceName(const QString &deviceName)

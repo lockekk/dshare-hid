@@ -49,6 +49,11 @@ public:
   ~BridgeClientWidget() override = default;
 
   /**
+   * @brief The activation state as the device names it (activationStateToString()), in the user's language
+   */
+  static QString activationStateText(const QString &state);
+
+  /**
    * @brief Get screen name
    */
   QString screenName() const
