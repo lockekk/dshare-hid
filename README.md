@@ -184,13 +184,14 @@ You will need an **ESP32-C3 Supermini** board. These are cheap and widely availa
 Open DShare-HID and navigate to **File -> Firmware** to open the management interface.
 
 ### 3. Setup (For New Devices)
-For a brand new device:
+You only need to do this once for each new dongle:
 
-1.  Go to the **Factory Mode** tab.
-2.  Click **Flash** under the "Online" section. The app downloads the latest firmware package and installs it.
+1.  Go to the **New Dongle Setup** tab.
+    *   **Windows**: hold the **Boot** button on the board while you plug it in, then click **Refresh**.
+2.  Click **Flash** under the "Online" section. The app downloads the latest firmware package and installs it. Everything else is automatic.
 3.  When it finishes, the device restarts and the **7-day free trial** starts automatically. No order or activation key is needed for the trial.
 
-**Note**: The first start permanently locks the board to official DShare-HID firmware (Secure Boot and flash encryption). After that, the board can only be updated from the **Upgrade Mode** tab and cannot be reused for other ESP32 projects.
+**Note**: The first start permanently locks the board to official DShare-HID firmware (Secure Boot and flash encryption). After that, the board can only be updated from the **Upgrade** tab and cannot be reused for other ESP32 projects. If the dongle is already set up, the **New Dongle Setup** tab says so and sends you to the **Upgrade** tab.
 
 ### 4. Purchase & Activation
 1.  Go to the **Order** tab.
@@ -199,8 +200,9 @@ For a brand new device:
 4.  Go to the **Activation** tab, paste the key and click **Activate**. The device state changes to **Activated**.
 
 ### 5. Updates & Maintenance
-*   **Upgrading**: Go to the **Upgrade Mode** tab and click **Check for Updates** -> **Flash** to install the latest firmware via OTA. Your license, profiles and pairings are kept. To install a firmware file (`.uzip`) you already have, select it under "Manual" and click **Flash**.
+*   **Upgrading**: Go to the **Upgrade** tab and click **Check for Updates** -> **Flash** to install the latest firmware via OTA. Your license, profiles and pairings are kept. To install a firmware file (`.uzip`) you already have, select it under "Manual" and click **Flash**. The **Upgrade** tab only works on a dongle that is already set up; a new dongle goes through **New Dongle Setup** first. If an update was interrupted, run it again from the **Upgrade** tab.
 *   **Activation**: Go to the **Activation** tab to view your serial number and license status, or enter a new activation key.
+*   **Problems**: The log at the bottom of the window shows each step. If something fails, copy it into your email to support.
 
 ## Building from Source
 The development environment and build process for DShare-HID are **identical to the upstream [Deskflow project](https://github.com/deskflow/deskflow)**. You can follow the official build instructions for Windows, macOS, and Linux.

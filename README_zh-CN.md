@@ -176,28 +176,26 @@ flatpak install --user ./dshare-hid-1.26.0-linux-x86_64.flatpak
 ### 2. 打开烧录工具
 打开 DShare-HID，点击菜单栏的 **File -> Firmware** 进入管理界面。
 
-### 3. 设置流程 (针对新设备)
-对于全新的“空白”设备，请按以下步骤操作：
+### 3. 设置新设备
+每个新的 Dongle 只需要设置一次：
 
-1.  **工厂模式 (在线烧录)**:
-    *   进入 **Factory Mode** (工厂模式) 标签页。
-    *   在 "Online" (在线) 区域点击 **Flash**，烧录通用的工厂固件。
-    *   这会让设备准备好进行配对和授权。
+1.  进入 **New Dongle Setup** (新设备设置) 标签页。
+    *   **Windows**：按住开发板上的 **Boot** 按钮再插入 USB，然后点击 **Refresh** (刷新)。
+2.  在 "Online" (在线) 区域点击 **Flash**。应用会下载最新的固件包并完成安装，其余步骤全部自动进行。
+3.  完成后设备会重启，并自动开始 **7 天免费试用**。试用无需下单，也无需激活码。
 
-2.  **申请设备专属应用**:
-    *   进入 **Order** (订单) 标签页。
-    *   选择 **Request 7-Day Free Trial** (申请7天免费试用) 或 **Purchase Full License** (购买完整授权)。
-    *   填写您的信息并点击 **Email** 发送请求。
-    *   您将通过邮件收到一个专属的 **设备固件文件** (例如 `app_xxxx.uzip`)。
+**注意**：首次启动会将开发板永久锁定为官方 DShare-HID 固件 (Secure Boot 和闪存加密)。此后只能通过 **Upgrade** (升级) 标签页更新固件，也不能再用于其他 ESP32 项目。如果 Dongle 已经设置过，**New Dongle Setup** 标签页会提示并转到 **Upgrade** 标签页。
 
-3.  **安装应用 (手动)**:
-    *   进入 **Upgrade Mode** (升级模式) 标签页。
-    *   在 "Manual" (手动) 区域，浏览并选择您收到的固件文件。
-    *   点击 **Flash** 烧录您的授权固件。
+### 4. 购买与激活
+1.  进入 **Order** (订单) 标签页。
+2.  选择 **Purchase Full License** (购买完整授权)，或选择 **Upgrade Profile Capacity** (增加配置文件数量)，填写您的信息和付款信息，然后点击 **Email** 发送订单。
+3.  确认付款后，您将通过邮件收到 **激活码**。
+4.  进入 **Activation** (激活) 标签页，粘贴激活码并点击 **Activate**。设备状态会变为 **Activated** (已激活)。
 
-### 4. 更新与维护
-*   **升级**: 进入 **Upgrade Mode** (升级模式) 标签页，点击 **Check for Updates** -> **Flash** 即可在线升级最新功能。
-*   **激活**: 进入 **Activation** (激活) 标签页查看授权状态或输入新的激活码。
+### 5. 更新与维护
+*   **升级**：进入 **Upgrade** (升级) 标签页，点击 **Check for Updates** -> **Flash** 即可通过 OTA 安装最新固件。授权、配置文件和蓝牙配对都会保留。如需安装已有的固件文件 (`.uzip`)，在 "Manual" (手动) 区域选择该文件并点击 **Flash**。**Upgrade** 标签页只适用于已经设置过的 Dongle，新的 Dongle 请先完成 **New Dongle Setup**。如果升级中途被打断，在 **Upgrade** 标签页重新升级即可。
+*   **激活**：进入 **Activation** (激活) 标签页查看序列号和授权状态，或输入新的激活码。
+*   **遇到问题**：窗口底部的日志会显示每一步。如果操作失败，请把日志复制到发给技术支持的邮件中。
 
 ## 从源码构建
 DShare-HID 的开发环境和构建过程与上游 [Deskflow 项目](https://github.com/deskflow/deskflow) **完全相同**。您可以遵循 Windows、macOS 和 Linux 的官方构建说明。

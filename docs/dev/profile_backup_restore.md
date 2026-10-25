@@ -228,10 +228,10 @@ Development builds before 1.2.1 report 1.0.1 (101). The rule covers them too: th
 
 `BridgeFirmwareNotice` (`src/lib/gui/core/BridgeFirmwareNotice.h`) has the rule. It keeps the last version seen for each serial number in `bridge-firmware.ini`, next to the app's settings. It isn't a `.conf`, which would be taken for a bridge client's config. A version of 0 (factory mode) is ignored, so it doesn't hide the version from before the update.
 
-The notice shows only at the end of a successful upgrade in the firmware tool (`Esp32HidToolsWidget::flashFirmware()`), as part of its success message. The main window, the Activation and Order tabs, and a factory flash don't show it, and an update made elsewhere gets none. The tool notes the version:
+The notice shows only at the end of a successful upgrade in the firmware tool (`Esp32HidToolsWidget::upgradeDongle()`), as part of its success message. The main window, the Activation and Order tabs, and a new dongle setup don't show it, and an update made elsewhere gets none. The tool notes the version:
 
-- before an upgrade sends the device to factory mode (the "before" version);
-- once the device runs the application firmware again after an upgrade or a factory flash (`waitForAppAfterFlash()`, up to 60 seconds). If the device doesn't come back in time, the success message has no notice.
+- when it checks the device just before an upgrade sends it to factory mode (`checkDongle()`, the "before" version). The Upgrade tab's Check for Updates doesn't note it;
+- once the device runs the application firmware again after an upgrade or a new dongle setup (`waitForAppAfterFlash()`, up to 60 seconds). If the device doesn't come back in time, the success message has no notice.
 
 Nothing else notes it, so nothing can take the version change before the upgrade's own check does.
 
