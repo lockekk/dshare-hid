@@ -191,7 +191,7 @@ You only need to do this once for each new dongle:
 2.  Click **Flash** under the "Online" section. The app downloads the latest firmware package and installs it. Everything else is automatic.
 3.  When it finishes, the device restarts and the **7-day free trial** starts automatically. No order or activation key is needed for the trial.
 
-**Note**: The first start permanently locks the board to official DShare-HID firmware (Secure Boot and flash encryption). After that, the board can only be updated from the **Upgrade** tab and cannot be reused for other ESP32 projects. If the dongle is already set up, the **New Dongle Setup** tab says so and sends you to the **Upgrade** tab.
+**Note**: The first start permanently locks the board to official DShare-HID firmware (Secure Boot and flash encryption). After that, the board can only be updated from the **Upgrade** tab and cannot be reused for other ESP32 projects. If the dongle is already set up, the **New Dongle Setup** tab only shows "This dongle is already set up."; use the **Upgrade** tab instead.
 
 ### 4. Purchase & Activation
 1.  Go to the **Order** tab.

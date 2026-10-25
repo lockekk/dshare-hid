@@ -184,7 +184,7 @@ flatpak install --user ./dshare-hid-1.26.0-linux-x86_64.flatpak
 2.  在 "Online" (在线) 区域点击 **Flash**。应用会下载最新的固件包并完成安装，其余步骤全部自动进行。
 3.  完成后设备会重启，并自动开始 **7 天免费试用**。试用无需下单，也无需激活码。
 
-**注意**：首次启动会将开发板永久锁定为官方 DShare-HID 固件 (Secure Boot 和闪存加密)。此后只能通过 **Upgrade** (升级) 标签页更新固件，也不能再用于其他 ESP32 项目。如果 Dongle 已经设置过，**New Dongle Setup** 标签页会提示并转到 **Upgrade** 标签页。
+**注意**：首次启动会将开发板永久锁定为官方 DShare-HID 固件 (Secure Boot 和闪存加密)。此后只能通过 **Upgrade** (升级) 标签页更新固件，也不能再用于其他 ESP32 项目。如果 Dongle 已经设置过，**New Dongle Setup** 标签页只会显示 "This dongle is already set up." (该 Dongle 已设置)，请改用 **Upgrade** 标签页。
 
 ### 4. 购买与激活
 1.  进入 **Order** (订单) 标签页。
