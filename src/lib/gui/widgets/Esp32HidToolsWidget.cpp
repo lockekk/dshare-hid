@@ -25,6 +25,7 @@
 #include <QScrollBar>
 #include <QSplitter>
 #include <QStandardPaths>
+#include <QTabBar>
 #include <QUrl>
 #include <QUrlQuery>
 #include <QVBoxLayout>
@@ -39,14 +40,87 @@
 
 #include <chrono>
 #include <thread>
+#include <tuple>
 
 namespace {
 
 const auto kSupportEmail = QStringLiteral("dshare.hid@gmail.com");
 
+// The firmware packages come from the latest release of this GitHub repository
+constexpr auto kReleaseOwner = "lockekk";
+constexpr auto kReleaseRepo = "esp32-hid-release";
+
 // Only the public free-trial package boots into the application by itself. Older factory
 // packages (esp32-hid-factory-*.fzip) leave the device waiting for per-device firmware.
 constexpr auto kFreeTrialFactoryPrefix = "esp32-hid-free-trial-";
+
+// A development build flashes a board in any state: the dongle checks only log what they found
+#ifdef DESKFLOW_DEV_BUILD
+constexpr bool kDevBuild = true;
+#else
+constexpr bool kDevBuild = false;
+#endif
+const auto kDevBuildContinues = QStringLiteral("Development build: continuing anyway.");
+
+// The firmware's version byte as text: 121 -> v1.2.1
+QString firmwareVersionText(uint8_t bcd)
+{
+  return QStringLiteral("v%1.%2.%3").arg(bcd / 100).arg((bcd % 100) / 10).arg(bcd % 10);
+}
+
+QString kilobytes(size_t bytes)
+{
+  return QString::number((bytes + 1023) / 1024);
+}
+
+// The port as the port list shows it: without the Windows "\\.\" prefix
+QString displayPort(const std::string &port)
+{
+  QString text = QString::fromStdString(port);
+  if (text.startsWith(QStringLiteral("\\\\.\\"))) {
+    text = text.mid(4);
+  }
+  return text;
+}
+
+std::tuple<int, int, int> parseVersion(const std::string &v)
+{
+  int major = 0, minor = 0, patch = 0;
+  if (v.empty() || v == "Unknown")
+    return std::make_tuple(0, 0, 0);
+
+  size_t start = (v[0] == 'v') ? 1 : 0;
+  // Find first dot
+  size_t dot1 = v.find('.', start);
+  if (dot1 != std::string::npos) {
+    try {
+      major = std::stoi(v.substr(start, dot1 - start));
+    } catch (...) {
+    }
+    size_t dot2 = v.find('.', dot1 + 1);
+    if (dot2 != std::string::npos) {
+      try {
+        minor = std::stoi(v.substr(dot1 + 1, dot2 - (dot1 + 1)));
+      } catch (...) {
+      }
+      try {
+        patch = std::stoi(v.substr(dot2 + 1));
+      } catch (...) {
+      }
+    } else {
+      try {
+        minor = std::stoi(v.substr(dot1 + 1));
+      } catch (...) {
+      }
+    }
+  } else {
+    try {
+      major = std::stoi(v.substr(start));
+    } catch (...) {
+    }
+  }
+  return std::make_tuple(major, minor, patch);
+}
 
 } // namespace
 
@@ -92,9 +166,16 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
   m_tabWidget->setMinimumHeight(100); // Allow shrinking below content hint
   m_tabWidget->setParent(this);
 
-  // --- Factory Tab ---
+  // --- New Dongle Setup Tab ---
   auto *factoryTab = new QWidget();
   auto *factoryLayout = new QVBoxLayout(factoryTab);
+
+  m_newDongleIntroLbl = new QLabel(
+      tr("Installs DShare-HID firmware on a new dongle. You only need to do this once; after that, use the Upgrade tab "
+         "for updates.")
+  );
+  m_newDongleIntroLbl->setWordWrap(true);
+  factoryLayout->addWidget(m_newDongleIntroLbl);
 
 #ifdef _WIN32
   auto *bootReminderLbl = new QLabel(tr(
@@ -138,10 +219,14 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
 
   factoryLayout->addWidget(onlineFactoryGroup);
   factoryLayout->addWidget(manualFactoryGroup);
+#ifndef DESKFLOW_DEV_BUILD
+  // users only take the package published online; a package file is for development boards
+  manualFactoryGroup->hide();
+#endif
 
   factoryLayout->addStretch();
 
-  m_tabWidget->addTab(factoryTab, tr("Factory Mode"));
+  m_tabWidget->addTab(factoryTab, tr("New Dongle Setup"));
 
   // --- Upgrade Tab ---
   auto *upgradeTab = new QWidget();
@@ -195,7 +280,7 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
   upgradeLayout->addWidget(manualGroup);
   upgradeLayout->addStretch();
 
-  m_tabWidget->addTab(upgradeTab, tr("Upgrade Mode"));
+  m_tabWidget->addTab(upgradeTab, tr("Upgrade"));
 
   // --- Activation Tab ---
   auto *activationTab = new QWidget();
@@ -350,6 +435,10 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
   auto *logContainer = new QWidget();
   auto *logLayout = new QVBoxLayout(logContainer);
   logLayout->setContentsMargins(0, 0, 0, 0);
+  m_progressBar = new QProgressBar();
+  m_progressBar->setRange(0, 100);
+  m_progressBar->hide();
+  logLayout->addWidget(m_progressBar);
   logLayout->addWidget(new QLabel(tr("Log Output:")));
   logLayout->addWidget(m_logOutput);
   m_splitter->addWidget(logContainer);
@@ -552,9 +641,58 @@ std::vector<uint8_t> Esp32HidToolsWidget::readFile(const QString &path)
 
 void Esp32HidToolsWidget::log(const QString &message)
 {
-  m_logOutput->append(message);
-  QScrollBar *sb = m_logOutput->verticalScrollBar();
-  sb->setValue(sb->maximum());
+  // The window's lines also go to the app log, so a log the user sends shows each step
+  LOG_INFO("firmware tool: %s", qPrintable(message));
+
+  // workers log too: the text box is only touched on the GUI thread
+  QMetaObject::invokeMethod(this, [this, message]() {
+    m_logOutput->append(message);
+    QScrollBar *sb = m_logOutput->verticalScrollBar();
+    sb->setValue(sb->maximum());
+  });
+}
+
+// The flash tool's own steps and failure reasons: the app log only, so they don't fill the window.
+// A failure shows the last error in the window too (logFlashFailure()).
+void Esp32HidToolsWidget::logDetail(const std::string &message)
+{
+  LOG_INFO("firmware tool detail: %s", message.c_str());
+  if (message.starts_with("Error")) {
+    m_lastFlashError = message;
+  }
+}
+
+// Runs on the worker thread: the result, with the flash tool's reason, to find the problem from the window's log
+void Esp32HidToolsWidget::logFlashFailure(FlashResult result)
+{
+  QString line = tr("Flash failed, %1").arg(QString::fromStdString(flashResultToString(result)));
+  if (!m_lastFlashError.empty()) {
+    line += QStringLiteral(" (%1)").arg(QString::fromStdString(m_lastFlashError));
+  }
+  log(line);
+}
+
+// The Activation and Order tabs read the state each time they open: only a change is worth a line
+void Esp32HidToolsWidget::logDeviceState(const QString &state)
+{
+  if (state != m_lastDeviceState) {
+    m_lastDeviceState = state;
+    log(state);
+  }
+}
+
+// Runs on the worker thread
+void Esp32HidToolsWidget::setProgress(size_t done, size_t total)
+{
+  const int percent = total > 0 ? static_cast<int>(done * 100 / total) : 0;
+  if (percent == m_progressPercent) {
+    return;
+  }
+  m_progressPercent = percent;
+  QMetaObject::invokeMethod(this, [this, percent]() {
+    m_progressBar->setValue(percent);
+    m_progressBar->show();
+  });
 }
 
 void Esp32HidToolsWidget::setControlsEnabled(bool enabled)
@@ -570,6 +708,8 @@ void Esp32HidToolsWidget::setControlsEnabled(bool enabled)
   m_portCombo->setEnabled(enabled);
   m_factoryPathEdit->setEnabled(enabled);
   m_upgradePathEdit->setEnabled(enabled);
+  // another tab would talk to the dongle while a task uses it
+  m_tabWidget->tabBar()->setEnabled(enabled);
 }
 
 // Helper to run tasks in background
@@ -577,6 +717,8 @@ template <typename Function> void Esp32HidToolsWidget::runBackgroundTask(Functio
 {
   setControlsEnabled(false);
   m_isTaskRunning = true;
+  m_progressPercent = -1;
+  m_lastFlashError.clear();
   QApplication::setOverrideCursor(Qt::WaitCursor);
 
   auto *watcher = new QFutureWatcher<void>(this);
@@ -584,6 +726,7 @@ template <typename Function> void Esp32HidToolsWidget::runBackgroundTask(Functio
     QApplication::restoreOverrideCursor();
     setControlsEnabled(true);
     m_isTaskRunning = false;
+    m_progressBar->hide();
     watcher->deleteLater();
   });
 
@@ -591,137 +734,65 @@ template <typename Function> void Esp32HidToolsWidget::runBackgroundTask(Functio
   watcher->setFuture(future);
 }
 
-void Esp32HidToolsWidget::onFlashFactory()
+// The port to work on, or empty after asking the user to pick one
+QString Esp32HidToolsWidget::selectedPort()
 {
-  QString path = m_factoryPathEdit->text();
   QString portName = m_portCombo->currentData().toString();
   if (portName.isEmpty()) {
     portName = m_portCombo->currentText();
     if (portName.isEmpty() || portName == tr("No devices found")) {
       showWideMessageBox(QMessageBox::Warning, tr("Error"), tr("Please select a valid serial port."));
-      return;
+      return QString();
     }
   }
+  return portName;
+}
 
-  std::vector<uint8_t> data;
-  if (!path.isEmpty()) {
-    log(tr("Reading factory firmware from: %1").arg(path));
-    data = readFile(path);
-    if (data.empty()) {
-      log(tr("Error: Failed to read file or file is empty: %1").arg(path));
-    }
-  }
-
-  if (!confirmFactoryFlash(path.isEmpty() ? "Unknown" : QFileInfo(path).fileName())) {
+void Esp32HidToolsWidget::onFlashFactory()
+{
+  const QString portName = selectedPort();
+  if (portName.isEmpty()) {
     return;
   }
 
-  std::string port = portName.toStdString();
+  const QString path = m_factoryPathEdit->text();
+  if (path.isEmpty()) {
+    showWideMessageBox(QMessageBox::Warning, tr("Error"), tr("Please select a factory package file to flash."));
+    return;
+  }
+  std::vector<uint8_t> data = readFile(path);
+  if (data.empty()) {
+    showWideMessageBox(QMessageBox::Critical, tr("Error"), tr("Failed to read firmware file."));
+    return;
+  }
 
-  log(tr("Checking device status..."));
+  if (!confirmNewDongleSetup()) {
+    return;
+  }
 
-  auto task = [this, port, data]() {
-    // Callback for progress/logging to update UI
-    auto log_cb = [this](const std::string &msg) {
-      QMetaObject::invokeMethod(this, [this, msg]() { log(QString::fromStdString(msg)); });
-    };
-
-    // Optionally we can throttle progress updates if needed, but for "brief" check we can just log major steps
-    // or we could implement a progress bar. For now, logging everything to UI is what the user seems to lack.
-    auto progress_cb = [this](size_t written, size_t total, size_t address) {
-      // Just log every 10%
-      static int last_percent = -1;
-      int percent = total > 0 ? (int)(((float)written / total) * 100) : 0;
-      if (percent % 10 == 0 && percent != last_percent) {
-        last_percent = percent;
-        QString msg = QString("Flashing... %1%").arg(percent);
-        QMetaObject::invokeMethod(this, [this, msg]() { log(msg); });
-      }
-    };
-
-    // Pre-check: Handshake must FAIL for Factory Flash (Device must be in valid Bootloader mode, not Firmware mode)
-    {
-      deskflow::bridge::CdcTransport cdc(QString::fromStdString(port));
-      // Use permissive open to detect if device is in firmware mode (any FW)
-      if (cdc.open(true)) {
-        // Handshake succeeded -> We are in Firmware Mode!
-        // Check if it is Factory Mode
-        const auto &config = cdc.deviceConfig();
-        if (config.firmwareMode == deskflow::bridge::FirmwareMode::Factory) {
-          const bool hasApp = config.hasOtaPartition;
-          QMetaObject::invokeMethod(this, [this, hasApp]() {
-            if (!hasApp) {
-              log(tr("Device is in factory mode without application firmware."));
-              showWideMessageBox(QMessageBox::Warning, tr("No Application Firmware"), noApplicationFirmwareMessage());
-              return;
-            }
-            log(tr("Device is already running with factory firmware."));
-            showWideMessageBox(
-                QMessageBox::Information, tr("Info"),
-                tr("Device is already running with factory firmware.")
-            );
-          });
-          return;
-        } else {
-          // App Mode
-          QMetaObject::invokeMethod(this, [this]() {
-            log(tr("Device is running Application Firmware."));
-            showWideMessageBox(
-                QMessageBox::Warning, tr("Wrong Mode"),
-                tr("Device is running Application Firmware. Please enter Bootloader mode to flash Factory Firmware.")
-            );
-          });
-          return;
-        }
-      }
-      // If open() failed, we assume it's because the device is in Bootloader mode (no handshake support)
-      // and proceed to try flashing.
+  log(tr("Setting up a new dongle with %1 (%2 KB).").arg(path, kilobytes(data.size())));
+  runBackgroundTask([this, port = portName.toStdString(), data]() {
+    if (dongleNeedsSetup(port)) {
+      setUpNewDongle(port, data);
     }
-
-    // Note: This calls the blocking C++ API
-    if (data.empty()) {
-      QMetaObject::invokeMethod(this, [this]() {
-        log(tr("Error: No factory package selected."));
-        showWideMessageBox(QMessageBox::Warning, tr("Error"), tr("Please select a factory package file to flash."));
-      });
-      return;
-    }
-
-    log(tr("Starting Factory Flash..."));
-    auto replug_cb = createReplugCallback();
-    FlashResult res = flash_factory(port, data, progress_cb, log_cb, replug_cb);
-    if (res != FlashResult::OK) {
-      QMetaObject::invokeMethod(this, [this, res]() {
-        log(tr("Flash failed, %1").arg(QString::fromStdString(flashResultToString(res))));
-      });
-      return;
-    }
-
-    QMetaObject::invokeMethod(this, [this]() { log(tr("Factory Flash Success!")); });
-    const auto check = waitForAppAfterFlash(port);
-    QMetaObject::invokeMethod(this, [this, check]() { showFactoryFlashResult(check); });
-  };
-
-  runBackgroundTask(task);
+  });
 }
 
 void Esp32HidToolsWidget::onDownloadAndFlashFactory()
 {
-  QString portName = m_portCombo->currentData().toString();
-  if (portName.isEmpty()) {
-    portName = m_portCombo->currentText();
-    if (portName.isEmpty() || portName == tr("No devices found")) {
-      showWideMessageBox(QMessageBox::Warning, tr("Error"), tr("Please select a valid serial port."));
-      return;
-    }
+  const QString portName = selectedPort();
+  if (portName.isEmpty() || !confirmNewDongleSetup()) {
+    return;
   }
 
-  log(tr("Checking for latest factory firmware..."));
-  std::string port = portName.toStdString();
+  log(tr("Setting up a new dongle with the latest firmware."));
+  runBackgroundTask([this, port = portName.toStdString()]() {
+    if (!dongleNeedsSetup(port)) {
+      return;
+    }
 
-  auto fetchTask = [this, port]() {
-    GithubDownloader downloader("lockekk", "esp32-hid-release");
-    auto assets = downloader.get_latest_assets();
+    GithubDownloader downloader(kReleaseOwner, kReleaseRepo);
+    const auto assets = downloader.get_latest_assets();
     std::string assetName;
     for (const auto &asset : assets) {
       if (asset.name.starts_with(kFreeTrialFactoryPrefix) && asset.name.ends_with(".fzip")) {
@@ -730,113 +801,37 @@ void Esp32HidToolsWidget::onDownloadAndFlashFactory()
       }
     }
 
-    QMetaObject::invokeMethod(this, [this, assetName, port]() {
-      if (assetName.empty()) {
-        log(tr("Failed to find factory firmware (%1*.fzip) in the latest release.")
-                .arg(QString::fromLatin1(kFreeTrialFactoryPrefix)));
-        showWideMessageBox(QMessageBox::Critical, tr("Error"), tr("Failed to find factory firmware."));
-        return;
-      }
+    if (assetName.empty()) {
+      logDetail(
+          "no " + std::string(kFreeTrialFactoryPrefix) + "*.fzip among the " + std::to_string(assets.size()) +
+          " assets of the latest " + kReleaseOwner + "/" + kReleaseRepo + " release"
+      );
+      const bool reachable = !assets.empty();
+      const QString text =
+          reachable ? tr("The setup firmware is not available for download yet. Please try again later.")
+                    : tr("Could not reach the download server. Check your internet connection and try again.");
+      log(text);
+      QMetaObject::invokeMethod(this, [this, text, reachable]() {
+        showWideMessageBox(reachable ? QMessageBox::Information : QMessageBox::Warning, tr("New Dongle Setup"), text);
+      });
+      return;
+    }
 
-      log(tr("Found factory firmware: %1").arg(QString::fromStdString(assetName)));
+    log(tr("Downloading %1...").arg(QString::fromStdString(assetName)));
+    const auto data = downloader.download_asset_to_memory(assetName);
+    if (!data.has_value()) {
+      log(tr("Download failed."));
+      QMetaObject::invokeMethod(this, [this]() {
+        showWideMessageBox(
+            QMessageBox::Critical, tr("Error"), tr("Failed to download firmware. Check internet connection.")
+        );
+      });
+      return;
+    }
+    log(tr("Downloaded (%1 KB).").arg(kilobytes(data->size())));
 
-      if (!confirmFactoryFlash(QString::fromStdString(assetName))) {
-        log(tr("Factory flash cancelled."));
-        return;
-      }
-
-      log(tr("Starting Download & Flash process..."));
-
-      auto flashTask = [this, port, assetName]() {
-        QMetaObject::invokeMethod(this, [this, assetName]() {
-          log(tr("Downloading %1...").arg(QString::fromStdString(assetName)));
-        });
-
-        GithubDownloader downloader("lockekk", "esp32-hid-release");
-        auto dataOpt = downloader.download_asset_to_memory(assetName);
-        if (!dataOpt.has_value()) {
-          QMetaObject::invokeMethod(this, [this]() {
-            log(tr("Download failed."));
-            showWideMessageBox(
-                QMessageBox::Critical, tr("Error"), tr("Failed to download firmware. Check internet connection.")
-            );
-          });
-          return;
-        }
-
-        std::vector<uint8_t> data = dataOpt.value();
-        QMetaObject::invokeMethod(this, [this, dataSize = data.size()]() {
-          log(tr("Download complete. Size: %1 bytes").arg(dataSize));
-          log(tr("Starting flashing process..."));
-        });
-
-        // 2. Flash
-        auto log_cb = [this](const std::string &msg) {
-          QMetaObject::invokeMethod(this, [this, msg]() { log(QString::fromStdString(msg)); });
-        };
-
-        auto progress_cb = [this](size_t written, size_t total, size_t address) {
-          static int last_percent = -1;
-          int percent = (int)(((float)written / total) * 100);
-          if (percent % 10 == 0 && percent != last_percent) {
-            last_percent = percent;
-            QString msg = QString("Flashing... %1%").arg(percent);
-            QMetaObject::invokeMethod(this, [this, msg]() { log(msg); });
-          }
-        };
-
-        // Pre-check handshake
-        {
-          deskflow::bridge::CdcTransport cdc(QString::fromStdString(port));
-          if (cdc.open(true)) {
-            const auto &config = cdc.deviceConfig();
-            if (config.firmwareMode == deskflow::bridge::FirmwareMode::Factory) {
-              const bool hasApp = config.hasOtaPartition;
-              QMetaObject::invokeMethod(this, [this, hasApp]() {
-                if (!hasApp) {
-                  log(tr("Device is in factory mode without application firmware."));
-                  showWideMessageBox(
-                      QMessageBox::Warning, tr("No Application Firmware"), noApplicationFirmwareMessage()
-                  );
-                  return;
-                }
-                showWideMessageBox(
-                    QMessageBox::Information, tr("Info"), tr("Device is already running factory firmware.")
-                );
-              });
-              return;
-            } else {
-              QMetaObject::invokeMethod(this, [this]() {
-                log(tr("Device is in App Mode. Please enter Bootloader Mode."));
-                showWideMessageBox(
-                    QMessageBox::Warning, tr("Wrong Mode"),
-                    tr("Please enter Bootloader mode to flash Factory Firmware.")
-                );
-              });
-              return;
-            }
-          }
-        }
-
-        auto replug_cb = createReplugCallback();
-        FlashResult res = flash_factory(port, data, progress_cb, log_cb, replug_cb);
-        if (res != FlashResult::OK) {
-          QMetaObject::invokeMethod(this, [this, res]() {
-            QString errorMsg = QString::fromStdString(flashResultToString(res));
-            log(tr("Flash failed, %1").arg(errorMsg));
-            showWideMessageBox(QMessageBox::Critical, tr("Error"), tr("Flash failed, %1").arg(errorMsg));
-          });
-          return;
-        }
-
-        QMetaObject::invokeMethod(this, [this]() { log(tr("Flash Success!")); });
-        const auto check = waitForAppAfterFlash(port);
-        QMetaObject::invokeMethod(this, [this, check]() { showFactoryFlashResult(check); });
-      };
-      runBackgroundTask(flashTask);
-    });
-  };
-  runBackgroundTask(fetchTask);
+    setUpNewDongle(port, data.value());
+  });
 }
 
 std::function<void()> Esp32HidToolsWidget::createReplugCallback()
@@ -874,18 +869,108 @@ int Esp32HidToolsWidget::showWideMessageBox(
   return msgBox.exec();
 }
 
-bool Esp32HidToolsWidget::confirmFactoryFlash(const QString &filename)
+bool Esp32HidToolsWidget::confirmNewDongleSetup()
 {
-  QString message = tr("About to flash: <b>%1</b><br><br>"
-                       "This action will permanently convert your device to DShare-HID. "
-                       "This process is irreversible and precludes non-DShare firmware.<br><br>Proceed?")
-                        .arg(filename);
+  return showWideMessageBox(
+             QMessageBox::Question, tr("Set Up New Dongle"), tr("Set up this dongle? This is permanent."),
+             QMessageBox::Yes | QMessageBox::No
+         ) == QMessageBox::Yes;
+}
 
-  return (
-      showWideMessageBox(
-          QMessageBox::Question, tr("Confirm Factory Flash"), message, QMessageBox::Yes | QMessageBox::No
-      ) == QMessageBox::Yes
-  );
+// Runs on the worker thread: asks the dongle on the port which firmware it runs
+Esp32HidToolsWidget::DongleCheck Esp32HidToolsWidget::checkDongle(const std::string &port, bool noteVersion)
+{
+  using deskflow::bridge::FirmwareMode;
+
+  log(tr("Checking the dongle on %1...").arg(displayPort(port)));
+
+  DongleCheck check;
+  deskflow::bridge::CdcTransport cdc(QString::fromStdString(port));
+  // permissive: this only asks which firmware answers
+  const bool answered = cdc.open(true) && cdc.hasDeviceConfig();
+  check.portOpened = cdc.isOpen();
+  if (!answered) {
+    logDetail(
+        "no DShare-HID handshake on " + port + (check.portOpened ? "" : " (port not opened)") + ": " + cdc.lastError()
+    );
+    return check;
+  }
+
+  const auto &config = cdc.deviceConfig();
+  if (config.firmwareMode == FirmwareMode::App) {
+    check.setup = DongleSetup::App;
+    check.version = firmwareVersionText(config.firmwareVersionBcd);
+    std::string serial;
+    cdc.fetchSerialNumber(serial);
+    // the version before the update, for the notice to pair the hosts again after 1.2.1
+    if (noteVersion && !serial.empty()) {
+      BridgeFirmwareNotice::noteHandshake(QString::fromStdString(serial), config);
+    }
+    log(tr("Dongle found: firmware %1, %2, serial %3.")
+            .arg(
+                check.version, QString::fromLatin1(config.activationStateString()),
+                serial.empty() ? QStringLiteral("-") : QString::fromStdString(serial)
+            ));
+  } else if (config.firmwareMode == FirmwareMode::Factory) {
+    check.setup = config.hasOtaPartition ? DongleSetup::Factory : DongleSetup::FactoryWithoutApp;
+    log(config.hasOtaPartition ? tr("Dongle found in update mode.")
+                               : tr("Dongle found in update mode, without application firmware."));
+  } else {
+    logDetail("unknown firmware mode " + std::to_string(static_cast<unsigned>(config.firmwareMode)) + " on " + port);
+  }
+  return check;
+}
+
+// Runs on the worker thread: a dongle that already runs DShare-HID firmware is updated on the Upgrade tab
+bool Esp32HidToolsWidget::dongleNeedsSetup(const std::string &port)
+{
+  const auto check = checkDongle(port, false);
+  if (check.setup == DongleSetup::NoAnswer) {
+    log(tr("No DShare-HID firmware found on the dongle."));
+    return true;
+  }
+
+  const QString text =
+      check.setup == DongleSetup::FactoryWithoutApp
+          ? tr("This dongle is already set up, but its last update did not finish. Use the Upgrade tab to install "
+               "the firmware again.")
+          : tr("This dongle is already set up. Use the Upgrade tab to update its firmware.");
+  log(text);
+  if (kDevBuild) {
+    log(kDevBuildContinues);
+    return true;
+  }
+  QMetaObject::invokeMethod(this, [this, text]() {
+    showWideMessageBox(QMessageBox::Information, tr("Already Set Up"), text);
+    m_tabWidget->setCurrentIndex(1);
+  });
+  return false;
+}
+
+// Runs on the worker thread: writes a new dongle's firmware package and waits for the application
+void Esp32HidToolsWidget::setUpNewDongle(const std::string &port, const std::vector<uint8_t> &package)
+{
+  log(tr("Writing the firmware..."));
+  bool written = false;
+  auto progress_cb = [this, &written](size_t done, size_t total, size_t) {
+    setProgress(done, total);
+    if (done == total && !written) {
+      written = true;
+      log(tr("Firmware written. Restarting the dongle..."));
+    }
+  };
+  auto log_cb = [this](const std::string &msg) { logDetail(msg); };
+
+  const FlashResult res = flash_factory(port, package, progress_cb, log_cb, createReplugCallback());
+  if (res != FlashResult::OK) {
+    logFlashFailure(res);
+    const QString text = flashFailureText(res, true);
+    QMetaObject::invokeMethod(this, [this, text]() { showWideMessageBox(QMessageBox::Critical, tr("Error"), text); });
+    return;
+  }
+
+  const auto check = waitForAppAfterFlash(port);
+  QMetaObject::invokeMethod(this, [this, check]() { showFactoryFlashResult(check); });
 }
 
 // Runs on the worker thread: polls the device until it reports the application firmware.
@@ -894,7 +979,7 @@ Esp32HidToolsWidget::FactoryFlashCheck Esp32HidToolsWidget::waitForAppAfterFlash
   using namespace std::chrono_literals;
   using deskflow::bridge::FirmwareMode;
 
-  QMetaObject::invokeMethod(this, [this]() { log(tr("Waiting for the device to start the application firmware...")); });
+  log(tr("Waiting for the dongle to start..."));
 
   // Any byte the factory receives restarts its 10 s idle timer before it boots OTA_0,
   // so back off after seeing the factory instead of probing it every second.
@@ -916,11 +1001,14 @@ Esp32HidToolsWidget::FactoryFlashCheck Esp32HidToolsWidget::waitForAppAfterFlash
           if (cdc.fetchSerialNumber(serial)) {
             notice = BridgeFirmwareNotice::noteHandshake(QString::fromStdString(serial), config);
           }
-          return {FactoryFlashOutcome::AppStarted, config.activationState, notice};
+          const QString version = firmwareVersionText(config.firmwareVersionBcd);
+          log(tr("Dongle ready: firmware %1, %2.").arg(version, QString::fromLatin1(config.activationStateString())));
+          return {FactoryFlashOutcome::AppStarted, config.activationState, notice, version};
         }
         if (config.firmwareMode == FirmwareMode::Factory) {
           if (!config.hasOtaPartition) {
-            return {FactoryFlashOutcome::FactoryWithoutApp, config.activationState, QString()};
+            log(tr("The dongle stayed in update mode, without application firmware."));
+            return {FactoryFlashOutcome::FactoryWithoutApp, config.activationState, QString(), QString()};
           }
           delay = kFactoryBootDelay;
         }
@@ -929,7 +1017,8 @@ Esp32HidToolsWidget::FactoryFlashCheck Esp32HidToolsWidget::waitForAppAfterFlash
     std::this_thread::sleep_for(delay);
   }
 
-  return {FactoryFlashOutcome::NotDetected, deskflow::bridge::ActivationState::Unknown, QString()};
+  log(tr("The dongle did not report back within 60 seconds."));
+  return {FactoryFlashOutcome::NotDetected, deskflow::bridge::ActivationState::Unknown, QString(), QString()};
 }
 
 void Esp32HidToolsWidget::showFactoryFlashResult(const FactoryFlashCheck &check)
@@ -938,8 +1027,6 @@ void Esp32HidToolsWidget::showFactoryFlashResult(const FactoryFlashCheck &check)
 
   switch (check.outcome) {
   case FactoryFlashOutcome::AppStarted:
-    log(tr("Device is running the application firmware, activation state: %1")
-            .arg(QString::fromLatin1(deskflow::bridge::activationStateToString(check.activationState))));
     if (check.activationState == ActivationState::FreeTrial) {
       showWideMessageBox(
           QMessageBox::Information, tr("Success"),
@@ -957,12 +1044,10 @@ void Esp32HidToolsWidget::showFactoryFlashResult(const FactoryFlashCheck &check)
     break;
 
   case FactoryFlashOutcome::FactoryWithoutApp:
-    log(tr("Device stayed in factory mode: the package has no valid application firmware."));
     showWideMessageBox(QMessageBox::Warning, tr("No Application Firmware"), noApplicationFirmwareMessage());
     break;
 
   case FactoryFlashOutcome::NotDetected:
-    log(tr("Device did not report back after flashing."));
     showWideMessageBox(
         QMessageBox::Warning, tr("Device Not Detected"),
         tr("The firmware was written, but the device did not start the application within 60 seconds.\n\n"
@@ -980,156 +1065,130 @@ QString Esp32HidToolsWidget::noApplicationFirmwareMessage() const
       .arg(kSupportEmail);
 }
 
+QString Esp32HidToolsWidget::flashFailureText(FlashResult result, bool newDongle) const
+{
+  switch (result) {
+  case FlashResult::ERROR_CONNECTION:
+  case FlashResult::ERROR_TIMEOUT:
+    if (!newDongle) {
+      return tr("Lost the connection to the dongle. Reconnect it and try again.");
+    }
+#ifdef _WIN32
+    return tr(
+        "Could not connect to the dongle. Hold the Boot button while you plug it in, then try again. "
+        "If it was set up before, use the Upgrade tab instead."
+    );
+#else
+    return tr(
+        "Could not connect to the dongle. Reconnect it and try again. "
+        "If it was set up before, use the Upgrade tab instead."
+    );
+#endif
+  case FlashResult::ERROR_FIRMWARE_CHECK:
+    return tr("The dongle did not accept this firmware.");
+  case FlashResult::ERROR_ARGS:
+  case FlashResult::ERROR_FILE_IO:
+  case FlashResult::ERROR_DECRYPTION:
+  case FlashResult::ERROR_EMPTY_DATA:
+    return tr("This is not a valid firmware file.");
+  case FlashResult::ERROR_FLASH_WRITE:
+    return tr("Writing the firmware failed. Reconnect the dongle and try again.");
+  default:
+    return tr("Flash failed, %1").arg(QString::fromStdString(flashResultToString(result)));
+  }
+}
+
+// Runs on the worker thread: only a dongle that runs DShare-HID firmware takes an upgrade
+bool Esp32HidToolsWidget::readyForUpgrade(const DongleCheck &check)
+{
+  if (check.setup == DongleSetup::NoAnswer) {
+    const QString title = check.portOpened ? tr("Not Set Up") : tr("Error");
+    const QString text = check.portOpened ? tr("This dongle is not set up yet. Use the New Dongle Setup tab first.")
+                                          : tr("Could not open the port. Reconnect the dongle and try again.");
+    log(text);
+    if (kDevBuild) {
+      log(kDevBuildContinues);
+      return true;
+    }
+    QMetaObject::invokeMethod(this, [this, title, text]() { showWideMessageBox(QMessageBox::Warning, title, text); });
+    return false;
+  }
+
+  // Still upgraded: on a release dongle this is the only repair, since its first boot turned off
+  // the ROM download mode a new dongle setup needs
+  if (check.setup == DongleSetup::FactoryWithoutApp) {
+    log(tr("The last update did not finish. The firmware will be installed again."));
+  }
+  return true;
+}
+
 // Check Upgrade
 void Esp32HidToolsWidget::onCheckUpgrade()
 {
-  QString portName = m_portCombo->currentData().toString();
+  const QString portName = selectedPort();
   if (portName.isEmpty()) {
-    portName = m_portCombo->currentText();
-    if (portName.isEmpty() || portName == tr("No devices found")) {
-      showWideMessageBox(QMessageBox::Warning, tr("Error"), tr("Please select a valid serial port."));
-      return;
-    }
+    return;
   }
-
-  log(tr("Checking for upgrades..."));
-  std::string port = portName.toStdString();
 
   // Online flash is only allowed for the port that this check finds an update for
   m_onlineFlashAllowed = false;
   m_flashOnlineBtn->setEnabled(false);
 
-  auto task = [this, port]() {
-    // Check for "dshare-hid" / "dshare-hid-release"
-    GithubDownloader downloader("lockekk", "esp32-hid-release");
-    auto latestTag = downloader.get_latest_tag();
+  runBackgroundTask([this, port = portName.toStdString()]() {
+    const auto check = checkDongle(port, false);
+    if (!readyForUpgrade(check)) {
+      return;
+    }
+
+    log(tr("Checking for upgrades..."));
+    GithubDownloader downloader(kReleaseOwner, kReleaseRepo);
+    const auto latestTag = downloader.get_latest_tag();
     if (latestTag.empty()) {
+      log(tr("Could not check for updates."));
       QMetaObject::invokeMethod(this, [this]() {
-        log(tr("Failed to fetch latest version tag from GitHub."));
         showWideMessageBox(QMessageBox::Warning, tr("Network Error"), tr("Could not check for updates."));
       });
       return;
     }
 
-    // Connect to device to get current version
-    QString portName = m_portCombo->currentData().toString();
-    if (portName.isEmpty()) {
-      portName = m_portCombo->currentText();
+    // only the application firmware reports its version: a dongle in update mode takes the update
+    const QString deviceVer = check.version.isEmpty() ? QStringLiteral("Unknown") : check.version;
+    logDetail("version check: latest tag " + latestTag + ", device " + deviceVer.toStdString());
+    bool updateAvailable = check.version.isEmpty();
+    if (!updateAvailable) {
+      updateAvailable = parseVersion(latestTag) > parseVersion(check.version.toStdString());
     }
 
-    QString deviceVer = "Unknown";
-    bool deviceAvailable = false;
-    uint8_t rawBcd = 0;
-
-    deskflow::bridge::CdcTransport cdc(portName);
-    if (cdc.open()) {
-      if (cdc.hasDeviceConfig()) {
-        auto config = cdc.deviceConfig();
-        rawBcd = config.firmwareVersionBcd;
-        // Interpret as decimal: 101 -> 1.0.1, 200 -> 2.0.0
-        int major = rawBcd / 100;
-        int minor = (rawBcd % 100) / 10;
-        int patch = rawBcd % 10;
-        deviceVer = QString("v%1.%2.%3").arg(major).arg(minor).arg(patch);
-        deviceAvailable = true;
-      } else {
-        QMetaObject::invokeMethod(this, [this]() {
-          log(tr("Device handshake failed or no config received. Assuming factory/unknown state."));
-        });
-      }
-    } else {
-      QMetaObject::invokeMethod(this, [this]() { log(tr("Could not open device. Assuming factory/unknown state.")); });
-    }
-
-    // Log info for debugging
-    QMetaObject::invokeMethod(this, [this, latestTag, deviceVer, rawBcd]() {
-      LOG_INFO(
-          "Version Check: Remote Tag='%s', Device Version='%s' (Raw BCD=%d)", latestTag.c_str(), qPrintable(deviceVer),
-          rawBcd
-      );
-    });
-
-    // Parse versions
-    auto parseVersion = [](const std::string &v) {
-      int major = 0, minor = 0, patch = 0;
-      if (v.empty() || v == "Unknown")
-        return std::make_tuple(0, 0, 0);
-
-      size_t start = (v[0] == 'v') ? 1 : 0;
-      // Find first dot
-      size_t dot1 = v.find('.', start);
-      if (dot1 != std::string::npos) {
-        try {
-          major = std::stoi(v.substr(start, dot1 - start));
-        } catch (...) {
-        }
-        size_t dot2 = v.find('.', dot1 + 1);
-        if (dot2 != std::string::npos) {
-          try {
-            minor = std::stoi(v.substr(dot1 + 1, dot2 - (dot1 + 1)));
-          } catch (...) {
-          }
-          try {
-            patch = std::stoi(v.substr(dot2 + 1));
-          } catch (...) {
-          }
-        } else {
-          try {
-            minor = std::stoi(v.substr(dot1 + 1));
-          } catch (...) {
-          }
-        }
-      } else {
-        try {
-          major = std::stoi(v.substr(start));
-        } catch (...) {
-        }
-      }
-      return std::make_tuple(major, minor, patch);
-    };
-
-    auto [tagMajor, tagMinor, tagPatch] = parseVersion(latestTag);
-    auto [devMajor, devMinor, devPatch] = parseVersion(deviceVer.toStdString());
-
-    QMetaObject::invokeMethod(this, [=, this]() {
+    QMetaObject::invokeMethod(this, [this, deviceVer, latestTag, updateAvailable]() {
+      const QString latest = QString::fromStdString(latestTag);
       m_lblCurrentVersion->setText(tr("Current Version: %1").arg(deviceVer));
-      m_lblLatestVersion->setText(tr("Latest Version: %1").arg(QString::fromStdString(latestTag)));
+      m_lblLatestVersion->setText(tr("Latest Version: %1").arg(latest));
 
-      bool updateAvailable = false;
-
-      // If device is not available or unknown, we assume update is possible/needed
-      if (!deviceAvailable || deviceVer == "Unknown") {
-        updateAvailable = true;
-      } else {
-        if (tagMajor > devMajor)
-          updateAvailable = true;
-        else if (tagMajor == devMajor && tagMinor > devMinor)
-          updateAvailable = true;
-        else if (tagMajor == devMajor && tagMinor == devMinor && tagPatch > devPatch)
-          updateAvailable = true;
-      }
-
-      if (updateAvailable) {
-        if (deviceVer != "Unknown") {
-          log(tr("Update available (%1 > %2).").arg(QString::fromStdString(latestTag)).arg(deviceVer));
-        } else {
-          log(tr("Update available (Device version unknown)."));
-        }
-
-        m_onlineFlashAllowed = true;
-        m_flashOnlineBtn->setEnabled(true);
-        m_flashOnlineBtn->setToolTip("");
-      } else {
+      if (!updateAvailable) {
         log(tr("Device is up to date."));
+        if (!kDevBuild) {
+          return;
+        }
+        log(kDevBuildContinues);
+      } else if (deviceVer != "Unknown") {
+        log(tr("Update available (%1 > %2).").arg(latest).arg(deviceVer));
+      } else {
+        log(tr("Update available (Device version unknown)."));
       }
+      m_onlineFlashAllowed = true;
+      m_flashOnlineBtn->setEnabled(true);
+      m_flashOnlineBtn->setToolTip("");
     });
-  };
-
-  runBackgroundTask(task);
+  });
 }
 
 void Esp32HidToolsWidget::onFlashLocal()
 {
+  const QString portName = selectedPort();
+  if (portName.isEmpty()) {
+    return;
+  }
+
   QString path = m_upgradePathEdit->text();
   if (path.isEmpty()) {
     showWideMessageBox(QMessageBox::Warning, tr("Error"), tr("Please select a firmware file."));
@@ -1142,32 +1201,45 @@ void Esp32HidToolsWidget::onFlashLocal()
     return;
   }
 
-  log(tr("Reading local firmware from: %1").arg(path));
   log(tr("Flashing local file: %1").arg(path));
-  flashFirmware(data);
+  runBackgroundTask([this, port = portName.toStdString(), data]() {
+    const auto check = checkDongle(port, true);
+    if (readyForUpgrade(check)) {
+      upgradeDongle(port, data, check);
+    }
+  });
 }
 
 void Esp32HidToolsWidget::onFlashOnline()
 {
-  log(tr("Downloading upgrade firmware..."));
+  const QString portName = selectedPort();
+  if (portName.isEmpty()) {
+    return;
+  }
 
-  // We need to fetch data first, then flash.
-  // We can reuse runBackgroundTask for download + flash chain.
+  runBackgroundTask([this, port = portName.toStdString()]() {
+    const auto check = checkDongle(port, true);
+    if (!readyForUpgrade(check)) {
+      return;
+    }
 
-  auto task = [this]() {
-    GithubDownloader downloader("lockekk", "esp32-hid-release");
-    auto assets = downloader.get_latest_assets();
+    GithubDownloader downloader(kReleaseOwner, kReleaseRepo);
+    const auto assets = downloader.get_latest_assets();
     std::string assetName;
     for (const auto &asset : assets) {
-      if (asset.name.length() >= 5 && asset.name.compare(asset.name.length() - 5, 5, ".uzip") == 0) {
+      if (asset.name.ends_with(".uzip")) {
         assetName = asset.name;
         break;
       }
     }
 
     if (assetName.empty()) {
+      logDetail(
+          "no *.uzip among the " + std::to_string(assets.size()) + " assets of the latest " + kReleaseOwner + "/" +
+          kReleaseRepo + " release"
+      );
+      log(tr("Download failed. No .uzip asset found."));
       QMetaObject::invokeMethod(this, [this]() {
-        log(tr("Download failed. No .uzip asset found."));
         showWideMessageBox(
             QMessageBox::Critical, tr("Error"), tr("Failed to find upgrade firmware in the latest release.")
         );
@@ -1175,151 +1247,92 @@ void Esp32HidToolsWidget::onFlashOnline()
       return;
     }
 
-    QMetaObject::invokeMethod(this, [this, assetName]() {
-      log(tr("Found upgrade firmware: %1").arg(QString::fromStdString(assetName)));
-      log(tr("Downloading %1...").arg(QString::fromStdString(assetName)));
-    });
-
-    auto dl = downloader.download_asset_to_memory(assetName);
-
-    QMetaObject::invokeMethod(this, [this, dl]() {
-      if (!dl.has_value()) {
-        log(tr("Download failed."));
+    log(tr("Downloading %1...").arg(QString::fromStdString(assetName)));
+    const auto data = downloader.download_asset_to_memory(assetName);
+    if (!data.has_value()) {
+      log(tr("Download failed."));
+      QMetaObject::invokeMethod(this, [this]() {
         showWideMessageBox(QMessageBox::Critical, tr("Error"), tr("Failed to download firmware."));
-        return;
-      }
-      log(tr("Download complete. Starting flash..."));
-      flashFirmware(dl.value());
-    });
-  };
+      });
+      return;
+    }
+    log(tr("Downloaded (%1 KB).").arg(kilobytes(data->size())));
 
-  runBackgroundTask(task);
+    upgradeDongle(port, data.value(), check);
+  });
 }
 
-void Esp32HidToolsWidget::flashFirmware(const std::vector<uint8_t> &firmwareData)
+// Runs on the worker thread: sends an upgrade package to a dongle that readyForUpgrade() accepted
+void Esp32HidToolsWidget::upgradeDongle(
+    const std::string &port, const std::vector<uint8_t> &package, const DongleCheck &check
+)
 {
-  QString portName = m_portCombo->currentData().toString();
-  if (portName.isEmpty()) {
-    portName = m_portCombo->currentText();
+  using namespace std::chrono_literals;
+  using deskflow::bridge::FirmwareMode;
+
+  const QString portName = QString::fromStdString(port);
+
+  // The factory firmware receives the update: the application firmware restarts into it
+  if (check.setup == DongleSetup::App) {
+    log(tr("Preparing the dongle for the update..."));
+    deskflow::bridge::CdcTransport cdc(portName);
+    if (!cdc.open() || !cdc.gotoFactory()) {
+      logDetail("switch to the factory firmware failed: " + cdc.lastError());
+      const QString text = tr("The dongle could not switch to update mode. Reconnect it and try again.");
+      log(text);
+      QMetaObject::invokeMethod(this, [this, text]() { showWideMessageBox(QMessageBox::Critical, tr("Error"), text); });
+      return;
+    }
+    cdc.close(); // Close to allow re-enumeration
+
+    bool reconnected = false;
+    for (int i = 0; i < 30 && !reconnected; i++) { // 15 seconds
+      std::this_thread::sleep_for(500ms);
+      deskflow::bridge::CdcTransport probe(portName);
+      reconnected =
+          probe.open(true) && probe.hasDeviceConfig() && probe.deviceConfig().firmwareMode == FirmwareMode::Factory;
+    }
+    if (reconnected) {
+      logDetail("the factory firmware answered on " + port);
+      std::this_thread::sleep_for(500ms);
+    } else {
+      logDetail("the factory firmware did not answer on " + port + " within 15 s, trying the update anyway");
+    }
   }
 
-  // Local copy to capture by value
-  std::vector<uint8_t> dataCopy = firmwareData;
+  log(tr("Sending the firmware..."));
+  auto progress_cb = [this](size_t done, size_t total, size_t) { setProgress(done, total); };
+  auto log_cb = [this](const std::string &msg) { logDetail(msg); };
 
-  auto task = [this, portName, dataCopy]() mutable {
-    auto log_cb_func = [this](const std::string &msg) {
-      QMetaObject::invokeMethod(this, [this, msg]() { this->log(QString::fromStdString(msg)); });
-    };
+  FlashResult res = FlashResult::ERROR_GENERAL;
+  try {
+    res = flash_upgrade(port, package, progress_cb, log_cb);
+  } catch (const std::exception &e) {
+    logDetail(std::string("flash_upgrade threw: ") + e.what());
+  }
 
-    std::string portStd = portName.toStdString();
-    deskflow::bridge::CdcTransport cdc(portName);
-
-    // 2. Switch to Factory if needed
-    if (!cdc.open()) {
-      // Proceed or fail?
-      // If we can't open, we might fail to check mode.
-      // But maybe we can proceed with upgrade assuming it might be in download mode?
-      // No, upgrade requires app or factory mode.
+  if (res != FlashResult::OK) {
+    logFlashFailure(res);
+    QString text = flashFailureText(res, false);
+    if (check.setup == DongleSetup::FactoryWithoutApp) {
+      text += QStringLiteral("\n\n") +
+              tr("If this keeps failing, contact %1 with the dongle's serial number.").arg(kSupportEmail);
     }
+    QMetaObject::invokeMethod(this, [this, text]() { showWideMessageBox(QMessageBox::Critical, tr("Error"), text); });
+    return;
+  }
 
-    // Check mode
-    // ... reused logic ...
-    bool inFactory = false;
-    // A factory without a valid OTA_0 may have been prepared by an older app for per-device
-    // firmware, which the public package cannot replace
-    bool factoryWithoutApp = false;
-    if (cdc.isOpen()) {
-      if (cdc.hasDeviceConfig() && cdc.deviceConfig().firmwareMode == deskflow::bridge::FirmwareMode::Factory) {
-        inFactory = true;
-        factoryWithoutApp = !cdc.deviceConfig().hasOtaPartition;
-      } else {
-        // the version before the update, for the notice to pair the hosts again after 1.2.1:
-        // factory mode reports none.  Only the success message below shows the notice.
-        std::string serial;
-        if (cdc.hasDeviceConfig() && cdc.fetchSerialNumber(serial)) {
-          BridgeFirmwareNotice::noteHandshake(QString::fromStdString(serial), cdc.deviceConfig());
-        }
-
-        // App mode, try switching
-        if (cdc.gotoFactory()) {
-          log_cb_func("Sent gotoFactory command. Waiting for device to reboot...");
-          cdc.close(); // Close to allow re-enumeration
-
-          // Poll for reconnection
-          bool reconnected = false;
-          for (int i = 0; i < 30; i++) { // 15 seconds
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
-            // Try open - probe needs QString
-            deskflow::bridge::CdcTransport probe(portName);
-            if (probe.open(true)) {
-              if (probe.hasDeviceConfig() &&
-                  probe.deviceConfig().firmwareMode == deskflow::bridge::FirmwareMode::Factory) {
-                reconnected = true;
-                break;
-              }
-            }
-          }
-
-          if (reconnected) {
-            log_cb_func("Device re-connected in Factory Mode.");
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
-          } else {
-            log_cb_func("Warning: Timed out waiting for device to reconnect.");
-          }
-        }
-      }
+  log(tr("Firmware accepted. Restarting the dongle..."));
+  // the factory restarts 100 ms after it acks the reboot: let it go before looking for the new firmware
+  std::this_thread::sleep_for(1s);
+  const auto started = waitForAppAfterFlash(port);
+  QMetaObject::invokeMethod(this, [this, started]() {
+    QString message = tr("Firmware upgrade successful.");
+    if (!started.pairingNotice.isEmpty()) {
+      message += QStringLiteral("\n\n") + started.pairingNotice;
     }
-
-    cdc.close(); // Validate flash tool opens it fresh
-
-    // 3. Flash
-    auto progress_cb = [this](size_t written, size_t total, size_t address) {
-      static int last_percent = -1;
-      int percent = total > 0 ? (int)(((float)written / total) * 100) : 0;
-      if (percent != last_percent && percent % 10 == 0) {
-        QMetaObject::invokeMethod(this, [this, percent]() { log(tr("Flashing... %1%").arg(percent)); });
-        last_percent = percent;
-      }
-    };
-
-    try {
-      FlashResult res = flash_upgrade(portStd, dataCopy, progress_cb, log_cb_func);
-      if (res == FlashResult::OK) {
-        log_cb_func("Upgrade flash complete.");
-        // the factory restarts 100 ms after it acks the reboot: let it go before looking for the new firmware
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        const auto check = waitForAppAfterFlash(portStd);
-        QMetaObject::invokeMethod(this, [this, check]() {
-          QString message = tr("Firmware upgrade successful.");
-          if (!check.pairingNotice.isEmpty()) {
-            message += QStringLiteral("\n\n") + check.pairingNotice;
-          }
-          showWideMessageBox(QMessageBox::Information, tr("Success"), message);
-        });
-      } else {
-        QString errorMsg = QString::fromStdString(flashResultToString(res));
-        log_cb_func(tr("Flash failed, %1").arg(errorMsg).toStdString()
-        ); // log_cb takes std::string, but log takes QString. log_cb calls log.
-        QMetaObject::invokeMethod(this, [this, errorMsg, factoryWithoutApp]() {
-          QString text = tr("Flash failed, %1").arg(errorMsg);
-          if (factoryWithoutApp) {
-            text += QStringLiteral("\n\n") +
-                    tr("This device has no application firmware and may have been prepared by an older version "
-                       "of DShare-HID. Contact %1 with the device serial number.")
-                        .arg(kSupportEmail);
-          }
-          showWideMessageBox(QMessageBox::Critical, tr("Error"), text);
-        });
-      }
-    } catch (const std::exception &e) {
-      log_cb_func(std::string("Flash failed: ") + e.what());
-      QMetaObject::invokeMethod(this, [this, e]() {
-        showWideMessageBox(QMessageBox::Critical, tr("Error"), tr("Flash failed: %1").arg(e.what()));
-      });
-    }
-  };
-
-  runBackgroundTask(task);
+    showWideMessageBox(QMessageBox::Information, tr("Success"), message);
+  });
 }
 
 void Esp32HidToolsWidget::reject()
@@ -1347,11 +1360,15 @@ void Esp32HidToolsWidget::updateText()
 
   m_refreshPortsBtn->setText(tr("Refresh"));
 
-  m_tabWidget->setTabText(0, tr("Factory Mode"));
-  m_tabWidget->setTabText(1, tr("Upgrade Mode"));
+  m_tabWidget->setTabText(0, tr("New Dongle Setup"));
+  m_tabWidget->setTabText(1, tr("Upgrade"));
   m_tabWidget->setTabText(2, tr("Activation"));
   m_tabWidget->setTabText(3, tr("Order"));
 
+  m_newDongleIntroLbl->setText(
+      tr("Installs DShare-HID firmware on a new dongle. You only need to do this once; after that, use the Upgrade tab "
+         "for updates.")
+  );
   m_factoryPathEdit->setPlaceholderText(tr("Path to factory.fzip"));
   m_factoryBrowseBtn->setText(tr("Browse..."));
   m_factoryFlashBtn->setText(tr("Flash"));
@@ -1411,7 +1428,7 @@ void deskflow::gui::Esp32HidToolsWidget::refreshDeviceState()
     }
   }
 
-  log(tr("Refreshing device state..."));
+  LOG_INFO("firmware tool: refreshing device state");
   m_lineSerial->clear();
   m_orderSerialLabel->setText(tr("-"));
   m_labelActivationState->setText(tr("State: Checking..."));
@@ -1494,7 +1511,7 @@ void deskflow::gui::Esp32HidToolsWidget::refreshDeviceState()
         if (result.isFactoryMode) {
           m_labelActivationState->setText(tr("State: Factory Mode (Cannot Activate)"));
           m_groupActivationInput->setVisible(false);
-          log(tr("Device State Refreshed. Serial: %1, Mode: Factory").arg(result.serial));
+          logDeviceState(tr("Device State Refreshed. Serial: %1, Mode: Factory").arg(result.serial));
         } else {
           // Conditional UI: Hide activation input if already activated
           // Conditional UI: Hide activation input if already activated AND has more than 2 profiles
@@ -1504,20 +1521,19 @@ void deskflow::gui::Esp32HidToolsWidget::refreshDeviceState()
           } else {
             m_groupActivationInput->setVisible(false);
           }
-          log(tr("Device State Refreshed. Serial: %1, State: %2, Profiles: %3")
-                  .arg(result.serial, result.activationState, QString::number(result.totalProfiles)));
+          logDeviceState(tr("Device State Refreshed. Serial: %1, State: %2, Profiles: %3")
+                             .arg(result.serial, result.activationState, QString::number(result.totalProfiles)));
         }
       } else {
         m_labelActivationState->setText(tr("State: Error"));
+        m_lastDeviceState.clear();
         log(tr("Failed to refresh state: %1").arg(result.error));
 
         // Erased Device Case: If on Order tab and handshake failed, warn user
         QTabWidget *tabs = findChild<QTabWidget *>();
         if (tabs && tabs->tabText(tabs->currentIndex()) == tr("Order")) {
           QMessageBox::warning(
-              this, tr("Erased Device Detected"),
-              tr("No valid firmware detected on the device. Please go to the 'Factory Mode' tab and flash 'Online' "
-                 "first.")
+              this, tr("Not Set Up"), tr("This dongle is not set up yet. Use the New Dongle Setup tab first.")
           );
         }
         // Reset Order Options
@@ -1877,6 +1893,7 @@ void deskflow::gui::Esp32HidToolsWidget::onPortChanged(int index)
   m_lineSerial->clear();
   m_orderSerialLabel->setText(tr("-"));
   m_labelActivationState->setText(tr("State: Unknown"));
+  m_lastDeviceState.clear();
 
   // Reset Order Options
   m_orderOption2->setEnabled(false);

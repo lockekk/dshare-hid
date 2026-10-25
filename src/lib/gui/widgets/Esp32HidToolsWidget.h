@@ -11,6 +11,7 @@
 #include <QLineEdit>
 #include <QMessageBox>
 #include <QNetworkReply>
+#include <QProgressBar>
 #include <QPushButton>
 #include <QRadioButton>
 #include <QSplitter>
@@ -22,6 +23,7 @@
 #include <vector>
 
 class QNetworkAccessManager;
+enum class FlashResult : int;
 
 namespace deskflow::bridge {
 enum class ActivationState : uint8_t;
@@ -84,13 +86,37 @@ private:
     FactoryFlashOutcome outcome;
     deskflow::bridge::ActivationState activationState;
     QString pairingNotice; // BridgeFirmwareNotice: the flash took the device to 1.2.1; only an upgrade shows it
+    QString version;       // the application firmware's version, when it started
+  };
+
+  // What the dongle answers before a new dongle setup or an upgrade
+  enum class DongleSetup
+  {
+    NoAnswer,         // no DShare-HID firmware: a new dongle, or the port could not be opened
+    App,              // the application firmware runs
+    Factory,          // the factory firmware runs, the application firmware is there
+    FactoryWithoutApp // the factory firmware runs without it: an earlier update did not finish
+  };
+  struct DongleCheck
+  {
+    DongleSetup setup = DongleSetup::NoAnswer;
+    bool portOpened = false;
+    QString version; // the application firmware's version, e.g. "v1.2.1"; empty in the factory firmware
   };
 
   void refreshDeviceState();
-  bool confirmFactoryFlash(const QString &filename);
+  QString selectedPort();
+  bool confirmNewDongleSetup();
+  DongleCheck checkDongle(const std::string &port, bool noteVersion);
+  bool dongleNeedsSetup(const std::string &port);
+  void setUpNewDongle(const std::string &port, const std::vector<uint8_t> &package);
+  bool readyForUpgrade(const DongleCheck &check);
+  void upgradeDongle(const std::string &port, const std::vector<uint8_t> &package, const DongleCheck &check);
   FactoryFlashCheck waitForAppAfterFlash(const std::string &port);
   void showFactoryFlashResult(const FactoryFlashCheck &check);
   QString noApplicationFirmwareMessage() const;
+  QString flashFailureText(FlashResult result, bool newDongle) const;
+  void logFlashFailure(FlashResult result);
   void fetchPrices();
   void onPriceResponse(QNetworkReply *reply);
 
@@ -98,13 +124,13 @@ private:
   QComboBox *m_portCombo;
   QPushButton *m_refreshPortsBtn;
 
-  // Factory Tab
+  // New Dongle Setup Tab
+  QLabel *m_newDongleIntroLbl;
   QLineEdit *m_factoryPathEdit;
   QPushButton *m_factoryBrowseBtn;
   QPushButton *m_factoryFlashBtn;
   QPushButton *m_downloadFlashBtn;
 
-  // Upgrade Tab
   // Upgrade Tab
   // Online Section
   QLabel *m_lblCurrentVersion;
@@ -146,12 +172,16 @@ private:
   // Common
   QTabWidget *m_tabWidget;
   QSplitter *m_splitter;
+  QProgressBar *m_progressBar;
   QTextEdit *m_logOutput;
 
   // State
   QString m_devicePath;
   bool m_isTaskRunning = false;
   bool m_onlineFlashAllowed = false;
+  int m_progressPercent = -1;   // last percentage sent to the progress bar, by the worker thread
+  std::string m_lastFlashError; // the flash tool's last "Error..." line in this task, by the worker thread
+  QString m_lastDeviceState;    // the last state line the Activation and Order tabs logged
   PriceConfig m_prices;
   QNetworkAccessManager *m_network;
 
@@ -161,11 +191,13 @@ private:
   );
 
   void log(const QString &message);
+  void logDetail(const std::string &message);
+  void logDeviceState(const QString &state);
+  void setProgress(size_t done, size_t total);
   void setControlsEnabled(bool enabled);
   template <typename Function> void runBackgroundTask(Function func);
   std::vector<uint8_t> readFile(const QString &path);
   std::function<void()> createReplugCallback();
-  void flashFirmware(const std::vector<uint8_t> &data);
   OrderPrice calculateOrderPrice(int option, int totalProfiles);
   QString composeOrderContent(QString &outPrefix, int &outOption);
   void reject() override;
