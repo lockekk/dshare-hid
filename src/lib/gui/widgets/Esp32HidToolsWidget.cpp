@@ -23,6 +23,7 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QScrollBar>
+#include <QSignalBlocker>
 #include <QSplitter>
 #include <QStandardPaths>
 #include <QTabBar>
@@ -168,7 +169,18 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
 
   // --- New Dongle Setup Tab ---
   auto *factoryTab = new QWidget();
-  auto *factoryLayout = new QVBoxLayout(factoryTab);
+  auto *factoryTabLayout = new QVBoxLayout(factoryTab);
+
+  // shown instead of the setup when the dongle already runs DShare-HID firmware
+  m_alreadySetUpLbl = new QLabel(tr("This dongle is already set up."));
+  m_alreadySetUpLbl->setWordWrap(true);
+  m_alreadySetUpLbl->hide();
+  factoryTabLayout->addWidget(m_alreadySetUpLbl);
+
+  m_newDongleSetupPanel = new QWidget();
+  auto *factoryLayout = new QVBoxLayout(m_newDongleSetupPanel);
+  factoryLayout->setContentsMargins(0, 0, 0, 0);
+  factoryTabLayout->addWidget(m_newDongleSetupPanel);
 
   m_newDongleIntroLbl = new QLabel(
       tr("Installs DShare-HID firmware on a new dongle. You only need to do this once; after that, use the Upgrade tab "
@@ -224,7 +236,7 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
   manualFactoryGroup->hide();
 #endif
 
-  factoryLayout->addStretch();
+  factoryTabLayout->addStretch();
 
   m_tabWidget->addTab(factoryTab, tr("New Dongle Setup"));
 
@@ -563,6 +575,8 @@ void Esp32HidToolsWidget::onPriceResponse(QNetworkReply *reply)
 
 void Esp32HidToolsWidget::refreshPorts()
 {
+  // one port change once the list is filled, not one per item: each change can ask the dongle
+  QSignalBlocker blocker(m_portCombo);
   m_portCombo->clear();
   LOG_INFO("Refreshing ports...");
   // Only filter by VID/PID, don't try to read serial (avoids timeouts on stuck devices)
@@ -607,6 +621,9 @@ void Esp32HidToolsWidget::refreshPorts()
       m_portCombo->setCurrentIndex(m_portCombo->count() - 1);
     }
   }
+
+  blocker.unblock();
+  onPortChanged(m_portCombo->currentIndex());
 }
 
 void Esp32HidToolsWidget::onBrowseFactory()
@@ -941,10 +958,38 @@ bool Esp32HidToolsWidget::dongleNeedsSetup(const std::string &port)
     return true;
   }
   QMetaObject::invokeMethod(this, [this, text]() {
+    showDongleSetUp(true);
     showWideMessageBox(QMessageBox::Information, tr("Already Set Up"), text);
     m_tabWidget->setCurrentIndex(1);
   });
   return false;
+}
+
+// Opening the New Dongle Setup tab asks the dongle first, so a set-up dongle isn't offered the setup
+void Esp32HidToolsWidget::checkNewDongleSetup()
+{
+  QString portName = m_portCombo->currentData().toString();
+  if (portName.isEmpty()) {
+    portName = m_portCombo->currentText();
+    if (portName.isEmpty() || portName == tr("No devices found")) {
+      showDongleSetUp(false);
+      return;
+    }
+  }
+
+  runBackgroundTask([this, port = portName.toStdString()]() {
+    // the factory or the application firmware answers: the dongle was set up before
+    const bool setUp = checkDongle(port, false).setup != DongleSetup::NoAnswer;
+    log(setUp ? tr("This dongle is already set up.") : tr("No DShare-HID firmware found on the dongle."));
+    QMetaObject::invokeMethod(this, [this, setUp]() { showDongleSetUp(setUp); });
+  });
+}
+
+void Esp32HidToolsWidget::showDongleSetUp(bool setUp)
+{
+  m_alreadySetUpLbl->setVisible(setUp);
+  // a development build sets up a board in any state
+  m_newDongleSetupPanel->setVisible(!setUp || kDevBuild);
 }
 
 // Runs on the worker thread: writes a new dongle's firmware package and waits for the application
@@ -1024,6 +1069,10 @@ Esp32HidToolsWidget::FactoryFlashCheck Esp32HidToolsWidget::waitForAppAfterFlash
 void Esp32HidToolsWidget::showFactoryFlashResult(const FactoryFlashCheck &check)
 {
   using deskflow::bridge::ActivationState;
+
+  if (check.outcome != FactoryFlashOutcome::NotDetected) {
+    showDongleSetUp(true);
+  }
 
   switch (check.outcome) {
   case FactoryFlashOutcome::AppStarted:
@@ -1365,6 +1414,7 @@ void Esp32HidToolsWidget::updateText()
   m_tabWidget->setTabText(2, tr("Activation"));
   m_tabWidget->setTabText(3, tr("Order"));
 
+  m_alreadySetUpLbl->setText(tr("This dongle is already set up."));
   m_newDongleIntroLbl->setText(
       tr("Installs DShare-HID firmware on a new dongle. You only need to do this once; after that, use the Upgrade tab "
          "for updates.")
@@ -1407,6 +1457,8 @@ void deskflow::gui::Esp32HidToolsWidget::onTabChanged(int index)
   QString title = m_tabWidget->tabText(index);
   if (title == tr("Activation") || title == tr("Order")) {
     refreshDeviceState();
+  } else if (title == tr("New Dongle Setup")) {
+    checkNewDongleSetup();
   }
 
   // Dynamically adjust splitter sizes to avoid scrollbars while maximizing log space
@@ -1900,10 +1952,12 @@ void deskflow::gui::Esp32HidToolsWidget::onPortChanged(int index)
   m_orderOption4->setEnabled(false);
   m_orderTotalProfiles->setEnabled(false);
 
-  // If on Activation or Order tab, auto-refresh state
+  // If on Activation or Order tab, auto-refresh state; the New Dongle Setup tab asks the new port's dongle
   QTabWidget *tabs = findChild<QTabWidget *>();
   if (tabs &&
       (tabs->tabText(tabs->currentIndex()) == tr("Activation") || tabs->tabText(tabs->currentIndex()) == tr("Order"))) {
     refreshDeviceState();
+  } else if (tabs && tabs->tabText(tabs->currentIndex()) == tr("New Dongle Setup")) {
+    checkNewDongleSetup();
   }
 }

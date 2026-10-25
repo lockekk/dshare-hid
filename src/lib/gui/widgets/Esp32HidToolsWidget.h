@@ -109,6 +109,8 @@ private:
   bool confirmNewDongleSetup();
   DongleCheck checkDongle(const std::string &port, bool noteVersion);
   bool dongleNeedsSetup(const std::string &port);
+  void checkNewDongleSetup();
+  void showDongleSetUp(bool setUp);
   void setUpNewDongle(const std::string &port, const std::vector<uint8_t> &package);
   bool readyForUpgrade(const DongleCheck &check);
   void upgradeDongle(const std::string &port, const std::vector<uint8_t> &package, const DongleCheck &check);
@@ -125,6 +127,8 @@ private:
   QPushButton *m_refreshPortsBtn;
 
   // New Dongle Setup Tab
+  QLabel *m_alreadySetUpLbl;
+  QWidget *m_newDongleSetupPanel; // the setup itself, hidden while m_alreadySetUpLbl shows
   QLabel *m_newDongleIntroLbl;
   QLineEdit *m_factoryPathEdit;
   QPushButton *m_factoryBrowseBtn;
