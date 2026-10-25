@@ -2615,6 +2615,150 @@ Duplicado: %1</translation>
         <translation>Herramienta de flasheo de firmware</translation>
     </message>
     <message>
+        <source>Setting up a new dongle with %1 (%2 KB).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Setting up a new dongle with the latest firmware.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The setup firmware is not available for download yet. Please try again later.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not reach the download server. Check your internet connection and try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Downloaded (%1 KB).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set Up New Dongle</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set up this dongle? This is permanent.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Checking the dongle on %1...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Dongle found: firmware %1, %2, serial %3.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Dongle found in update mode.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Dongle found in update mode, without application firmware.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No DShare-HID firmware found on the dongle.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This dongle is already set up, but its last update did not finish. Use the Upgrade tab to install the firmware again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This dongle is already set up. Use the Upgrade tab to update its firmware.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Already Set Up</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Writing the firmware...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Firmware written. Restarting the dongle...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Waiting for the dongle to start...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Dongle ready: firmware %1, %2.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The dongle stayed in update mode, without application firmware.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The dongle did not report back within 60 seconds.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lost the connection to the dongle. Reconnect it and try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not connect to the dongle. Hold the Boot button while you plug it in, then try again. If it was set up before, use the Upgrade tab instead.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not connect to the dongle. Reconnect it and try again. If it was set up before, use the Upgrade tab instead.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The dongle did not accept this firmware.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This is not a valid firmware file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Writing the firmware failed. Reconnect the dongle and try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not Set Up</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This dongle is not set up yet. Use the New Dongle Setup tab first.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not open the port. Reconnect the dongle and try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The last update did not finish. The firmware will be installed again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Preparing the dongle for the update...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The dongle could not switch to update mode. Reconnect it and try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sending the firmware...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>If this keeps failing, contact %1 with the dongle&apos;s serial number.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Firmware accepted. Restarting the dongle...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Firmware Flash Tool - %1</source>
         <translation>Herramienta de flasheo de firmware - %1</translation>
     </message>
@@ -2627,6 +2771,10 @@ Duplicado: %1</translation>
         <translation>Puerto:</translation>
     </message>
     <message>
+        <source>Installs DShare-HID firmware on a new dongle. You only need to do this once; after that, use the Upgrade tab for updates.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Path to factory.fzip</source>
         <translation>Ruta a factory.fzip</translation>
     </message>
@@ -2636,7 +2784,7 @@ Duplicado: %1</translation>
     </message>
     <message>
         <source>Factory Mode</source>
-        <translation>Modo fábrica</translation>
+        <translation type="vanished">Modo fábrica</translation>
     </message>
     <message>
         <source>Current Version: Unknown</source>
@@ -2660,7 +2808,7 @@ Duplicado: %1</translation>
     </message>
     <message>
         <source>Upgrade Mode</source>
-        <translation>Modo de actualización</translation>
+        <translation type="vanished">Modo de actualización</translation>
     </message>
     <message>
         <source>State: Unknown</source>
@@ -2820,15 +2968,11 @@ Duplicado: %1</translation>
     </message>
     <message>
         <source>Error: Failed to read file or file is empty: %1</source>
-        <translation>Error: Fallo al leer el archivo o el archivo está vacío: %1</translation>
+        <translation type="vanished">Error: Fallo al leer el archivo o el archivo está vacío: %1</translation>
     </message>
     <message>
         <source>Checking device status...</source>
-        <translation>Comprobando estado del dispositivo...</translation>
-    </message>
-    <message>
-        <source>Device is in factory mode without application firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation type="vanished">Comprobando estado del dispositivo...</translation>
     </message>
     <message>
         <source>No Application Firmware</source>
@@ -2836,7 +2980,7 @@ Duplicado: %1</translation>
     </message>
     <message>
         <source>Device is already running with factory firmware.</source>
-        <translation>El dispositivo ya está funcionando con firmware de fábrica.</translation>
+        <translation type="vanished">El dispositivo ya está funcionando con firmware de fábrica.</translation>
     </message>
     <message>
         <source>Attempting to fetch PDEK...</source>
@@ -2852,7 +2996,7 @@ Duplicado: %1</translation>
     </message>
     <message>
         <source>Info</source>
-        <translation>Información</translation>
+        <translation type="vanished">Información</translation>
     </message>
     <message>
         <source>Device is already running with factory firmware. Device Info has been fetched.</source>
@@ -2868,19 +3012,19 @@ Duplicado: %1</translation>
     </message>
     <message>
         <source>Device is running Application Firmware.</source>
-        <translation>El dispositivo está ejecutando firmware de aplicación.</translation>
+        <translation type="vanished">El dispositivo está ejecutando firmware de aplicación.</translation>
     </message>
     <message>
         <source>Wrong Mode</source>
-        <translation>Modo incorrecto</translation>
+        <translation type="vanished">Modo incorrecto</translation>
     </message>
     <message>
         <source>Device is running Application Firmware. Please enter Bootloader mode to flash Factory Firmware.</source>
-        <translation>El dispositivo está ejecutando firmware de aplicación. Por favor, entre en modo Bootloader para flashear el firmware de fábrica.</translation>
+        <translation type="vanished">El dispositivo está ejecutando firmware de aplicación. Por favor, entre en modo Bootloader para flashear el firmware de fábrica.</translation>
     </message>
     <message>
         <source>Error: No factory package selected.</source>
-        <translation>Error: No se seleccionó ningún paquete de fábrica.</translation>
+        <translation type="vanished">Error: No se seleccionó ningún paquete de fábrica.</translation>
     </message>
     <message>
         <source>Please select a factory package file to flash.</source>
@@ -2888,11 +3032,11 @@ Duplicado: %1</translation>
     </message>
     <message>
         <source>Starting Factory Flash...</source>
-        <translation>Iniciando flasheo de fábrica...</translation>
+        <translation type="vanished">Iniciando flasheo de fábrica...</translation>
     </message>
     <message>
         <source>Factory Flash Success!</source>
-        <translation>¡Éxito en el flasheo de fábrica!</translation>
+        <translation type="vanished">¡Éxito en el flasheo de fábrica!</translation>
     </message>
     <message>
         <source>Flash failed, %1</source>
@@ -2900,7 +3044,7 @@ Duplicado: %1</translation>
     </message>
     <message>
         <source>Starting Download &amp; Flash process...</source>
-        <translation>Iniciando proceso de descarga y flasheo...</translation>
+        <translation type="vanished">Iniciando proceso de descarga y flasheo...</translation>
     </message>
     <message>
         <source>Downloading %1...</source>
@@ -2916,27 +3060,27 @@ Duplicado: %1</translation>
     </message>
     <message>
         <source>Download complete. Size: %1 bytes</source>
-        <translation>Descarga completada. Tamaño: %1 bytes</translation>
+        <translation type="vanished">Descarga completada. Tamaño: %1 bytes</translation>
     </message>
     <message>
         <source>Starting flashing process...</source>
-        <translation>Iniciando proceso de flasheo...</translation>
+        <translation type="vanished">Iniciando proceso de flasheo...</translation>
     </message>
     <message>
         <source>Device is already running factory firmware.</source>
-        <translation>El dispositivo ya está ejecutando firmware de fábrica.</translation>
+        <translation type="vanished">El dispositivo ya está ejecutando firmware de fábrica.</translation>
     </message>
     <message>
         <source>Device is in App Mode. Please enter Bootloader Mode.</source>
-        <translation>El dispositivo está en modo aplicación. Por favor, entre en modo Bootloader.</translation>
+        <translation type="vanished">El dispositivo está en modo aplicación. Por favor, entre en modo Bootloader.</translation>
     </message>
     <message>
         <source>Please enter Bootloader mode to flash Factory Firmware.</source>
-        <translation>Por favor, entre en modo Bootloader para flashear el firmware de fábrica.</translation>
+        <translation type="vanished">Por favor, entre en modo Bootloader para flashear el firmware de fábrica.</translation>
     </message>
     <message>
         <source>Flash Success!</source>
-        <translation>¡Éxito en el flasheo!</translation>
+        <translation type="vanished">¡Éxito en el flasheo!</translation>
     </message>
     <message>
         <source>Success</source>
@@ -2945,6 +3089,14 @@ Duplicado: %1</translation>
     <message>
         <source>Paypal Seller: &lt;b&gt;&lt;font color=&apos;red&apos;&gt;%1&lt;/font&gt;&lt;/b&gt;</source>
         <translation>Vendedor de Paypal: &lt;b&gt;&lt;font color=&apos;red&apos;&gt;%1&lt;/font&gt;&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <source>New Dongle Setup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Upgrade</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>I will arrange payment via email</source>
@@ -2959,24 +3111,8 @@ Duplicado: %1</translation>
         <translation>ID de transacción de PayPal:</translation>
     </message>
     <message>
-        <source>Checking for latest factory firmware...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to find factory firmware (%1*.fzip) in the latest release.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to find factory firmware.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Factory flash cancelled.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Confirm Factory Flash</source>
-        <translation>Confirmar flasheo de fábrica</translation>
+        <translation type="vanished">Confirmar flasheo de fábrica</translation>
     </message>
     <message>
         <source>Factory firmware flashed successfully.
@@ -3000,10 +3136,6 @@ Siguiente paso: Debe flashear el firmware por dispositivo para usar el dispositi
     </message>
     <message>
         <source>Selected upgrade firmware: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Found factory firmware: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3052,7 +3184,7 @@ Siguiente paso: Debe flashear el firmware por dispositivo para usar el dispositi
     </message>
     <message>
         <source>Failed to fetch latest version tag from GitHub.</source>
-        <translation>Error al obtener la etiqueta de la última versión de GitHub.</translation>
+        <translation type="vanished">Error al obtener la etiqueta de la última versión de GitHub.</translation>
     </message>
     <message>
         <source>Network Error</source>
@@ -3064,11 +3196,11 @@ Siguiente paso: Debe flashear el firmware por dispositivo para usar el dispositi
     </message>
     <message>
         <source>Device handshake failed or no config received. Assuming factory/unknown state.</source>
-        <translation>Fallo en la negociación del dispositivo o no se recibió configuración. Asumiendo estado de fábrica/desconocido.</translation>
+        <translation type="vanished">Fallo en la negociación del dispositivo o no se recibió configuración. Asumiendo estado de fábrica/desconocido.</translation>
     </message>
     <message>
         <source>Could not open device. Assuming factory/unknown state.</source>
-        <translation>No se pudo abrir el dispositivo. Asumiendo estado de fábrica/desconocido.</translation>
+        <translation type="vanished">No se pudo abrir el dispositivo. Asumiendo estado de fábrica/desconocido.</translation>
     </message>
     <message>
         <source>Current Version: %1</source>
@@ -3104,7 +3236,7 @@ Siguiente paso: Debe flashear el firmware por dispositivo para usar el dispositi
     </message>
     <message>
         <source>Downloading upgrade firmware...</source>
-        <translation>Descargando firmware de actualización...</translation>
+        <translation type="vanished">Descargando firmware de actualización...</translation>
     </message>
     <message>
         <source>Download failed. No .uzip asset found.</source>
@@ -3116,7 +3248,7 @@ Siguiente paso: Debe flashear el firmware por dispositivo para usar el dispositi
     </message>
     <message>
         <source>Found upgrade firmware: %1</source>
-        <translation>Firmware de actualización encontrado: %1</translation>
+        <translation type="vanished">Firmware de actualización encontrado: %1</translation>
     </message>
     <message>
         <source>Failed to download firmware.</source>
@@ -3124,23 +3256,19 @@ Siguiente paso: Debe flashear el firmware por dispositivo para usar el dispositi
     </message>
     <message>
         <source>Flashing... %1%</source>
-        <translation>Flasheando... %1%</translation>
+        <translation type="vanished">Flasheando... %1%</translation>
     </message>
     <message>
         <source>Firmware upgrade successful.</source>
         <translation>Actualización de firmware exitosa.</translation>
     </message>
     <message>
-        <source>This device has no application firmware and may have been prepared by an older version of DShare-HID. Contact %1 with the device serial number.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Flash failed: %1</source>
-        <translation>Fallo en el flasheo: %1</translation>
+        <translation type="vanished">Fallo en el flasheo: %1</translation>
     </message>
     <message>
         <source>Refreshing device state...</source>
-        <translation>Actualizando estado del dispositivo...</translation>
+        <translation type="vanished">Actualizando estado del dispositivo...</translation>
     </message>
     <message>
         <source>State: Checking...</source>
@@ -3149,10 +3277,6 @@ Siguiente paso: Debe flashear el firmware por dispositivo para usar el dispositi
     <message>
         <source>State: %1</source>
         <translation>Estado: %1</translation>
-    </message>
-    <message>
-        <source>Download complete. Starting flash...</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>State: Factory Mode (Cannot Activate)</source>
@@ -3168,11 +3292,11 @@ Siguiente paso: Debe flashear el firmware por dispositivo para usar el dispositi
     </message>
     <message>
         <source>Erased Device Detected</source>
-        <translation>Dispositivo borrado detectado</translation>
+        <translation type="vanished">Dispositivo borrado detectado</translation>
     </message>
     <message>
         <source>No valid firmware detected on the device. Please go to the &apos;Factory Mode&apos; tab and flash &apos;Online&apos; first.</source>
-        <translation>No se detectó ningún firmware válido en el dispositivo. Vaya a la pestaña &apos;Modo fábrica&apos; y flashee &apos;Online&apos; primero.</translation>
+        <translation type="vanished">No se detectó ningún firmware válido en el dispositivo. Vaya a la pestaña &apos;Modo fábrica&apos; y flashee &apos;Online&apos; primero.</translation>
     </message>
     <message>
         <source>Serial number copied to clipboard.</source>
@@ -3291,14 +3415,6 @@ Siguiente paso: Debe flashear el firmware por dispositivo para usar el dispositi
         <translation>Opciones de pedido</translation>
     </message>
     <message>
-        <source>Waiting for the device to start the application firmware...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Device is running the application firmware, activation state: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Firmware flashed successfully.
 
 The device is running a 7-day free trial. After the trial expires, use the Activation tab to activate with a license key.</source>
@@ -3308,14 +3424,6 @@ The device is running a 7-day free trial. After the trial expires, use the Activ
         <source>Firmware flashed successfully.
 
 The device is running the application firmware. Check its license on the Activation tab.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Device stayed in factory mode: the package has no valid application firmware.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Device did not report back after flashing.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3348,11 +3456,11 @@ Install it from the Upgrade tab (Check for Updates, then Flash). If that fails, 
     </message>
     <message>
         <source>Reading factory firmware from: %1</source>
-        <translation>Leyendo firmware de fábrica de: %1</translation>
+        <translation type="vanished">Leyendo firmware de fábrica de: %1</translation>
     </message>
     <message>
         <source>Reading local firmware from: %1</source>
-        <translation>Leyendo firmware local de: %1</translation>
+        <translation type="vanished">Leyendo firmware local de: %1</translation>
     </message>
     <message>
         <source>Online</source>
@@ -3393,10 +3501,6 @@ Install it from the Upgrade tab (Check for Updates, then Flash). If that fails, 
     <message>
         <source>Reminder: Press &apos;Boot&apos; button then plugin your ESP32-C3. Click Refresh button to ensure the device is detected.</source>
         <translation>Recordatorio: Presione el botón &apos;Boot&apos; y luego conecte su ESP32-C3. Haga clic en el botón Actualizar para asegurarse de que se detecte el dispositivo.</translation>
-    </message>
-    <message>
-        <source>About to flash: &lt;b&gt;%1&lt;/b&gt;&lt;br&gt;&lt;br&gt;This action will permanently convert your device to DShare-HID. This process is irreversible and precludes non-DShare firmware.&lt;br&gt;&lt;br&gt;Proceed?</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
