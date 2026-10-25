@@ -64,6 +64,11 @@ BridgePlatformScreen::BridgePlatformScreen(
       m_events(events)
 {
   LOG_INFO("BridgeScreen: initialized screen=%dx%d", m_screenWidth, m_screenHeight);
+  // the size given is what the GUI read before starting the core, or its default when that
+  // read failed: the device's active profile decides.  nothing is connected yet to be told
+  if (m_transport != nullptr) {
+    loadActiveProfile();
+  }
 
   m_lastCdcCommand = std::chrono::steady_clock::time_point::min();
 
@@ -1404,7 +1409,8 @@ void BridgePlatformScreen::handleRequests()
       LOG_WARN("BridgeScreen: request '%s' failed: %s", qPrintable(request.command), qPrintable(error));
       fields = {error};
     }
-    // even a failed request may have changed the device, e.g. when only reading it back failed
+    // even a failed request may have changed the device, e.g. a switch whose reply timed out, or
+    // when only reading it back failed
     if (requests::changesActiveProfile(request.command)) {
       applyActiveProfile();
     }
@@ -1415,11 +1421,21 @@ void BridgePlatformScreen::handleRequests()
 
 void BridgePlatformScreen::applyActiveProfile()
 {
-  const uint8_t index = m_transport->deviceConfig().activeProfile;
+  if (loadActiveProfile()) {
+    // the client sends the server the new size, so it stays connected through the switch
+    m_events->addEvent(Event(EventTypes::ComputerShapeChanged, getEventTarget()));
+  }
+}
+
+bool BridgePlatformScreen::loadActiveProfile()
+{
+  // ask the device which profile is active rather than trust deviceConfig(): a switch whose
+  // reply timed out may still have happened
+  uint8_t index = 0;
   DeviceProfile profile;
-  if (!m_transport->getProfile(index, profile)) {
-    LOG_WARN("BridgeScreen: failed to load profile %d", index);
-    return;
+  if (!m_transport->getActiveProfile(index, profile)) {
+    LOG_WARN("BridgeScreen: failed to load the active profile");
+    return false;
   }
   applyScrollSettings(index, profile);
 
@@ -1427,20 +1443,19 @@ void BridgePlatformScreen::applyActiveProfile()
   int32_t height = 0;
   profileScreenSize(profile, width, height);
   if (width == m_screenWidth && height == m_screenHeight) {
-    return;
+    return false;
   }
   // the protocol carries the size as int16, and the server drops a client whose size isn't positive
   if (width <= 0 || height <= 0 || width > INT16_MAX || height > INT16_MAX) {
     LOG_WARN("BridgeScreen: ignoring profile %d's screen size %dx%d", index, width, height);
-    return;
+    return false;
   }
 
   LOG_INFO("BridgeScreen: profile %d screen=%dx%d", index, width, height);
   m_screenWidth = width;
   m_screenHeight = height;
   getCursorCenter(m_cursorX, m_cursorY);
-  // the client sends the server the new size, so it stays connected through the switch
-  m_events->addEvent(Event(EventTypes::ComputerShapeChanged, getEventTarget()));
+  return true;
 }
 
 void BridgePlatformScreen::applyScrollSettings(uint8_t index, const DeviceProfile &profile)

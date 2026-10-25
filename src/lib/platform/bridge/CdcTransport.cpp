@@ -1025,20 +1025,48 @@ bool CdcTransport::getProfile(uint8_t index, DeviceProfile &outProfile)
     return false;
   }
 
-  std::vector<uint8_t> payload(2);
-  payload[0] = kUsbControlGetProfile;
-  payload[1] = index;
+  return requestProfile({kUsbControlGetProfile, index}, outProfile);
+}
 
+bool CdcTransport::getActiveProfile(uint8_t &outIndex, DeviceProfile &outProfile)
+{
+  if (!ensureOpen()) {
+    return false;
+  }
+
+  // without an index the firmware answers with the active profile, its slot set to its index
+  if (!requestProfile({kUsbControlGetProfile}, outProfile)) {
+    return false;
+  }
+  if (m_deviceConfig.totalProfiles > 0 && outProfile.slot >= m_deviceConfig.totalProfiles) {
+    m_lastError = "Invalid active profile " + std::to_string(outProfile.slot);
+    return false;
+  }
+
+  outIndex = outProfile.slot;
+  m_deviceConfig.activeProfile = outIndex;
+  return true;
+}
+
+bool CdcTransport::requestProfile(const std::vector<uint8_t> &payload, DeviceProfile &outProfile)
+{
   if (!sendUsbFrame(kUsbFrameTypeControl, 0, payload)) {
     LOG_ERR("CDC: Failed to send getProfile command");
     return false;
   }
 
+  // a bare success is the late reply to an earlier command, such as a switch whose wait timed
+  // out, never this one's: wait on for this one's
+  const auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(kConfigCommandTimeoutMs);
   std::vector<uint8_t> response;
-  if (!waitForControlMessage(kUsbControlAck, response, kConfigCommandTimeoutMs)) {
-    LOG_ERR("CDC: Timeout waiting for getProfile response");
-    return false;
-  }
+  do {
+    const auto left =
+        std::chrono::duration_cast<std::chrono::milliseconds>(deadline - std::chrono::steady_clock::now()).count();
+    if (left <= 0 || !waitForControlMessage(kUsbControlAck, response, static_cast<int>(left))) {
+      LOG_ERR("CDC: Timeout waiting for getProfile response");
+      return false;
+    }
+  } while (response.size() == 1 && response[0] == 0);
 
   // Response: [Status(1), ProfileData(52)]
   if (response.size() < 1 + sizeof(DeviceProfile)) {

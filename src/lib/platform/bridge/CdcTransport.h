@@ -185,6 +185,14 @@ public:
   virtual bool getProfile(uint8_t index, DeviceProfile &outProfile);
 
   /**
+   * @brief Get the profile that is active on the device now (deviceConfig().activeProfile follows it)
+   * @param outIndex Its index, as the device reports it
+   * @param outProfile Output profile data
+   * @return true if successful
+   */
+  bool getActiveProfile(uint8_t &outIndex, DeviceProfile &outProfile);
+
+  /**
    * @brief Set a profile on the device
    * @param index Profile index
    * @param profile Profile data to set
@@ -253,6 +261,7 @@ private:
   bool sendUsbFrame(uint8_t type, uint8_t flags, const std::vector<uint8_t> &payload);
   bool waitForConfigResponse(uint8_t &msgType, uint8_t &status, std::vector<uint8_t> &payload, int timeoutMs);
   bool waitForControlMessage(uint8_t controlId, std::vector<uint8_t> &payload, int timeoutMs);
+  bool requestProfile(const std::vector<uint8_t> &payload, DeviceProfile &outProfile);
   bool writeAll(const uint8_t *data, size_t length);
   bool readFrame(uint8_t &type, uint8_t &flags, std::vector<uint8_t> &payload, int timeoutMs);
   void resetState();

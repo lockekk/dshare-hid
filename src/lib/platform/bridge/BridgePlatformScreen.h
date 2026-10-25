@@ -131,6 +131,8 @@ private:
   void handleRequests();
   // take on the active profile's screen size and scroll settings after a request changed it
   void applyActiveProfile();
+  // the same, read from the device; true if the screen size changed
+  bool loadActiveProfile();
   void applyScrollSettings(uint8_t index, const DeviceProfile &profile);
 
   std::shared_ptr<CdcTransport> m_transport;
