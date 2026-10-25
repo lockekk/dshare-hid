@@ -9,6 +9,19 @@ create_test(
   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/platform"
 )
 
+# the active profile as the device reports it (platform/bridge/CdcTransport.h), and the bridge
+# screen's size that follows it (platform/bridge/BridgePlatformScreen.h), against a fake dongle
+# on a pseudo-terminal
+if(UNIX)
+  create_test(
+    NAME BridgeActiveProfileTests
+    DEPENDS platform
+    LIBS base arch
+    SOURCE BridgeActiveProfileTests.cpp
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/platform"
+  )
+endif()
+
 if(WIN32)
   set(server_extra_libs version app mt net)
 endif()
