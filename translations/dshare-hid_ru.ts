@@ -43,7 +43,19 @@ p, li { white-space: pre-wrap; }
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;https://github.com/lockekk/dshare-hid&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#508ed8;&quot;&gt;Code Contributors&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;https://github.com/lockekk/dshare-hid&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#508ed8;&quot;&gt;Участники разработки&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>Forked from &lt;a href=&apos;https://github.com/deskflow/deskflow&apos;&gt;Deskflow&lt;/a&gt;. We gratefully acknowledge their work and thank the original contributors.</source>
+        <translation>Форк проекта &lt;a href=&apos;https://github.com/deskflow/deskflow&apos;&gt;Deskflow&lt;/a&gt;. Мы с благодарностью отмечаем их труд и благодарим участников оригинального проекта.</translation>
+    </message>
+    <message>
+        <source>Support: %1</source>
+        <translation>Поддержка: %1</translation>
     </message>
 </context>
 <context>
@@ -137,78 +149,78 @@ p, li { white-space: pre-wrap; }
     <name>BridgeFirmwareNotice</name>
     <message>
         <source>Pairings were reset. On each host, forget &quot;%1&quot; and pair again with its profile active.</source>
-        <translation type="unfinished"></translation>
+        <translation>Сопряжения сброшены. На каждом хост-устройстве забудьте &quot;%1&quot; и выполните сопряжение заново, когда активен профиль этого хоста.</translation>
     </message>
 </context>
 <context>
     <name>BridgeProfileBackup</name>
     <message>
         <source>%1: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1: %2</translation>
     </message>
     <message>
         <source>&quot;%1&quot; is missing.</source>
-        <translation type="unfinished"></translation>
+        <translation>Поле &quot;%1&quot; отсутствует.</translation>
     </message>
     <message>
         <source>&quot;%1&quot; must be a whole number from %2 to %3.</source>
-        <translation type="unfinished"></translation>
+        <translation>Поле &quot;%1&quot; должно быть целым числом от %2 до %3.</translation>
     </message>
     <message>
         <source>Entry %1 of &quot;profiles&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Запись %1 в &quot;profiles&quot;</translation>
     </message>
     <message>
         <source>%1 isn&apos;t a profile.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 не является профилем.</translation>
     </message>
     <message>
         <source>Profile %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Профиль %1</translation>
     </message>
     <message>
         <source>Profile %1 is in the backup more than once.</source>
-        <translation type="unfinished"></translation>
+        <translation>Профиль %1 встречается в резервной копии более одного раза.</translation>
     </message>
     <message>
         <source>&quot;%1&quot; must be %2, the profile&apos;s index.</source>
-        <translation type="unfinished"></translation>
+        <translation>Поле &quot;%1&quot; должно быть равно %2 (индексу профиля).</translation>
     </message>
     <message>
         <source>the hostname must be 1 to 31 characters: A-Z, 0-9, spaces and .-_ (not only spaces).</source>
-        <translation type="unfinished"></translation>
+        <translation>имя хоста должно содержать от 1 до 31 символа: A-Z, 0-9, пробелы и .-_ (не только пробелы).</translation>
     </message>
     <message>
         <source>The file is too large to be a profile backup.</source>
-        <translation type="unfinished"></translation>
+        <translation>Файл слишком велик для резервной копии профилей.</translation>
     </message>
     <message>
         <source>The file isn&apos;t valid JSON: %1 (at character %2).</source>
-        <translation type="unfinished"></translation>
+        <translation>Файл не является корректным JSON: %1 (символ %2).</translation>
     </message>
     <message>
         <source>The file isn&apos;t a profile backup: it has no &quot;%1&quot;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Файл не является резервной копией профилей: в нём нет &quot;%1&quot;.</translation>
     </message>
     <message>
         <source>The device name must be 1 to 22 characters: A-Z, 0-9, spaces and .-_ (not only spaces).</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя устройства должно содержать от 1 до 22 символов: A-Z, 0-9, пробелы и .-_ (не только пробелы).</translation>
     </message>
     <message>
         <source>&quot;%1&quot; must be a list.</source>
-        <translation type="unfinished"></translation>
+        <translation>Поле &quot;%1&quot; должно быть списком.</translation>
     </message>
     <message>
         <source>The backup has no profiles.</source>
-        <translation type="unfinished"></translation>
+        <translation>В резервной копии нет профилей.</translation>
     </message>
     <message>
         <source>This device has no profile %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>На этом устройстве нет профиля %1.</translation>
     </message>
     <message>
         <source>This device has no profile %1 to make active.</source>
-        <translation type="unfinished"></translation>
+        <translation>На этом устройстве нет профиля %1, который можно сделать активным.</translation>
     </message>
 </context>
 <context>
@@ -513,129 +525,129 @@ File -&gt; Firmware -&gt; Order.</source>
     <name>DeskflowHidExtension</name>
     <message>
         <source>Bridge Client Logs</source>
-        <translation type="unfinished">Логи клиента моста</translation>
+        <translation>Логи клиента моста</translation>
     </message>
     <message>
         <source>ESP32 HID Tools</source>
-        <translation type="unfinished">Инструменты ESP32 HID</translation>
+        <translation>Инструменты ESP32 HID</translation>
     </message>
     <message>
         <source>Ready</source>
-        <translation type="unfinished">Готово</translation>
+        <translation>Готово</translation>
     </message>
     <message>
         <source>Feature Unavailable</source>
-        <translation type="unfinished">Функция недоступна</translation>
+        <translation>Функция недоступна</translation>
     </message>
     <message>
         <source>The ESP32 HID Tools module is not available in this build.</source>
-        <translation type="unfinished">Модуль инструментов ESP32 HID недоступен в этой сборке.</translation>
+        <translation>Модуль инструментов ESP32 HID недоступен в этой сборке.</translation>
     </message>
     <message>
         <source>Unknown Device</source>
-        <translation type="unfinished">Неизвестное устройство</translation>
+        <translation>Неизвестное устройство</translation>
     </message>
     <message>
         <source>Bridge client device plugged in: %1</source>
-        <translation type="unfinished">Подключено устройство клиента моста: %1</translation>
+        <translation>Подключено устройство клиента моста: %1</translation>
     </message>
     <message>
         <source>Bridge client device unplugged: %1</source>
-        <translation type="unfinished">Отключено устройство клиента моста: %1</translation>
+        <translation>Отключено устройство клиента моста: %1</translation>
     </message>
     <message>
         <source>Error: No configuration found for device: %1</source>
-        <translation type="unfinished">Ошибка: Конфигурация для устройства не найдена: %1</translation>
+        <translation>Ошибка: Конфигурация для устройства не найдена: %1</translation>
     </message>
     <message>
         <source>Error: Cannot connect. Device path is empty.</source>
-        <translation type="unfinished">Ошибка: Невозможно подключиться. Путь к устройству пуст.</translation>
+        <translation>Ошибка: Невозможно подключиться. Путь к устройству пуст.</translation>
     </message>
     <message>
         <source>Already connected via another profile</source>
-        <translation type="unfinished">Уже подключено через другой профиль</translation>
+        <translation>Уже подключено через другой профиль</translation>
     </message>
     <message>
         <source>Activation Required</source>
-        <translation type="unfinished">Требуется активация</translation>
+        <translation>Требуется активация</translation>
     </message>
     <message>
         <source>Free trial is expired. Please consider purchasing a license via 
 File -&gt; Firmware -&gt; Order.</source>
-        <translation type="unfinished">Истекла бесплатная пробная версия. Пожалуйста, рассмотрите покупку лицензии через 
+        <translation>Срок бесплатной пробной версии истёк. Пожалуйста, рассмотрите покупку лицензии через 
 Файл -&gt; Прошивка -&gt; Заказ.</translation>
     </message>
     <message>
         <source>Starting bridge client: %1</source>
-        <translation type="unfinished">Запуск клиента моста: %1</translation>
+        <translation>Запуск клиента моста: %1</translation>
     </message>
     <message>
         <source>Failed to start bridge client: %1</source>
-        <translation type="unfinished">Не удалось запустить клиент моста: %1</translation>
+        <translation>Не удалось запустить клиент моста: %1</translation>
     </message>
     <message>
         <source>Failed to switch profile on %1: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось переключить профиль для %1: %2</translation>
     </message>
     <message>
         <source>Several bridge clients are connected: move the cursor onto the one to switch</source>
-        <translation type="unfinished"></translation>
+        <translation>Подключено несколько клиентов моста: наведите курсор на тот, который нужно переключить</translation>
     </message>
     <message>
         <source>%1 has no profile %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1: нет профиля %2</translation>
     </message>
     <message>
         <source>Bridge Profile Shortcuts</source>
-        <translation type="unfinished"></translation>
+        <translation>Горячие клавиши профилей моста</translation>
     </message>
     <message>
         <source>Off</source>
-        <translation type="unfinished"></translation>
+        <translation>Выключено</translation>
     </message>
     <message>
         <source>Failed to rename the device to %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось переименовать устройство в %1</translation>
     </message>
     <message>
         <source>Factory firmware detected. Please update firmware.</source>
-        <translation type="unfinished">Обнаружена заводская прошивка. Пожалуйста, обновите прошивку.</translation>
+        <translation>Обнаружена заводская прошивка. Пожалуйста, обновите прошивку.</translation>
     </message>
     <message>
         <source>Factory firmware detected on %1. Auto-connect disabled.</source>
-        <translation type="unfinished">Обнаружена заводская прошивка на %1. Автоматическое подключение отключено.</translation>
+        <translation>Обнаружена заводская прошивка на %1. Автоматическое подключение отключено.</translation>
     </message>
     <message>
         <source>Device handshake failed. Possibly not a DShare-HID firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка рукопожатия с устройством. Возможно, это не прошивка DShare-HID.</translation>
     </message>
     <message>
         <source>Handshake failed on %1. Auto-connect disabled.</source>
-        <translation type="unfinished">Ошибка рукопожатия на %1. Автоматическое подключение отключено.</translation>
+        <translation>Ошибка рукопожатия на %1. Автоматическое подключение отключено.</translation>
     </message>
     <message>
         <source>Device disconnected.</source>
-        <translation type="unfinished">Устройство отключено.</translation>
+        <translation>Устройство отключено.</translation>
     </message>
     <message>
         <source>Server is down. Auto-connect will resume once the server starts.</source>
-        <translation type="unfinished">Сервер недоступен. Автоматическое подключение возобновится после запуска сервера.</translation>
+        <translation>Сервер недоступен. Автоматическое подключение возобновится после запуска сервера.</translation>
     </message>
     <message>
         <source>Connection failed. Retrying auto-connect (%1/3)...</source>
-        <translation type="unfinished">Ошибка подключения. Повторная попытка автоматического подключения (%1/3)...</translation>
+        <translation>Ошибка подключения. Повторная попытка автоматического подключения (%1/3)...</translation>
     </message>
     <message>
         <source>Auto-connect failed. Giving up after 3 attempts.</source>
-        <translation type="unfinished">Ошибка автоматического подключения. Отмена после 3 попыток.</translation>
+        <translation>Ошибка автоматического подключения. Отмена после 3 попыток.</translation>
     </message>
     <message>
         <source>Locked</source>
-        <translation type="unfinished">Заблокировано</translation>
+        <translation>Заблокировано</translation>
     </message>
     <message>
         <source>Locked by %1</source>
-        <translation type="unfinished">Заблокировано %1</translation>
+        <translation>Заблокировано: %1</translation>
     </message>
 </context>
 <context>
@@ -1797,7 +1809,12 @@ Do you want to delete its configuration file as well?
 
 If you choose &apos;Yes&apos;, the bridge client widget will be removed from the main window.
 If you choose &apos;No&apos;, the bridge client configuration will be kept and can still be used.</source>
-        <translation type="unfinished"></translation>
+        <translation>Экран &apos;%1&apos; является клиентом моста.
+
+Удалить также его файл конфигурации?
+
+Если выбрать &apos;Да&apos;, виджет клиента моста будет удалён из главного окна.
+Если выбрать &apos;Нет&apos;, конфигурация клиента моста будет сохранена и её можно будет использовать дальше.</translation>
     </message>
     <message>
         <source>Deletion Failed</source>
@@ -2229,7 +2246,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Disconnect to rename the screen.</source>
-        <translation type="unfinished"></translation>
+        <translation>Отключитесь, чтобы переименовать экран.</translation>
     </message>
     <message>
         <source>Switched to %1</source>
@@ -2237,27 +2254,27 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Failed to read the profiles: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось прочитать профили: %1</translation>
     </message>
     <message>
         <source>Profile backups (*.json)</source>
-        <translation type="unfinished"></translation>
+        <translation>Резервные копии профилей (*.json)</translation>
     </message>
     <message>
         <source>Failed to save %1: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось сохранить %1: %2</translation>
     </message>
     <message>
         <source>Restore Profiles</source>
-        <translation type="unfinished"></translation>
+        <translation>Восстановление профилей</translation>
     </message>
     <message>
         <source>Profile backups (*.json);;All files (*)</source>
-        <translation type="unfinished"></translation>
+        <translation>Резервные копии профилей (*.json);;Все файлы (*)</translation>
     </message>
     <message>
         <source>Failed to open %1: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось открыть %1: %2</translation>
     </message>
     <message>
         <source>Rename Failed</source>
@@ -2273,31 +2290,31 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>and %1 more</source>
-        <translation type="unfinished"></translation>
+        <translation>и ещё %1</translation>
     </message>
     <message>
         <source>Reset %1. Its host must pair again manually.</source>
-        <translation type="unfinished"></translation>
+        <translation>Сбросить профиль %1. Его хост-устройство придётся заново сопрячь вручную.</translation>
     </message>
     <message>
         <source>Save %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить: %1.</translation>
     </message>
     <message>
         <source>Active profile changes to %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>Активный профиль изменится на %1.</translation>
     </message>
     <message>
         <source>Device name changes to %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя устройства изменится на %1.</translation>
     </message>
     <message>
         <source>Apply Changes</source>
-        <translation type="unfinished"></translation>
+        <translation>Применить изменения</translation>
     </message>
     <message>
         <source>Apply these changes to the device?</source>
-        <translation type="unfinished"></translation>
+        <translation>Применить эти изменения к устройству?</translation>
     </message>
     <message>
         <source>Screen name cannot be empty.</source>
@@ -2305,7 +2322,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Screen name can only contain letters, numbers, &apos;-&apos;, &apos;_&apos; and &apos;.&apos;, and cannot start or end with &apos;-&apos;, &apos;_&apos; or &apos;.&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя экрана может содержать только буквы, цифры, &apos;-&apos;, &apos;_&apos; и &apos;.&apos; и не может начинаться или заканчиваться на &apos;-&apos;, &apos;_&apos; или &apos;.&apos;.</translation>
     </message>
     <message>
         <source>Device name cannot be empty.</source>
@@ -2345,7 +2362,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Automatically restore screen location for the active profile</source>
-        <translation type="unfinished"></translation>
+        <translation>Автоматически восстанавливать расположение экрана для активного профиля</translation>
     </message>
     <message>
         <source>Profiles (Device)</source>
@@ -2353,7 +2370,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Restore...</source>
-        <translation type="unfinished"></translation>
+        <translation>Восстановить...</translation>
     </message>
     <message>
         <source>A-Z, 0-9, spaces, .-_ (max 31 chars)</source>
@@ -2393,23 +2410,23 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>When enabled, the saved screen location for the active profile will be restored automatically.</source>
-        <translation type="unfinished"></translation>
+        <translation>Если включено, сохранённое расположение экрана для активного профиля будет восстанавливаться автоматически.</translation>
     </message>
     <message>
         <source>Backup...</source>
-        <translation type="unfinished"></translation>
+        <translation>Резервная копия...</translation>
     </message>
     <message>
         <source>Save the device&apos;s profiles to a file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить профили устройства в файл.</translation>
     </message>
     <message>
         <source>Load profiles from a backup file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Загрузить профили из файла резервной копии.</translation>
     </message>
     <message>
         <source>Vertical Scroll Scale:</source>
-        <translation type="unfinished"></translation>
+        <translation>Масштаб вертикальной прокрутки:</translation>
     </message>
     <message>
         <source>Device must be activated to change its name.</source>
@@ -2457,31 +2474,31 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Backup Profiles</source>
-        <translation type="unfinished"></translation>
+        <translation>Резервное копирование профилей</translation>
     </message>
     <message>
         <source>This device has no profiles to backup.</source>
-        <translation type="unfinished"></translation>
+        <translation>На этом устройстве нет профилей для резервного копирования.</translation>
     </message>
     <message>
         <source>Please fix these profiles first:</source>
-        <translation type="unfinished"></translation>
+        <translation>Пожалуйста, сначала исправьте эти профили:</translation>
     </message>
     <message>
         <source>Failed to update the device: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось применить изменения на устройстве: %1</translation>
     </message>
     <message>
         <source>Backup saved to:</source>
-        <translation type="unfinished"></translation>
+        <translation>Резервная копия сохранена в:</translation>
     </message>
     <message>
         <source>This file can&apos;t be restored:</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удаётся восстановить профили из этого файла:</translation>
     </message>
     <message>
         <source>Backup loaded. Click OK to apply.</source>
-        <translation type="unfinished"></translation>
+        <translation>Резервная копия загружена. Нажмите OK, чтобы применить изменения.</translation>
     </message>
     <message>
         <source>Duplicate Configuration</source>
@@ -2501,31 +2518,35 @@ Duplicate: %1</source>
         <source>Scroll speed:</source>
         <translation type="vanished">Скорость прокрутки:</translation>
     </message>
+    <message>
+        <source>%1 (Active)</source>
+        <translation>%1 (Активный)</translation>
+    </message>
 </context>
 <context>
     <name>deskflow::gui::BridgeClientManager</name>
     <message>
         <source>&lt;br&gt;Device plugged in</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;br&gt;Устройство подключено</translation>
     </message>
 </context>
 <context>
     <name>deskflow::gui::BridgeClientProcess</name>
     <message>
         <source>the bridge client isn&apos;t running</source>
-        <translation type="unfinished"></translation>
+        <translation>клиент моста не запущен</translation>
     </message>
     <message>
         <source>the bridge client isn&apos;t answering</source>
-        <translation type="unfinished"></translation>
+        <translation>клиент моста не отвечает</translation>
     </message>
     <message>
         <source>the bridge client didn&apos;t answer</source>
-        <translation type="unfinished"></translation>
+        <translation>клиент моста не ответил</translation>
     </message>
     <message>
         <source>the bridge client stopped</source>
-        <translation type="unfinished"></translation>
+        <translation>клиент моста завершил работу</translation>
     </message>
 </context>
 <context>
@@ -2552,7 +2573,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>unknown</source>
-        <translation>неизвестно</translation>
+        <translation type="vanished">неизвестно</translation>
     </message>
     <message>
         <source>Disconnect</source>
@@ -2560,11 +2581,11 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Active profile: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Активный профиль: %1</translation>
     </message>
     <message>
         <source>Switch to profile: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Переключиться на профиль: %1</translation>
     </message>
     <message>
         <source>Device not connected</source>
@@ -2594,6 +2615,22 @@ Duplicate: %1</source>
         <source>Portrait</source>
         <translation>Портретная</translation>
     </message>
+    <message>
+        <source>Unknown</source>
+        <translation>Неизвестно</translation>
+    </message>
+    <message>
+        <source>Activated</source>
+        <translation>Активировано</translation>
+    </message>
+    <message>
+        <source>Free Trial</source>
+        <translation>Пробная версия</translation>
+    </message>
+    <message>
+        <source>Unlicensed</source>
+        <translation>Без лицензии</translation>
+    </message>
 </context>
 <context>
     <name>deskflow::gui::BridgeDeviceService</name>
@@ -2603,27 +2640,27 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>the firmware tool is using the device</source>
-        <translation type="unfinished"></translation>
+        <translation>устройство используется инструментом прошивки</translation>
     </message>
     <message>
         <source>failed to write profile %1: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>не удалось записать профиль %1: %2</translation>
     </message>
     <message>
         <source>profile %1 didn&apos;t read back as it was written</source>
-        <translation type="unfinished"></translation>
+        <translation>профиль %1 при обратном чтении не совпал с записанным</translation>
     </message>
     <message>
         <source>failed to make profile %1 active: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>не удалось сделать профиль %1 активным: %2</translation>
     </message>
     <message>
         <source>the device didn&apos;t make profile %1 active</source>
-        <translation type="unfinished"></translation>
+        <translation>устройство не сделало профиль %1 активным</translation>
     </message>
     <message>
         <source>the device sent an invalid profile list</source>
-        <translation type="unfinished"></translation>
+        <translation>устройство прислало недопустимый список профилей</translation>
     </message>
 </context>
 <context>
@@ -2726,79 +2763,79 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Setting up a new dongle with %1 (%2 KB).</source>
-        <translation type="unfinished"></translation>
+        <translation>Настройка нового донгла из файла %1 (%2 КБ).</translation>
     </message>
     <message>
         <source>Setting up a new dongle with the latest firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>Настройка нового донгла с последней версией прошивки.</translation>
     </message>
     <message>
         <source>The setup firmware is not available for download yet. Please try again later.</source>
-        <translation type="unfinished"></translation>
+        <translation>Прошивка для настройки пока недоступна для загрузки. Пожалуйста, повторите попытку позже.</translation>
     </message>
     <message>
         <source>Could not reach the download server. Check your internet connection and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось связаться с сервером загрузки. Проверьте интернет-соединение и повторите попытку.</translation>
     </message>
     <message>
         <source>Downloaded (%1 KB).</source>
-        <translation type="unfinished"></translation>
+        <translation>Загружено (%1 КБ).</translation>
     </message>
     <message>
         <source>Set Up New Dongle</source>
-        <translation type="unfinished"></translation>
+        <translation>Настройка нового донгла</translation>
     </message>
     <message>
         <source>Checking the dongle on %1...</source>
-        <translation type="unfinished"></translation>
+        <translation>Проверка донгла на %1...</translation>
     </message>
     <message>
         <source>Dongle found: firmware %1, %2, serial %3.</source>
-        <translation type="unfinished"></translation>
+        <translation>Донгл найден: прошивка %1, %2, серийный номер %3.</translation>
     </message>
     <message>
         <source>Dongle found in update mode.</source>
-        <translation type="unfinished"></translation>
+        <translation>Донгл найден в режиме обновления.</translation>
     </message>
     <message>
         <source>Dongle found in update mode, without application firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>Донгл найден в режиме обновления, без прошивки приложения.</translation>
     </message>
     <message>
         <source>No DShare-HID firmware found on the dongle.</source>
-        <translation type="unfinished"></translation>
+        <translation>На донгле не найдена прошивка DShare-HID.</translation>
     </message>
     <message>
         <source>This dongle is already set up, but its last update did not finish. Use the Upgrade tab to install the firmware again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Этот донгл уже настроен, но его последнее обновление не завершилось. Используйте вкладку &apos;Обновление&apos;, чтобы установить прошивку заново.</translation>
     </message>
     <message>
         <source>This dongle is already set up. Use the Upgrade tab to update its firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>Этот донгл уже настроен. Для обновления его прошивки используйте вкладку &apos;Обновление&apos;.</translation>
     </message>
     <message>
         <source>Already Set Up</source>
-        <translation type="unfinished"></translation>
+        <translation>Уже настроен</translation>
     </message>
     <message>
         <source>Writing the firmware...</source>
-        <translation type="unfinished"></translation>
+        <translation>Запись прошивки...</translation>
     </message>
     <message>
         <source>Firmware written. Restarting the dongle...</source>
-        <translation type="unfinished"></translation>
+        <translation>Прошивка записана. Перезапуск донгла...</translation>
     </message>
     <message>
         <source>Flash failed, %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Прошивка не удалась, %1</translation>
     </message>
     <message>
         <source>Downloading %1...</source>
-        <translation type="unfinished"></translation>
+        <translation>Загрузка %1...</translation>
     </message>
     <message>
         <source>Failed to find upgrade firmware in the latest release.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось найти прошивку обновления в последнем выпуске.</translation>
     </message>
     <message>
         <source>Free trial for 7 days</source>
@@ -2814,7 +2851,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Already licensed, but want bump profiles</source>
-        <translation>Уже есть лицензия, но хочу увеличить количество профилей</translation>
+        <translation type="vanished">Уже есть лицензия, но хочу увеличить количество профилей</translation>
     </message>
     <message>
         <source>Payments</source>
@@ -2874,23 +2911,23 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>I will arrange payment via email</source>
-        <translation type="unfinished"></translation>
+        <translation>Я договорюсь об оплате по электронной почте</translation>
     </message>
     <message>
         <source>Installs DShare-HID firmware on a new dongle. You only need to do this once; after that, use the Upgrade tab for updates.</source>
-        <translation type="unfinished"></translation>
+        <translation>Устанавливает прошивку DShare-HID на новый донгл. Это нужно сделать только один раз; после этого для обновлений используйте вкладку &apos;Обновление&apos;.</translation>
     </message>
     <message>
         <source>New Dongle Setup</source>
-        <translation type="unfinished"></translation>
+        <translation>Настройка нового донгла</translation>
     </message>
     <message>
         <source>Upgrade</source>
-        <translation type="unfinished"></translation>
+        <translation>Обновление</translation>
     </message>
     <message>
         <source>Not required for manual payment</source>
-        <translation type="unfinished"></translation>
+        <translation>Не требуется при ручной оплате</translation>
     </message>
     <message>
         <source>Email</source>
@@ -2942,7 +2979,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>No Application Firmware</source>
-        <translation type="unfinished"></translation>
+        <translation>Нет прошивки приложения</translation>
     </message>
     <message>
         <source>Device is already running with factory firmware.</source>
@@ -3206,39 +3243,47 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Selected factory firmware: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Выбрана заводская прошивка: %1</translation>
     </message>
     <message>
         <source>Selected upgrade firmware: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Выбрана прошивка обновления: %1</translation>
     </message>
     <message>
         <source>Firmware flashed successfully.
 
 The device is running a 7-day free trial. After the trial expires, use the Activation tab to activate with a license key.</source>
-        <translation type="unfinished"></translation>
+        <translation>Прошивка успешно установлена.
+
+На устройстве действует 7-дневная бесплатная пробная версия. После её окончания активируйте устройство ключом лицензии на вкладке &apos;Активация&apos;.</translation>
     </message>
     <message>
         <source>Firmware flashed successfully.
 
 The device is running the application firmware. Check its license on the Activation tab.</source>
-        <translation type="unfinished"></translation>
+        <translation>Прошивка успешно установлена.
+
+Устройство работает с прошивкой приложения. Проверьте его лицензию на вкладке &apos;Активация&apos;.</translation>
     </message>
     <message>
         <source>Device Not Detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройство не обнаружено</translation>
     </message>
     <message>
         <source>The firmware was written, but the device did not start the application within 60 seconds.
 
 Disconnect and reconnect the device, then check its status on the Activation tab.</source>
-        <translation type="unfinished"></translation>
+        <translation>Прошивка записана, но устройство не запустило приложение в течение 60 секунд.
+
+Отключите и снова подключите устройство, затем проверьте его состояние на вкладке &apos;Активация&apos;.</translation>
     </message>
     <message>
         <source>The device is in factory mode without application firmware.
 
 Install it from the Upgrade tab (Check for Updates, then Flash). If that fails, contact %1 with the device serial number.</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройство находится в заводском режиме без прошивки приложения.
+
+Установите её на вкладке &apos;Обновление&apos; (&apos;Проверить обновления&apos;, затем &apos;Прошить&apos;). Если это не поможет, напишите на %1, указав серийный номер устройства.</translation>
     </message>
     <message>
         <source>Found upgrade firmware: %1</source>
@@ -3374,83 +3419,83 @@ Install it from the Upgrade tab (Check for Updates, then Flash). If that fails, 
     </message>
     <message>
         <source>Set up this dongle? This is permanent.</source>
-        <translation type="unfinished"></translation>
+        <translation>Настроить этот донгл? Это действие необратимо.</translation>
     </message>
     <message>
         <source>Waiting for the dongle to start...</source>
-        <translation type="unfinished"></translation>
+        <translation>Ожидание запуска донгла...</translation>
     </message>
     <message>
         <source>Dongle ready: firmware %1, %2.</source>
-        <translation type="unfinished"></translation>
+        <translation>Донгл готов: прошивка %1, %2.</translation>
     </message>
     <message>
         <source>The dongle stayed in update mode, without application firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>Донгл остался в режиме обновления без прошивки приложения.</translation>
     </message>
     <message>
         <source>The dongle did not report back within 60 seconds.</source>
-        <translation type="unfinished"></translation>
+        <translation>Донгл не ответил в течение 60 секунд.</translation>
     </message>
     <message>
         <source>Lost the connection to the dongle. Reconnect it and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Потеряно соединение с донглом. Переподключите его и повторите попытку.</translation>
     </message>
     <message>
         <source>Could not connect to the dongle. Hold the Boot button while you plug it in, then try again. If it was set up before, use the Upgrade tab instead.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось подключиться к донглу. Удерживайте кнопку &apos;Boot&apos; при подключении донгла, затем повторите попытку. Если донгл уже был настроен ранее, используйте вместо этого вкладку &apos;Обновление&apos;.</translation>
     </message>
     <message>
         <source>Could not connect to the dongle. Reconnect it and try again. If it was set up before, use the Upgrade tab instead.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось подключиться к донглу. Переподключите его и повторите попытку. Если донгл уже был настроен ранее, используйте вместо этого вкладку &apos;Обновление&apos;.</translation>
     </message>
     <message>
         <source>The dongle did not accept this firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>Донгл не принял эту прошивку.</translation>
     </message>
     <message>
         <source>This is not a valid firmware file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Это недопустимый файл прошивки.</translation>
     </message>
     <message>
         <source>Writing the firmware failed. Reconnect the dongle and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось записать прошивку. Переподключите донгл и повторите попытку.</translation>
     </message>
     <message>
         <source>Not Set Up</source>
-        <translation type="unfinished"></translation>
+        <translation>Не настроен</translation>
     </message>
     <message>
         <source>This dongle is not set up yet. Use the New Dongle Setup tab first.</source>
-        <translation type="unfinished"></translation>
+        <translation>Этот донгл ещё не настроен. Сначала воспользуйтесь вкладкой &apos;Настройка нового донгла&apos;.</translation>
     </message>
     <message>
         <source>Could not open the port. Reconnect the dongle and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось открыть порт. Переподключите донгл и повторите попытку.</translation>
     </message>
     <message>
         <source>The last update did not finish. The firmware will be installed again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Последнее обновление не завершилось. Прошивка будет установлена заново.</translation>
     </message>
     <message>
         <source>Preparing the dongle for the update...</source>
-        <translation type="unfinished"></translation>
+        <translation>Подготовка донгла к обновлению...</translation>
     </message>
     <message>
         <source>The dongle could not switch to update mode. Reconnect it and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Донгл не смог перейти в режим обновления. Переподключите его и повторите попытку.</translation>
     </message>
     <message>
         <source>Sending the firmware...</source>
-        <translation type="unfinished"></translation>
+        <translation>Отправка прошивки...</translation>
     </message>
     <message>
         <source>If this keeps failing, contact %1 with the dongle&apos;s serial number.</source>
-        <translation type="unfinished"></translation>
+        <translation>Если ошибка повторяется, напишите на %1, указав серийный номер донгла.</translation>
     </message>
     <message>
         <source>Firmware accepted. Restarting the dongle...</source>
-        <translation type="unfinished"></translation>
+        <translation>Прошивка принята. Перезапуск донгла...</translation>
     </message>
     <message>
         <source>State: %1, %2 Profiles</source>
@@ -3458,7 +3503,7 @@ Install it from the Upgrade tab (Check for Updates, then Flash). If that fails, 
     </message>
     <message>
         <source>Device State Refreshed. Serial: %1, Mode: Factory</source>
-        <translation type="unfinished"></translation>
+        <translation>Состояние устройства обновлено. Серийный номер: %1, Режим: Заводской</translation>
     </message>
     <message>
         <source>Failed to refresh state: %1</source>
@@ -3522,7 +3567,31 @@ Install it from the Upgrade tab (Check for Updates, then Flash). If that fails, 
     </message>
     <message>
         <source>This dongle is already set up.</source>
-        <translation type="unfinished"></translation>
+        <translation>Этот донгл уже настроен.</translation>
+    </message>
+    <message>
+        <source>Unknown</source>
+        <translation>Неизвестно</translation>
+    </message>
+    <message>
+        <source>License($%1) + %2 Profiles(%3)</source>
+        <translation>Лицензия ($%1) + профилей: %2 (%3)</translation>
+    </message>
+    <message>
+        <source>%1 - Combo Discount($%2)</source>
+        <translation>%1 - Скидка за комплект ($%2)</translation>
+    </message>
+    <message>
+        <source>Upgrade profiles to %1 (%2)</source>
+        <translation>Увеличение количества профилей до %1 (%2)</translation>
+    </message>
+    <message>
+        <source>Select an option</source>
+        <translation>Выберите вариант</translation>
+    </message>
+    <message>
+        <source>Payment Details: %1 = Total $%2 USD</source>
+        <translation>Детали платежа: %1 = Итого $%2 USD</translation>
     </message>
 </context>
 <context>

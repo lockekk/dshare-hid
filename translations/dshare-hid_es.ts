@@ -9,7 +9,7 @@
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;https://www.gnu.org/licenses/old-licenses/gpl-2.0.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#508ed8;&quot;&gt;License: GNU GPL Version 2&lt;/a&gt;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
@@ -41,7 +41,19 @@ p, li { white-space: pre-wrap; }
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;https://github.com/lockekk/dshare-hid&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#508ed8;&quot;&gt;Code Contributors&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;https://github.com/lockekk/dshare-hid&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#508ed8;&quot;&gt;Colaboradores del código&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>Forked from &lt;a href=&apos;https://github.com/deskflow/deskflow&apos;&gt;Deskflow&lt;/a&gt;. We gratefully acknowledge their work and thank the original contributors.</source>
+        <translation>Derivado de &lt;a href=&apos;https://github.com/deskflow/deskflow&apos;&gt;Deskflow&lt;/a&gt;. Reconocemos con gratitud su trabajo y damos las gracias a los colaboradores originales.</translation>
+    </message>
+    <message>
+        <source>Support: %1</source>
+        <translation>Soporte: %1</translation>
     </message>
 </context>
 <context>
@@ -135,78 +147,78 @@ p, li { white-space: pre-wrap; }
     <name>BridgeFirmwareNotice</name>
     <message>
         <source>Pairings were reset. On each host, forget &quot;%1&quot; and pair again with its profile active.</source>
-        <translation type="unfinished"></translation>
+        <translation>Se restablecieron los emparejamientos. En cada host, olvide &quot;%1&quot; y vuelva a emparejarlo con el perfil de ese host activo.</translation>
     </message>
 </context>
 <context>
     <name>BridgeProfileBackup</name>
     <message>
         <source>%1: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1: %2</translation>
     </message>
     <message>
         <source>&quot;%1&quot; is missing.</source>
-        <translation type="unfinished"></translation>
+        <translation>Falta &quot;%1&quot;.</translation>
     </message>
     <message>
         <source>&quot;%1&quot; must be a whole number from %2 to %3.</source>
-        <translation type="unfinished"></translation>
+        <translation>&quot;%1&quot; debe ser un número entero de %2 a %3.</translation>
     </message>
     <message>
         <source>Entry %1 of &quot;profiles&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Entrada %1 de &quot;profiles&quot;</translation>
     </message>
     <message>
         <source>%1 isn&apos;t a profile.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 no es un perfil.</translation>
     </message>
     <message>
         <source>Profile %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Perfil %1</translation>
     </message>
     <message>
         <source>Profile %1 is in the backup more than once.</source>
-        <translation type="unfinished"></translation>
+        <translation>El perfil %1 aparece más de una vez en la copia de seguridad.</translation>
     </message>
     <message>
         <source>&quot;%1&quot; must be %2, the profile&apos;s index.</source>
-        <translation type="unfinished"></translation>
+        <translation>&quot;%1&quot; debe ser %2, el índice del perfil.</translation>
     </message>
     <message>
         <source>the hostname must be 1 to 31 characters: A-Z, 0-9, spaces and .-_ (not only spaces).</source>
-        <translation type="unfinished"></translation>
+        <translation>el nombre de host debe tener de 1 a 31 caracteres: A-Z, 0-9, espacios y .-_ (no solo espacios).</translation>
     </message>
     <message>
         <source>The file is too large to be a profile backup.</source>
-        <translation type="unfinished"></translation>
+        <translation>El archivo es demasiado grande para ser una copia de seguridad de perfiles.</translation>
     </message>
     <message>
         <source>The file isn&apos;t valid JSON: %1 (at character %2).</source>
-        <translation type="unfinished"></translation>
+        <translation>El archivo no es un JSON válido: %1 (en el carácter %2).</translation>
     </message>
     <message>
         <source>The file isn&apos;t a profile backup: it has no &quot;%1&quot;.</source>
-        <translation type="unfinished"></translation>
+        <translation>El archivo no es una copia de seguridad de perfiles: no tiene &quot;%1&quot;.</translation>
     </message>
     <message>
         <source>The device name must be 1 to 22 characters: A-Z, 0-9, spaces and .-_ (not only spaces).</source>
-        <translation type="unfinished"></translation>
+        <translation>El nombre del dispositivo debe tener de 1 a 22 caracteres: A-Z, 0-9, espacios y .-_ (no solo espacios).</translation>
     </message>
     <message>
         <source>&quot;%1&quot; must be a list.</source>
-        <translation type="unfinished"></translation>
+        <translation>&quot;%1&quot; debe ser una lista.</translation>
     </message>
     <message>
         <source>The backup has no profiles.</source>
-        <translation type="unfinished"></translation>
+        <translation>La copia de seguridad no tiene perfiles.</translation>
     </message>
     <message>
         <source>This device has no profile %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>Este dispositivo no tiene el perfil %1.</translation>
     </message>
     <message>
         <source>This device has no profile %1 to make active.</source>
-        <translation type="unfinished"></translation>
+        <translation>Este dispositivo no tiene el perfil %1 para activarlo.</translation>
     </message>
 </context>
 <context>
@@ -511,129 +523,129 @@ Archivo -&gt; Firmware -&gt; Pedido.</translation>
     <name>DeskflowHidExtension</name>
     <message>
         <source>Bridge Client Logs</source>
-        <translation type="unfinished">Registros del cliente puente</translation>
+        <translation>Registros del cliente puente</translation>
     </message>
     <message>
         <source>ESP32 HID Tools</source>
-        <translation type="unfinished">Herramientas HID ESP32</translation>
+        <translation>Herramientas HID ESP32</translation>
     </message>
     <message>
         <source>Ready</source>
-        <translation type="unfinished">Listo</translation>
+        <translation>Listo</translation>
     </message>
     <message>
         <source>Feature Unavailable</source>
-        <translation type="unfinished">Función no disponible</translation>
+        <translation>Función no disponible</translation>
     </message>
     <message>
         <source>The ESP32 HID Tools module is not available in this build.</source>
-        <translation type="unfinished">El módulo de herramientas HID ESP32 no está disponible en esta compilación.</translation>
+        <translation>El módulo de herramientas HID ESP32 no está disponible en esta compilación.</translation>
     </message>
     <message>
         <source>Unknown Device</source>
-        <translation type="unfinished">Dispositivo desconocido</translation>
+        <translation>Dispositivo desconocido</translation>
     </message>
     <message>
         <source>Bridge client device plugged in: %1</source>
-        <translation type="unfinished">Dispositivo cliente puente conectado: %1</translation>
+        <translation>Dispositivo cliente puente conectado: %1</translation>
     </message>
     <message>
         <source>Bridge client device unplugged: %1</source>
-        <translation type="unfinished">Dispositivo cliente puente desconectado: %1</translation>
+        <translation>Dispositivo cliente puente desconectado: %1</translation>
     </message>
     <message>
         <source>Error: No configuration found for device: %1</source>
-        <translation type="unfinished">Error: No se encontró configuración para el dispositivo: %1</translation>
+        <translation>Error: No se encontró configuración para el dispositivo: %1</translation>
     </message>
     <message>
         <source>Error: Cannot connect. Device path is empty.</source>
-        <translation type="unfinished">Error: No se puede conectar. La ruta del dispositivo está vacía.</translation>
+        <translation>Error: No se puede conectar. La ruta del dispositivo está vacía.</translation>
     </message>
     <message>
         <source>Already connected via another profile</source>
-        <translation type="unfinished">Ya está conectado a través de otro perfil</translation>
+        <translation>Ya está conectado a través de otro perfil</translation>
     </message>
     <message>
         <source>Activation Required</source>
-        <translation type="unfinished">Activación requerida</translation>
+        <translation>Activación requerida</translation>
     </message>
     <message>
         <source>Free trial is expired. Please consider purchasing a license via 
 File -&gt; Firmware -&gt; Order.</source>
-        <translation type="unfinished">La prueba gratuita ha expirado. Por favor, considere comprar una licencia a través de 
+        <translation>La prueba gratuita ha expirado. Por favor, considere comprar una licencia a través de 
 Archivo -&gt; Firmware -&gt; Pedido.</translation>
     </message>
     <message>
         <source>Starting bridge client: %1</source>
-        <translation type="unfinished">Iniciando cliente puente: %1</translation>
+        <translation>Iniciando cliente puente: %1</translation>
     </message>
     <message>
         <source>Failed to start bridge client: %1</source>
-        <translation type="unfinished">Error al iniciar el cliente puente: %1</translation>
+        <translation>Error al iniciar el cliente puente: %1</translation>
     </message>
     <message>
         <source>Failed to switch profile on %1: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al cambiar el perfil en %1: %2</translation>
     </message>
     <message>
         <source>Several bridge clients are connected: move the cursor onto the one to switch</source>
-        <translation type="unfinished"></translation>
+        <translation>Hay varios clientes puente conectados: mueva el cursor sobre el que desea cambiar</translation>
     </message>
     <message>
         <source>%1 has no profile %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 no tiene el perfil %2</translation>
     </message>
     <message>
         <source>Bridge Profile Shortcuts</source>
-        <translation type="unfinished"></translation>
+        <translation>Atajos de perfiles puente</translation>
     </message>
     <message>
         <source>Off</source>
-        <translation type="unfinished"></translation>
+        <translation>Desactivado</translation>
     </message>
     <message>
         <source>Failed to rename the device to %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al cambiar el nombre del dispositivo a %1</translation>
     </message>
     <message>
         <source>Factory firmware detected. Please update firmware.</source>
-        <translation type="unfinished">Firmware de fábrica detectado. Por favor, actualice el firmware.</translation>
+        <translation>Firmware de fábrica detectado. Por favor, actualice el firmware.</translation>
     </message>
     <message>
         <source>Factory firmware detected on %1. Auto-connect disabled.</source>
-        <translation type="unfinished">Firmware de fábrica detectado en %1. Conexión automática desactivada.</translation>
+        <translation>Firmware de fábrica detectado en %1. Conexión automática desactivada.</translation>
     </message>
     <message>
         <source>Device handshake failed. Possibly not a DShare-HID firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fallo en la negociación del dispositivo. Posiblemente no sea un firmware de DShare-HID.</translation>
     </message>
     <message>
         <source>Handshake failed on %1. Auto-connect disabled.</source>
-        <translation type="unfinished">Fallo en la negociación en %1. Conexión automática desactivada.</translation>
+        <translation>Fallo en la negociación en %1. Conexión automática desactivada.</translation>
     </message>
     <message>
         <source>Device disconnected.</source>
-        <translation type="unfinished">Dispositivo desconectado.</translation>
+        <translation>Dispositivo desconectado.</translation>
     </message>
     <message>
         <source>Server is down. Auto-connect will resume once the server starts.</source>
-        <translation type="unfinished">El servidor está caído. La conexión automática se reanudará cuando el servidor se inicie.</translation>
+        <translation>El servidor está caído. La conexión automática se reanudará cuando el servidor se inicie.</translation>
     </message>
     <message>
         <source>Connection failed. Retrying auto-connect (%1/3)...</source>
-        <translation type="unfinished">Fallo en la conexión. Reintentando conexión automática (%1/3)...</translation>
+        <translation>Fallo en la conexión. Reintentando conexión automática (%1/3)...</translation>
     </message>
     <message>
         <source>Auto-connect failed. Giving up after 3 attempts.</source>
-        <translation type="unfinished">Fallo en la conexión automática. Desistiendo tras 3 intentos.</translation>
+        <translation>Fallo en la conexión automática. Desistiendo tras 3 intentos.</translation>
     </message>
     <message>
         <source>Locked</source>
-        <translation type="unfinished">Bloqueado</translation>
+        <translation>Bloqueado</translation>
     </message>
     <message>
         <source>Locked by %1</source>
-        <translation type="unfinished">Bloqueado por %1</translation>
+        <translation>Bloqueado por %1</translation>
     </message>
 </context>
 <context>
@@ -1781,7 +1793,12 @@ Do you want to delete its configuration file as well?
 
 If you choose &apos;Yes&apos;, the bridge client widget will be removed from the main window.
 If you choose &apos;No&apos;, the bridge client configuration will be kept and can still be used.</source>
-        <translation type="unfinished"></translation>
+        <translation>La pantalla &apos;%1&apos; es un cliente puente.
+
+¿Desea eliminar también su archivo de configuración?
+
+Si elige &apos;Sí&apos;, el widget del cliente puente se eliminará de la ventana principal.
+Si elige &apos;No&apos;, la configuración del cliente puente se conservará y podrá seguir usándose.</translation>
     </message>
     <message>
         <source>Deletion Failed</source>
@@ -2211,7 +2228,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Disconnect to rename the screen.</source>
-        <translation type="unfinished"></translation>
+        <translation>Desconecte para cambiar el nombre de la pantalla.</translation>
     </message>
     <message>
         <source>Switched to %1</source>
@@ -2219,27 +2236,27 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Failed to read the profiles: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al leer los perfiles: %1</translation>
     </message>
     <message>
         <source>Profile backups (*.json)</source>
-        <translation type="unfinished"></translation>
+        <translation>Copias de seguridad de perfiles (*.json)</translation>
     </message>
     <message>
         <source>Failed to save %1: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al guardar %1: %2</translation>
     </message>
     <message>
         <source>Restore Profiles</source>
-        <translation type="unfinished"></translation>
+        <translation>Restaurar perfiles</translation>
     </message>
     <message>
         <source>Profile backups (*.json);;All files (*)</source>
-        <translation type="unfinished"></translation>
+        <translation>Copias de seguridad de perfiles (*.json);;Todos los archivos (*)</translation>
     </message>
     <message>
         <source>Failed to open %1: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al abrir %1: %2</translation>
     </message>
     <message>
         <source>Rename Failed</source>
@@ -2255,31 +2272,31 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>and %1 more</source>
-        <translation type="unfinished"></translation>
+        <translation>y %1 más</translation>
     </message>
     <message>
         <source>Reset %1. Its host must pair again manually.</source>
-        <translation type="unfinished"></translation>
+        <translation>Restablecer %1. Su host deberá volver a emparejarse manualmente.</translation>
     </message>
     <message>
         <source>Save %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>Guardar %1.</translation>
     </message>
     <message>
         <source>Active profile changes to %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>El perfil activo cambia a %1.</translation>
     </message>
     <message>
         <source>Device name changes to %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>El nombre del dispositivo cambia a %1.</translation>
     </message>
     <message>
         <source>Apply Changes</source>
-        <translation type="unfinished"></translation>
+        <translation>Aplicar cambios</translation>
     </message>
     <message>
         <source>Apply these changes to the device?</source>
-        <translation type="unfinished"></translation>
+        <translation>¿Aplicar estos cambios al dispositivo?</translation>
     </message>
     <message>
         <source>Screen name cannot be empty.</source>
@@ -2287,7 +2304,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Screen name can only contain letters, numbers, &apos;-&apos;, &apos;_&apos; and &apos;.&apos;, and cannot start or end with &apos;-&apos;, &apos;_&apos; or &apos;.&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>El nombre de pantalla solo puede contener letras, números, &apos;-&apos;, &apos;_&apos; y &apos;.&apos;, y no puede empezar ni terminar con &apos;-&apos;, &apos;_&apos; o &apos;.&apos;.</translation>
     </message>
     <message>
         <source>Device name cannot be empty.</source>
@@ -2327,7 +2344,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Automatically restore screen location for the active profile</source>
-        <translation type="unfinished"></translation>
+        <translation>Restaurar automáticamente la ubicación de la pantalla para el perfil activo</translation>
     </message>
     <message>
         <source>Profiles (Device)</source>
@@ -2335,7 +2352,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Restore...</source>
-        <translation type="unfinished"></translation>
+        <translation>Restaurar...</translation>
     </message>
     <message>
         <source>A-Z, 0-9, spaces, .-_ (max 31 chars)</source>
@@ -2375,23 +2392,23 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>When enabled, the saved screen location for the active profile will be restored automatically.</source>
-        <translation type="unfinished"></translation>
+        <translation>Si se activa, la ubicación de pantalla guardada para el perfil activo se restaurará automáticamente.</translation>
     </message>
     <message>
         <source>Backup...</source>
-        <translation type="unfinished"></translation>
+        <translation>Copia de seguridad...</translation>
     </message>
     <message>
         <source>Save the device&apos;s profiles to a file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Guardar los perfiles del dispositivo en un archivo.</translation>
     </message>
     <message>
         <source>Load profiles from a backup file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Cargar perfiles desde un archivo de copia de seguridad.</translation>
     </message>
     <message>
         <source>Vertical Scroll Scale:</source>
-        <translation type="unfinished"></translation>
+        <translation>Escala de desplazamiento vertical:</translation>
     </message>
     <message>
         <source>Device must be activated to change its name.</source>
@@ -2439,31 +2456,31 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Backup Profiles</source>
-        <translation type="unfinished"></translation>
+        <translation>Copia de seguridad de perfiles</translation>
     </message>
     <message>
         <source>This device has no profiles to backup.</source>
-        <translation type="unfinished"></translation>
+        <translation>Este dispositivo no tiene perfiles de los que hacer una copia de seguridad.</translation>
     </message>
     <message>
         <source>Please fix these profiles first:</source>
-        <translation type="unfinished"></translation>
+        <translation>Por favor, corrija primero estos perfiles:</translation>
     </message>
     <message>
         <source>Failed to update the device: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al actualizar el dispositivo: %1</translation>
     </message>
     <message>
         <source>Backup saved to:</source>
-        <translation type="unfinished"></translation>
+        <translation>Copia de seguridad guardada en:</translation>
     </message>
     <message>
         <source>This file can&apos;t be restored:</source>
-        <translation type="unfinished"></translation>
+        <translation>Este archivo no se puede restaurar:</translation>
     </message>
     <message>
         <source>Backup loaded. Click OK to apply.</source>
-        <translation type="unfinished"></translation>
+        <translation>Copia de seguridad cargada. Haga clic en Aceptar para aplicarla.</translation>
     </message>
     <message>
         <source>Duplicate Configuration</source>
@@ -2483,31 +2500,35 @@ Duplicado: %1</translation>
         <source>Scroll speed:</source>
         <translation type="vanished">Velocidad de desplazamiento:</translation>
     </message>
+    <message>
+        <source>%1 (Active)</source>
+        <translation>%1 (Activo)</translation>
+    </message>
 </context>
 <context>
     <name>deskflow::gui::BridgeClientManager</name>
     <message>
         <source>&lt;br&gt;Device plugged in</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;br&gt;Dispositivo conectado</translation>
     </message>
 </context>
 <context>
     <name>deskflow::gui::BridgeClientProcess</name>
     <message>
         <source>the bridge client isn&apos;t running</source>
-        <translation type="unfinished"></translation>
+        <translation>el cliente puente no se está ejecutando</translation>
     </message>
     <message>
         <source>the bridge client isn&apos;t answering</source>
-        <translation type="unfinished"></translation>
+        <translation>el cliente puente no responde</translation>
     </message>
     <message>
         <source>the bridge client didn&apos;t answer</source>
-        <translation type="unfinished"></translation>
+        <translation>el cliente puente no respondió</translation>
     </message>
     <message>
         <source>the bridge client stopped</source>
-        <translation type="unfinished"></translation>
+        <translation>el cliente puente se detuvo</translation>
     </message>
 </context>
 <context>
@@ -2534,7 +2555,7 @@ Duplicado: %1</translation>
     </message>
     <message>
         <source>unknown</source>
-        <translation>desconocido</translation>
+        <translation type="vanished">desconocido</translation>
     </message>
     <message>
         <source>Disconnect</source>
@@ -2542,11 +2563,11 @@ Duplicado: %1</translation>
     </message>
     <message>
         <source>Active profile: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Perfil activo: %1</translation>
     </message>
     <message>
         <source>Switch to profile: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Cambiar al perfil: %1</translation>
     </message>
     <message>
         <source>Device not connected</source>
@@ -2576,6 +2597,22 @@ Duplicado: %1</translation>
         <source>Portrait</source>
         <translation>Vertical</translation>
     </message>
+    <message>
+        <source>Unknown</source>
+        <translation>Desconocido</translation>
+    </message>
+    <message>
+        <source>Activated</source>
+        <translation>Activado</translation>
+    </message>
+    <message>
+        <source>Free Trial</source>
+        <translation>Prueba gratuita</translation>
+    </message>
+    <message>
+        <source>Unlicensed</source>
+        <translation>Sin licencia</translation>
+    </message>
 </context>
 <context>
     <name>deskflow::gui::BridgeDeviceService</name>
@@ -2585,27 +2622,27 @@ Duplicado: %1</translation>
     </message>
     <message>
         <source>the firmware tool is using the device</source>
-        <translation type="unfinished"></translation>
+        <translation>la herramienta de firmware está usando el dispositivo</translation>
     </message>
     <message>
         <source>failed to write profile %1: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>error al escribir el perfil %1: %2</translation>
     </message>
     <message>
         <source>profile %1 didn&apos;t read back as it was written</source>
-        <translation type="unfinished"></translation>
+        <translation>el perfil %1 no se leyó tal como se escribió</translation>
     </message>
     <message>
         <source>failed to make profile %1 active: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>error al activar el perfil %1: %2</translation>
     </message>
     <message>
         <source>the device didn&apos;t make profile %1 active</source>
-        <translation type="unfinished"></translation>
+        <translation>el dispositivo no activó el perfil %1</translation>
     </message>
     <message>
         <source>the device sent an invalid profile list</source>
-        <translation type="unfinished"></translation>
+        <translation>el dispositivo envió una lista de perfiles no válida</translation>
     </message>
 </context>
 <context>
@@ -2616,147 +2653,147 @@ Duplicado: %1</translation>
     </message>
     <message>
         <source>Setting up a new dongle with %1 (%2 KB).</source>
-        <translation type="unfinished"></translation>
+        <translation>Configurando un dongle nuevo con %1 (%2 KB).</translation>
     </message>
     <message>
         <source>Setting up a new dongle with the latest firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>Configurando un dongle nuevo con el firmware más reciente.</translation>
     </message>
     <message>
         <source>The setup firmware is not available for download yet. Please try again later.</source>
-        <translation type="unfinished"></translation>
+        <translation>El firmware de configuración aún no está disponible para descargar. Por favor, inténtelo de nuevo más tarde.</translation>
     </message>
     <message>
         <source>Could not reach the download server. Check your internet connection and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>No se pudo acceder al servidor de descargas. Compruebe su conexión a internet e inténtelo de nuevo.</translation>
     </message>
     <message>
         <source>Downloaded (%1 KB).</source>
-        <translation type="unfinished"></translation>
+        <translation>Descargado (%1 KB).</translation>
     </message>
     <message>
         <source>Set Up New Dongle</source>
-        <translation type="unfinished"></translation>
+        <translation>Configurar dongle nuevo</translation>
     </message>
     <message>
         <source>Set up this dongle? This is permanent.</source>
-        <translation type="unfinished"></translation>
+        <translation>¿Configurar este dongle? Esta acción es permanente.</translation>
     </message>
     <message>
         <source>Checking the dongle on %1...</source>
-        <translation type="unfinished"></translation>
+        <translation>Comprobando el dongle en %1...</translation>
     </message>
     <message>
         <source>Dongle found: firmware %1, %2, serial %3.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dongle encontrado: firmware %1, %2, serie %3.</translation>
     </message>
     <message>
         <source>Dongle found in update mode.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dongle encontrado en modo de actualización.</translation>
     </message>
     <message>
         <source>Dongle found in update mode, without application firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dongle encontrado en modo de actualización, sin firmware de aplicación.</translation>
     </message>
     <message>
         <source>No DShare-HID firmware found on the dongle.</source>
-        <translation type="unfinished"></translation>
+        <translation>No se encontró firmware de DShare-HID en el dongle.</translation>
     </message>
     <message>
         <source>This dongle is already set up, but its last update did not finish. Use the Upgrade tab to install the firmware again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Este dongle ya está configurado, pero su última actualización no terminó. Use la pestaña Actualización para volver a instalar el firmware.</translation>
     </message>
     <message>
         <source>This dongle is already set up. Use the Upgrade tab to update its firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>Este dongle ya está configurado. Use la pestaña Actualización para actualizar su firmware.</translation>
     </message>
     <message>
         <source>Already Set Up</source>
-        <translation type="unfinished"></translation>
+        <translation>Ya configurado</translation>
     </message>
     <message>
         <source>Writing the firmware...</source>
-        <translation type="unfinished"></translation>
+        <translation>Escribiendo el firmware...</translation>
     </message>
     <message>
         <source>Firmware written. Restarting the dongle...</source>
-        <translation type="unfinished"></translation>
+        <translation>Firmware escrito. Reiniciando el dongle...</translation>
     </message>
     <message>
         <source>Waiting for the dongle to start...</source>
-        <translation type="unfinished"></translation>
+        <translation>Esperando a que el dongle se inicie...</translation>
     </message>
     <message>
         <source>Dongle ready: firmware %1, %2.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dongle listo: firmware %1, %2.</translation>
     </message>
     <message>
         <source>The dongle stayed in update mode, without application firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>El dongle permaneció en modo de actualización, sin firmware de aplicación.</translation>
     </message>
     <message>
         <source>The dongle did not report back within 60 seconds.</source>
-        <translation type="unfinished"></translation>
+        <translation>El dongle no respondió en un plazo de 60 segundos.</translation>
     </message>
     <message>
         <source>Lost the connection to the dongle. Reconnect it and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Se perdió la conexión con el dongle. Vuelva a conectarlo e inténtelo de nuevo.</translation>
     </message>
     <message>
         <source>Could not connect to the dongle. Hold the Boot button while you plug it in, then try again. If it was set up before, use the Upgrade tab instead.</source>
-        <translation type="unfinished"></translation>
+        <translation>No se pudo conectar con el dongle. Mantenga presionado el botón Boot mientras lo conecta e inténtelo de nuevo. Si ya se configuró antes, use en su lugar la pestaña Actualización.</translation>
     </message>
     <message>
         <source>Could not connect to the dongle. Reconnect it and try again. If it was set up before, use the Upgrade tab instead.</source>
-        <translation type="unfinished"></translation>
+        <translation>No se pudo conectar con el dongle. Vuelva a conectarlo e inténtelo de nuevo. Si ya se configuró antes, use en su lugar la pestaña Actualización.</translation>
     </message>
     <message>
         <source>The dongle did not accept this firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>El dongle no aceptó este firmware.</translation>
     </message>
     <message>
         <source>This is not a valid firmware file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Este no es un archivo de firmware válido.</translation>
     </message>
     <message>
         <source>Writing the firmware failed. Reconnect the dongle and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al escribir el firmware. Vuelva a conectar el dongle e inténtelo de nuevo.</translation>
     </message>
     <message>
         <source>Not Set Up</source>
-        <translation type="unfinished"></translation>
+        <translation>No configurado</translation>
     </message>
     <message>
         <source>This dongle is not set up yet. Use the New Dongle Setup tab first.</source>
-        <translation type="unfinished"></translation>
+        <translation>Este dongle aún no está configurado. Use primero la pestaña Configuración de dongle nuevo.</translation>
     </message>
     <message>
         <source>Could not open the port. Reconnect the dongle and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>No se pudo abrir el puerto. Vuelva a conectar el dongle e inténtelo de nuevo.</translation>
     </message>
     <message>
         <source>The last update did not finish. The firmware will be installed again.</source>
-        <translation type="unfinished"></translation>
+        <translation>La última actualización no terminó. El firmware se volverá a instalar.</translation>
     </message>
     <message>
         <source>Preparing the dongle for the update...</source>
-        <translation type="unfinished"></translation>
+        <translation>Preparando el dongle para la actualización...</translation>
     </message>
     <message>
         <source>The dongle could not switch to update mode. Reconnect it and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>El dongle no pudo cambiar al modo de actualización. Vuelva a conectarlo e inténtelo de nuevo.</translation>
     </message>
     <message>
         <source>Sending the firmware...</source>
-        <translation type="unfinished"></translation>
+        <translation>Enviando el firmware...</translation>
     </message>
     <message>
         <source>If this keeps failing, contact %1 with the dongle&apos;s serial number.</source>
-        <translation type="unfinished"></translation>
+        <translation>Si el problema persiste, contacte con %1 indicando el número de serie del dongle.</translation>
     </message>
     <message>
         <source>Firmware accepted. Restarting the dongle...</source>
-        <translation type="unfinished"></translation>
+        <translation>Firmware aceptado. Reiniciando el dongle...</translation>
     </message>
     <message>
         <source>Firmware Flash Tool - %1</source>
@@ -2772,7 +2809,7 @@ Duplicado: %1</translation>
     </message>
     <message>
         <source>Installs DShare-HID firmware on a new dongle. You only need to do this once; after that, use the Upgrade tab for updates.</source>
-        <translation type="unfinished"></translation>
+        <translation>Instala el firmware de DShare-HID en un dongle nuevo. Solo necesita hacerlo una vez; después, use la pestaña Actualización para las actualizaciones.</translation>
     </message>
     <message>
         <source>Path to factory.fzip</source>
@@ -2868,7 +2905,7 @@ Duplicado: %1</translation>
     </message>
     <message>
         <source>Already licensed, but want bump profiles</source>
-        <translation>Ya tengo licencia, pero quiero aumentar los perfiles</translation>
+        <translation type="vanished">Ya tengo licencia, pero quiero aumentar los perfiles</translation>
     </message>
     <message>
         <source>Payments</source>
@@ -2976,7 +3013,7 @@ Duplicado: %1</translation>
     </message>
     <message>
         <source>No Application Firmware</source>
-        <translation type="unfinished"></translation>
+        <translation>Sin firmware de aplicación</translation>
     </message>
     <message>
         <source>Device is already running with factory firmware.</source>
@@ -3040,7 +3077,7 @@ Duplicado: %1</translation>
     </message>
     <message>
         <source>Flash failed, %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Fallo en el flasheo, %1</translation>
     </message>
     <message>
         <source>Starting Download &amp; Flash process...</source>
@@ -3048,7 +3085,7 @@ Duplicado: %1</translation>
     </message>
     <message>
         <source>Downloading %1...</source>
-        <translation type="unfinished"></translation>
+        <translation>Descargando %1...</translation>
     </message>
     <message>
         <source>Download failed.</source>
@@ -3092,19 +3129,19 @@ Duplicado: %1</translation>
     </message>
     <message>
         <source>New Dongle Setup</source>
-        <translation type="unfinished"></translation>
+        <translation>Configuración de dongle nuevo</translation>
     </message>
     <message>
         <source>Upgrade</source>
-        <translation type="unfinished"></translation>
+        <translation>Actualización</translation>
     </message>
     <message>
         <source>I will arrange payment via email</source>
-        <translation type="unfinished"></translation>
+        <translation>Gestionaré el pago por correo electrónico</translation>
     </message>
     <message>
         <source>Not required for manual payment</source>
-        <translation type="unfinished"></translation>
+        <translation>No es necesario para el pago manual</translation>
     </message>
     <message>
         <source>PayPal Transaction ID:</source>
@@ -3132,11 +3169,11 @@ Siguiente paso: Debe flashear el firmware por dispositivo para usar el dispositi
     </message>
     <message>
         <source>Selected factory firmware: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Firmware de fábrica seleccionado: %1</translation>
     </message>
     <message>
         <source>Selected upgrade firmware: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Firmware de actualización seleccionado: %1</translation>
     </message>
     <message>
         <source>Device is in Factory Mode. Fetching PDEK...</source>
@@ -3244,7 +3281,7 @@ Siguiente paso: Debe flashear el firmware por dispositivo para usar el dispositi
     </message>
     <message>
         <source>Failed to find upgrade firmware in the latest release.</source>
-        <translation type="unfinished"></translation>
+        <translation>No se encontró el firmware de actualización en la última versión publicada.</translation>
     </message>
     <message>
         <source>Found upgrade firmware: %1</source>
@@ -3418,29 +3455,37 @@ Siguiente paso: Debe flashear el firmware por dispositivo para usar el dispositi
         <source>Firmware flashed successfully.
 
 The device is running a 7-day free trial. After the trial expires, use the Activation tab to activate with a license key.</source>
-        <translation type="unfinished"></translation>
+        <translation>Firmware flasheado con éxito.
+
+El dispositivo está ejecutando una prueba gratuita de 7 días. Cuando la prueba expire, use la pestaña Activación para activarlo con una clave de licencia.</translation>
     </message>
     <message>
         <source>Firmware flashed successfully.
 
 The device is running the application firmware. Check its license on the Activation tab.</source>
-        <translation type="unfinished"></translation>
+        <translation>Firmware flasheado con éxito.
+
+El dispositivo está ejecutando el firmware de aplicación. Compruebe su licencia en la pestaña Activación.</translation>
     </message>
     <message>
         <source>Device Not Detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Dispositivo no detectado</translation>
     </message>
     <message>
         <source>The firmware was written, but the device did not start the application within 60 seconds.
 
 Disconnect and reconnect the device, then check its status on the Activation tab.</source>
-        <translation type="unfinished"></translation>
+        <translation>El firmware se escribió, pero el dispositivo no inició la aplicación en un plazo de 60 segundos.
+
+Desconecte y vuelva a conectar el dispositivo y, a continuación, compruebe su estado en la pestaña Activación.</translation>
     </message>
     <message>
         <source>The device is in factory mode without application firmware.
 
 Install it from the Upgrade tab (Check for Updates, then Flash). If that fails, contact %1 with the device serial number.</source>
-        <translation type="unfinished"></translation>
+        <translation>El dispositivo está en modo fábrica sin firmware de aplicación.
+
+Instálelo desde la pestaña Actualización (Buscar actualizaciones y luego Flashear). Si eso falla, contacte con %1 indicando el número de serie del dispositivo.</translation>
     </message>
     <message>
         <source>State: %1, %2 Profiles</source>
@@ -3448,7 +3493,7 @@ Install it from the Upgrade tab (Check for Updates, then Flash). If that fails, 
     </message>
     <message>
         <source>Device State Refreshed. Serial: %1, Mode: Factory</source>
-        <translation type="unfinished"></translation>
+        <translation>Estado del dispositivo actualizado. Serie: %1, Modo: Fábrica</translation>
     </message>
     <message>
         <source>Failed to refresh state: %1</source>
@@ -3504,7 +3549,31 @@ Install it from the Upgrade tab (Check for Updates, then Flash). If that fails, 
     </message>
     <message>
         <source>This dongle is already set up.</source>
-        <translation type="unfinished"></translation>
+        <translation>Este dongle ya está configurado.</translation>
+    </message>
+    <message>
+        <source>Unknown</source>
+        <translation>Desconocida</translation>
+    </message>
+    <message>
+        <source>License($%1) + %2 Profiles(%3)</source>
+        <translation>Licencia($%1) + %2 Perfiles(%3)</translation>
+    </message>
+    <message>
+        <source>%1 - Combo Discount($%2)</source>
+        <translation>%1 - Descuento combinado($%2)</translation>
+    </message>
+    <message>
+        <source>Upgrade profiles to %1 (%2)</source>
+        <translation>Aumentar perfiles a %1 (%2)</translation>
+    </message>
+    <message>
+        <source>Select an option</source>
+        <translation>Seleccione una opción</translation>
+    </message>
+    <message>
+        <source>Payment Details: %1 = Total $%2 USD</source>
+        <translation>Detalles del pago: %1 = Total $%2 USD</translation>
     </message>
 </context>
 <context>

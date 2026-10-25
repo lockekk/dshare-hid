@@ -41,7 +41,19 @@ p, li { white-space: pre-wrap; }
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;https://github.com/lockekk/dshare-hid&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#508ed8;&quot;&gt;Code Contributors&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;https://github.com/lockekk/dshare-hid&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#508ed8;&quot;&gt;コード貢献者&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>Forked from &lt;a href=&apos;https://github.com/deskflow/deskflow&apos;&gt;Deskflow&lt;/a&gt;. We gratefully acknowledge their work and thank the original contributors.</source>
+        <translation>&lt;a href=&apos;https://github.com/deskflow/deskflow&apos;&gt;Deskflow&lt;/a&gt; からフォークしました。その成果に深く感謝するとともに、オリジナルの貢献者の皆様に御礼申し上げます。</translation>
+    </message>
+    <message>
+        <source>Support: %1</source>
+        <translation>サポート: %1</translation>
     </message>
 </context>
 <context>
@@ -135,78 +147,78 @@ p, li { white-space: pre-wrap; }
     <name>BridgeFirmwareNotice</name>
     <message>
         <source>Pairings were reset. On each host, forget &quot;%1&quot; and pair again with its profile active.</source>
-        <translation type="unfinished"></translation>
+        <translation>ペアリングがリセットされました。各ホストで「%1」の登録を解除し、そのホストのプロファイルをアクティブにした状態で再度ペアリングしてください。</translation>
     </message>
 </context>
 <context>
     <name>BridgeProfileBackup</name>
     <message>
         <source>%1: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1: %2</translation>
     </message>
     <message>
         <source>&quot;%1&quot; is missing.</source>
-        <translation type="unfinished"></translation>
+        <translation>&quot;%1&quot; がありません。</translation>
     </message>
     <message>
         <source>&quot;%1&quot; must be a whole number from %2 to %3.</source>
-        <translation type="unfinished"></translation>
+        <translation>&quot;%1&quot; は %2 から %3 までの整数である必要があります。</translation>
     </message>
     <message>
         <source>Entry %1 of &quot;profiles&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>&quot;profiles&quot; の %1 番目のエントリ</translation>
     </message>
     <message>
         <source>%1 isn&apos;t a profile.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 はプロファイルではありません。</translation>
     </message>
     <message>
         <source>Profile %1</source>
-        <translation type="unfinished"></translation>
+        <translation>プロファイル %1</translation>
     </message>
     <message>
         <source>Profile %1 is in the backup more than once.</source>
-        <translation type="unfinished"></translation>
+        <translation>プロファイル %1 がバックアップ内に複数回含まれています。</translation>
     </message>
     <message>
         <source>&quot;%1&quot; must be %2, the profile&apos;s index.</source>
-        <translation type="unfinished"></translation>
+        <translation>&quot;%1&quot; はプロファイルのインデックスである %2 である必要があります。</translation>
     </message>
     <message>
         <source>the hostname must be 1 to 31 characters: A-Z, 0-9, spaces and .-_ (not only spaces).</source>
-        <translation type="unfinished"></translation>
+        <translation>ホスト名は A-Z, 0-9, スペース, .-_ からなる 1～31 文字である必要があります (スペースのみは不可)。</translation>
     </message>
     <message>
         <source>The file is too large to be a profile backup.</source>
-        <translation type="unfinished"></translation>
+        <translation>プロファイルのバックアップとしてはファイルが大きすぎます。</translation>
     </message>
     <message>
         <source>The file isn&apos;t valid JSON: %1 (at character %2).</source>
-        <translation type="unfinished"></translation>
+        <translation>ファイルが有効な JSON ではありません: %1 (%2 文字目)。</translation>
     </message>
     <message>
         <source>The file isn&apos;t a profile backup: it has no &quot;%1&quot;.</source>
-        <translation type="unfinished"></translation>
+        <translation>ファイルはプロファイルのバックアップではありません: &quot;%1&quot; がありません。</translation>
     </message>
     <message>
         <source>The device name must be 1 to 22 characters: A-Z, 0-9, spaces and .-_ (not only spaces).</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイス名は A-Z, 0-9, スペース, .-_ からなる 1～22 文字である必要があります (スペースのみは不可)。</translation>
     </message>
     <message>
         <source>&quot;%1&quot; must be a list.</source>
-        <translation type="unfinished"></translation>
+        <translation>&quot;%1&quot; はリストである必要があります。</translation>
     </message>
     <message>
         <source>The backup has no profiles.</source>
-        <translation type="unfinished"></translation>
+        <translation>バックアップにプロファイルがありません。</translation>
     </message>
     <message>
         <source>This device has no profile %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>このデバイスにはプロファイル %1 がありません。</translation>
     </message>
     <message>
         <source>This device has no profile %1 to make active.</source>
-        <translation type="unfinished"></translation>
+        <translation>このデバイスにはアクティブにするプロファイル %1 がありません。</translation>
     </message>
 </context>
 <context>
@@ -511,129 +523,129 @@ File -&gt; Firmware -&gt; Order.</source>
     <name>DeskflowHidExtension</name>
     <message>
         <source>Bridge Client Logs</source>
-        <translation type="unfinished">ブリッジクライアントログ</translation>
+        <translation>ブリッジクライアントログ</translation>
     </message>
     <message>
         <source>ESP32 HID Tools</source>
-        <translation type="unfinished">ESP32 HID ツール</translation>
+        <translation>ESP32 HID ツール</translation>
     </message>
     <message>
         <source>Ready</source>
-        <translation type="unfinished">準備完了</translation>
+        <translation>準備完了</translation>
     </message>
     <message>
         <source>Feature Unavailable</source>
-        <translation type="unfinished">機能は利用できません</translation>
+        <translation>機能は利用できません</translation>
     </message>
     <message>
         <source>The ESP32 HID Tools module is not available in this build.</source>
-        <translation type="unfinished">このビルドでは ESP32 HID ツールモジュールは利用できません。</translation>
+        <translation>このビルドでは ESP32 HID ツールモジュールは利用できません。</translation>
     </message>
     <message>
         <source>Unknown Device</source>
-        <translation type="unfinished">不明なデバイス</translation>
+        <translation>不明なデバイス</translation>
     </message>
     <message>
         <source>Bridge client device plugged in: %1</source>
-        <translation type="unfinished">ブリッジクライアントデバイスが接続されました: %1</translation>
+        <translation>ブリッジクライアントデバイスが接続されました: %1</translation>
     </message>
     <message>
         <source>Bridge client device unplugged: %1</source>
-        <translation type="unfinished">ブリッジクライアントデバイスが切断されました: %1</translation>
+        <translation>ブリッジクライアントデバイスが切断されました: %1</translation>
     </message>
     <message>
         <source>Error: No configuration found for device: %1</source>
-        <translation type="unfinished">エラー: デバイスの設定が見つかりません: %1</translation>
+        <translation>エラー: デバイスの設定が見つかりません: %1</translation>
     </message>
     <message>
         <source>Error: Cannot connect. Device path is empty.</source>
-        <translation type="unfinished">エラー: 接続できません。デバイスパスが空です。</translation>
+        <translation>エラー: 接続できません。デバイスパスが空です。</translation>
     </message>
     <message>
         <source>Already connected via another profile</source>
-        <translation type="unfinished">別のプロファイル経由で既に接続されています</translation>
+        <translation>別のプロファイル経由で既に接続されています</translation>
     </message>
     <message>
         <source>Activation Required</source>
-        <translation type="unfinished">アクティベーションが必要です</translation>
+        <translation>アクティベーションが必要です</translation>
     </message>
     <message>
         <source>Free trial is expired. Please consider purchasing a license via 
 File -&gt; Firmware -&gt; Order.</source>
-        <translation type="unfinished">無料トライアルの有効期限が切れました。
+        <translation>無料トライアルの有効期限が切れました。
 ファイル -&gt; ファームウェア -&gt; 注文 からライセンスの購入をご検討ください。</translation>
     </message>
     <message>
         <source>Starting bridge client: %1</source>
-        <translation type="unfinished">ブリッジクライアントを開始中: %1</translation>
+        <translation>ブリッジクライアントを開始中: %1</translation>
     </message>
     <message>
         <source>Failed to start bridge client: %1</source>
-        <translation type="unfinished">ブリッジクライアントの開始に失敗しました: %1</translation>
+        <translation>ブリッジクライアントの開始に失敗しました: %1</translation>
     </message>
     <message>
         <source>Failed to switch profile on %1: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 のプロファイルの切り替えに失敗しました: %2</translation>
     </message>
     <message>
         <source>Several bridge clients are connected: move the cursor onto the one to switch</source>
-        <translation type="unfinished"></translation>
+        <translation>複数のブリッジクライアントが接続されています: 切り替えるクライアントにカーソルを移動してください</translation>
     </message>
     <message>
         <source>%1 has no profile %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 にはプロファイル %2 がありません</translation>
     </message>
     <message>
         <source>Bridge Profile Shortcuts</source>
-        <translation type="unfinished"></translation>
+        <translation>ブリッジプロファイルのショートカット</translation>
     </message>
     <message>
         <source>Off</source>
-        <translation type="unfinished"></translation>
+        <translation>オフ</translation>
     </message>
     <message>
         <source>Failed to rename the device to %1</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイス名を %1 に変更できませんでした</translation>
     </message>
     <message>
         <source>Factory firmware detected. Please update firmware.</source>
-        <translation type="unfinished">工場出荷時ファームウェアを検出しました。ファームウェアを更新してください。</translation>
+        <translation>工場出荷時ファームウェアを検出しました。ファームウェアを更新してください。</translation>
     </message>
     <message>
         <source>Factory firmware detected on %1. Auto-connect disabled.</source>
-        <translation type="unfinished">%1 で工場出荷時ファームウェアを検出しました。自動接続を無効にしました。</translation>
+        <translation>%1 で工場出荷時ファームウェアを検出しました。自動接続を無効にしました。</translation>
     </message>
     <message>
         <source>Device handshake failed. Possibly not a DShare-HID firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスのハンドシェイクに失敗しました。DShare-HID ファームウェアではない可能性があります。</translation>
     </message>
     <message>
         <source>Handshake failed on %1. Auto-connect disabled.</source>
-        <translation type="unfinished">%1 でのハンドシェイクに失敗しました。自動接続を無効にしました。</translation>
+        <translation>%1 でのハンドシェイクに失敗しました。自動接続を無効にしました。</translation>
     </message>
     <message>
         <source>Device disconnected.</source>
-        <translation type="unfinished">デバイスが切断されました。</translation>
+        <translation>デバイスが切断されました。</translation>
     </message>
     <message>
         <source>Server is down. Auto-connect will resume once the server starts.</source>
-        <translation type="unfinished">サーバーがダウンしています。サーバーが起動すると自動接続が再開されます。</translation>
+        <translation>サーバーがダウンしています。サーバーが起動すると自動接続が再開されます。</translation>
     </message>
     <message>
         <source>Connection failed. Retrying auto-connect (%1/3)...</source>
-        <translation type="unfinished">接続に失敗しました。自動接続を再試行中 (%1/3)...</translation>
+        <translation>接続に失敗しました。自動接続を再試行中 (%1/3)...</translation>
     </message>
     <message>
         <source>Auto-connect failed. Giving up after 3 attempts.</source>
-        <translation type="unfinished">自動接続に失敗しました。3回試行しましたが諦めます。</translation>
+        <translation>自動接続に失敗しました。3回試行しましたが諦めます。</translation>
     </message>
     <message>
         <source>Locked</source>
-        <translation type="unfinished">ロック済み</translation>
+        <translation>ロック済み</translation>
     </message>
     <message>
         <source>Locked by %1</source>
-        <translation type="unfinished">%1 によってロックされています</translation>
+        <translation>%1 によってロックされています</translation>
     </message>
 </context>
 <context>
@@ -1782,7 +1794,12 @@ Do you want to delete its configuration file as well?
 
 If you choose &apos;Yes&apos;, the bridge client widget will be removed from the main window.
 If you choose &apos;No&apos;, the bridge client configuration will be kept and can still be used.</source>
-        <translation type="unfinished"></translation>
+        <translation>画面 &apos;%1&apos; はブリッジクライアントです。
+
+その設定ファイルも削除しますか？
+
+「はい」を選択すると、ブリッジクライアントウィジェットがメインウィンドウから削除されます。
+「いいえ」を選択すると、ブリッジクライアント設定は保持され、引き続き使用できます。</translation>
     </message>
     <message>
         <source>Deletion Failed</source>
@@ -2211,7 +2228,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Disconnect to rename the screen.</source>
-        <translation type="unfinished"></translation>
+        <translation>画面名を変更するには切断してください。</translation>
     </message>
     <message>
         <source>Switched to %1</source>
@@ -2219,27 +2236,27 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Failed to read the profiles: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>プロファイルの読み込みに失敗しました: %1</translation>
     </message>
     <message>
         <source>Profile backups (*.json)</source>
-        <translation type="unfinished"></translation>
+        <translation>プロファイルのバックアップ (*.json)</translation>
     </message>
     <message>
         <source>Failed to save %1: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 の保存に失敗しました: %2</translation>
     </message>
     <message>
         <source>Restore Profiles</source>
-        <translation type="unfinished"></translation>
+        <translation>プロファイルの復元</translation>
     </message>
     <message>
         <source>Profile backups (*.json);;All files (*)</source>
-        <translation type="unfinished"></translation>
+        <translation>プロファイルのバックアップ (*.json);;すべてのファイル (*)</translation>
     </message>
     <message>
         <source>Failed to open %1: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 を開けませんでした: %2</translation>
     </message>
     <message>
         <source>Rename Failed</source>
@@ -2255,31 +2272,31 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>and %1 more</source>
-        <translation type="unfinished"></translation>
+        <translation>他 %1 件</translation>
     </message>
     <message>
         <source>Reset %1. Its host must pair again manually.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 をリセットします。そのホストでは手動で再度ペアリングする必要があります。</translation>
     </message>
     <message>
         <source>Save %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 を保存します。</translation>
     </message>
     <message>
         <source>Active profile changes to %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>アクティブなプロファイルを %1 に変更します。</translation>
     </message>
     <message>
         <source>Device name changes to %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイス名を %1 に変更します。</translation>
     </message>
     <message>
         <source>Apply Changes</source>
-        <translation type="unfinished"></translation>
+        <translation>変更の適用</translation>
     </message>
     <message>
         <source>Apply these changes to the device?</source>
-        <translation type="unfinished"></translation>
+        <translation>これらの変更をデバイスに適用しますか？</translation>
     </message>
     <message>
         <source>Screen name cannot be empty.</source>
@@ -2287,7 +2304,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Screen name can only contain letters, numbers, &apos;-&apos;, &apos;_&apos; and &apos;.&apos;, and cannot start or end with &apos;-&apos;, &apos;_&apos; or &apos;.&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>画面名には英字、数字、&apos;-&apos;、&apos;_&apos;、&apos;.&apos; のみ使用でき、先頭と末尾に &apos;-&apos;、&apos;_&apos;、&apos;.&apos; は使用できません。</translation>
     </message>
     <message>
         <source>Device name cannot be empty.</source>
@@ -2327,7 +2344,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Automatically restore screen location for the active profile</source>
-        <translation type="unfinished"></translation>
+        <translation>アクティブなプロファイルの画面位置を自動的に復元</translation>
     </message>
     <message>
         <source>Profiles (Device)</source>
@@ -2335,7 +2352,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Restore...</source>
-        <translation type="unfinished"></translation>
+        <translation>復元...</translation>
     </message>
     <message>
         <source>A-Z, 0-9, spaces, .-_ (max 31 chars)</source>
@@ -2375,23 +2392,23 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>When enabled, the saved screen location for the active profile will be restored automatically.</source>
-        <translation type="unfinished"></translation>
+        <translation>有効にすると、アクティブなプロファイルの保存された画面位置が自動的に復元されます。</translation>
     </message>
     <message>
         <source>Backup...</source>
-        <translation type="unfinished"></translation>
+        <translation>バックアップ...</translation>
     </message>
     <message>
         <source>Save the device&apos;s profiles to a file.</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスのプロファイルをファイルに保存します。</translation>
     </message>
     <message>
         <source>Load profiles from a backup file.</source>
-        <translation type="unfinished"></translation>
+        <translation>バックアップファイルからプロファイルを読み込みます。</translation>
     </message>
     <message>
         <source>Vertical Scroll Scale:</source>
-        <translation type="unfinished"></translation>
+        <translation>縦スクロール倍率:</translation>
     </message>
     <message>
         <source>Device must be activated to change its name.</source>
@@ -2439,31 +2456,31 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Backup Profiles</source>
-        <translation type="unfinished"></translation>
+        <translation>プロファイルのバックアップ</translation>
     </message>
     <message>
         <source>This device has no profiles to backup.</source>
-        <translation type="unfinished"></translation>
+        <translation>このデバイスにはバックアップするプロファイルがありません。</translation>
     </message>
     <message>
         <source>Please fix these profiles first:</source>
-        <translation type="unfinished"></translation>
+        <translation>先に次のプロファイルを修正してください：</translation>
     </message>
     <message>
         <source>Failed to update the device: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスの更新に失敗しました: %1</translation>
     </message>
     <message>
         <source>Backup saved to:</source>
-        <translation type="unfinished"></translation>
+        <translation>バックアップの保存先：</translation>
     </message>
     <message>
         <source>This file can&apos;t be restored:</source>
-        <translation type="unfinished"></translation>
+        <translation>このファイルは復元できません：</translation>
     </message>
     <message>
         <source>Backup loaded. Click OK to apply.</source>
-        <translation type="unfinished"></translation>
+        <translation>バックアップを読み込みました。適用するには OK をクリックしてください。</translation>
     </message>
     <message>
         <source>Duplicate Configuration</source>
@@ -2483,31 +2500,35 @@ Duplicate: %1</source>
         <source>Scroll speed:</source>
         <translation type="vanished">スクロール速度:</translation>
     </message>
+    <message>
+        <source>%1 (Active)</source>
+        <translation>%1 (アクティブ)</translation>
+    </message>
 </context>
 <context>
     <name>deskflow::gui::BridgeClientManager</name>
     <message>
         <source>&lt;br&gt;Device plugged in</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;br&gt;デバイス接続中</translation>
     </message>
 </context>
 <context>
     <name>deskflow::gui::BridgeClientProcess</name>
     <message>
         <source>the bridge client isn&apos;t running</source>
-        <translation type="unfinished"></translation>
+        <translation>ブリッジクライアントが実行されていません</translation>
     </message>
     <message>
         <source>the bridge client isn&apos;t answering</source>
-        <translation type="unfinished"></translation>
+        <translation>ブリッジクライアントが応答していません</translation>
     </message>
     <message>
         <source>the bridge client didn&apos;t answer</source>
-        <translation type="unfinished"></translation>
+        <translation>ブリッジクライアントが応答しませんでした</translation>
     </message>
     <message>
         <source>the bridge client stopped</source>
-        <translation type="unfinished"></translation>
+        <translation>ブリッジクライアントが停止しました</translation>
     </message>
 </context>
 <context>
@@ -2534,7 +2555,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>unknown</source>
-        <translation>不明</translation>
+        <translation type="vanished">不明</translation>
     </message>
     <message>
         <source>Disconnect</source>
@@ -2542,11 +2563,11 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Active profile: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>アクティブなプロファイル: %1</translation>
     </message>
     <message>
         <source>Switch to profile: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>プロファイルに切り替え: %1</translation>
     </message>
     <message>
         <source>Device not connected</source>
@@ -2576,6 +2597,22 @@ Duplicate: %1</source>
         <source>Portrait</source>
         <translation>縦向き</translation>
     </message>
+    <message>
+        <source>Unknown</source>
+        <translation>不明</translation>
+    </message>
+    <message>
+        <source>Activated</source>
+        <translation>有効化済み</translation>
+    </message>
+    <message>
+        <source>Free Trial</source>
+        <translation>無料トライアル</translation>
+    </message>
+    <message>
+        <source>Unlicensed</source>
+        <translation>未ライセンス</translation>
+    </message>
 </context>
 <context>
     <name>deskflow::gui::BridgeDeviceService</name>
@@ -2585,27 +2622,27 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>the firmware tool is using the device</source>
-        <translation type="unfinished"></translation>
+        <translation>ファームウェアツールがデバイスを使用中です</translation>
     </message>
     <message>
         <source>failed to write profile %1: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>プロファイル %1 の書き込みに失敗しました: %2</translation>
     </message>
     <message>
         <source>profile %1 didn&apos;t read back as it was written</source>
-        <translation type="unfinished"></translation>
+        <translation>プロファイル %1 を読み返した内容が書き込んだ内容と一致しません</translation>
     </message>
     <message>
         <source>failed to make profile %1 active: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>プロファイル %1 をアクティブにできませんでした: %2</translation>
     </message>
     <message>
         <source>the device didn&apos;t make profile %1 active</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスがプロファイル %1 をアクティブにしませんでした</translation>
     </message>
     <message>
         <source>the device sent an invalid profile list</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスが無効なプロファイルリストを送信しました</translation>
     </message>
 </context>
 <context>
@@ -2708,79 +2745,79 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Setting up a new dongle with %1 (%2 KB).</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 (%2 KB) で新しいドングルをセットアップしています。</translation>
     </message>
     <message>
         <source>Setting up a new dongle with the latest firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>最新のファームウェアで新しいドングルをセットアップしています。</translation>
     </message>
     <message>
         <source>The setup firmware is not available for download yet. Please try again later.</source>
-        <translation type="unfinished"></translation>
+        <translation>セットアップ用ファームウェアはまだダウンロードできません。後でもう一度お試しください。</translation>
     </message>
     <message>
         <source>Could not reach the download server. Check your internet connection and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>ダウンロードサーバーに接続できませんでした。インターネット接続を確認して、もう一度お試しください。</translation>
     </message>
     <message>
         <source>Downloaded (%1 KB).</source>
-        <translation type="unfinished"></translation>
+        <translation>ダウンロード完了 (%1 KB)。</translation>
     </message>
     <message>
         <source>Set Up New Dongle</source>
-        <translation type="unfinished"></translation>
+        <translation>新規ドングルのセットアップ</translation>
     </message>
     <message>
         <source>Checking the dongle on %1...</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 のドングルを確認中...</translation>
     </message>
     <message>
         <source>Dongle found: firmware %1, %2, serial %3.</source>
-        <translation type="unfinished"></translation>
+        <translation>ドングルが見つかりました: ファームウェア %1、%2、シリアル %3。</translation>
     </message>
     <message>
         <source>Dongle found in update mode.</source>
-        <translation type="unfinished"></translation>
+        <translation>更新モードのドングルが見つかりました。</translation>
     </message>
     <message>
         <source>Dongle found in update mode, without application firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>更新モードのドングルが見つかりました (アプリケーションファームウェアなし)。</translation>
     </message>
     <message>
         <source>No DShare-HID firmware found on the dongle.</source>
-        <translation type="unfinished"></translation>
+        <translation>ドングルに DShare-HID ファームウェアが見つかりません。</translation>
     </message>
     <message>
         <source>This dongle is already set up, but its last update did not finish. Use the Upgrade tab to install the firmware again.</source>
-        <translation type="unfinished"></translation>
+        <translation>このドングルは既にセットアップ済みですが、前回の更新が完了していません。「アップグレード」タブでファームウェアを再インストールしてください。</translation>
     </message>
     <message>
         <source>This dongle is already set up. Use the Upgrade tab to update its firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>このドングルは既にセットアップ済みです。ファームウェアを更新するには「アップグレード」タブを使用してください。</translation>
     </message>
     <message>
         <source>Already Set Up</source>
-        <translation type="unfinished"></translation>
+        <translation>セットアップ済み</translation>
     </message>
     <message>
         <source>Writing the firmware...</source>
-        <translation type="unfinished"></translation>
+        <translation>ファームウェアを書き込み中...</translation>
     </message>
     <message>
         <source>Firmware written. Restarting the dongle...</source>
-        <translation type="unfinished"></translation>
+        <translation>ファームウェアを書き込みました。ドングルを再起動中...</translation>
     </message>
     <message>
         <source>Flash failed, %1</source>
-        <translation type="unfinished"></translation>
+        <translation>書き込み失敗、%1</translation>
     </message>
     <message>
         <source>Downloading %1...</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 をダウンロード中...</translation>
     </message>
     <message>
         <source>Failed to find upgrade firmware in the latest release.</source>
-        <translation type="unfinished"></translation>
+        <translation>最新リリースにアップグレードファームウェアが見つかりませんでした。</translation>
     </message>
     <message>
         <source>Free trial for 7 days</source>
@@ -2796,7 +2833,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Already licensed, but want bump profiles</source>
-        <translation>既にライセンス済みですが、プロファイル数を増やしたいです</translation>
+        <translation type="vanished">既にライセンス済みですが、プロファイル数を増やしたいです</translation>
     </message>
     <message>
         <source>Payments</source>
@@ -2856,23 +2893,23 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>I will arrange payment via email</source>
-        <translation type="unfinished"></translation>
+        <translation>メールで支払いを手配します</translation>
     </message>
     <message>
         <source>Installs DShare-HID firmware on a new dongle. You only need to do this once; after that, use the Upgrade tab for updates.</source>
-        <translation type="unfinished"></translation>
+        <translation>新しいドングルに DShare-HID ファームウェアをインストールします。この操作は一度だけ必要です。以降の更新には「アップグレード」タブを使用してください。</translation>
     </message>
     <message>
         <source>New Dongle Setup</source>
-        <translation type="unfinished"></translation>
+        <translation>新規ドングルセットアップ</translation>
     </message>
     <message>
         <source>Upgrade</source>
-        <translation type="unfinished"></translation>
+        <translation>アップグレード</translation>
     </message>
     <message>
         <source>Not required for manual payment</source>
-        <translation type="unfinished"></translation>
+        <translation>手動支払いの場合は不要です</translation>
     </message>
     <message>
         <source>Email</source>
@@ -2924,7 +2961,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>No Application Firmware</source>
-        <translation type="unfinished"></translation>
+        <translation>アプリケーションファームウェアなし</translation>
     </message>
     <message>
         <source>Device is already running with factory firmware.</source>
@@ -3188,39 +3225,47 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Selected factory firmware: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>選択した工場ファームウェア: %1</translation>
     </message>
     <message>
         <source>Selected upgrade firmware: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>選択したアップグレードファームウェア: %1</translation>
     </message>
     <message>
         <source>Firmware flashed successfully.
 
 The device is running a 7-day free trial. After the trial expires, use the Activation tab to activate with a license key.</source>
-        <translation type="unfinished"></translation>
+        <translation>ファームウェアの書き込みに成功しました。
+
+デバイスは7日間の無料トライアル中です。トライアル期間の終了後は、「アクティベーション」タブでライセンスキーを使用して有効化してください。</translation>
     </message>
     <message>
         <source>Firmware flashed successfully.
 
 The device is running the application firmware. Check its license on the Activation tab.</source>
-        <translation type="unfinished"></translation>
+        <translation>ファームウェアの書き込みに成功しました。
+
+デバイスはアプリケーションファームウェアを実行しています。「アクティベーション」タブでライセンスを確認してください。</translation>
     </message>
     <message>
         <source>Device Not Detected</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスが検出されません</translation>
     </message>
     <message>
         <source>The firmware was written, but the device did not start the application within 60 seconds.
 
 Disconnect and reconnect the device, then check its status on the Activation tab.</source>
-        <translation type="unfinished"></translation>
+        <translation>ファームウェアは書き込まれましたが、60 秒以内にデバイスでアプリケーションが起動しませんでした。
+
+デバイスを一度切断して再接続し、「アクティベーション」タブで状態を確認してください。</translation>
     </message>
     <message>
         <source>The device is in factory mode without application firmware.
 
 Install it from the Upgrade tab (Check for Updates, then Flash). If that fails, contact %1 with the device serial number.</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイスはアプリケーションファームウェアのない工場モードです。
+
+「アップグレード」タブからインストールしてください (「更新を確認」の後に「書き込み」)。それでも失敗する場合は、デバイスのシリアル番号を添えて %1 までお問い合わせください。</translation>
     </message>
     <message>
         <source>Found upgrade firmware: %1</source>
@@ -3356,83 +3401,83 @@ Install it from the Upgrade tab (Check for Updates, then Flash). If that fails, 
     </message>
     <message>
         <source>Set up this dongle? This is permanent.</source>
-        <translation type="unfinished"></translation>
+        <translation>このドングルをセットアップしますか？この操作は取り消せません。</translation>
     </message>
     <message>
         <source>Waiting for the dongle to start...</source>
-        <translation type="unfinished"></translation>
+        <translation>ドングルの起動を待っています...</translation>
     </message>
     <message>
         <source>Dongle ready: firmware %1, %2.</source>
-        <translation type="unfinished"></translation>
+        <translation>ドングルの準備完了: ファームウェア %1、%2。</translation>
     </message>
     <message>
         <source>The dongle stayed in update mode, without application firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>ドングルはアプリケーションファームウェアのないまま、更新モードにとどまりました。</translation>
     </message>
     <message>
         <source>The dongle did not report back within 60 seconds.</source>
-        <translation type="unfinished"></translation>
+        <translation>60 秒以内にドングルから応答がありませんでした。</translation>
     </message>
     <message>
         <source>Lost the connection to the dongle. Reconnect it and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>ドングルとの接続が切れました。再接続して、もう一度お試しください。</translation>
     </message>
     <message>
         <source>Could not connect to the dongle. Hold the Boot button while you plug it in, then try again. If it was set up before, use the Upgrade tab instead.</source>
-        <translation type="unfinished"></translation>
+        <translation>ドングルに接続できませんでした。Boot ボタンを押しながら接続し、もう一度お試しください。以前にセットアップ済みの場合は、代わりに「アップグレード」タブを使用してください。</translation>
     </message>
     <message>
         <source>Could not connect to the dongle. Reconnect it and try again. If it was set up before, use the Upgrade tab instead.</source>
-        <translation type="unfinished"></translation>
+        <translation>ドングルに接続できませんでした。再接続して、もう一度お試しください。以前にセットアップ済みの場合は、代わりに「アップグレード」タブを使用してください。</translation>
     </message>
     <message>
         <source>The dongle did not accept this firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>ドングルがこのファームウェアを受け付けませんでした。</translation>
     </message>
     <message>
         <source>This is not a valid firmware file.</source>
-        <translation type="unfinished"></translation>
+        <translation>有効なファームウェアファイルではありません。</translation>
     </message>
     <message>
         <source>Writing the firmware failed. Reconnect the dongle and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>ファームウェアの書き込みに失敗しました。ドングルを再接続して、もう一度お試しください。</translation>
     </message>
     <message>
         <source>Not Set Up</source>
-        <translation type="unfinished"></translation>
+        <translation>未セットアップ</translation>
     </message>
     <message>
         <source>This dongle is not set up yet. Use the New Dongle Setup tab first.</source>
-        <translation type="unfinished"></translation>
+        <translation>このドングルはまだセットアップされていません。先に「新規ドングルセットアップ」タブを使用してください。</translation>
     </message>
     <message>
         <source>Could not open the port. Reconnect the dongle and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>ポートを開けませんでした。ドングルを再接続して、もう一度お試しください。</translation>
     </message>
     <message>
         <source>The last update did not finish. The firmware will be installed again.</source>
-        <translation type="unfinished"></translation>
+        <translation>前回の更新が完了していません。ファームウェアを再インストールします。</translation>
     </message>
     <message>
         <source>Preparing the dongle for the update...</source>
-        <translation type="unfinished"></translation>
+        <translation>更新のためにドングルを準備中...</translation>
     </message>
     <message>
         <source>The dongle could not switch to update mode. Reconnect it and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>ドングルを更新モードに切り替えられませんでした。再接続して、もう一度お試しください。</translation>
     </message>
     <message>
         <source>Sending the firmware...</source>
-        <translation type="unfinished"></translation>
+        <translation>ファームウェアを送信中...</translation>
     </message>
     <message>
         <source>If this keeps failing, contact %1 with the dongle&apos;s serial number.</source>
-        <translation type="unfinished"></translation>
+        <translation>失敗が続く場合は、ドングルのシリアル番号を添えて %1 までお問い合わせください。</translation>
     </message>
     <message>
         <source>Firmware accepted. Restarting the dongle...</source>
-        <translation type="unfinished"></translation>
+        <translation>ファームウェアが受け入れられました。ドングルを再起動中...</translation>
     </message>
     <message>
         <source>State: %1, %2 Profiles</source>
@@ -3440,7 +3485,7 @@ Install it from the Upgrade tab (Check for Updates, then Flash). If that fails, 
     </message>
     <message>
         <source>Device State Refreshed. Serial: %1, Mode: Factory</source>
-        <translation type="unfinished"></translation>
+        <translation>状態更新。シリアル: %1, モード: 工場</translation>
     </message>
     <message>
         <source>Failed to refresh state: %1</source>
@@ -3504,7 +3549,31 @@ Install it from the Upgrade tab (Check for Updates, then Flash). If that fails, 
     </message>
     <message>
         <source>This dongle is already set up.</source>
-        <translation type="unfinished"></translation>
+        <translation>このドングルは既にセットアップ済みです。</translation>
+    </message>
+    <message>
+        <source>Unknown</source>
+        <translation>不明</translation>
+    </message>
+    <message>
+        <source>License($%1) + %2 Profiles(%3)</source>
+        <translation>ライセンス($%1) + %2 プロファイル(%3)</translation>
+    </message>
+    <message>
+        <source>%1 - Combo Discount($%2)</source>
+        <translation>%1 - セット割引($%2)</translation>
+    </message>
+    <message>
+        <source>Upgrade profiles to %1 (%2)</source>
+        <translation>プロファイル数を %1 にアップグレード (%2)</translation>
+    </message>
+    <message>
+        <source>Select an option</source>
+        <translation>オプションを選択してください</translation>
+    </message>
+    <message>
+        <source>Payment Details: %1 = Total $%2 USD</source>
+        <translation>支払い詳細: %1 = 合計 $%2 USD</translation>
     </message>
 </context>
 <context>

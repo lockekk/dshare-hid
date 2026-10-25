@@ -41,7 +41,19 @@ p, li { white-space: pre-wrap; }
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;https://github.com/lockekk/dshare-hid&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#508ed8;&quot;&gt;Code Contributors&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;https://github.com/lockekk/dshare-hid&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#508ed8;&quot;&gt;代码贡献者&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>Forked from &lt;a href=&apos;https://github.com/deskflow/deskflow&apos;&gt;Deskflow&lt;/a&gt;. We gratefully acknowledge their work and thank the original contributors.</source>
+        <translation>基于 &lt;a href=&apos;https://github.com/deskflow/deskflow&apos;&gt;Deskflow&lt;/a&gt; 派生。我们衷心感谢他们的工作，并向原项目的所有贡献者致谢。</translation>
+    </message>
+    <message>
+        <source>Support: %1</source>
+        <translation>技术支持：%1</translation>
     </message>
 </context>
 <context>
@@ -135,78 +147,78 @@ p, li { white-space: pre-wrap; }
     <name>BridgeFirmwareNotice</name>
     <message>
         <source>Pairings were reset. On each host, forget &quot;%1&quot; and pair again with its profile active.</source>
-        <translation type="unfinished"></translation>
+        <translation>配对已被重置。请在每台主机上忽略“%1”，然后切换到该主机对应的配置文件并重新配对。</translation>
     </message>
 </context>
 <context>
     <name>BridgeProfileBackup</name>
     <message>
         <source>%1: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1：%2</translation>
     </message>
     <message>
         <source>&quot;%1&quot; is missing.</source>
-        <translation type="unfinished"></translation>
+        <translation>缺少“%1”。</translation>
     </message>
     <message>
         <source>&quot;%1&quot; must be a whole number from %2 to %3.</source>
-        <translation type="unfinished"></translation>
+        <translation>“%1”必须是 %2 到 %3 之间的整数。</translation>
     </message>
     <message>
         <source>Entry %1 of &quot;profiles&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>“profiles”中的第 %1 项</translation>
     </message>
     <message>
         <source>%1 isn&apos;t a profile.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 不是配置文件。</translation>
     </message>
     <message>
         <source>Profile %1</source>
-        <translation type="unfinished"></translation>
+        <translation>配置文件 %1</translation>
     </message>
     <message>
         <source>Profile %1 is in the backup more than once.</source>
-        <translation type="unfinished"></translation>
+        <translation>配置文件 %1 在备份中出现了多次。</translation>
     </message>
     <message>
         <source>&quot;%1&quot; must be %2, the profile&apos;s index.</source>
-        <translation type="unfinished"></translation>
+        <translation>“%1”必须为 %2，即该配置文件的索引。</translation>
     </message>
     <message>
         <source>the hostname must be 1 to 31 characters: A-Z, 0-9, spaces and .-_ (not only spaces).</source>
-        <translation type="unfinished"></translation>
+        <translation>主机名必须为 1 到 31 个字符：A-Z、0-9、空格及 .-_ (不能只有空格)。</translation>
     </message>
     <message>
         <source>The file is too large to be a profile backup.</source>
-        <translation type="unfinished"></translation>
+        <translation>文件过大，不是有效的配置文件备份。</translation>
     </message>
     <message>
         <source>The file isn&apos;t valid JSON: %1 (at character %2).</source>
-        <translation type="unfinished"></translation>
+        <translation>文件不是有效的 JSON：%1 (位于第 %2 个字符)。</translation>
     </message>
     <message>
         <source>The file isn&apos;t a profile backup: it has no &quot;%1&quot;.</source>
-        <translation type="unfinished"></translation>
+        <translation>该文件不是配置文件备份：缺少“%1”。</translation>
     </message>
     <message>
         <source>The device name must be 1 to 22 characters: A-Z, 0-9, spaces and .-_ (not only spaces).</source>
-        <translation type="unfinished"></translation>
+        <translation>设备名称必须为 1 到 22 个字符：A-Z、0-9、空格及 .-_ (不能只有空格)。</translation>
     </message>
     <message>
         <source>&quot;%1&quot; must be a list.</source>
-        <translation type="unfinished"></translation>
+        <translation>“%1”必须是列表。</translation>
     </message>
     <message>
         <source>The backup has no profiles.</source>
-        <translation type="unfinished"></translation>
+        <translation>备份中没有配置文件。</translation>
     </message>
     <message>
         <source>This device has no profile %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>此设备没有配置文件 %1。</translation>
     </message>
     <message>
         <source>This device has no profile %1 to make active.</source>
-        <translation type="unfinished"></translation>
+        <translation>此设备没有配置文件 %1，无法将其设为当前配置文件。</translation>
     </message>
 </context>
 <context>
@@ -514,128 +526,129 @@ File -&gt; Firmware -&gt; Order.</source>
     <name>DeskflowHidExtension</name>
     <message>
         <source>Bridge Client Logs</source>
-        <translation type="unfinished">桥接客户端日志</translation>
+        <translation>桥接客户端日志</translation>
     </message>
     <message>
         <source>ESP32 HID Tools</source>
-        <translation type="unfinished">ESP32 HID 工具</translation>
+        <translation>ESP32 HID 工具</translation>
     </message>
     <message>
         <source>Ready</source>
-        <translation type="unfinished">就绪</translation>
+        <translation>就绪</translation>
     </message>
     <message>
         <source>Feature Unavailable</source>
-        <translation type="unfinished">功能不可用</translation>
+        <translation>功能不可用</translation>
     </message>
     <message>
         <source>The ESP32 HID Tools module is not available in this build.</source>
-        <translation type="unfinished">此构建版本中 ESP32 HID 工具模块不可用。</translation>
+        <translation>此构建版本中 ESP32 HID 工具模块不可用。</translation>
     </message>
     <message>
         <source>Unknown Device</source>
-        <translation type="unfinished">未知设备</translation>
+        <translation>未知设备</translation>
     </message>
     <message>
         <source>Bridge client device plugged in: %1</source>
-        <translation type="unfinished">桥接客户端设备已插入：%1</translation>
+        <translation>桥接客户端设备已插入：%1</translation>
     </message>
     <message>
         <source>Bridge client device unplugged: %1</source>
-        <translation type="unfinished">桥接客户端设备已拔出：%1</translation>
+        <translation>桥接客户端设备已拔出：%1</translation>
     </message>
     <message>
         <source>Error: No configuration found for device: %1</source>
-        <translation type="unfinished">错误：未找到设备配置：%1</translation>
+        <translation>错误：未找到设备配置：%1</translation>
     </message>
     <message>
         <source>Error: Cannot connect. Device path is empty.</source>
-        <translation type="unfinished">错误：无法连接。设备路径为空。</translation>
+        <translation>错误：无法连接。设备路径为空。</translation>
     </message>
     <message>
         <source>Already connected via another profile</source>
-        <translation type="unfinished">已通过另一个配置文件连接</translation>
+        <translation>已通过另一个配置文件连接</translation>
     </message>
     <message>
         <source>Activation Required</source>
-        <translation type="unfinished">需要激活</translation>
+        <translation>需要激活</translation>
     </message>
     <message>
         <source>Free trial is expired. Please consider purchasing a license via 
 File -&gt; Firmware -&gt; Order.</source>
-        <translation type="unfinished">免费试用已过期。请通过 文件 -&gt; 固件 -&gt; 订购 购买许可。</translation>
+        <translation>免费试用已过期。请考虑通过以下菜单购买许可：
+文件 -&gt; 固件 -&gt; 订购。</translation>
     </message>
     <message>
         <source>Starting bridge client: %1</source>
-        <translation type="unfinished">正在启动桥接客户端：%1</translation>
+        <translation>正在启动桥接客户端：%1</translation>
     </message>
     <message>
         <source>Failed to start bridge client: %1</source>
-        <translation type="unfinished">启动桥接客户端失败：%1</translation>
+        <translation>启动桥接客户端失败：%1</translation>
     </message>
     <message>
         <source>Failed to switch profile on %1: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>在 %1 上切换配置文件失败：%2</translation>
     </message>
     <message>
         <source>Several bridge clients are connected: move the cursor onto the one to switch</source>
-        <translation type="unfinished"></translation>
+        <translation>已连接多个桥接客户端：请将光标移到要切换的客户端上</translation>
     </message>
     <message>
         <source>%1 has no profile %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 没有配置文件 %2</translation>
     </message>
     <message>
         <source>Bridge Profile Shortcuts</source>
-        <translation type="unfinished"></translation>
+        <translation>桥接配置文件快捷键</translation>
     </message>
     <message>
         <source>Off</source>
-        <translation type="unfinished"></translation>
+        <translation>关闭</translation>
     </message>
     <message>
         <source>Failed to rename the device to %1</source>
-        <translation type="unfinished"></translation>
+        <translation>将设备重命名为 %1 失败</translation>
     </message>
     <message>
         <source>Factory firmware detected. Please update firmware.</source>
-        <translation type="unfinished">检测到工厂固件。请更新固件。</translation>
+        <translation>检测到工厂固件。请更新固件。</translation>
     </message>
     <message>
         <source>Factory firmware detected on %1. Auto-connect disabled.</source>
-        <translation type="unfinished">在 %1 上检测到工厂固件。自动连接已禁用。</translation>
+        <translation>在 %1 上检测到工厂固件。自动连接已禁用。</translation>
     </message>
     <message>
         <source>Device handshake failed. Possibly not a DShare-HID firmware.</source>
-        <translation type="unfinished">设备握手失败。可能不是 DShare-HID 固件。</translation>
+        <translation>设备握手失败。可能不是 DShare-HID 固件。</translation>
     </message>
     <message>
         <source>Handshake failed on %1. Auto-connect disabled.</source>
-        <translation type="unfinished">在 %1 上握手失败。自动连接已禁用。</translation>
+        <translation>在 %1 上握手失败。自动连接已禁用。</translation>
     </message>
     <message>
         <source>Device disconnected.</source>
-        <translation type="unfinished">设备已断开连接。</translation>
+        <translation>设备已断开连接。</translation>
     </message>
     <message>
         <source>Server is down. Auto-connect will resume once the server starts.</source>
-        <translation type="unfinished">服务器已停机。服务器启动后将恢复自动连接。</translation>
+        <translation>服务器已停机。服务器启动后将恢复自动连接。</translation>
     </message>
     <message>
         <source>Connection failed. Retrying auto-connect (%1/3)...</source>
-        <translation type="unfinished">连接失败。正在重试自动连接 (%1/3)...</translation>
+        <translation>连接失败。正在重试自动连接 (%1/3)...</translation>
     </message>
     <message>
         <source>Auto-connect failed. Giving up after 3 attempts.</source>
-        <translation type="unfinished">自动连接失败。尝试 3 次后放弃。</translation>
+        <translation>自动连接失败。尝试 3 次后放弃。</translation>
     </message>
     <message>
         <source>Locked</source>
-        <translation type="unfinished">已锁定</translation>
+        <translation>已锁定</translation>
     </message>
     <message>
         <source>Locked by %1</source>
-        <translation type="unfinished">被 %1 锁定</translation>
+        <translation>被 %1 锁定</translation>
     </message>
 </context>
 <context>
@@ -1124,15 +1137,15 @@ Valid names:
     </message>
     <message>
         <source>current user</source>
-        <translation type="unfinished"></translation>
+        <translation>当前用户</translation>
     </message>
     <message>
         <source>Permission Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>权限警告</translation>
     </message>
     <message>
         <source>User &lt;b&gt;%1&lt;/b&gt; is not in the &lt;b&gt;dialout&lt;/b&gt; group.&lt;br&gt;&lt;br&gt;You may not be able to access the USB device.&lt;br&gt;Please run the following command then &lt;b&gt;log out then log in&lt;/b&gt;, or &lt;b&gt;reboot&lt;/b&gt;:&lt;br&gt;&lt;br&gt;&lt;code&gt;sudo usermod -a -G dialout $USER&lt;/code&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>用户 &lt;b&gt;%1&lt;/b&gt; 不在 &lt;b&gt;dialout&lt;/b&gt; 组中。&lt;br&gt;&lt;br&gt;您可能无法访问 USB 设备。&lt;br&gt;请运行以下命令，然后&lt;b&gt;注销并重新登录&lt;/b&gt;，或&lt;b&gt;重启&lt;/b&gt;：&lt;br&gt;&lt;br&gt;&lt;code&gt;sudo usermod -a -G dialout $USER&lt;/code&gt;</translation>
     </message>
     <message>
         <source>The Core executable could not be successfully started, although it does exist. Please check if you have sufficient permissions to run this program.</source>
@@ -1784,7 +1797,12 @@ Do you want to delete its configuration file as well?
 
 If you choose &apos;Yes&apos;, the bridge client widget will be removed from the main window.
 If you choose &apos;No&apos;, the bridge client configuration will be kept and can still be used.</source>
-        <translation type="unfinished"></translation>
+        <translation>屏幕“%1”是一个桥接客户端。
+
+是否同时删除其配置文件？
+
+如果选择“是”，桥接客户端组件将从主窗口中移除。
+如果选择“否”，桥接客户端配置将被保留，并可继续使用。</translation>
     </message>
     <message>
         <source>Deletion Failed</source>
@@ -2213,7 +2231,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Disconnect to rename the screen.</source>
-        <translation type="unfinished"></translation>
+        <translation>断开连接后才能重命名屏幕。</translation>
     </message>
     <message>
         <source>Switched to %1</source>
@@ -2221,27 +2239,27 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Failed to read the profiles: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>读取配置文件失败：%1</translation>
     </message>
     <message>
         <source>Profile backups (*.json)</source>
-        <translation type="unfinished"></translation>
+        <translation>配置文件备份 (*.json)</translation>
     </message>
     <message>
         <source>Failed to save %1: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>保存 %1 失败：%2</translation>
     </message>
     <message>
         <source>Restore Profiles</source>
-        <translation type="unfinished"></translation>
+        <translation>恢复配置文件</translation>
     </message>
     <message>
         <source>Profile backups (*.json);;All files (*)</source>
-        <translation type="unfinished"></translation>
+        <translation>配置文件备份 (*.json);;所有文件 (*)</translation>
     </message>
     <message>
         <source>Failed to open %1: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>打开 %1 失败：%2</translation>
     </message>
     <message>
         <source>Rename Failed</source>
@@ -2257,31 +2275,31 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>and %1 more</source>
-        <translation type="unfinished"></translation>
+        <translation>以及其他 %1 项</translation>
     </message>
     <message>
         <source>Reset %1. Its host must pair again manually.</source>
-        <translation type="unfinished"></translation>
+        <translation>重置 %1。其主机需要手动重新配对。</translation>
     </message>
     <message>
         <source>Save %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>保存 %1。</translation>
     </message>
     <message>
         <source>Active profile changes to %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>当前配置文件更改为 %1。</translation>
     </message>
     <message>
         <source>Device name changes to %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>设备名称更改为 %1。</translation>
     </message>
     <message>
         <source>Apply Changes</source>
-        <translation type="unfinished"></translation>
+        <translation>应用更改</translation>
     </message>
     <message>
         <source>Apply these changes to the device?</source>
-        <translation type="unfinished"></translation>
+        <translation>要将以下更改应用到设备吗？</translation>
     </message>
     <message>
         <source>Screen name cannot be empty.</source>
@@ -2289,7 +2307,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Screen name can only contain letters, numbers, &apos;-&apos;, &apos;_&apos; and &apos;.&apos;, and cannot start or end with &apos;-&apos;, &apos;_&apos; or &apos;.&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>屏幕名称只能包含字母、数字、&apos;-&apos;、&apos;_&apos; 和 &apos;.&apos;，且不能以 &apos;-&apos;、&apos;_&apos; 或 &apos;.&apos; 开头或结尾。</translation>
     </message>
     <message>
         <source>Device name cannot be empty.</source>
@@ -2329,7 +2347,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Automatically restore screen location for the active profile</source>
-        <translation type="unfinished"></translation>
+        <translation>自动恢复当前配置文件的屏幕位置</translation>
     </message>
     <message>
         <source>Profiles (Device)</source>
@@ -2337,7 +2355,7 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Restore...</source>
-        <translation type="unfinished"></translation>
+        <translation>恢复...</translation>
     </message>
     <message>
         <source>A-Z, 0-9, spaces, .-_ (max 31 chars)</source>
@@ -2377,23 +2395,23 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>When enabled, the saved screen location for the active profile will be restored automatically.</source>
-        <translation type="unfinished"></translation>
+        <translation>启用后，将自动恢复当前配置文件已保存的屏幕位置。</translation>
     </message>
     <message>
         <source>Backup...</source>
-        <translation type="unfinished"></translation>
+        <translation>备份...</translation>
     </message>
     <message>
         <source>Save the device&apos;s profiles to a file.</source>
-        <translation type="unfinished"></translation>
+        <translation>将设备的配置文件保存到文件。</translation>
     </message>
     <message>
         <source>Load profiles from a backup file.</source>
-        <translation type="unfinished"></translation>
+        <translation>从备份文件加载配置文件。</translation>
     </message>
     <message>
         <source>Vertical Scroll Scale:</source>
-        <translation type="unfinished"></translation>
+        <translation>垂直滚动比例：</translation>
     </message>
     <message>
         <source>Device must be activated to change its name.</source>
@@ -2441,31 +2459,31 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
     </message>
     <message>
         <source>Backup Profiles</source>
-        <translation type="unfinished"></translation>
+        <translation>备份配置文件</translation>
     </message>
     <message>
         <source>This device has no profiles to backup.</source>
-        <translation type="unfinished"></translation>
+        <translation>此设备没有可备份的配置文件。</translation>
     </message>
     <message>
         <source>Please fix these profiles first:</source>
-        <translation type="unfinished"></translation>
+        <translation>请先修正以下配置文件中的问题：</translation>
     </message>
     <message>
         <source>Failed to update the device: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>更新设备失败：%1</translation>
     </message>
     <message>
         <source>Backup saved to:</source>
-        <translation type="unfinished"></translation>
+        <translation>备份已保存到：</translation>
     </message>
     <message>
         <source>This file can&apos;t be restored:</source>
-        <translation type="unfinished"></translation>
+        <translation>无法恢复此文件：</translation>
     </message>
     <message>
         <source>Backup loaded. Click OK to apply.</source>
-        <translation type="unfinished"></translation>
+        <translation>备份已加载。点击“确定”以应用。</translation>
     </message>
     <message>
         <source>Duplicate Configuration</source>
@@ -2485,31 +2503,35 @@ Duplicate: %1</source>
         <source>Scroll speed:</source>
         <translation type="vanished">滚动速度：</translation>
     </message>
+    <message>
+        <source>%1 (Active)</source>
+        <translation>%1 (当前)</translation>
+    </message>
 </context>
 <context>
     <name>deskflow::gui::BridgeClientManager</name>
     <message>
         <source>&lt;br&gt;Device plugged in</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;br&gt;设备已插入</translation>
     </message>
 </context>
 <context>
     <name>deskflow::gui::BridgeClientProcess</name>
     <message>
         <source>the bridge client isn&apos;t running</source>
-        <translation type="unfinished"></translation>
+        <translation>桥接客户端未在运行</translation>
     </message>
     <message>
         <source>the bridge client isn&apos;t answering</source>
-        <translation type="unfinished"></translation>
+        <translation>桥接客户端无响应</translation>
     </message>
     <message>
         <source>the bridge client didn&apos;t answer</source>
-        <translation type="unfinished"></translation>
+        <translation>桥接客户端未响应</translation>
     </message>
     <message>
         <source>the bridge client stopped</source>
-        <translation type="unfinished"></translation>
+        <translation>桥接客户端已停止</translation>
     </message>
 </context>
 <context>
@@ -2536,7 +2558,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>unknown</source>
-        <translation>未知</translation>
+        <translation type="vanished">未知</translation>
     </message>
     <message>
         <source>Disconnect</source>
@@ -2544,11 +2566,11 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Active profile: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>当前配置文件：%1</translation>
     </message>
     <message>
         <source>Switch to profile: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>切换到配置文件：%1</translation>
     </message>
     <message>
         <source>Device not connected</source>
@@ -2578,6 +2600,22 @@ Duplicate: %1</source>
         <source>Portrait</source>
         <translation>竖屏</translation>
     </message>
+    <message>
+        <source>Unknown</source>
+        <translation>未知</translation>
+    </message>
+    <message>
+        <source>Activated</source>
+        <translation>已激活</translation>
+    </message>
+    <message>
+        <source>Free Trial</source>
+        <translation>免费试用</translation>
+    </message>
+    <message>
+        <source>Unlicensed</source>
+        <translation>未授权</translation>
+    </message>
 </context>
 <context>
     <name>deskflow::gui::BridgeDeviceService</name>
@@ -2587,27 +2625,27 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>the firmware tool is using the device</source>
-        <translation type="unfinished"></translation>
+        <translation>固件工具正在使用该设备</translation>
     </message>
     <message>
         <source>failed to write profile %1: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>写入配置文件 %1 失败：%2</translation>
     </message>
     <message>
         <source>profile %1 didn&apos;t read back as it was written</source>
-        <translation type="unfinished"></translation>
+        <translation>配置文件 %1 的回读内容与写入内容不一致</translation>
     </message>
     <message>
         <source>failed to make profile %1 active: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>将配置文件 %1 设为当前配置文件失败：%2</translation>
     </message>
     <message>
         <source>the device didn&apos;t make profile %1 active</source>
-        <translation type="unfinished"></translation>
+        <translation>设备未将配置文件 %1 设为当前配置文件</translation>
     </message>
     <message>
         <source>the device sent an invalid profile list</source>
-        <translation type="unfinished"></translation>
+        <translation>设备发送了无效的配置文件列表</translation>
     </message>
 </context>
 <context>
@@ -2710,67 +2748,67 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Setting up a new dongle with %1 (%2 KB).</source>
-        <translation type="unfinished"></translation>
+        <translation>正在使用 %1 (%2 KB) 设置新 Dongle。</translation>
     </message>
     <message>
         <source>Setting up a new dongle with the latest firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>正在使用最新固件设置新 Dongle。</translation>
     </message>
     <message>
         <source>The setup firmware is not available for download yet. Please try again later.</source>
-        <translation type="unfinished"></translation>
+        <translation>设置固件暂时无法下载。请稍后重试。</translation>
     </message>
     <message>
         <source>Could not reach the download server. Check your internet connection and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>无法连接到下载服务器。请检查网络连接后重试。</translation>
     </message>
     <message>
         <source>Downloaded (%1 KB).</source>
-        <translation type="unfinished"></translation>
+        <translation>下载完成 (%1 KB)。</translation>
     </message>
     <message>
         <source>Set Up New Dongle</source>
-        <translation type="unfinished"></translation>
+        <translation>设置新设备</translation>
     </message>
     <message>
         <source>Checking the dongle on %1...</source>
-        <translation type="unfinished"></translation>
+        <translation>正在检查 %1 上的 Dongle...</translation>
     </message>
     <message>
         <source>Dongle found: firmware %1, %2, serial %3.</source>
-        <translation type="unfinished"></translation>
+        <translation>已找到 Dongle：固件 %1，%2，序列号 %3。</translation>
     </message>
     <message>
         <source>Dongle found in update mode.</source>
-        <translation type="unfinished"></translation>
+        <translation>已找到处于更新模式的 Dongle。</translation>
     </message>
     <message>
         <source>Dongle found in update mode, without application firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>已找到处于更新模式的 Dongle，但其上没有应用固件。</translation>
     </message>
     <message>
         <source>No DShare-HID firmware found on the dongle.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dongle 上未找到 DShare-HID 固件。</translation>
     </message>
     <message>
         <source>This dongle is already set up, but its last update did not finish. Use the Upgrade tab to install the firmware again.</source>
-        <translation type="unfinished"></translation>
+        <translation>该 Dongle 已设置，但上次更新未能完成。请使用“升级”选项卡重新安装固件。</translation>
     </message>
     <message>
         <source>This dongle is already set up. Use the Upgrade tab to update its firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>该 Dongle 已设置。请使用“升级”选项卡更新其固件。</translation>
     </message>
     <message>
         <source>Already Set Up</source>
-        <translation type="unfinished"></translation>
+        <translation>已完成设置</translation>
     </message>
     <message>
         <source>Writing the firmware...</source>
-        <translation type="unfinished"></translation>
+        <translation>正在写入固件...</translation>
     </message>
     <message>
         <source>Firmware written. Restarting the dongle...</source>
-        <translation type="unfinished"></translation>
+        <translation>固件已写入。正在重启 Dongle...</translation>
     </message>
     <message>
         <source>Flash failed, %1</source>
@@ -2810,7 +2848,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Already licensed, but want bump profiles</source>
-        <translation>已有许可，但想增加配置文件数量</translation>
+        <translation type="vanished">已有许可，但想增加配置文件数量</translation>
     </message>
     <message>
         <source>Payments</source>
@@ -2874,15 +2912,15 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>Installs DShare-HID firmware on a new dongle. You only need to do this once; after that, use the Upgrade tab for updates.</source>
-        <translation type="unfinished"></translation>
+        <translation>在新 Dongle 上安装 DShare-HID 固件。此操作只需执行一次；之后请使用“升级”选项卡进行更新。</translation>
     </message>
     <message>
         <source>New Dongle Setup</source>
-        <translation type="unfinished"></translation>
+        <translation>新设备设置</translation>
     </message>
     <message>
         <source>Upgrade</source>
-        <translation type="unfinished"></translation>
+        <translation>升级</translation>
     </message>
     <message>
         <source>Not required for manual payment</source>
@@ -2938,7 +2976,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>No Application Firmware</source>
-        <translation type="unfinished"></translation>
+        <translation>无应用固件</translation>
     </message>
     <message>
         <source>Device is already running with factory firmware.</source>
@@ -3334,7 +3372,7 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>You are about to open PayPal to pay &lt;b&gt;$%1 USD&lt;/b&gt; to &lt;b&gt;%2&lt;/b&gt;.&lt;br&gt;&lt;br&gt;Product: %3&lt;br&gt;Reference: %4&lt;br&gt;&lt;br&gt;Please confirm to proceed to PayPal.</source>
-        <translation>您即将打开 PayPal 向 &lt;b&gt;%2&lt;/b&gt; 支付 &lt;b&gt;$%1 USD&lt;/b&gt; 至 &lt;b&gt;%2&lt;/b&gt;。&lt;br&gt;&lt;br&gt;产品：%3&lt;br&gt;参考号：%4&lt;br&gt;&lt;br&gt;请确认以前往 PayPal。</translation>
+        <translation>您即将打开 PayPal 向 &lt;b&gt;%2&lt;/b&gt; 支付 &lt;b&gt;$%1 USD&lt;/b&gt;。&lt;br&gt;&lt;br&gt;产品：%3&lt;br&gt;参考号：%4&lt;br&gt;&lt;br&gt;请确认后前往 PayPal。</translation>
     </message>
     <message>
         <source>Confirm Payment</source>
@@ -3378,111 +3416,119 @@ Next step: You need to flash the per-device firmware to use the device. Please s
     </message>
     <message>
         <source>Set up this dongle? This is permanent.</source>
-        <translation type="unfinished"></translation>
+        <translation>要设置此 Dongle 吗？此操作是永久性的。</translation>
     </message>
     <message>
         <source>Waiting for the dongle to start...</source>
-        <translation type="unfinished"></translation>
+        <translation>正在等待 Dongle 启动...</translation>
     </message>
     <message>
         <source>Dongle ready: firmware %1, %2.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dongle 已就绪：固件 %1，%2。</translation>
     </message>
     <message>
         <source>The dongle stayed in update mode, without application firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dongle 仍处于更新模式，没有应用固件。</translation>
     </message>
     <message>
         <source>The dongle did not report back within 60 seconds.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dongle 未在 60 秒内响应。</translation>
     </message>
     <message>
         <source>Firmware flashed successfully.
 
 The device is running a 7-day free trial. After the trial expires, use the Activation tab to activate with a license key.</source>
-        <translation type="unfinished"></translation>
+        <translation>固件烧录成功。
+
+设备正处于 7 天免费试用期。试用期结束后，请在“激活”选项卡中使用激活密钥激活设备。</translation>
     </message>
     <message>
         <source>Firmware flashed successfully.
 
 The device is running the application firmware. Check its license on the Activation tab.</source>
-        <translation type="unfinished"></translation>
+        <translation>固件烧录成功。
+
+设备正在运行应用固件。请在“激活”选项卡中查看其许可状态。</translation>
     </message>
     <message>
         <source>Device Not Detected</source>
-        <translation type="unfinished"></translation>
+        <translation>未检测到设备</translation>
     </message>
     <message>
         <source>The firmware was written, but the device did not start the application within 60 seconds.
 
 Disconnect and reconnect the device, then check its status on the Activation tab.</source>
-        <translation type="unfinished"></translation>
+        <translation>固件已写入，但设备未在 60 秒内启动应用固件。
+
+请断开并重新连接设备，然后在“激活”选项卡中检查其状态。</translation>
     </message>
     <message>
         <source>The device is in factory mode without application firmware.
 
 Install it from the Upgrade tab (Check for Updates, then Flash). If that fails, contact %1 with the device serial number.</source>
-        <translation type="unfinished"></translation>
+        <translation>设备处于工厂模式，且没有应用固件。
+
+请在“升级”选项卡中安装应用固件（先点击“检查更新”，再点击“烧录”）。如果仍然失败，请提供设备序列号并联系 %1。</translation>
     </message>
     <message>
         <source>Lost the connection to the dongle. Reconnect it and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>与 Dongle 的连接已断开。请重新连接 Dongle 后重试。</translation>
     </message>
     <message>
         <source>Could not connect to the dongle. Hold the Boot button while you plug it in, then try again. If it was set up before, use the Upgrade tab instead.</source>
-        <translation type="unfinished"></translation>
+        <translation>无法连接到 Dongle。请按住 Boot 按钮的同时插入 Dongle，然后重试。如果该 Dongle 之前已设置过，请改用“升级”选项卡。</translation>
     </message>
     <message>
         <source>Could not connect to the dongle. Reconnect it and try again. If it was set up before, use the Upgrade tab instead.</source>
-        <translation type="unfinished"></translation>
+        <translation>无法连接到 Dongle。请重新连接 Dongle 后重试。如果该 Dongle 之前已设置过，请改用“升级”选项卡。</translation>
     </message>
     <message>
         <source>The dongle did not accept this firmware.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dongle 不接受此固件。</translation>
     </message>
     <message>
         <source>This is not a valid firmware file.</source>
-        <translation type="unfinished"></translation>
+        <translation>这不是有效的固件文件。</translation>
     </message>
     <message>
         <source>Writing the firmware failed. Reconnect the dongle and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>写入固件失败。请重新连接 Dongle 后重试。</translation>
     </message>
     <message>
         <source>Not Set Up</source>
-        <translation type="unfinished"></translation>
+        <translation>未设置</translation>
     </message>
     <message>
         <source>This dongle is not set up yet. Use the New Dongle Setup tab first.</source>
-        <translation type="unfinished"></translation>
+        <translation>该 Dongle 尚未设置。请先使用“新设备设置”选项卡。</translation>
     </message>
     <message>
         <source>Could not open the port. Reconnect the dongle and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>无法打开端口。请重新连接 Dongle 后重试。</translation>
     </message>
     <message>
         <source>The last update did not finish. The firmware will be installed again.</source>
-        <translation type="unfinished"></translation>
+        <translation>上次更新未完成。将重新安装固件。</translation>
     </message>
     <message>
         <source>Preparing the dongle for the update...</source>
-        <translation type="unfinished"></translation>
+        <translation>正在准备 Dongle 以进行更新...</translation>
     </message>
     <message>
         <source>The dongle could not switch to update mode. Reconnect it and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dongle 无法切换到更新模式。请重新连接 Dongle 后重试。</translation>
     </message>
     <message>
         <source>Sending the firmware...</source>
-        <translation type="unfinished"></translation>
+        <translation>正在发送固件...</translation>
     </message>
     <message>
         <source>If this keeps failing, contact %1 with the dongle&apos;s serial number.</source>
-        <translation type="unfinished"></translation>
+        <translation>如果反复失败，请提供 Dongle 的序列号并联系 %1。</translation>
     </message>
     <message>
         <source>Firmware accepted. Restarting the dongle...</source>
-        <translation type="unfinished"></translation>
+        <translation>Dongle 已接受固件。正在重启 Dongle...</translation>
     </message>
     <message>
         <source>State: %1, %2 Profiles</source>
@@ -3490,7 +3536,7 @@ Install it from the Upgrade tab (Check for Updates, then Flash). If that fails, 
     </message>
     <message>
         <source>Device State Refreshed. Serial: %1, Mode: Factory</source>
-        <translation type="unfinished"></translation>
+        <translation>设备状态已刷新。序列号：%1，模式：工厂</translation>
     </message>
     <message>
         <source>Failed to refresh state: %1</source>
@@ -3562,7 +3608,31 @@ Install it from the Upgrade tab (Check for Updates, then Flash). If that fails, 
     </message>
     <message>
         <source>This dongle is already set up.</source>
-        <translation type="unfinished"></translation>
+        <translation>该 Dongle 已设置。</translation>
+    </message>
+    <message>
+        <source>Unknown</source>
+        <translation>未知</translation>
+    </message>
+    <message>
+        <source>License($%1) + %2 Profiles(%3)</source>
+        <translation>许可($%1) + %2 个配置文件(%3)</translation>
+    </message>
+    <message>
+        <source>%1 - Combo Discount($%2)</source>
+        <translation>%1 - 组合优惠($%2)</translation>
+    </message>
+    <message>
+        <source>Upgrade profiles to %1 (%2)</source>
+        <translation>将配置文件数量升级到 %1 (%2)</translation>
+    </message>
+    <message>
+        <source>Select an option</source>
+        <translation>请选择一个选项</translation>
+    </message>
+    <message>
+        <source>Payment Details: %1 = Total $%2 USD</source>
+        <translation>支付详情：%1 = 总计 $%2 USD</translation>
     </message>
 </context>
 <context>
