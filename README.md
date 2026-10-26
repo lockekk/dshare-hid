@@ -1,8 +1,28 @@
-# DShare-HID: Share Keyboard and Mouse with Mobile Devices
+<div align="center">
 
-![License](https://img.shields.io/github/license/lockekk/dshare-hid?style=flat-square) ![Release](https://img.shields.io/github/v/tag/lockekk/dshare-hid?style=flat-square)
+<img src="docs/io.github.lockekk.dshare-hid.png" alt="DShare-HID" width="112">
+
+# DShare-HID
+
+**Share your computer's keyboard and mouse with iPad, iPhone and Android.**
+
+<a href="https://github.com/lockekk/dshare-hid/releases/latest"><img src="https://img.shields.io/badge/Download-latest%20release-2EA44F?style=for-the-badge&logo=github&logoColor=white" alt="Download the latest release"></a>
+
+[Install](#-installation) · [First use](#first-use--flashing-guide) · [Support](#support--contact)
+
+<a href="https://github.com/lockekk/dshare-hid/releases/latest"><img src="https://img.shields.io/github/v/release/lockekk/dshare-hid?style=flat-square&color=blue" alt="Latest release"></a>
+<a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--2.0-blue?style=flat-square" alt="License: GPL-2.0"></a>
+<img src="https://img.shields.io/badge/Qt-41CD52?style=flat-square&logo=qt&logoColor=white" alt="Qt">
+<img src="https://img.shields.io/badge/ESP32--C3-E7352C?style=flat-square&logo=espressif&logoColor=white" alt="ESP32-C3">
+<a href="https://ko-fi.com/lockekk"><img src="https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-FF5E5B?style=flat-square&logo=kofi&logoColor=white" alt="Buy me a coffee on Ko-fi"></a>
+<br>
+<img src="https://img.shields.io/badge/Windows-0078D4?style=flat-square&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik0wIDBoMTEuNHYxMS40SDB6TTEyLjYgMEgyNHYxMS40SDEyLjZ6TTAgMTIuNmgxMS40VjI0SDB6TTEyLjYgMTIuNkgyNFYyNEgxMi42eiIvPjwvc3ZnPg%3D%3D" alt="Windows">
+<img src="https://img.shields.io/badge/macOS-000000?style=flat-square&logo=apple&logoColor=white" alt="macOS">
+<img src="https://img.shields.io/badge/Linux-FCC624?style=flat-square&logo=linux&logoColor=black" alt="Linux">
 
 **[ English ]** | [ 简体中文 ](README_zh-CN.md)
+
+</div>
 
 ---
 
@@ -236,6 +256,10 @@ We also thank [Josselin Hefti](https://www.printables.com/model/1360390-esp32-c3
 ## Support & Contact
 - **Email**: [dshare.hid@gmail.com](mailto:dshare.hid@gmail.com)
 - **Issues**: Please report bugs via [GitHub Issues](https://github.com/lockekk/dshare-hid/issues).
+
+If DShare-HID is useful to you, you can buy me a coffee — entirely optional, and thanks.
+
+<a href="https://ko-fi.com/lockekk"><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Support DShare-HID on Ko-fi" height="30"></a>
 
 ## Disclaimer & Legal
 DShare-HID is an open-source project. However, some optional features (like firmware management) may rely on proprietary components. The core application remains fully functional and open-source without these components.

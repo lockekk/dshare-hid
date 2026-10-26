@@ -1,8 +1,28 @@
-# DShare-HID: 与移动设备共享键盘和鼠标
+<div align="center">
 
-![License](https://img.shields.io/github/license/lockekk/dshare-hid?style=flat-square) ![Release](https://img.shields.io/github/v/tag/lockekk/dshare-hid?style=flat-square)
+<img src="docs/io.github.lockekk.dshare-hid.png" alt="DShare-HID" width="112">
+
+# DShare-HID
+
+**与 iPad、iPhone 和 Android 设备共享电脑的键盘和鼠标。**
+
+<a href="https://github.com/lockekk/dshare-hid/releases/latest"><img src="https://img.shields.io/badge/%E4%B8%8B%E8%BD%BD-%E6%9C%80%E6%96%B0%E7%89%88%E6%9C%AC-2EA44F?style=for-the-badge&logo=github&logoColor=white" alt="下载最新版本"></a>
+
+[安装](#-安装指南) · [首次使用](#首次使用与烧录指南) · [支持](#支持与联系)
+
+<a href="https://github.com/lockekk/dshare-hid/releases/latest"><img src="https://img.shields.io/github/v/release/lockekk/dshare-hid?style=flat-square&color=blue" alt="最新版本"></a>
+<a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--2.0-blue?style=flat-square" alt="许可证：GPL-2.0"></a>
+<img src="https://img.shields.io/badge/Qt-41CD52?style=flat-square&logo=qt&logoColor=white" alt="Qt">
+<img src="https://img.shields.io/badge/ESP32--C3-E7352C?style=flat-square&logo=espressif&logoColor=white" alt="ESP32-C3">
+<a href="https://ko-fi.com/lockekk"><img src="https://img.shields.io/badge/Ko--fi-%E8%AF%B7%E6%88%91%E5%96%9D%E6%9D%AF%E5%92%96%E5%95%A1-FF5E5B?style=flat-square&logo=kofi&logoColor=white" alt="在 Ko-fi 上请我喝杯咖啡"></a>
+<br>
+<img src="https://img.shields.io/badge/Windows-0078D4?style=flat-square&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik0wIDBoMTEuNHYxMS40SDB6TTEyLjYgMEgyNHYxMS40SDEyLjZ6TTAgMTIuNmgxMS40VjI0SDB6TTEyLjYgMTIuNkgyNFYyNEgxMi42eiIvPjwvc3ZnPg%3D%3D" alt="Windows">
+<img src="https://img.shields.io/badge/macOS-000000?style=flat-square&logo=apple&logoColor=white" alt="macOS">
+<img src="https://img.shields.io/badge/Linux-FCC624?style=flat-square&logo=linux&logoColor=black" alt="Linux">
 
 [ English ](README.md) | **[ 简体中文 ]**
+
+</div>
 
 ---
 
@@ -229,6 +249,10 @@ DShare-HID 本质上是一个开源项目。桌面应用程序和桥接架构开
 ## 支持与联系
 - **邮箱**: [dshare.hid@gmail.com](mailto:dshare.hid@gmail.com)
 - **问题反馈**: 请通过 [GitHub Issues](https://github.com/lockekk/dshare-hid/issues) 提交 Bug 或建议。
+
+如果 DShare-HID 对您有帮助，欢迎请我喝杯咖啡——完全自愿，感谢支持。
+
+<a href="https://ko-fi.com/lockekk"><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="在 Ko-fi 上支持 DShare-HID" height="30"></a>
 
 ## 免责声明与法律信息
 DShare-HID 是一个开源项目。但是，某些可选功能（如固件管理）可能依赖于专有组件。核心应用程序在没有这些组件的情况下仍然功能齐全且开源。
