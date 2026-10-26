@@ -13,7 +13,8 @@ OUTPUT_DIR="$(realpath "$OUTPUT_DIR")"
 # Work relative to the script location
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 PROJECT_ROOT="$(realpath "$SCRIPT_DIR/../..")"
-APPDIR="$OUTPUT_DIR/AppDir"
+# Stage in the build dir so OUTPUT_DIR only receives the final AppImage
+APPDIR="$BUILD_DIR/AppDir"
 
 echo "Project Root: $PROJECT_ROOT"
 echo "Build Dir:    $BUILD_DIR"
@@ -118,6 +119,13 @@ if [ ! -z "$QMAKE" ]; then
     # Export for linuxdeploy if needed
     QT_BIN_DIR=$($QMAKE -query QT_INSTALL_BINS)
     export PATH="$QT_BIN_DIR:$PATH"
+
+    # Export for linuxdeploy core (dependency resolution). The installed binary
+    # has no RUNPATH to this Qt, so without this linuxdeploy bundles the system
+    # Qt libs next to this Qt's plugins and the xcb plugin fails to load.
+    QT_LIB_DIR=$($QMAKE -query QT_INSTALL_LIBS)
+    echo "Detected Qt Lib Dir: $QT_LIB_DIR"
+    export LD_LIBRARY_PATH="$QT_LIB_DIR:$LD_LIBRARY_PATH"
 fi
 
 if [ ! -z "$QT_PLUGINS_DIR" ] && [ -d "$QT_PLUGINS_DIR" ]; then

@@ -16,8 +16,8 @@ sudo apt install flatpak-builder
 # Add Flathub repo
 flatpak remote-add --if-not-exists --user flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
-# Install required KDE SDK (version 6.10)
-flatpak install --user -y flathub org.kde.Sdk//6.10 org.kde.Platform//6.10
+# Install required KDE SDK (version 6.11)
+flatpak install --user -y flathub org.kde.Sdk//6.11 org.kde.Platform//6.11
 ```
 
 ### Building
@@ -42,13 +42,13 @@ Run these commands from the root of the repository.
     ```bash
     ./run_task.sh 5
     ```
-    This will generate the bundle inside the `build_flatpak/` directory.
+    This will generate the bundle in the `outputs/` directory at the repository root. If the KDE runtime/SDK named in the manifest is missing, it is installed from Flathub first.
 
 ### Installing & Running
 
 1.  **Install**
     ```bash
-    flatpak install --user -y dshare-hid-1.26.0-linux-x86_64.flatpak
+    flatpak install --user -y outputs/dshare-hid-1.27.0-linux-x86_64.flatpak
     ```
 
 2.  **Run**
@@ -66,7 +66,7 @@ Run these commands from the root of the repository.
 *   **Reinstall (Update)**
     If you have rebuilt the package and want to update your existing installation:
     ```bash
-    flatpak install --user --reinstall -y dshare-hid-1.26.0-linux-x86_64.flatpak
+    flatpak install --user --reinstall -y outputs/dshare-hid-1.27.0-linux-x86_64.flatpak
     ```
 
 ### Notes
@@ -89,7 +89,7 @@ The easiest way to generate an AppImage is using the interactive task runner.
     ./run_task.sh
     ```
 2.  Select **Option 6 ("Build AppImage")**.
-3.  The AppImage will be generated directly in your `build` directory (e.g., `build/DShare-HID-x86_64.AppImage`).
+3.  The AppImage will be generated in the `outputs/` directory at the repository root (e.g., `outputs/dshare-hid-1.27.0-linux-x86_64.AppImage`).
 
 #### Method 2: Manual Script
 
@@ -139,7 +139,7 @@ This performs the following:
 
 ### Output
 
-The MSI file will be created in the `build` directory (e.g., `build/DShare-HID-1.25.0-win-x64.msi`).
+The MSI installer and the portable ZIP are moved to the `outputs/` directory at the repository root (e.g., `outputs/DShare-HID-1.27.0-win-x64.msi`).
 
 ---
 
@@ -181,10 +181,10 @@ The `run_task.sh` script (Option 5) handles the entire process.
     ./run_task.sh 5
     ```
 
-    *   This will create a clean build in `build_deploy`.
+    *   This will create a clean build in `build_dmg`.
     *   It creates a **Universal Binary** (x86_64 + arm64).
 
 4.  **Output**
 
-    The `.dmg` file will be generated in `build_deploy/` (e.g., `DShare-HID-1.25.0-macos-universal.dmg`).
+    The `.dmg` file will be moved to the `outputs/` directory at the repository root (e.g., `outputs/DShare-HID-1.27.0-macos-universal.dmg`).
 

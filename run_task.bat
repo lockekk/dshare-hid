@@ -80,7 +80,14 @@ call :Build
 if %ERRORLEVEL% neq 0 exit /b %ERRORLEVEL%
 echo --- PACKAGING ---
 cmake --build build --target package
-exit /b %ERRORLEVEL%
+if %ERRORLEVEL% neq 0 exit /b %ERRORLEVEL%
+rem Final packages (MSI, portable ZIP) are collected in outputs
+if not exist outputs mkdir outputs
+for %%F in (build\*.msi build\*.zip) do (
+    move /y "%%F" outputs\ >nul
+    echo Package: outputs\%%~nxF
+)
+exit /b 0
 
 :Launch
 if not exist build\bin\dshare-hid.exe (

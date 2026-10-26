@@ -14,10 +14,11 @@ OUTPUT_DIR="$(realpath "$OUTPUT_DIR")"
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 PROJECT_ROOT="$(realpath "$SCRIPT_DIR/../..")"
 
+# Both staging areas live in the build dir so OUTPUT_DIR only receives the .deb
 # Staging Area (AppDir-like structure for linuxdeploy)
-STAGING_DIR="$OUTPUT_DIR/deb_staging"
+STAGING_DIR="$BUILD_DIR/deb_staging"
 # Final Deb Root (structure for dpkg-deb)
-DEB_ROOT="$OUTPUT_DIR/deb_root"
+DEB_ROOT="$BUILD_DIR/deb_root"
 INSTALL_PREFIX="/opt/dshare-hid"
 
 echo "Project Root:     $PROJECT_ROOT"

@@ -25,6 +25,9 @@ if [ "$(uname)" = "Darwin" ]; then
     fi
 fi
 
+# Final packages (DMG, Flatpak, AppImage, Deb) are collected here
+OUTPUTS_DIR="outputs"
+
 process_input() {
     local input="$1"
     local input_lower=$(echo "$input" | tr '[:upper:]' '[:lower:]')
@@ -192,7 +195,9 @@ process_input() {
                 (cd "$BUILD_DIR" && cpack)
 
                 if [ $? -eq 0 ]; then
-                    echo "Deployment package created successfully in $BUILD_DIR"
+                    mkdir -p "$OUTPUTS_DIR"
+                    mv -f "$BUILD_DIR"/*.dmg "$OUTPUTS_DIR"/ || return 1
+                    echo "Deployment package created successfully in $OUTPUTS_DIR"
                 else
                     echo "Packaging failed."
                     return 1
@@ -234,8 +239,9 @@ process_input() {
 
             echo "--- BUILDING FLATPAK ---"
 
-            # Build using the generated manifest
-            flatpak-builder --user --force-clean --repo=repo build_flatpak io.github.lockekk.dshare-hid.generated.yml
+            # Build using the generated manifest; fetch the runtime/SDK from
+            # flathub if the manifest's runtime-version isn't installed yet
+            flatpak-builder --user --install-deps-from=flathub --force-clean --repo=repo build_flatpak io.github.lockekk.dshare-hid.generated.yml
 
             if [ $? -eq 0 ]; then
                 echo "--- CREATING BUNDLE ---"
@@ -247,10 +253,11 @@ process_input() {
                 ARCH=$(uname -m)
                 BUNDLE_NAME="dshare-hid-${VERSION}-linux-${ARCH}.flatpak"
 
-                flatpak build-bundle --runtime-repo=https://dl.flathub.org/repo/flathub.flatpakrepo repo "build_flatpak/${BUNDLE_NAME}" io.github.lockekk.dshare-hid
+                mkdir -p "$OUTPUTS_DIR"
+                flatpak build-bundle --runtime-repo=https://dl.flathub.org/repo/flathub.flatpakrepo repo "${OUTPUTS_DIR}/${BUNDLE_NAME}" io.github.lockekk.dshare-hid
 
                 if [ $? -eq 0 ]; then
-                    echo "Flatpak bundle created: ${BUNDLE_NAME}"
+                    echo "Flatpak bundle created: ${OUTPUTS_DIR}/${BUNDLE_NAME}"
                 else
                     echo "Failed to create flatpak bundle."
                 fi
@@ -272,8 +279,7 @@ process_input() {
                 echo "Error: 'build' directory not found. Please run a configuration step (2 or 4) first."
                 return 1
             fi
-            # Using 'build' as output directory as requested ("cat the build folder")
-            ./deploy/linux/create_appimage.sh build build
+            ./deploy/linux/create_appimage.sh build "$OUTPUTS_DIR"
             ;;
         7|"deb")
             if [ "$os_name" = "Darwin" ]; then
@@ -285,7 +291,7 @@ process_input() {
                 echo "Error: 'build' directory not found. Please run a configuration step (2 or 4) first."
                 return 1
             fi
-            ./deploy/linux/create_deb.sh build build_deb
+            ./deploy/linux/create_deb.sh build "$OUTPUTS_DIR"
             ;;
         q|"quit"|"exit")
             echo "Exiting..."

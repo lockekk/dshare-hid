@@ -54,6 +54,9 @@ tools
 build_deb
 build_flatpak
 
+# final packages collected by run_task.sh / run_task.bat
+/outputs
+
 # scripts folder
 /scripts
 
