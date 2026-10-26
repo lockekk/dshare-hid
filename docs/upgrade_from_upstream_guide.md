@@ -397,7 +397,10 @@ never take upstream's), translations, README.md, and docs. See Sections 1–3.
 - `src/lib/common/Settings.{cpp,h}` (Bridge keys — all must be in `m_validKeys`, see Scenario R; enableHeatbeat migration), `Constants.h.in`, `UrlConstants.h` (fork URLs + `kUrlWiki`)
 - `src/lib/client/Client.cpp`, `src/lib/client/CMakeLists.txt`
 - `src/lib/server/{Server.cpp,BaseClientProxy.h,ClientProxy.{cpp,h},ClientProxyUnknown.cpp}`
-- `src/lib/gui/`: MainWindow.{cpp,h,ui}, ComputerSetupModel.{cpp,h}
+- `src/lib/gui/`: MainWindow.{cpp,h,ui} (among others: the constructor shows
+  the log at each start — upstream keeps a window whose log was hidden at a
+  fixed size, even after a restart, so it can't be resized or zoomed),
+  ComputerSetupModel.{cpp,h}
   (`addComputer(..., awayFromServer)`), config/ComputerList.{cpp,h}
   (`addComputerAwayFromServer`), widgets/ComputerSetupView.{cpp,h}
   (`screenDeleted` signal), ServerConfig.{cpp,h} (bridge placement,

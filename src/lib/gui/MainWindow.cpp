@@ -171,6 +171,13 @@ MainWindow::MainWindow()
   QLocalServer::removeServer(m_guiSocketName);
   m_guiDupeChecker->listen(m_guiSocketName);
 
+  // The log shows at each start: a hidden log keeps the window at a fixed size, so it could not be resized again
+  if (!Settings::value(Settings::Gui::LogExpanded).toBool()) {
+    Settings::setValue(Settings::Gui::LogExpanded, true);
+    // the saved geometry is the one without the log
+    Settings::setValue(Settings::Gui::WindowGeometry, QVariant());
+  }
+
   createMenuBar();
   setupControls();
   updateText();
