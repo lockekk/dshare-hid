@@ -13,6 +13,11 @@ BUILD_ARM64="${BASE_DIR}/arm64"
 BUILD_X86_64="${BASE_DIR}/x86_64"
 OUTPUT_DIR="${BASE_DIR}/universal"
 
+# Minimum macOS for the dylibs. Without it clang targets the SDK's own version,
+# so the bundled libs claim a newer macOS than the app. Keep in step with
+# CMAKE_OSX_DEPLOYMENT_TARGET in run_task.sh.
+export MACOSX_DEPLOYMENT_TARGET=12.0
+
 # Create directories
 mkdir -p "${SRC_DIR}" "${BUILD_ARM64}" "${BUILD_X86_64}" "${OUTPUT_DIR}/lib" "${OUTPUT_DIR}/include"
 
@@ -22,17 +27,21 @@ if [ ! -f "${SRC_DIR}/${OPENSSL_NAME}.tar.gz" ]; then
     curl -L "${OPENSSL_URL}" -o "${SRC_DIR}/${OPENSSL_NAME}.tar.gz"
 fi
 
-# 2. Extract
-if [ ! -d "${SRC_DIR}/${OPENSSL_NAME}" ]; then
+# 2. Extract a clean source tree for each arch build. `make distclean` is not
+# enough: when it fails, objects from the other arch survive and end up in this
+# arch's static libs, and the link then fails with undefined symbols.
+fresh_source() {
+    cd "${SRC_DIR}"
+    rm -rf "${SRC_DIR}/${OPENSSL_NAME}"
     echo "Extracting OpenSSL..."
     tar -xzf "${SRC_DIR}/${OPENSSL_NAME}.tar.gz" -C "${SRC_DIR}"
-fi
+    cd "${SRC_DIR}/${OPENSSL_NAME}"
+}
 
 # 3. Build for ARM64
 if [ ! -f "${BUILD_ARM64}/lib/libssl.dylib" ]; then
     echo "Building OpenSSL for ARM64..."
-    cd "${SRC_DIR}/${OPENSSL_NAME}"
-    make distclean >/dev/null 2>&1 || true
+    fresh_source
 
     ./Configure darwin64-arm64-cc shared -DOPENSSL_NO_APPLE_CRYPTO_API_RANDOM --prefix="${BUILD_ARM64}" --openssldir="${BUILD_ARM64}"
     make -j$(sysctl -n hw.ncpu)
@@ -42,8 +51,7 @@ fi
 # 4. Build for x86_64
 if [ ! -f "${BUILD_X86_64}/lib/libssl.dylib" ]; then
     echo "Building OpenSSL for x86_64..."
-    cd "${SRC_DIR}/${OPENSSL_NAME}"
-    make distclean >/dev/null 2>&1 || true
+    fresh_source
 
     ./Configure darwin64-x86_64-cc shared -DOPENSSL_NO_APPLE_CRYPTO_API_RANDOM --prefix="${BUILD_X86_64}" --openssldir="${BUILD_X86_64}"
     make -j$(sysctl -n hw.ncpu)
