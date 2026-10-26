@@ -81,15 +81,16 @@ brew upgrade dshare-hid
 
 #### Option B: Manual Install
 1.  Download the latest `.dmg` from the [Releases](https://github.com/lockekk/dshare-hid/releases) page.
-2.  Open `dshare-hid-1.26.0-macos-universal.dmg` and drag the application to your `Applications` folder.
+2.  Open the downloaded `.dmg` and drag the application to your `Applications` folder.
 3.  **Note**: If you encounter a "Damaged" or "Unverified" error, run the following command in Terminal:
     ```bash
     xattr -cr /Applications/DShare-HID.app
     ```
+    Or, without Terminal: open the app once and click **Done**, then go to **System Settings → Privacy & Security** and click **Open Anyway**.
 
 > [!IMPORTANT]
 > **Permissions & Setup**:
-> - **Accessibility Access**: You must grant "Accessibility" access (Privacy & Security) to both the **DShare-HID** app and the **dshare-hid** process.
+> - **Accessibility Access**: You must grant "Accessibility" access (Privacy & Security) to both the **DShare-HID** app and the **dshare-hid-core** process.
 > - **macOS Sequoia**: You may also need to allow DShare-HID under "Local Network" settings.
 > - **Upgrading**: If you are upgrading and already have DShare-HID on the allowed list, you may need to **manually remove** the old entries before accessibility access can be granted to the new version.
 

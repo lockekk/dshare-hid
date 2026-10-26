@@ -74,15 +74,16 @@ brew upgrade dshare-hid
 
 #### 选项 B: 手动安装
 1.  从 [Releases](https://github.com/lockekk/dshare-hid/releases) 页面下载最新的 `.dmg` 文件。
-2.  打开 `dshare-hid-1.26.0-macos-universal.dmg` 并将应用程序拖入 `Applications` 文件夹。
+2.  打开下载的 `.dmg` 文件并将应用程序拖入 `Applications` 文件夹。
 3.  **注意**: 如果遇到“已损坏”或“无法验证”的错误提示，请在终端中运行以下命令：
     ```bash
     xattr -cr /Applications/DShare-HID.app
     ```
+    或者不使用终端：先打开一次应用并点击 **完成**，然后前往 **系统设置 → 隐私与安全性**，点击 **仍要打开**。
 
 > [!IMPORTANT]
 > **权限与设置**:
-> - **辅助功能**: 您必须在“隐私与安全性”中授予 **DShare-HID** 应用程序和 **dshare-hid** 进程“辅助功能”权限。
+> - **辅助功能**: 您必须在“隐私与安全性”中授予 **DShare-HID** 应用程序和 **dshare-hid-core** 进程“辅助功能”权限。
 > - **macOS Sequoia**: 您可能还需要在“本地网络”设置中允许 DShare-HID。
 > - **升级**: 如果您正在升级且允许列表中已存在旧版条目，您可能需要**手动移除**它们，然后重新授予新版本辅助功能权限。
 
