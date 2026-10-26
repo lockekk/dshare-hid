@@ -901,7 +901,7 @@ bool Esp32HidToolsWidget::confirmNewDongleSetup()
 }
 
 // Runs on the worker thread: asks the dongle on the port which firmware it runs
-Esp32HidToolsWidget::DongleCheck Esp32HidToolsWidget::checkDongle(const std::string &port, bool noteVersion)
+Esp32HidToolsWidget::DongleCheck Esp32HidToolsWidget::checkDongle(const std::string &port, VersionNote note)
 {
   using deskflow::bridge::FirmwareMode;
 
@@ -925,9 +925,14 @@ Esp32HidToolsWidget::DongleCheck Esp32HidToolsWidget::checkDongle(const std::str
     check.version = firmwareVersionText(config.firmwareVersionBcd);
     std::string serial;
     cdc.fetchSerialNumber(serial);
-    // the version before the update, for the notice to pair the hosts again after 1.2.1
-    if (noteVersion && !serial.empty()) {
-      BridgeFirmwareNotice::noteHandshake(QString::fromStdString(serial), config);
+    check.serial = QString::fromStdString(serial);
+    // for the notice to pair the hosts again after 1.2.1
+    if (!check.serial.isEmpty()) {
+      if (note == VersionNote::BeforeUpgrade) {
+        check.pairingNotice = BridgeFirmwareNotice::noteHandshake(check.serial, config);
+      } else if (note == VersionNote::ConfirmUpgrade) {
+        check.upgradeConfirmed = BridgeFirmwareNotice::confirmUpgrade(check.serial, config, check.pairingNotice);
+      }
     }
     log(tr("Dongle found: firmware %1, %2, serial %3.")
             .arg(
@@ -947,7 +952,7 @@ Esp32HidToolsWidget::DongleCheck Esp32HidToolsWidget::checkDongle(const std::str
 // Runs on the worker thread: a dongle that already runs DShare-HID firmware is updated on the Upgrade tab
 bool Esp32HidToolsWidget::dongleNeedsSetup(const std::string &port)
 {
-  const auto check = checkDongle(port, false);
+  const auto check = checkDongle(port, VersionNote::None);
   if (check.setup == DongleSetup::NoAnswer) {
     log(tr("No DShare-HID firmware found on the dongle."));
     return true;
@@ -985,7 +990,7 @@ void Esp32HidToolsWidget::checkNewDongleSetup()
 
   runBackgroundTask([this, port = portName.toStdString()]() {
     // the factory or the application firmware answers: the dongle was set up before
-    const bool setUp = checkDongle(port, false).setup != DongleSetup::NoAnswer;
+    const bool setUp = checkDongle(port, VersionNote::None).setup != DongleSetup::NoAnswer;
     log(setUp ? tr("This dongle is already set up.") : tr("No DShare-HID firmware found on the dongle."));
     QMetaObject::invokeMethod(this, [this, setUp]() { showDongleSetUp(setUp); });
   });
@@ -1190,9 +1195,14 @@ void Esp32HidToolsWidget::onCheckUpgrade()
   m_flashOnlineBtn->setEnabled(false);
 
   runBackgroundTask([this, port = portName.toStdString()]() {
-    const auto check = checkDongle(port, false);
+    const auto check = checkDongle(port, VersionNote::ConfirmUpgrade);
     if (!readyForUpgrade(check)) {
       return;
+    }
+    // an upgrade that didn't report back in time worked: finish it as the upgrade would have
+    if (check.upgradeConfirmed) {
+      logDetail("the dongle runs " + check.version.toStdString() + " after an upgrade that did not report back");
+      QMetaObject::invokeMethod(this, [this, notice = check.pairingNotice]() { showUpgradeSuccess(notice); });
     }
 
     log(tr("Checking for upgrades..."));
@@ -1261,7 +1271,7 @@ void Esp32HidToolsWidget::onFlashLocal()
 
   log(tr("Flashing local file: %1").arg(path));
   runBackgroundTask([this, port = portName.toStdString(), data]() {
-    const auto check = checkDongle(port, true);
+    const auto check = checkDongle(port, VersionNote::BeforeUpgrade);
     if (readyForUpgrade(check)) {
       upgradeDongle(port, data, check);
     }
@@ -1276,7 +1286,7 @@ void Esp32HidToolsWidget::onFlashOnline()
   }
 
   runBackgroundTask([this, port = portName.toStdString()]() {
-    const auto check = checkDongle(port, true);
+    const auto check = checkDongle(port, VersionNote::BeforeUpgrade);
     if (!readyForUpgrade(check)) {
       return;
     }
@@ -1384,13 +1394,40 @@ void Esp32HidToolsWidget::upgradeDongle(
   // the factory restarts 100 ms after it acks the reboot: let it go before looking for the new firmware
   std::this_thread::sleep_for(1s);
   const auto started = waitForAppAfterFlash(port);
-  QMetaObject::invokeMethod(this, [this, started]() {
-    QString message = tr("Firmware upgrade successful.");
-    if (!started.pairingNotice.isEmpty()) {
-      message += QStringLiteral("\n\n") + started.pairingNotice;
+  if (started.outcome == FactoryFlashOutcome::NotDetected) {
+    // the version from before the upgrade stays: the next Check for Updates confirms it
+    BridgeFirmwareNotice::noteUnconfirmedUpgrade(check.serial);
+  }
+  // a notice the check before the upgrade found due goes with this upgrade's success
+  const QString notice = started.pairingNotice.isEmpty() ? check.pairingNotice : started.pairingNotice;
+  QMetaObject::invokeMethod(this, [this, outcome = started.outcome, notice]() {
+    switch (outcome) {
+    case FactoryFlashOutcome::AppStarted:
+      showUpgradeSuccess(notice);
+      break;
+
+    case FactoryFlashOutcome::FactoryWithoutApp:
+      showWideMessageBox(QMessageBox::Warning, tr("No Application Firmware"), noApplicationFirmwareMessage());
+      break;
+
+    case FactoryFlashOutcome::NotDetected:
+      showWideMessageBox(
+          QMessageBox::Warning, tr("Device Not Detected"),
+          tr("The firmware was sent, but the dongle did not report back within 60 seconds.\n\n"
+             "Disconnect and reconnect the dongle, then click Check for Updates.")
+      );
+      break;
     }
-    showWideMessageBox(QMessageBox::Information, tr("Success"), message);
   });
+}
+
+void Esp32HidToolsWidget::showUpgradeSuccess(const QString &pairingNotice)
+{
+  QString message = tr("Firmware upgrade successful.");
+  if (!pairingNotice.isEmpty()) {
+    message += QStringLiteral("\n\n") + pairingNotice;
+  }
+  showWideMessageBox(QMessageBox::Information, tr("Success"), message);
 }
 
 void Esp32HidToolsWidget::reject()

@@ -171,4 +171,64 @@ void BridgeFirmwareNoticeTests::versionsAreKeptBySettings()
   QCOMPARE(versions.value(kSerial + "/firmwareVersion").toInt(), 120);
 }
 
+void BridgeFirmwareNoticeTests::unconfirmedUpgradeIsConfirmedOnce()
+{
+  // the check before the upgrade noted 1.2.0, then the device didn't come back in time
+  QVERIFY(!due(kSerial, 120));
+  BridgeFirmwareNotice::noteUnconfirmedUpgrade(kSerial);
+
+  QString notice;
+  QVERIFY(BridgeFirmwareNotice::confirmUpgrade(kSerial, firmware(121), notice));
+  QVERIFY(!notice.isEmpty());
+
+  QVERIFY(!BridgeFirmwareNotice::confirmUpgrade(kSerial, firmware(121), notice)); // once only
+  QVERIFY(notice.isEmpty());
+}
+
+void BridgeFirmwareNoticeTests::unconfirmedUpgradeThatDidNotTake()
+{
+  QVERIFY(!due(kSerial, 120));
+  BridgeFirmwareNotice::noteUnconfirmedUpgrade(kSerial);
+
+  QString notice;
+  QVERIFY(!BridgeFirmwareNotice::confirmUpgrade(kSerial, firmware(120), notice));
+  QVERIFY(notice.isEmpty());
+  QVERIFY(!BridgeFirmwareNotice::confirmUpgrade(kSerial, firmware(121), notice)); // nothing waits any more
+}
+
+void BridgeFirmwareNoticeTests::confirmNotesNothingWithoutUnconfirmedUpgrade()
+{
+  // Check for Updates notes no version of its own, so an update made elsewhere gets no notice
+  QVERIFY(!due(kSerial, 120));
+
+  QString notice;
+  QVERIFY(!BridgeFirmwareNotice::confirmUpgrade(kSerial, firmware(121), notice));
+  QVERIFY(notice.isEmpty());
+
+  QSettings versions(BridgeFirmwareNotice::versionsFile(), QSettings::IniFormat);
+  QCOMPARE(versions.value(kSerial + "/firmwareVersion").toInt(), 120);
+}
+
+void BridgeFirmwareNoticeTests::confirmWaitsOutFactoryMode()
+{
+  QVERIFY(!due(kSerial, 120));
+  BridgeFirmwareNotice::noteUnconfirmedUpgrade(kSerial);
+
+  QString notice;
+  QVERIFY(!BridgeFirmwareNotice::confirmUpgrade(kSerial, firmware(0), notice));
+  QVERIFY(BridgeFirmwareNotice::confirmUpgrade(kSerial, firmware(121), notice));
+  QVERIFY(!notice.isEmpty());
+}
+
+void BridgeFirmwareNoticeTests::handshakeSettlesUnconfirmedUpgrade()
+{
+  // the checks of a later upgrade note the version, which settles the earlier one
+  QVERIFY(!due(kSerial, 120));
+  BridgeFirmwareNotice::noteUnconfirmedUpgrade(kSerial);
+  QVERIFY(due(kSerial, 121));
+
+  QString notice;
+  QVERIFY(!BridgeFirmwareNotice::confirmUpgrade(kSerial, firmware(121), notice));
+}
+
 QTEST_GUILESS_MAIN(BridgeFirmwareNoticeTests)

@@ -31,8 +31,26 @@ public:
    * @param serialNumber The device's serial number (CdcTransport::fetchSerialNumber())
    * @return The notice, if it is due.  Nothing for a device the app sees for the first time
    * (it can't know whether it was ever paired), a version of 0 (factory mode) or no serial number.
+   * A version it notes also confirms an upgrade noteUnconfirmedUpgrade() noted.
    */
   static QString noteHandshake(const QString &serialNumber, const deskflow::bridge::FirmwareConfig &config);
+
+  /**
+   * @brief Note that the app sent an upgrade, but the device didn't come back in time to report its version
+   *
+   * The version from before the upgrade stays, so the device's next check for updates can still
+   * tell the upgrade worked (confirmUpgrade()).
+   */
+  static void noteUnconfirmedUpgrade(const QString &serialNumber);
+
+  /**
+   * @brief Confirm an upgrade noteUnconfirmedUpgrade() noted, from the device's handshake
+   * @param notice Set to the notice, if it is due (noteHandshake())
+   * @return Whether the device now runs a newer version than before that upgrade.  False, and
+   * nothing noted, when no upgrade of the device waits to be confirmed.
+   */
+  static bool
+  confirmUpgrade(const QString &serialNumber, const deskflow::bridge::FirmwareConfig &config, QString &notice);
 
   /// the name hosts see the device by, as the firmware advertises it
   static QString advertisedName(deskflow::bridge::ActivationState state, const QString &deviceName);

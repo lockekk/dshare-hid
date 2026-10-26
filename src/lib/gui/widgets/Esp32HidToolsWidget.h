@@ -103,12 +103,23 @@ private:
     DongleSetup setup = DongleSetup::NoAnswer;
     bool portOpened = false;
     QString version; // the application firmware's version, e.g. "v1.2.1"; empty in the factory firmware
+    QString serial;  // the application firmware's serial number, when it gave one
+    bool upgradeConfirmed = false; // VersionNote::ConfirmUpgrade: an upgrade that didn't report back worked
+    QString pairingNotice;         // BridgeFirmwareNotice, when the version this check noted makes it due
+  };
+
+  // What checkDongle() does with the application firmware's version, for BridgeFirmwareNotice
+  enum class VersionNote
+  {
+    None,
+    BeforeUpgrade, // note it: the version an upgrade starts from
+    ConfirmUpgrade // note it only to confirm an earlier upgrade that didn't report back in time
   };
 
   void refreshDeviceState();
   QString selectedPort();
   bool confirmNewDongleSetup();
-  DongleCheck checkDongle(const std::string &port, bool noteVersion);
+  DongleCheck checkDongle(const std::string &port, VersionNote note);
   bool dongleNeedsSetup(const std::string &port);
   void checkNewDongleSetup();
   void showDongleSetUp(bool setUp);
@@ -117,6 +128,7 @@ private:
   void upgradeDongle(const std::string &port, const std::vector<uint8_t> &package, const DongleCheck &check);
   FactoryFlashCheck waitForAppAfterFlash(const std::string &port);
   void showFactoryFlashResult(const FactoryFlashCheck &check);
+  void showUpgradeSuccess(const QString &pairingNotice);
   QString noApplicationFirmwareMessage() const;
   QString flashFailureText(FlashResult result, bool newDongle) const;
   void logFlashFailure(FlashResult result);

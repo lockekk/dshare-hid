@@ -25,6 +25,11 @@ private Q_SLOTS:
   void noticeNamesTheDevice_data();
   void noticeNamesTheDevice();
   void versionsAreKeptBySettings();
+  void unconfirmedUpgradeIsConfirmedOnce();
+  void unconfirmedUpgradeThatDidNotTake();
+  void confirmNotesNothingWithoutUnconfirmedUpgrade();
+  void confirmWaitsOutFactoryMode();
+  void handshakeSettlesUnconfirmedUpgrade();
 
 private:
   QTemporaryDir m_settingsDir;
