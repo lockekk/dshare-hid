@@ -3498,6 +3498,14 @@ Install it from the Upgrade tab (Check for Updates, then Flash). If that fails, 
         <translation>Прошивка принята. Перезапуск донгла...</translation>
     </message>
     <message>
+        <source>The firmware was sent, but the dongle did not report back within 60 seconds.
+
+Disconnect and reconnect the dongle, then click Check for Updates.</source>
+        <translation>Прошивка отправлена, но донгл не ответил в течение 60 секунд.
+
+Отключите и снова подключите донгл, затем нажмите &apos;Проверить обновления&apos;.</translation>
+    </message>
+    <message>
         <source>State: %1, %2 Profiles</source>
         <translation>Состояние: %1, %2 профилей</translation>
     </message>

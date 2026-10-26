@@ -2796,6 +2796,14 @@ Duplicado: %1</translation>
         <translation>Firmware aceptado. Reiniciando el dongle...</translation>
     </message>
     <message>
+        <source>The firmware was sent, but the dongle did not report back within 60 seconds.
+
+Disconnect and reconnect the dongle, then click Check for Updates.</source>
+        <translation>El firmware se envió, pero el dongle no respondió en un plazo de 60 segundos.
+
+Desconecte y vuelva a conectar el dongle y, a continuación, haga clic en Buscar actualizaciones.</translation>
+    </message>
+    <message>
         <source>Firmware Flash Tool - %1</source>
         <translation>Herramienta de flasheo de firmware - %1</translation>
     </message>

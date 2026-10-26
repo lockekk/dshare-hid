@@ -3531,6 +3531,14 @@ Install it from the Upgrade tab (Check for Updates, then Flash). If that fails, 
         <translation>Dongle 已接受固件。正在重启 Dongle...</translation>
     </message>
     <message>
+        <source>The firmware was sent, but the dongle did not report back within 60 seconds.
+
+Disconnect and reconnect the dongle, then click Check for Updates.</source>
+        <translation>固件已发送，但 Dongle 未在 60 秒内响应。
+
+请断开并重新连接 Dongle，然后点击“检查更新”。</translation>
+    </message>
+    <message>
         <source>State: %1, %2 Profiles</source>
         <translation>状态: %1, %2个配置</translation>
     </message>

@@ -3480,6 +3480,14 @@ Installalo dalla scheda Aggiornamento (Controlla Aggiornamenti, poi Flash). Se n
         <translation>Firmware accettato. Riavvio del dongle...</translation>
     </message>
     <message>
+        <source>The firmware was sent, but the dongle did not report back within 60 seconds.
+
+Disconnect and reconnect the dongle, then click Check for Updates.</source>
+        <translation>Il firmware è stato inviato, ma il dongle non ha risposto entro 60 secondi.
+
+Scollega e ricollega il dongle, poi fai clic su Controlla Aggiornamenti.</translation>
+    </message>
+    <message>
         <source>State: %1, %2 Profiles</source>
         <translation>Stato: %1, %2 Profili</translation>
     </message>

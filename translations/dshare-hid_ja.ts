@@ -3480,6 +3480,14 @@ Install it from the Upgrade tab (Check for Updates, then Flash). If that fails, 
         <translation>ファームウェアが受け入れられました。ドングルを再起動中...</translation>
     </message>
     <message>
+        <source>The firmware was sent, but the dongle did not report back within 60 seconds.
+
+Disconnect and reconnect the dongle, then click Check for Updates.</source>
+        <translation>ファームウェアは送信されましたが、60 秒以内にドングルから応答がありませんでした。
+
+ドングルを一度切断して再接続し、「更新を確認」をクリックしてください。</translation>
+    </message>
+    <message>
         <source>State: %1, %2 Profiles</source>
         <translation>状態: %1, %2 プロファイル</translation>
     </message>
