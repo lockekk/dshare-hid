@@ -166,10 +166,6 @@ flatpak install --user ./dshare-hid-1.26.0-linux-x86_64.flatpak
 
 ## 首次使用与烧录指南
 
-<div align="center">
-  <img src="docs/images/firmware_update.png" width="600" alt="Firmware Flash Tool">
-</div>
-
 ### 1. 准备硬件
 您需要准备一个 **ESP32-C3 Super Mini** 开发板。这些板子价格实惠，在淘宝或速卖通均可轻松买到。通过 USB 将其连接到您的电脑。
 
@@ -179,12 +175,16 @@ flatpak install --user ./dshare-hid-1.26.0-linux-x86_64.flatpak
 ### 3. 设置新设备
 每个新的 Dongle 只需要设置一次：
 
+<div align="center">
+  <img src="docs/images/firmware_new_dongle_setup.png" width="600" alt="New Dongle Setup">
+</div>
+
 1.  进入 **New Dongle Setup** (新设备设置) 标签页。
     *   **Windows**：按住开发板上的 **Boot** 按钮再插入 USB，然后点击 **Refresh** (刷新)。
-2.  在 "Online" (在线) 区域点击 **Flash**。应用会下载最新的固件包并完成安装，其余步骤全部自动进行。
+2.  在 "Online" (在线) 区域点击 **Flash**，然后点击 **Yes** 确认。应用会下载最新的固件并完成安装，其余步骤全部自动进行。
 3.  完成后设备会重启，并自动开始 **7 天免费试用**。试用无需下单，也无需激活码。
 
-**注意**：首次启动会将开发板永久锁定为官方 DShare-HID 固件 (Secure Boot 和闪存加密)。此后只能通过 **Upgrade** (升级) 标签页更新固件，也不能再用于其他 ESP32 项目。如果 Dongle 已经设置过，**New Dongle Setup** 标签页只会显示 "This dongle is already set up." (该 Dongle 已设置)，请改用 **Upgrade** 标签页。
+**注意**：首次启动会将开发板永久锁定为官方 DShare-HID 固件 (Secure Boot 和闪存加密)。此后只能按 [固件升级](#5-固件升级) 中的方法更新固件，也不能再用于其他 ESP32 项目。如果 Dongle 已经设置过，**New Dongle Setup** 标签页只会显示 "This dongle is already set up." (该 Dongle 已设置)。
 
 ### 4. 购买与激活
 1.  进入 **Order** (订单) 标签页。
@@ -192,8 +192,20 @@ flatpak install --user ./dshare-hid-1.26.0-linux-x86_64.flatpak
 3.  确认付款后，您将通过邮件收到 **激活码**。
 4.  进入 **Activation** (激活) 标签页，粘贴激活码并点击 **Activate**。设备状态会变为 **Activated** (已激活)。
 
-### 5. 更新与维护
-*   **升级**：进入 **Upgrade** (升级) 标签页，点击 **Check for Updates** -> **Flash** 即可通过 OTA 安装最新固件。授权、配置文件和蓝牙配对都会保留。如需安装已有的固件文件 (`.uzip`)，在 "Manual" (手动) 区域选择该文件并点击 **Flash**。**Upgrade** 标签页只适用于已经设置过的 Dongle，新的 Dongle 请先完成 **New Dongle Setup**。如果升级中途被打断，在 **Upgrade** 标签页重新升级即可。
+### 5. 固件升级
+之后的更新都在 **Upgrade** (升级) 标签页进行。它只适用于已经设置过的 Dongle，新的 Dongle 请先完成 [设置新设备](#3-设置新设备)。
+
+<div align="center">
+  <img src="docs/images/firmware_upgrade.png" width="600" alt="Upgrade">
+</div>
+
+1.  进入 **Upgrade** (升级) 标签页，点击 **Check for Updates** (检查更新)。
+2.  如果有可用更新，点击 **Flash** 通过 OTA 安装。授权和配置文件都会保留。
+
+*   **固件文件**：如需安装已有的固件文件 (`.uzip`)，在 "Manual" (手动) 区域选择该文件并点击 **Flash**。
+*   **升级中断**：在 **Upgrade** 标签页重新升级即可。
+
+### 6. 维护
 *   **激活**：进入 **Activation** (激活) 标签页查看序列号和授权状态，或输入新的激活码。
 *   **遇到问题**：窗口底部的日志会显示每一步。如果操作失败，请把日志复制到发给技术支持的邮件中。
 

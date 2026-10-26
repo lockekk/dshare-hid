@@ -173,25 +173,25 @@ For Ubuntu 24.04 and newer.
 
 ## First Use & Flashing Guide
 
-<div align="center">
-  <img src="docs/images/firmware_update.png" width="600" alt="Firmware Flash Tool">
-</div>
-
 ### 1. Prepare Hardware
 You will need an **ESP32-C3 Supermini** board. These are cheap and widely available from AliExpress or local electronics stores. Connect it to your computer via USB.
 
 ### 2. Access Flash Tool
 Open DShare-HID and navigate to **File -> Firmware** to open the management interface.
 
-### 3. Setup (For New Devices)
+### 3. New Dongle Setup
 You only need to do this once for each new dongle:
+
+<div align="center">
+  <img src="docs/images/firmware_new_dongle_setup.png" width="600" alt="New Dongle Setup">
+</div>
 
 1.  Go to the **New Dongle Setup** tab.
     *   **Windows**: hold the **Boot** button on the board while you plug it in, then click **Refresh**.
-2.  Click **Flash** under the "Online" section. The app downloads the latest firmware package and installs it. Everything else is automatic.
+2.  Click **Flash** under "Online", then **Yes** to confirm. The app downloads the latest firmware and installs it. Everything else is automatic.
 3.  When it finishes, the device restarts and the **7-day free trial** starts automatically. No order or activation key is needed for the trial.
 
-**Note**: The first start permanently locks the board to official DShare-HID firmware (Secure Boot and flash encryption). After that, the board can only be updated from the **Upgrade** tab and cannot be reused for other ESP32 projects. If the dongle is already set up, the **New Dongle Setup** tab only shows "This dongle is already set up."; use the **Upgrade** tab instead.
+**Note**: The first start permanently locks the board to official DShare-HID firmware (Secure Boot and flash encryption). After that, the board can only be updated as described in [Firmware Upgrades](#5-firmware-upgrades) and cannot be reused for other ESP32 projects. If the dongle is already set up, the **New Dongle Setup** tab only shows "This dongle is already set up."
 
 ### 4. Purchase & Activation
 1.  Go to the **Order** tab.
@@ -199,8 +199,20 @@ You only need to do this once for each new dongle:
 3.  Once the payment is confirmed, you will receive an **activation key** by email.
 4.  Go to the **Activation** tab, paste the key and click **Activate**. The device state changes to **Activated**.
 
-### 5. Updates & Maintenance
-*   **Upgrading**: Go to the **Upgrade** tab and click **Check for Updates** -> **Flash** to install the latest firmware via OTA. Your license, profiles and pairings are kept. To install a firmware file (`.uzip`) you already have, select it under "Manual" and click **Flash**. The **Upgrade** tab only works on a dongle that is already set up; a new dongle goes through **New Dongle Setup** first. If an update was interrupted, run it again from the **Upgrade** tab.
+### 5. Firmware Upgrades
+Later updates use the **Upgrade** tab. It only works on a dongle that is already set up; a new dongle goes through [New Dongle Setup](#3-new-dongle-setup) first.
+
+<div align="center">
+  <img src="docs/images/firmware_upgrade.png" width="600" alt="Upgrade">
+</div>
+
+1.  Go to the **Upgrade** tab and click **Check for Updates**.
+2.  If an update is available, click **Flash** to install it via OTA. Your license and profiles are kept.
+
+*   **Firmware file**: To install a firmware file (`.uzip`) you already have, select it under "Manual" and click **Flash**.
+*   **Interrupted update**: Run it again from the **Upgrade** tab.
+
+### 6. Maintenance
 *   **Activation**: Go to the **Activation** tab to view your serial number and license status, or enter a new activation key.
 *   **Problems**: The log at the bottom of the window shows each step. If something fails, copy it into your email to support.
 
