@@ -2753,7 +2753,7 @@ Duplicato: %1</translation>
     </message>
     <message>
         <source>The setup firmware is not available for download yet. Please try again later.</source>
-        <translation>Il firmware di configurazione non è ancora disponibile per il download. Riprova più tardi.</translation>
+        <translation type="vanished">Il firmware di configurazione non è ancora disponibile per il download. Riprova più tardi.</translation>
     </message>
     <message>
         <source>Could not reach the download server. Check your internet connection and try again.</source>
@@ -3396,8 +3396,16 @@ Installalo dalla scheda Aggiornamento (Controlla Aggiornamenti, poi Flash). Se n
         <translation>Stato: Errore</translation>
     </message>
     <message>
+        <source>Reminder: Press &apos;Boot&apos; button then plugin your dongle. Click Refresh button to ensure the device is detected.</source>
+        <translation>Promemoria: Premi il pulsante &apos;Boot&apos; quindi scollega e ricollega il tuo dongle. Fai clic sul pulsante Aggiorna per assicurarti che il dispositivo venga rilevato.</translation>
+    </message>
+    <message>
         <source>Order Options</source>
         <translation>Opzioni Ordine</translation>
+    </message>
+    <message>
+        <source>The setup firmware for this dongle is not available for download yet. Please try again later.</source>
+        <translation>Il firmware di configurazione per questo dongle non è ancora disponibile per il download. Riprova più tardi.</translation>
     </message>
     <message>
         <source>Set up this dongle? This is permanent.</source>
@@ -3458,6 +3466,10 @@ Installalo dalla scheda Aggiornamento (Controlla Aggiornamenti, poi Flash). Se n
     <message>
         <source>The last update did not finish. The firmware will be installed again.</source>
         <translation>L&apos;ultimo aggiornamento non è stato completato. Il firmware verrà reinstallato.</translation>
+    </message>
+    <message>
+        <source>This version of DShare-HID can&apos;t update this dongle. Update DShare-HID and try again.</source>
+        <translation>Questa versione di DShare-HID non può aggiornare questo dongle. Aggiorna DShare-HID e riprova.</translation>
     </message>
     <message>
         <source>Preparing the dongle for the update...</source>
@@ -3553,7 +3565,7 @@ Scollega e ricollega il dongle, poi fai clic su Controlla Aggiornamenti.</transl
     </message>
     <message>
         <source>Reminder: Press &apos;Boot&apos; button then plugin your ESP32-C3. Click Refresh button to ensure the device is detected.</source>
-        <translation>Promemoria: Premi il pulsante &apos;Boot&apos; quindi scollega e ricollega il tuo ESP32-C3. Fai clic sul pulsante Aggiorna per assicurarti che il dispositivo venga rilevato.</translation>
+        <translation type="vanished">Promemoria: Premi il pulsante &apos;Boot&apos; quindi scollega e ricollega il tuo ESP32-C3. Fai clic sul pulsante Aggiorna per assicurarti che il dispositivo venga rilevato.</translation>
     </message>
     <message>
         <source>This dongle is already set up.</source>

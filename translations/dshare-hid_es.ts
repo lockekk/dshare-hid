@@ -2661,11 +2661,15 @@ Duplicado: %1</translation>
     </message>
     <message>
         <source>The setup firmware is not available for download yet. Please try again later.</source>
-        <translation>El firmware de configuración aún no está disponible para descargar. Por favor, inténtelo de nuevo más tarde.</translation>
+        <translation type="vanished">El firmware de configuración aún no está disponible para descargar. Por favor, inténtelo de nuevo más tarde.</translation>
     </message>
     <message>
         <source>Could not reach the download server. Check your internet connection and try again.</source>
         <translation>No se pudo acceder al servidor de descargas. Compruebe su conexión a internet e inténtelo de nuevo.</translation>
+    </message>
+    <message>
+        <source>The setup firmware for this dongle is not available for download yet. Please try again later.</source>
+        <translation>El firmware de configuración para este dongle aún no está disponible para descargar. Por favor, inténtelo de nuevo más tarde.</translation>
     </message>
     <message>
         <source>Downloaded (%1 KB).</source>
@@ -2774,6 +2778,10 @@ Duplicado: %1</translation>
     <message>
         <source>The last update did not finish. The firmware will be installed again.</source>
         <translation>La última actualización no terminó. El firmware se volverá a instalar.</translation>
+    </message>
+    <message>
+        <source>This version of DShare-HID can&apos;t update this dongle. Update DShare-HID and try again.</source>
+        <translation>Esta versión de DShare-HID no puede actualizar este dongle. Actualice DShare-HID e inténtelo de nuevo.</translation>
     </message>
     <message>
         <source>Preparing the dongle for the update...</source>
@@ -3456,6 +3464,10 @@ Siguiente paso: Debe flashear el firmware por dispositivo para usar el dispositi
         <translation>Estado: Error</translation>
     </message>
     <message>
+        <source>Reminder: Press &apos;Boot&apos; button then plugin your dongle. Click Refresh button to ensure the device is detected.</source>
+        <translation>Recordatorio: Presione el botón &apos;Boot&apos; y luego conecte su dongle. Haga clic en el botón Actualizar para asegurarse de que se detecte el dispositivo.</translation>
+    </message>
+    <message>
         <source>Order Options</source>
         <translation>Opciones de pedido</translation>
     </message>
@@ -3553,7 +3565,7 @@ Instálelo desde la pestaña Actualización (Buscar actualizaciones y luego Flas
     </message>
     <message>
         <source>Reminder: Press &apos;Boot&apos; button then plugin your ESP32-C3. Click Refresh button to ensure the device is detected.</source>
-        <translation>Recordatorio: Presione el botón &apos;Boot&apos; y luego conecte su ESP32-C3. Haga clic en el botón Actualizar para asegurarse de que se detecte el dispositivo.</translation>
+        <translation type="vanished">Recordatorio: Presione el botón &apos;Boot&apos; y luego conecte su ESP32-C3. Haga clic en el botón Actualizar para asegurarse de que se detecte el dispositivo.</translation>
     </message>
     <message>
         <source>This dongle is already set up.</source>

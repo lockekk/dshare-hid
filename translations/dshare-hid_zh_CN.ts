@@ -2756,7 +2756,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>The setup firmware is not available for download yet. Please try again later.</source>
-        <translation>设置固件暂时无法下载。请稍后重试。</translation>
+        <translation type="vanished">设置固件暂时无法下载。请稍后重试。</translation>
     </message>
     <message>
         <source>Could not reach the download server. Check your internet connection and try again.</source>
@@ -3411,8 +3411,16 @@ Next step: You need to flash the per-device firmware to use the device. Please s
         <translation>状态：错误</translation>
     </message>
     <message>
+        <source>Reminder: Press &apos;Boot&apos; button then plugin your dongle. Click Refresh button to ensure the device is detected.</source>
+        <translation>提醒：按住 &apos;Boot&apos; 按钮，然后插入您的 Dongle。点击刷新按钮以确保检测到设备。</translation>
+    </message>
+    <message>
         <source>Order Options</source>
         <translation>订购选项</translation>
+    </message>
+    <message>
+        <source>The setup firmware for this dongle is not available for download yet. Please try again later.</source>
+        <translation>该 Dongle 的设置固件暂时无法下载。请稍后重试。</translation>
     </message>
     <message>
         <source>Set up this dongle? This is permanent.</source>
@@ -3511,6 +3519,10 @@ Install it from the Upgrade tab (Check for Updates, then Flash). If that fails, 
         <translation>上次更新未完成。将重新安装固件。</translation>
     </message>
     <message>
+        <source>This version of DShare-HID can&apos;t update this dongle. Update DShare-HID and try again.</source>
+        <translation>此版本的 DShare-HID 无法更新该 Dongle。请更新 DShare-HID 后重试。</translation>
+    </message>
+    <message>
         <source>Preparing the dongle for the update...</source>
         <translation>正在准备 Dongle 以进行更新...</translation>
     </message>
@@ -3604,7 +3616,7 @@ Disconnect and reconnect the dongle, then click Check for Updates.</source>
     </message>
     <message>
         <source>Reminder: Press &apos;Boot&apos; button then plugin your ESP32-C3. Click Refresh button to ensure the device is detected.</source>
-        <translation>提醒：按住 &apos;Boot&apos; 按钮，然后插入您的 ESP32-C3。点击刷新按钮以确保检测到设备。</translation>
+        <translation type="vanished">提醒：按住 &apos;Boot&apos; 按钮，然后插入您的 ESP32-C3。点击刷新按钮以确保检测到设备。</translation>
     </message>
     <message>
         <source>Invert vertical scroll direction on this computer</source>

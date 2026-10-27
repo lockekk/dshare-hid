@@ -2753,7 +2753,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>The setup firmware is not available for download yet. Please try again later.</source>
-        <translation>セットアップ用ファームウェアはまだダウンロードできません。後でもう一度お試しください。</translation>
+        <translation type="vanished">セットアップ用ファームウェアはまだダウンロードできません。後でもう一度お試しください。</translation>
     </message>
     <message>
         <source>Could not reach the download server. Check your internet connection and try again.</source>
@@ -3396,8 +3396,16 @@ Install it from the Upgrade tab (Check for Updates, then Flash). If that fails, 
         <translation>状態: エラー</translation>
     </message>
     <message>
+        <source>Reminder: Press &apos;Boot&apos; button then plugin your dongle. Click Refresh button to ensure the device is detected.</source>
+        <translation>リマインダー: &apos;Boot&apos; ボタンを押しながらドングルを接続してください。更新ボタンをクリックしてデバイスが検出されることを確認してください。</translation>
+    </message>
+    <message>
         <source>Order Options</source>
         <translation>注文オプション</translation>
+    </message>
+    <message>
+        <source>The setup firmware for this dongle is not available for download yet. Please try again later.</source>
+        <translation>このドングル用のセットアップ用ファームウェアはまだダウンロードできません。後でもう一度お試しください。</translation>
     </message>
     <message>
         <source>Set up this dongle? This is permanent.</source>
@@ -3458,6 +3466,10 @@ Install it from the Upgrade tab (Check for Updates, then Flash). If that fails, 
     <message>
         <source>The last update did not finish. The firmware will be installed again.</source>
         <translation>前回の更新が完了していません。ファームウェアを再インストールします。</translation>
+    </message>
+    <message>
+        <source>This version of DShare-HID can&apos;t update this dongle. Update DShare-HID and try again.</source>
+        <translation>このバージョンの DShare-HID ではこのドングルを更新できません。DShare-HID を更新して、もう一度お試しください。</translation>
     </message>
     <message>
         <source>Preparing the dongle for the update...</source>
@@ -3553,7 +3565,7 @@ Disconnect and reconnect the dongle, then click Check for Updates.</source>
     </message>
     <message>
         <source>Reminder: Press &apos;Boot&apos; button then plugin your ESP32-C3. Click Refresh button to ensure the device is detected.</source>
-        <translation>リマインダー: &apos;Boot&apos; ボタンを押しながら ESP32-C3 を接続してください。更新ボタンをクリックしてデバイスが検出されることを確認してください。</translation>
+        <translation type="vanished">リマインダー: &apos;Boot&apos; ボタンを押しながら ESP32-C3 を接続してください。更新ボタンをクリックしてデバイスが検出されることを確認してください。</translation>
     </message>
     <message>
         <source>This dongle is already set up.</source>

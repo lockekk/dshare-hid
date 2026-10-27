@@ -2771,7 +2771,7 @@ Duplicate: %1</source>
     </message>
     <message>
         <source>The setup firmware is not available for download yet. Please try again later.</source>
-        <translation>Прошивка для настройки пока недоступна для загрузки. Пожалуйста, повторите попытку позже.</translation>
+        <translation type="vanished">Прошивка для настройки пока недоступна для загрузки. Пожалуйста, повторите попытку позже.</translation>
     </message>
     <message>
         <source>Could not reach the download server. Check your internet connection and try again.</source>
@@ -3414,8 +3414,16 @@ Install it from the Upgrade tab (Check for Updates, then Flash). If that fails, 
         <translation>Состояние: Ошибка</translation>
     </message>
     <message>
+        <source>Reminder: Press &apos;Boot&apos; button then plugin your dongle. Click Refresh button to ensure the device is detected.</source>
+        <translation>Напоминание: Нажмите кнопку &apos;Boot&apos;, затем подключите ваш донгл. Нажмите кнопку &apos;Обновить&apos;, чтобы убедиться, что устройство обнаружено.</translation>
+    </message>
+    <message>
         <source>Order Options</source>
         <translation>Варианты заказа</translation>
+    </message>
+    <message>
+        <source>The setup firmware for this dongle is not available for download yet. Please try again later.</source>
+        <translation>Прошивка для настройки этого донгла пока недоступна для загрузки. Пожалуйста, повторите попытку позже.</translation>
     </message>
     <message>
         <source>Set up this dongle? This is permanent.</source>
@@ -3476,6 +3484,10 @@ Install it from the Upgrade tab (Check for Updates, then Flash). If that fails, 
     <message>
         <source>The last update did not finish. The firmware will be installed again.</source>
         <translation>Последнее обновление не завершилось. Прошивка будет установлена заново.</translation>
+    </message>
+    <message>
+        <source>This version of DShare-HID can&apos;t update this dongle. Update DShare-HID and try again.</source>
+        <translation>Эта версия DShare-HID не может обновить этот донгл. Обновите DShare-HID и повторите попытку.</translation>
     </message>
     <message>
         <source>Preparing the dongle for the update...</source>
@@ -3571,7 +3583,7 @@ Disconnect and reconnect the dongle, then click Check for Updates.</source>
     </message>
     <message>
         <source>Reminder: Press &apos;Boot&apos; button then plugin your ESP32-C3. Click Refresh button to ensure the device is detected.</source>
-        <translation>Напоминание: Нажмите кнопку &apos;Boot&apos;, затем подключите ваш ESP32-C3. Нажмите кнопку &apos;Обновить&apos;, чтобы убедиться, что устройство обнаружено.</translation>
+        <translation type="vanished">Напоминание: Нажмите кнопку &apos;Boot&apos;, затем подключите ваш ESP32-C3. Нажмите кнопку &apos;Обновить&apos;, чтобы убедиться, что устройство обнаружено.</translation>
     </message>
     <message>
         <source>This dongle is already set up.</source>
