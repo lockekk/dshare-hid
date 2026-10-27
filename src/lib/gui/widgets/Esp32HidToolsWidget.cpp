@@ -52,9 +52,33 @@ const auto kSupportEmail = QStringLiteral("dshare.hid@gmail.com");
 constexpr auto kReleaseOwner = "lockekk";
 constexpr auto kReleaseRepo = "esp32-hid-release";
 
-// Only the public free-trial package boots into the application by itself. Older factory
-// packages (esp32-hid-factory-*.fzip) leave the device waiting for per-device firmware.
-constexpr auto kFreeTrialFactoryPrefix = "esp32-hid-free-trial-";
+// The release carries one package of each kind per chip, named after the chip's ESP-IDF target:
+// esp32-hid-<chip>-free-trial-<version>.fzip and esp32-hid-<chip>-upgrade-<version>.uzip. Only the
+// free-trial factory package boots into the application by itself; the others leave the device
+// waiting for per-device firmware.
+std::string releasePackagePrefix(const std::string &chip, const char *kind)
+{
+  return "esp32-hid-" + chip + "-" + kind + "-";
+}
+
+std::string findReleaseAsset(const std::vector<ReleaseAsset> &assets, const std::string &prefix, const char *suffix)
+{
+  for (const auto &asset : assets) {
+    if (asset.name.starts_with(prefix) && asset.name.ends_with(suffix)) {
+      return asset.name;
+    }
+  }
+  return {};
+}
+
+// The ESP-IDF target of the chip a dongle reported, for its package names; nullptr for a chip this
+// app can't flash
+const char *dongleChip(uint8_t chipId)
+{
+  // firmware 1.2.1 and older runs only on the ESP32-C3 and reports no chip
+  constexpr uint8_t kEsp32C3ChipId = 5;
+  return chip_target_name(chipId != 0 ? chipId : kEsp32C3ChipId);
+}
 
 // A development build flashes a board in any state: the dongle checks only log what they found
 #ifdef DESKFLOW_DEV_BUILD
@@ -197,7 +221,7 @@ Esp32HidToolsWidget::Esp32HidToolsWidget(const QString &devicePath, QWidget *par
 
 #ifdef _WIN32
   auto *bootReminderLbl = new QLabel(tr(
-      "Reminder: Press 'Boot' button then plugin your ESP32-C3. Click Refresh button to ensure the device is detected."
+      "Reminder: Press 'Boot' button then plugin your dongle. Click Refresh button to ensure the device is detected."
   ));
   bootReminderLbl->setStyleSheet("color: blue; font-weight: bold;");
   bootReminderLbl->setWordWrap(true);
@@ -796,7 +820,7 @@ void Esp32HidToolsWidget::onFlashFactory()
   log(tr("Setting up a new dongle with %1 (%2 KB).").arg(path, kilobytes(data.size())));
   runBackgroundTask([this, port = portName.toStdString(), data]() {
     if (dongleNeedsSetup(port)) {
-      setUpNewDongle(port, data);
+      setUpNewDongle(port, [&data](const std::string &) { return data; });
     }
   });
 }
@@ -816,44 +840,48 @@ void Esp32HidToolsWidget::onDownloadAndFlashFactory()
 
     GithubDownloader downloader(kReleaseOwner, kReleaseRepo);
     const auto assets = downloader.get_latest_assets();
-    std::string assetName;
-    for (const auto &asset : assets) {
-      if (asset.name.starts_with(kFreeTrialFactoryPrefix) && asset.name.ends_with(".fzip")) {
-        assetName = asset.name;
-        break;
-      }
-    }
-
-    if (assetName.empty()) {
-      logDetail(
-          "no " + std::string(kFreeTrialFactoryPrefix) + "*.fzip among the " + std::to_string(assets.size()) +
-          " assets of the latest " + kReleaseOwner + "/" + kReleaseRepo + " release"
-      );
-      const bool reachable = !assets.empty();
-      const QString text =
-          reachable ? tr("The setup firmware is not available for download yet. Please try again later.")
-                    : tr("Could not reach the download server. Check your internet connection and try again.");
+    if (assets.empty()) {
+      logDetail(std::string("no assets in the latest ") + kReleaseOwner + "/" + kReleaseRepo + " release");
+      const QString text = tr("Could not reach the download server. Check your internet connection and try again.");
       log(text);
-      QMetaObject::invokeMethod(this, [this, text, reachable]() {
-        showWideMessageBox(reachable ? QMessageBox::Information : QMessageBox::Warning, tr("New Dongle Setup"), text);
+      QMetaObject::invokeMethod(this, [this, text]() {
+        showWideMessageBox(QMessageBox::Warning, tr("New Dongle Setup"), text);
       });
       return;
     }
 
-    log(tr("Downloading %1...").arg(QString::fromStdString(assetName)));
-    const auto data = downloader.download_asset_to_memory(assetName);
-    if (!data.has_value()) {
-      log(tr("Download failed."));
-      QMetaObject::invokeMethod(this, [this]() {
-        showWideMessageBox(
-            QMessageBox::Critical, tr("Error"), tr("Failed to download firmware. Check internet connection.")
+    // Only the dongle's ROM tells its chip: the flash connects first, then asks for that chip's package
+    setUpNewDongle(port, [this, &downloader, &assets](const std::string &chip) -> std::vector<uint8_t> {
+      const std::string prefix = releasePackagePrefix(chip, "free-trial");
+      const std::string assetName = findReleaseAsset(assets, prefix, ".fzip");
+      if (assetName.empty()) {
+        logDetail(
+            "no " + prefix + "*.fzip among the " + std::to_string(assets.size()) + " assets of the latest " +
+            kReleaseOwner + "/" + kReleaseRepo + " release"
         );
-      });
-      return;
-    }
-    log(tr("Downloaded (%1 KB).").arg(kilobytes(data->size())));
+        const QString text =
+            tr("The setup firmware for this dongle is not available for download yet. Please try again later.");
+        log(text);
+        QMetaObject::invokeMethod(this, [this, text]() {
+          showWideMessageBox(QMessageBox::Information, tr("New Dongle Setup"), text);
+        });
+        return {};
+      }
 
-    setUpNewDongle(port, data.value());
+      log(tr("Downloading %1...").arg(QString::fromStdString(assetName)));
+      const auto data = downloader.download_asset_to_memory(assetName);
+      if (!data.has_value()) {
+        log(tr("Download failed."));
+        QMetaObject::invokeMethod(this, [this]() {
+          showWideMessageBox(
+              QMessageBox::Critical, tr("Error"), tr("Failed to download firmware. Check internet connection.")
+          );
+        });
+        return {};
+      }
+      log(tr("Downloaded (%1 KB).").arg(kilobytes(data->size())));
+      return data.value();
+    });
   });
 }
 
@@ -920,6 +948,7 @@ Esp32HidToolsWidget::DongleCheck Esp32HidToolsWidget::checkDongle(const std::str
   }
 
   const auto &config = cdc.deviceConfig();
+  check.chipId = config.chipId;
   if (config.firmwareMode == FirmwareMode::App) {
     check.setup = DongleSetup::App;
     check.version = firmwareVersionText(config.firmwareVersionBcd);
@@ -1004,7 +1033,7 @@ void Esp32HidToolsWidget::showDongleSetUp(bool setUp)
 }
 
 // Runs on the worker thread: writes a new dongle's firmware package and waits for the application
-void Esp32HidToolsWidget::setUpNewDongle(const std::string &port, const std::vector<uint8_t> &package)
+void Esp32HidToolsWidget::setUpNewDongle(const std::string &port, const FactoryPackageProvider &packageForChip)
 {
   log(tr("Writing the firmware..."));
   bool written = false;
@@ -1017,7 +1046,10 @@ void Esp32HidToolsWidget::setUpNewDongle(const std::string &port, const std::vec
   };
   auto log_cb = [this](const std::string &msg) { logDetail(msg); };
 
-  const FlashResult res = flash_factory(port, package, progress_cb, log_cb, createReplugCallback());
+  const FlashResult res = flash_factory(port, packageForChip, progress_cb, log_cb, createReplugCallback());
+  if (res == FlashResult::ERROR_EMPTY_DATA) {
+    return; // packageForChip told why it has no package
+  }
   if (res != FlashResult::OK) {
     logFlashFailure(res);
     const QString text = flashFailureText(res, true);
@@ -1291,20 +1323,23 @@ void Esp32HidToolsWidget::onFlashOnline()
       return;
     }
 
-    GithubDownloader downloader(kReleaseOwner, kReleaseRepo);
-    const auto assets = downloader.get_latest_assets();
-    std::string assetName;
-    for (const auto &asset : assets) {
-      if (asset.name.ends_with(".uzip")) {
-        assetName = asset.name;
-        break;
-      }
+    const char *chip = dongleChip(check.chipId);
+    if (chip == nullptr) {
+      logDetail("unknown chip id " + std::to_string(check.chipId));
+      const QString text = tr("This version of DShare-HID can't update this dongle. Update DShare-HID and try again.");
+      log(text);
+      QMetaObject::invokeMethod(this, [this, text]() { showWideMessageBox(QMessageBox::Critical, tr("Error"), text); });
+      return;
     }
 
+    GithubDownloader downloader(kReleaseOwner, kReleaseRepo);
+    const auto assets = downloader.get_latest_assets();
+    const std::string prefix = releasePackagePrefix(chip, "upgrade");
+    const std::string assetName = findReleaseAsset(assets, prefix, ".uzip");
     if (assetName.empty()) {
       logDetail(
-          "no *.uzip among the " + std::to_string(assets.size()) + " assets of the latest " + kReleaseOwner + "/" +
-          kReleaseRepo + " release"
+          "no " + prefix + "*.uzip among the " + std::to_string(assets.size()) + " assets of the latest " +
+          kReleaseOwner + "/" + kReleaseRepo + " release"
       );
       log(tr("Download failed. No .uzip asset found."));
       QMetaObject::invokeMethod(this, [this]() {

@@ -106,6 +106,7 @@ private:
     QString serial;  // the application firmware's serial number, when it gave one
     bool upgradeConfirmed = false; // VersionNote::ConfirmUpgrade: an upgrade that didn't report back worked
     QString pairingNotice;         // BridgeFirmwareNotice, when the version this check noted makes it due
+    uint8_t chipId = 0;            // esp_chip_id_t the firmware reported; 0 from firmware 1.2.1 and older
   };
 
   // What checkDongle() does with the application firmware's version, for BridgeFirmwareNotice
@@ -123,7 +124,10 @@ private:
   bool dongleNeedsSetup(const std::string &port);
   void checkNewDongleSetup();
   void showDongleSetUp(bool setUp);
-  void setUpNewDongle(const std::string &port, const std::vector<uint8_t> &package);
+  // packageForChip is flash_tool's FactoryPackageProvider
+  void setUpNewDongle(
+      const std::string &port, const std::function<std::vector<uint8_t>(const std::string &chip)> &packageForChip
+  );
   bool readyForUpgrade(const DongleCheck &check);
   void upgradeDongle(const std::string &port, const std::vector<uint8_t> &package, const DongleCheck &check);
   FactoryFlashCheck waitForAppAfterFlash(const std::string &port);
