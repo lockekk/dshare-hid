@@ -41,6 +41,7 @@
 #include "platform/bridge/CdcTransport.h"
 
 #include <chrono>
+#include <map>
 #include <thread>
 #include <tuple>
 
@@ -850,8 +851,29 @@ void Esp32HidToolsWidget::onDownloadAndFlashFactory()
       return;
     }
 
-    // Only the dongle's ROM tells its chip: the flash connects first, then asks for that chip's package
-    setUpNewDongle(port, [this, &downloader, &assets](const std::string &chip) -> std::vector<uint8_t> {
+    // Only the dongle's ROM tells its chip, once the flash has connected to it. Download the setup
+    // firmware of every chip first, so the dongle never waits in download mode on the network.
+    std::map<std::string, std::vector<uint8_t>> packages;
+    for (const auto &asset : assets) {
+      if (asset.name.find("-free-trial-") == std::string::npos || !asset.name.ends_with(".fzip")) {
+        continue;
+      }
+      log(tr("Downloading %1...").arg(QString::fromStdString(asset.name)));
+      auto data = downloader.download_asset_to_memory(asset.name);
+      if (!data.has_value()) {
+        log(tr("Download failed."));
+        QMetaObject::invokeMethod(this, [this]() {
+          showWideMessageBox(
+              QMessageBox::Critical, tr("Error"), tr("Failed to download firmware. Check internet connection.")
+          );
+        });
+        return;
+      }
+      log(tr("Downloaded (%1 KB).").arg(kilobytes(data->size())));
+      packages.emplace(asset.name, std::move(data.value()));
+    }
+
+    setUpNewDongle(port, [this, &assets, &packages](const std::string &chip) -> std::vector<uint8_t> {
       const std::string prefix = releasePackagePrefix(chip, "free-trial");
       const std::string assetName = findReleaseAsset(assets, prefix, ".fzip");
       if (assetName.empty()) {
@@ -867,20 +889,7 @@ void Esp32HidToolsWidget::onDownloadAndFlashFactory()
         });
         return {};
       }
-
-      log(tr("Downloading %1...").arg(QString::fromStdString(assetName)));
-      const auto data = downloader.download_asset_to_memory(assetName);
-      if (!data.has_value()) {
-        log(tr("Download failed."));
-        QMetaObject::invokeMethod(this, [this]() {
-          showWideMessageBox(
-              QMessageBox::Critical, tr("Error"), tr("Failed to download firmware. Check internet connection.")
-          );
-        });
-        return {};
-      }
-      log(tr("Downloaded (%1 KB).").arg(kilobytes(data->size())));
-      return data.value();
+      return packages.at(assetName);
     });
   });
 }
@@ -1323,6 +1332,9 @@ void Esp32HidToolsWidget::onFlashOnline()
       return;
     }
 
+    if (check.chipId == 0) {
+      logDetail("the dongle reports no chip: firmware 1.2.1 or older, which runs only on the ESP32-C3");
+    }
     const char *chip = dongleChip(check.chipId);
     if (chip == nullptr) {
       logDetail("unknown chip id " + std::to_string(check.chipId));
