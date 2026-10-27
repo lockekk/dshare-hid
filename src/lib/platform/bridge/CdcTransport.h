@@ -94,6 +94,7 @@ struct FirmwareConfig
   bool isBleConnected = false;
   std::string deviceName;
   bool hasOtaPartition = false;
+  uint8_t chipId = 0; // esp_chip_id_t of the dongle's chip; 0 from firmware 1.2.1 and older
 
   const char *activationStateString() const
   {
