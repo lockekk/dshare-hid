@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
     <!-- USB Device Access -->
-    <!-- Required for communication with ESP32-C3 CDC devices -->
+    <!-- Required for communication with the ESP32 dongle's CDC port -->
     <key>com.apple.security.device.usb</key>
     <true/>
     <!-- Hardened Runtime Exceptions -->
