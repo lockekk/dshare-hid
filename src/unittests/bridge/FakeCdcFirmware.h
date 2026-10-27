@@ -100,6 +100,8 @@ public:
   std::atomic<bool> lateSuccess = false;
   /// answer profile reads with an error
   std::atomic<bool> failProfileReads = false;
+  /// the esp_chip_id_t HELLO reports, ESP32-C3 by default
+  std::atomic<int> chipId = 5;
 
 private:
   static constexpr uint8_t kControl = 0x80;
@@ -159,9 +161,10 @@ private:
       ack[3] = 121; // firmware 1.2.1
       ack[4] = 10;  // hardware 1.0
       ack[5] = 1;   // app mode
+      ack[6] = 1;   // OTA_0 holds a valid image
       ack[7] = static_cast<uint8_t>((reportedCount << 4) | (active & 0x0F));
       ack[8] = 1; // Bluetooth connected
-      ack[9] = 1; // has an OTA partition
+      ack[10] = static_cast<uint8_t>(chipId.load());
       send(ack);
       break;
     }

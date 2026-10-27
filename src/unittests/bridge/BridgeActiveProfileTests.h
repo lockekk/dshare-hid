@@ -14,6 +14,7 @@ private Q_SLOTS:
   void initTestCase();
 
   // CdcTransport, against FakeCdcFirmware
+  void handshakeReadsFirmwareStatus();
   void activeProfileComesFromDevice();
   void activeProfileRejectsUnknownSlot();
   void profileReadSkipsLateSuccess();

@@ -97,6 +97,24 @@ void BridgeActiveProfileTests::initTestCase()
   Settings::setValue(Settings::Bridge::BluetoothKeepAlive, false);
 }
 
+void BridgeActiveProfileTests::handshakeReadsFirmwareStatus()
+{
+  FakeCdcFirmware device(4, 1);
+  device.chipId = 13; // ESP32-C6
+  QVERIFY(!device.devicePath().isEmpty());
+  CdcTransport transport(device.devicePath());
+  QVERIFY(transport.open(true));
+
+  const auto &config = transport.deviceConfig();
+  QCOMPARE(int(config.firmwareVersionBcd), 121);
+  QVERIFY(config.firmwareMode == FirmwareMode::App);
+  QVERIFY(config.hasOtaPartition);
+  QCOMPARE(int(config.activeProfile), 1);
+  QCOMPARE(int(config.totalProfiles), 4);
+  QVERIFY(config.isBleConnected);
+  QCOMPARE(int(config.chipId), 13);
+}
+
 void BridgeActiveProfileTests::activeProfileComesFromDevice()
 {
   FakeCdcFirmware device(4);
