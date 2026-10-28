@@ -1447,13 +1447,15 @@ void Esp32HidToolsWidget::upgradeDongle(
   }
   // a notice the check before the upgrade found due goes with this upgrade's success
   const QString notice = started.pairingNotice.isEmpty() ? check.pairingNotice : started.pairingNotice;
-  QMetaObject::invokeMethod(this, [this, outcome = started.outcome, notice]() {
+  QMetaObject::invokeMethod(this, [this, outcome = started.outcome, notice, version = started.version]() {
     switch (outcome) {
     case FactoryFlashOutcome::AppStarted:
+      m_lblCurrentVersion->setText(tr("Current Version: %1").arg(version));
       showUpgradeSuccess(notice);
       break;
 
     case FactoryFlashOutcome::FactoryWithoutApp:
+      m_lblCurrentVersion->setText(tr("Current Version: %1").arg(tr("Unknown")));
       showWideMessageBox(QMessageBox::Warning, tr("No Application Firmware"), noApplicationFirmwareMessage());
       break;
 
