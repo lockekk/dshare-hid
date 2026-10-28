@@ -14,6 +14,7 @@
 <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--2.0-blue?style=flat-square" alt="许可证：GPL-2.0"></a>
 <img src="https://img.shields.io/badge/Qt-41CD52?style=flat-square&logo=qt&logoColor=white" alt="Qt">
 <img src="https://img.shields.io/badge/ESP32--C3-E7352C?style=flat-square&logo=espressif&logoColor=white" alt="ESP32-C3">
+<img src="https://img.shields.io/badge/ESP32--C6-E7352C?style=flat-square&logo=espressif&logoColor=white" alt="ESP32-C6">
 <a href="https://ko-fi.com/lockekk"><img src="https://img.shields.io/badge/Ko--fi-%E8%AF%B7%E6%88%91%E5%96%9D%E6%9D%AF%E5%92%96%E5%95%A1-FF5E5B?style=flat-square&logo=kofi&logoColor=white" alt="在 Ko-fi 上请我喝杯咖啡"></a>
 <br>
 <img src="https://img.shields.io/badge/Windows-0078D4?style=flat-square&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik0wIDBoMTEuNHYxMS40SDB6TTEyLjYgMEgyNHYxMS40SDEyLjZ6TTAgMTIuNmgxMS40VjI0SDB6TTEyLjYgMTIuNkgyNFYyNEgxMi42eiIvPjwvc3ZnPg%3D%3D" alt="Windows">
@@ -44,7 +45,7 @@ DShare-HID 是基于 [Deskflow](https://github.com/deskflow/deskflow) 项目的�
 
 ## 解决方案：硬件辅助桥接
 
-DShare-HID 使用经济实惠（AliExpress 上约 2.5 美元）的 **ESP32-C3 Supermini** 开发板作为物理硬件桥接器。它将 Deskflow 事件转换为 **低功耗蓝牙 (BLE) HID**，让您能够通过无线方式与任何移动设备共享键盘和鼠标。
+DShare-HID 使用经济实惠（AliExpress 上约 2.5 美元）的 **ESP32-C3 Supermini** 开发板或 **Seeed Studio XIAO ESP32-C6** 开发板作为物理硬件桥接器。它将 Deskflow 事件转换为 **低功耗蓝牙 (BLE) HID**，让您能够通过无线方式与任何移动设备共享键盘和鼠标。
 
 <br/> <img src="docs/images/esp32-c3-supermini.png" height="120" alt="ESP32-C3 Super Mini"> <br/> <sub>图片来源: [Josselin Hefti](https://www.printables.com/model/1360390-esp32-c3-super-mini-model)</sub>
 
@@ -188,7 +189,7 @@ flatpak install --user ./dshare-hid-1.26.0-linux-x86_64.flatpak
 ## 首次使用与烧录指南
 
 ### 1. 准备硬件
-您需要准备一个 **ESP32-C3 Super Mini** 开发板。这些板子价格实惠，在淘宝或速卖通均可轻松买到。通过 USB 将其连接到您的电脑。
+您需要准备一块 **ESP32-C3 Super Mini** 或 **Seeed Studio XIAO ESP32-C6** 开发板。这些板子价格实惠，在淘宝、速卖通或 Seeed Studio 均可轻松买到。通过 USB 将其连接到您的电脑。
 
 ### 2. 打开烧录工具
 打开 DShare-HID，点击菜单栏的 **File -> Firmware** 进入管理界面。

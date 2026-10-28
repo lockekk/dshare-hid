@@ -14,6 +14,7 @@
 <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--2.0-blue?style=flat-square" alt="License: GPL-2.0"></a>
 <img src="https://img.shields.io/badge/Qt-41CD52?style=flat-square&logo=qt&logoColor=white" alt="Qt">
 <img src="https://img.shields.io/badge/ESP32--C3-E7352C?style=flat-square&logo=espressif&logoColor=white" alt="ESP32-C3">
+<img src="https://img.shields.io/badge/ESP32--C6-E7352C?style=flat-square&logo=espressif&logoColor=white" alt="ESP32-C6">
 <a href="https://ko-fi.com/lockekk"><img src="https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-FF5E5B?style=flat-square&logo=kofi&logoColor=white" alt="Buy me a coffee on Ko-fi"></a>
 <br>
 <img src="https://img.shields.io/badge/Windows-0078D4?style=flat-square&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik0wIDBoMTEuNHYxMS40SDB6TTEyLjYgMEgyNHYxMS40SDEyLjZ6TTAgMTIuNmgxMS40VjI0SDB6TTEyLjYgMTIuNkgyNFYyNEgxMi42eiIvPjwvc3ZnPg%3D%3D" alt="Windows">
@@ -46,7 +47,7 @@ While traditional software KVM solutions like Deskflow work great between comput
 
 ## The Solution: Hardware Bridge Client
 
-DShare-HID uses a budget-friendly (~$2.50 USD on AliExpress) **ESP32-C3 Supermini** board as a hardware bridge. It converts Deskflow events into **Bluetooth Low Energy (BLE) HID**, letting you wirelessly share your keyboard and mouse with any mobile device.
+DShare-HID uses a budget-friendly (~$2.50 USD on AliExpress) **ESP32-C3 Supermini** board, or a **Seeed Studio XIAO ESP32-C6**, as a hardware bridge. It converts Deskflow events into **Bluetooth Low Energy (BLE) HID**, letting you wirelessly share your keyboard and mouse with any mobile device.
 
 <br/> <img src="docs/images/esp32-c3-supermini.png" height="120" alt="ESP32-C3 Super Mini"> <br/> <sub>Image credit: [Josselin Hefti](https://www.printables.com/model/1360390-esp32-c3-super-mini-model)</sub>
 
@@ -195,7 +196,7 @@ For Ubuntu 24.04 and newer.
 ## First Use & Flashing Guide
 
 ### 1. Prepare Hardware
-You will need an **ESP32-C3 Supermini** board. These are cheap and widely available from AliExpress or local electronics stores. Connect it to your computer via USB.
+You will need an **ESP32-C3 Supermini** or a **Seeed Studio XIAO ESP32-C6** board. Both are cheap and widely available from AliExpress, Seeed Studio or local electronics stores. Connect it to your computer via USB.
 
 ### 2. Access Flash Tool
 Open DShare-HID and navigate to **File -> Firmware** to open the management interface.
