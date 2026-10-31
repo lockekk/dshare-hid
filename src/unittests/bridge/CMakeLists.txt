@@ -1,4 +1,4 @@
-# dshare-hid -- created by locke.huang@gmail.com
+# dshare-hid -- created by dshare.hid@gmail.com
 
 # the bridge's device request protocol (platform/bridge/BridgeRequests.h)
 create_test(

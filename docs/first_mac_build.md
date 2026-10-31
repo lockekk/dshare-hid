@@ -29,7 +29,7 @@ If `security find-identity` shows the certificate but says **0 valid identities*
 
 ```bash
 # 1. Export the certificate (replace with your email found above)
-security find-certificate -c "locke.huang@gmail.com" -p > /tmp/mycert.pem
+security find-certificate -c "dshare.hid@gmail.com" -p > /tmp/mycert.pem
 
 # 2. Add to trusted store (will ask for password)
 security add-trusted-cert -r trustRoot -k "$HOME/Library/Keychains/login.keychain-db" /tmp/mycert.pem
@@ -44,7 +44,7 @@ Add these to your `~/.zshrc` (recommended) or export them in your current sessio
 ```bash
 export CMAKE_PREFIX_PATH="$HOME/Qt/6.10.1/macos"
 export CMAKE_OSX_SYSROOT="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
-export APPLE_CODESIGN_DEV="Apple Development: locke.huang@gmail.com (8479KTS8YJ)"
+export APPLE_CODESIGN_DEV="Apple Development: dshare.hid@gmail.com (8479KTS8YJ)"
 ```
 
 Then source your config:
