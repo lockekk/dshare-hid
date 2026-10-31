@@ -9,6 +9,16 @@ create_test(
   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/platform"
 )
 
+# the server's key events as the HID reports a bridge client sends (platform/bridge/BridgeKeyboard.h),
+# for each kind of computer and both keyboard layouts
+create_test(
+  NAME BridgeKeyboardTests
+  DEPENDS platform
+  LIBS base arch
+  SOURCE BridgeKeyboardTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/platform"
+)
+
 # the active profile as the device reports it (platform/bridge/CdcTransport.h), and the bridge
 # screen's size that follows it (platform/bridge/BridgePlatformScreen.h), against a fake dongle
 # on a pseudo-terminal

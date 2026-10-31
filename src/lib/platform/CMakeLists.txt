@@ -199,6 +199,10 @@ include_directories(${inc})
 
 # Bridge sources (platform-independent)
 set(BRIDGE_SOURCES
+  bridge/BridgeKeyboard.cpp
+  bridge/BridgeKeyboard.h
+  bridge/BridgeKeys.cpp
+  bridge/BridgeKeys.h
   bridge/BridgePlatformScreen.cpp
   bridge/BridgePlatformScreen.h
   bridge/BridgeRequests.cpp

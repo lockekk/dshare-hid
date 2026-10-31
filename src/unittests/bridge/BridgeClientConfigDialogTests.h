@@ -32,6 +32,7 @@ private Q_SLOTS:
   void showsTheDeviceProfiles();
   void okWithoutChangesSendsNothing();
   void editIsSavedOnOk();
+  void keyboardLayoutIsSavedOnOk();
   void revertedEditSendsNothing();
   void editKeepsWhatTheFormDoesntShow();
   void summaryCancelSendsNothing();

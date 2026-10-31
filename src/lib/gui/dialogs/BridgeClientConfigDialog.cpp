@@ -10,6 +10,7 @@
 #include "gui/core/BridgeDeviceService.h"
 #include "gui/core/BridgeProfileBackup.h"
 #include "gui/devices/UsbDeviceHelper.h"
+#include "platform/bridge/BridgeKeys.h"
 
 #include <QApplication>
 #include <QDate>
@@ -367,6 +368,25 @@ void BridgeClientConfigDialog::setupProfileUI(QVBoxLayout *mainLayout)
     addComplexRow(tr("HID Mode:"), l, 36);
   }
 
+  // Keyboard Layout: the one set on the device
+  {
+    using deskflow::bridge::KeyboardLayout;
+    m_comboKeyboardLayout = new QComboBox(this);
+    m_comboKeyboardLayout->setObjectName(QStringLiteral("profileKeyboardLayout"));
+    m_comboKeyboardLayout->addItem(tr("US"), static_cast<int>(KeyboardLayout::Us));
+    m_comboKeyboardLayout->addItem(tr("Same as this computer"), static_cast<int>(KeyboardLayout::SameAsComputer));
+    if (deskflow::bridge::canSendKeysAsPressed()) {
+      m_comboKeyboardLayout->setToolTip(tr("The keyboard layout set on the device"));
+    } else {
+      m_comboKeyboardLayout->setEnabled(false);
+      m_comboKeyboardLayout->setToolTip(tr("Only on Windows for now"));
+    }
+    auto *l = createHBox();
+    l->addWidget(m_comboKeyboardLayout);
+    l->addStretch();
+    addComplexRow(tr("Keyboard Layout:"), l);
+  }
+
   // Scroll Settings
   auto *scrollLayout = createHBox();
 
@@ -408,6 +428,7 @@ void BridgeClientConfigDialog::setupProfileUI(QVBoxLayout *mainLayout)
   connect(m_spinProfileHeight, &QSpinBox::valueChanged, this, noteEdit);
   connect(m_profileOrientationGroup, &QButtonGroup::idToggled, this, noteEdit);
   connect(m_profileHidModeGroup, &QButtonGroup::idToggled, this, noteEdit);
+  connect(m_comboKeyboardLayout, &QComboBox::currentIndexChanged, this, noteEdit);
   connect(m_spinScrollScale, &QDoubleSpinBox::valueChanged, this, noteEdit);
   connect(m_checkInvertScroll, &QCheckBox::toggled, this, noteEdit);
 
@@ -664,6 +685,7 @@ void BridgeClientConfigDialog::saveUiToCache(int index)
   p.hidMode = m_radioProfileMouseOnly->isChecked() ? 1 : 0;
   p.slot = index;
   p.invert = m_checkInvertScroll->isChecked() ? 1 : 0;
+  p.keyboardLayout = static_cast<uint8_t>(m_comboKeyboardLayout->currentData().toInt());
   // e.g. 0.3 * 10 is 2.999...; 0, the firmware's default, is shown as 1.0, so keep it as it is
   const auto scale = static_cast<uint8_t>(qRound(m_spinScrollScale->value() * 10));
   if (!(p.yScrollScale == 0 && scale == 10))
@@ -728,6 +750,9 @@ void BridgeClientConfigDialog::updateProfileDetailUI(int index)
   double scale = (p.yScrollScale == 0) ? 1.0 : static_cast<double>(p.yScrollScale) / 10.0;
   m_spinScrollScale->setValue(scale);
   m_checkInvertScroll->setChecked(p.invert != 0);
+  m_comboKeyboardLayout->setCurrentIndex(
+      m_comboKeyboardLayout->findData(static_cast<int>(deskflow::bridge::keyboardLayout(p.keyboardLayout)))
+  );
 
   m_showingProfile = false;
   blockSignals(blocked);

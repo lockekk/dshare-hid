@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "BridgeKeyboard.h"
 #include "BridgeRequests.h"
 #include "CdcTransport.h"
 #include "deskflow/PlatformComputer.h"
@@ -110,15 +111,7 @@ private:
   bool sendMouseScrollEvent(int8_t delta) const;
   bool sendConsumerControlEvent(HidEventType type, uint16_t usageCode) const;
 
-  uint8_t convertModifiers(KeyModifierMask mask) const;
-  uint8_t modifierBitForKey(KeyID id) const;
-  uint8_t modifierBitForButton(KeyButton button) const;
-  uint16_t convertMediaKeyToConsumerControl(KeyID id) const;
-  uint8_t convertKeyID(KeyID id) const;
-  uint8_t convertKeyButton(KeyButton button) const;
-  uint8_t convertKey(KeyID id, KeyButton button) const;
   uint8_t convertButtonID(ButtonID id) const;
-  uint8_t activeModifierBitmap() const;
   void resetMouseAccumulator() const;
 
   void recordCdcCommand(std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now()) const;
@@ -129,11 +122,12 @@ private:
 
   // the GUI's device requests (see BridgeRequests.h), answered on stdout
   void handleRequests();
-  // take on the active profile's screen size and scroll settings after a request changed it
+  // take on the active profile's screen size, scroll and keyboard settings after a request
+  // changed it
   void applyActiveProfile();
   // the same, read from the device; true if the screen size changed
   bool loadActiveProfile();
-  void applyScrollSettings(uint8_t index, const DeviceProfile &profile);
+  void applyProfileSettings(uint8_t index, const DeviceProfile &profile);
 
   std::shared_ptr<CdcTransport> m_transport;
   std::shared_ptr<requests::Queue> m_requests;
@@ -146,16 +140,7 @@ private:
   int32_t m_cursorY = 0;
   uint8_t m_mouseButtons = 0; // HID button bitmap
 
-  std::set<KeyButton> m_pressedButtons;
-  std::map<KeyButton, uint16_t> m_pressedConsumerControls; // button -> consumer code
-  struct ActiveKeyState
-  {
-    uint8_t hidKey = 0;
-    uint8_t modifierBit = 0;
-  };
-  std::map<KeyButton, ActiveKeyState> m_buttonToActiveKey;
-  uint8_t m_currentHidModifiers = 0;
-  KeyModifierMask m_activeModifiers = 0;
+  BridgeKeyboard m_keyboard;
 
   bool m_enabled = false;
   uint32_t m_sequenceNumber = 0;

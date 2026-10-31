@@ -8,9 +8,11 @@
 
 #include "common/Settings.h"
 #include "gui/dialogs/BridgeClientConfigDialog.h"
+#include "platform/bridge/BridgeKeys.h"
 
 #include <QApplication>
 #include <QCheckBox>
+#include <QComboBox>
 #include <QDate>
 #include <QDialogButtonBox>
 #include <QDoubleSpinBox>
@@ -310,6 +312,26 @@ void BridgeClientConfigDialogTests::editIsSavedOnOk()
   QCOMPARE(saved.hidMode, uint8_t(1));
   QCOMPARE(saved.invert, uint8_t(1));
   QCOMPARE(saved.yScrollScale, uint8_t(15));
+}
+
+void BridgeClientConfigDialogTests::keyboardLayoutIsSavedOnOk()
+{
+  auto dialog = openDialog();
+  auto *layout = child<QComboBox>(*dialog, "profileKeyboardLayout");
+  QCOMPARE(layout->currentText(), QStringLiteral("US"));
+  // only Windows can send the keys as they are pressed
+  QCOMPARE(layout->isEnabled(), deskflow::bridge::canSendKeysAsPressed());
+
+  layout->setCurrentIndex(layout->findText(QStringLiteral("Same as this computer")));
+  m_modals->press(QMessageBox::Apply);
+  clickOk(*dialog);
+
+  QCOMPARE(m_device->received, (QStringList{"profiles", "profiles", "save 1"}));
+  QCOMPARE(m_device->profiles.at(1).keyboardLayout, uint8_t(1));
+
+  // and shown again
+  auto again = openDialog();
+  QCOMPARE(child<QComboBox>(*again, "profileKeyboardLayout")->currentText(), QStringLiteral("Same as this computer"));
 }
 
 void BridgeClientConfigDialogTests::revertedEditSendsNothing()
