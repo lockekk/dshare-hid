@@ -36,7 +36,11 @@ constexpr Choice kChoices[] = {
     {QLatin1StringView("ctrl+alt"), kControl | kAlt},
     {QLatin1StringView("ctrl+shift"), kControl | kShift},
     {QLatin1StringView("alt+shift"), kAlt | kShift},
+#if !defined(Q_OS_WIN)
+    // not on Windows: Explorer holds Win+Alt+digit for the taskbar's jump lists, so the server
+    // can't register it and the keys open a jump list instead
     {QLatin1StringView("super+alt"), kSuper | kAlt},
+#endif
 };
 
 // the positions the server's action takes (BridgeProfileAction): a device has at most 6
