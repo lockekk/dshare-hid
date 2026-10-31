@@ -2379,6 +2379,26 @@ Si elige &apos;No&apos;, la configuración del cliente puente se conservará y p
         <translation>Modo HID:</translation>
     </message>
     <message>
+        <source>US</source>
+        <translation>EE. UU.</translation>
+    </message>
+    <message>
+        <source>Same as this computer</source>
+        <translation>Igual que este equipo</translation>
+    </message>
+    <message>
+        <source>The keyboard layout set on the device</source>
+        <translation>La distribución de teclado configurada en el dispositivo</translation>
+    </message>
+    <message>
+        <source>Only on Windows for now</source>
+        <translation>Por ahora, solo en Windows</translation>
+    </message>
+    <message>
+        <source>Keyboard Layout:</source>
+        <translation>Distribución del teclado:</translation>
+    </message>
+    <message>
         <source>Invert direction</source>
         <translation>Invertir dirección</translation>
     </message>

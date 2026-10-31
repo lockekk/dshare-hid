@@ -2397,6 +2397,26 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation>Режим HID:</translation>
     </message>
     <message>
+        <source>US</source>
+        <translation>США</translation>
+    </message>
+    <message>
+        <source>Same as this computer</source>
+        <translation>Как на этом компьютере</translation>
+    </message>
+    <message>
+        <source>The keyboard layout set on the device</source>
+        <translation>Раскладка клавиатуры, заданная на устройстве</translation>
+    </message>
+    <message>
+        <source>Only on Windows for now</source>
+        <translation>Пока только в Windows</translation>
+    </message>
+    <message>
+        <source>Keyboard Layout:</source>
+        <translation>Раскладка клавиатуры:</translation>
+    </message>
+    <message>
         <source>Invert direction</source>
         <translation>Инвертировать направление</translation>
     </message>

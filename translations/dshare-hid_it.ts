@@ -2379,6 +2379,26 @@ Se scegli &apos;No&apos;, la configurazione del client bridge verrà mantenuta e
         <translation>Modalità HID:</translation>
     </message>
     <message>
+        <source>US</source>
+        <translation>USA</translation>
+    </message>
+    <message>
+        <source>Same as this computer</source>
+        <translation>Come questo computer</translation>
+    </message>
+    <message>
+        <source>The keyboard layout set on the device</source>
+        <translation>Il layout di tastiera impostato sul dispositivo</translation>
+    </message>
+    <message>
+        <source>Only on Windows for now</source>
+        <translation>Per ora solo su Windows</translation>
+    </message>
+    <message>
+        <source>Keyboard Layout:</source>
+        <translation>Layout tastiera:</translation>
+    </message>
+    <message>
         <source>Invert direction</source>
         <translation>Inverti direzione</translation>
     </message>
