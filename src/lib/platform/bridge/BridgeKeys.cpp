@@ -447,16 +447,20 @@ bool deadKeyFor(char16_t character, uint16_t &scanCode, uint8_t &modifiers, HKL 
 
 } // namespace
 
-bool windowsDeadKey(KeyID id, uint16_t scanCode, uint8_t heldModifiers, uint16_t &deadScanCode, uint8_t &deadModifiers)
+DeadKeyLayout windowsDeadKeyLayout(void *handle)
 {
-  const HKL layout = currentLayout();
-  const DeadKeyLayout windows{
+  const auto layout = static_cast<HKL>(handle);
+  return {
       [layout](uint16_t key, uint8_t held, KeyID character) { return typesCharacter(key, held, character, layout); },
       [layout](char16_t character, uint16_t &key, uint8_t &modifiers) {
         return deadKeyFor(character, key, modifiers, layout);
       }
   };
-  return findDeadKey(id, scanCode, heldModifiers, windows, deadScanCode, deadModifiers);
+}
+
+bool windowsDeadKey(KeyID id, uint16_t scanCode, uint8_t heldModifiers, uint16_t &deadScanCode, uint8_t &deadModifiers)
+{
+  return findDeadKey(id, scanCode, heldModifiers, windowsDeadKeyLayout(currentLayout()), deadScanCode, deadModifiers);
 }
 
 #endif

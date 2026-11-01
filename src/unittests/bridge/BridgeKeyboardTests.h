@@ -19,6 +19,8 @@ private Q_SLOTS:
   void deadKeyCharacters();
   void findDeadKey_data();
   void findDeadKey();
+  void windowsLayoutsDeadKeys_data();
+  void windowsLayoutsDeadKeys();
   void unknownLayoutIsUs();
 
   // every key, by its key code and by its key ID, for each kind of computer and both layouts

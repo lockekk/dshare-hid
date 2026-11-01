@@ -6,11 +6,22 @@
 
 #include "platform/bridge/BridgeKeyboard.h"
 
+#include <algorithm>
 #include <map>
 #include <set>
 #include <tuple>
 #include <utility>
 #include <vector>
+
+#if defined(_WIN32)
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <Windows.h>
+#endif
 
 using namespace deskflow::bridge;
 using KeyCodes = BridgeKeyboard::KeyCodes;
@@ -801,6 +812,93 @@ void BridgeKeyboardTests::findDeadKey()
     QCOMPARE(int(foundScanCode), deadScanCode);
     QCOMPARE(int(foundModifiers), deadModifiers);
   }
+}
+
+void BridgeKeyboardTests::windowsLayoutsDeadKeys_data()
+{
+#if defined(_WIN32)
+  // as findDeadKey_data, with Windows' own layouts by their KLID
+  QTest::addColumn<QString>("klid");
+  QTest::addColumn<int>("id");
+  QTest::addColumn<int>("scanCode");
+  QTest::addColumn<int>("held");
+  QTest::addColumn<bool>("found");
+  QTest::addColumn<int>("deadScanCode");
+  QTest::addColumn<int>("deadModifiers");
+
+  const QString german = QStringLiteral("00000407");
+  QTest::newRow("German ^ e") << german << 0xEA << 0x12 << 0 << true << 0x29 << 0;
+  QTest::newRow("German ´ e") << german << 0xE9 << 0x12 << 0 << true << 0x0D << 0;
+  QTest::newRow("German ` a") << german << 0xE0 << 0x1E << 0 << true << 0x0D << 0x02;
+  QTest::newRow("German ^ Space") << german << int('^') << 0x39 << 0 << true << 0x29 << 0;
+  QTest::newRow("German ^ ^") << german << int('^') << 0x29 << 0 << false << 0 << 0;
+  QTest::newRow("German Shift+^ (°)") << german << 0xB0 << 0x29 << 0x02 << false << 0 << 0;
+  QTest::newRow("German AltGr+E (€)") << german << 0x20AC << 0x12 << 0x41 << false << 0 << 0;
+  QTest::newRow("German ü") << german << 0xFC << 0x1A << 0 << false << 0 << 0;
+
+  const QString usInternational = QStringLiteral("00020409");
+  QTest::newRow("US International ' e") << usInternational << 0xE9 << 0x12 << 0 << true << 0x28 << 0;
+  QTest::newRow("US International AltGr+E (é)") << usInternational << 0xE9 << 0x12 << 0x41 << false << 0 << 0;
+  QTest::newRow("US International \" u") << usInternational << 0xFC << 0x16 << 0 << true << 0x28 << 0x02;
+  QTest::newRow("US International ~ n") << usInternational << 0xF1 << 0x31 << 0 << true << 0x29 << 0x02;
+  QTest::newRow("US International ^ e") << usInternational << 0xEA << 0x12 << 0 << true << 0x07 << 0x02;
+
+  const QString french = QStringLiteral("0000040C");
+  QTest::newRow("French é") << french << 0xE9 << 0x03 << 0 << false << 0 << 0;
+  QTest::newRow("French ^ e") << french << 0xEA << 0x12 << 0 << true << 0x1A << 0;
+  QTest::newRow("French ¨ e") << french << 0xEB << 0x12 << 0 << true << 0x1A << 0x02;
+
+  const QString czech = QStringLiteral("00000405");
+  QTest::newRow("Czech ě") << czech << 0x011B << 0x03 << 0 << false << 0 << 0;
+  QTest::newRow("Czech ě with Caps Lock (Ě)") << czech << 0x011A << 0x03 << 0 << false << 0 << 0;
+  QTest::newRow("Czech ˇ e") << czech << 0x011B << 0x12 << 0 << true << 0x0D << 0x02;
+#else
+  QSKIP("Windows' keyboard layouts are only on Windows");
+#endif
+}
+
+void BridgeKeyboardTests::windowsLayoutsDeadKeys()
+{
+#if defined(_WIN32)
+  QFETCH(QString, klid);
+  QFETCH(int, id);
+  QFETCH(int, scanCode);
+  QFETCH(int, held);
+  QFETCH(bool, found);
+  QFETCH(int, deadScanCode);
+  QFETCH(int, deadModifiers);
+
+  // loaded for this process, and unloaded after unless the user has it
+  std::vector<HKL> userLayouts(static_cast<size_t>(GetKeyboardLayoutList(0, nullptr)));
+  GetKeyboardLayoutList(static_cast<int>(userLayouts.size()), userLayouts.data());
+  const HKL layout = LoadKeyboardLayoutW(reinterpret_cast<LPCWSTR>(klid.utf16()), KLF_NOTELLSHELL);
+  QVERIFY2(layout != nullptr, qPrintable(QStringLiteral("can't load the layout %1").arg(klid)));
+  struct Unload
+  {
+    HKL layout;
+    bool theUsers;
+    ~Unload()
+    {
+      if (!theUsers) {
+        UnloadKeyboardLayout(layout);
+      }
+    }
+  } unload{layout, std::find(userLayouts.begin(), userLayouts.end(), layout) != userLayouts.end()};
+
+  uint16_t foundScanCode = 0;
+  uint8_t foundModifiers = 0;
+  QCOMPARE(
+      deskflow::bridge::findDeadKey(
+          static_cast<KeyID>(id), static_cast<uint16_t>(scanCode), static_cast<uint8_t>(held),
+          windowsDeadKeyLayout(layout), foundScanCode, foundModifiers
+      ),
+      found
+  );
+  if (found) {
+    QCOMPARE(int(foundScanCode), deadScanCode);
+    QCOMPARE(int(foundModifiers), deadModifiers);
+  }
+#endif
 }
 
 void BridgeKeyboardTests::unknownLayoutIsUs()

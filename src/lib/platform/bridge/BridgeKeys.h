@@ -80,6 +80,10 @@ bool findDeadKey(
 );
 
 #if defined(_WIN32)
+/// what a Windows keyboard layout answers findDeadKey
+/// @param layout the layout's HKL
+DeadKeyLayout windowsDeadKeyLayout(void *layout);
+
 /// findDeadKey, with the layout of the window typed in
 bool windowsDeadKey(KeyID id, uint16_t scanCode, uint8_t heldModifiers, uint16_t &deadScanCode, uint8_t &deadModifiers);
 #endif
