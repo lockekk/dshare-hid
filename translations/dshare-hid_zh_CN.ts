@@ -2382,6 +2382,26 @@ If you choose &apos;No&apos;, the bridge client configuration will be kept and c
         <translation>HID 模式：</translation>
     </message>
     <message>
+        <source>US</source>
+        <translation>美式</translation>
+    </message>
+    <message>
+        <source>Same as this computer</source>
+        <translation>与本机相同</translation>
+    </message>
+    <message>
+        <source>The keyboard layout set on the device</source>
+        <translation>设备上设置的键盘布局</translation>
+    </message>
+    <message>
+        <source>Only on Windows for now</source>
+        <translation>目前仅支持 Windows</translation>
+    </message>
+    <message>
+        <source>Keyboard Layout:</source>
+        <translation>键盘布局：</translation>
+    </message>
+    <message>
         <source>Invert direction</source>
         <translation>反转方向</translation>
     </message>

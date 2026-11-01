@@ -1,10 +1,11 @@
 /*
- * dshare-hid -- created by locke.huang@gmail.com
+ * dshare-hid -- created by dshare.hid@gmail.com
  */
 
 #include "BridgeProfileBackup.h"
 
 #include "gui/core/BridgeDeviceService.h"
+#include "platform/bridge/BridgeKeys.h"
 
 #include <QFile>
 #include <QJsonArray>
@@ -43,6 +44,7 @@ struct Field
   int max;
   int (*get)(const DeviceProfile &);
   void (*set)(DeviceProfile &, int);
+  bool optional = false; // added after backups were made: missing is 0
 };
 
 const Field kFields[] = {
@@ -65,6 +67,10 @@ const Field kFields[] = {
     // tenths, 0.1-10.0 as the dialog's scroll scale; 0 is the firmware's default, 1.0
     {"y_scroll_scale", 0, 100, [](const DeviceProfile &p) -> int { return p.yScrollScale; },
      [](DeviceProfile &p, int v) { p.yScrollScale = static_cast<uint8_t>(v); }},
+    // the device's: 0 US, 1 the same as this computer; any other value is US, as the core reads it
+    {"keyboard_layout", 0, 1,
+     [](const DeviceProfile &p) -> int { return static_cast<int>(deskflow::bridge::keyboardLayout(p.keyboardLayout)); },
+     [](DeviceProfile &p, int v) { p.keyboardLayout = static_cast<uint8_t>(v); }, true},
 };
 
 QString prefixed(const QString &where, const QString &problem)
@@ -162,8 +168,12 @@ void readProfile(
   }
 
   for (const auto &field : kFields) {
+    const QString key = QString::fromLatin1(field.key);
+    if (field.optional && !object.contains(key)) {
+      continue; // the profile was zeroed
+    }
     int value = 0;
-    if (readInteger(object, QString::fromLatin1(field.key), field.min, field.max, where, value, problems)) {
+    if (readInteger(object, key, field.min, field.max, where, value, problems)) {
       field.set(profile, value);
     } else {
       valid = false;

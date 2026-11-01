@@ -1,5 +1,5 @@
 /*
- * dshare-hid -- created by locke.huang@gmail.com
+ * dshare-hid -- created by dshare.hid@gmail.com
  */
 
 #include <QTest>
@@ -12,6 +12,7 @@ private Q_SLOTS:
   void deviceNameIsOptional();
   void acceptsMatchingSlotAndUnknownKeys();
   void roundTrip();
+  void unknownKeyboardLayoutIsUs();
   void skipsInvalidDeviceName();
   void rejectsInvalidFile_data();
   void rejectsInvalidFile();

@@ -1,5 +1,5 @@
 /*
- * dshare-hid -- created by locke.huang@gmail.com
+ * dshare-hid -- created by dshare.hid@gmail.com
  */
 
 #pragma once
@@ -52,18 +52,20 @@ inline const char *activationStateToString(ActivationState state)
 #pragma pack(push, 1)
 struct DeviceProfile
 {
-  char hostname[32];     // Null-terminated string
-  uint8_t slot;          // Slot Index (0-14)
-  uint8_t hidMode;       // 0: Combo, 1: Mouse
-  uint16_t screenWidth;  // Pixels (default 1080)
-  uint16_t screenHeight; // Pixels (default 2424)
-  uint8_t rotation;      // 0: Portrait, 1: Landscape
-  uint8_t invert;        // scroll direction 0: no invert, 1: invert
-  uint8_t speed;         // legacy scroll speed
-  uint8_t yScrollScale;  // scroll scale (1-100 representing 0.1-10.0, 0 treats as 1)
-  uint8_t reserved[10];  // reserved for future use, total size is 52 bytes
+  char hostname[32];      // Null-terminated string
+  uint8_t slot;           // Slot Index (0-14)
+  uint8_t hidMode;        // 0: Combo, 1: Mouse
+  uint16_t screenWidth;   // Pixels (default 1080)
+  uint16_t screenHeight;  // Pixels (default 2424)
+  uint8_t rotation;       // 0: Portrait, 1: Landscape
+  uint8_t invert;         // scroll direction 0: no invert, 1: invert
+  uint8_t speed;          // legacy scroll speed
+  uint8_t yScrollScale;   // scroll scale (1-100 representing 0.1-10.0, 0 treats as 1)
+  uint8_t keyboardLayout; // the device's: 0 US, 1 the same as this computer (BridgeKeys.h)
+  uint8_t reserved[9];    // reserved for future use, total size is 52 bytes
 };
 #pragma pack(pop)
+static_assert(sizeof(DeviceProfile) == 52, "the firmware's profile is 52 bytes");
 
 /**
  * @brief The screen size a profile gives the bridge client: its resolution, turned to match

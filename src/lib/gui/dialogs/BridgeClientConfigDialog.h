@@ -1,9 +1,10 @@
 /*
- * dshare-hid -- created by locke.huang@gmail.com
+ * dshare-hid -- created by dshare.hid@gmail.com
  */
 
 #include <QButtonGroup>
 #include <QCheckBox>
+#include <QComboBox>
 #include <QDialog>
 #include <QGroupBox> // Added
 #include <QLabel>    // Added
@@ -92,6 +93,7 @@ private:
   QButtonGroup *m_profileHidModeGroup = nullptr;
   QRadioButton *m_radioProfileCombo = nullptr;
   QRadioButton *m_radioProfileMouseOnly = nullptr;
+  QComboBox *m_comboKeyboardLayout = nullptr; // the device's (DeviceProfile::keyboardLayout)
 
   QPushButton *m_btnProfileReset = nullptr;
   QPushButton *m_btnProfileBackup = nullptr;

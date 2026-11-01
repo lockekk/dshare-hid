@@ -23,7 +23,7 @@ A backup holds what is stored on the device. Changes in the dialog that haven't 
 
 | Saved | Not saved |
 |---|---|
-| Each profile that has been set: hostname, HID mode, width, height, rotation, invert, speed, Y scroll scale | Bluetooth pairings. The CDC protocol can't read them; they stay in the firmware's Bluetooth storage. |
+| Each profile that has been set: hostname, HID mode, width, height, rotation, invert, speed, Y scroll scale, keyboard layout | Bluetooth pairings. The CDC protocol can't read them; they stay in the firmware's Bluetooth storage. |
 | The active profile index | Activation state and profile limit |
 | The device name (optional) | |
 
@@ -115,6 +115,7 @@ The firmware stores any 52 bytes it is sent as a profile: `SET_PROFILE` only che
 | `invert` | 0 or 1 | |
 | `speed` | Whole number, 0–255 | The legacy scroll speed; the core reads 0 as 120 |
 | `y_scroll_scale` | Whole number, 0–100 | Tenths: 1–100 is 0.1–10.0, as in the dialog; 0 is the default, 1.0 |
+| `keyboard_layout` (optional) | 0 or 1 | The layout set on the device: 0 US, 1 the same as this computer. Stored in the first of the profile's spare bytes. Backups made before it existed lack it, and restore it as 0. Any other value on the device, which the app reads as US, is backed up as 0 |
 | `active_profile` | Whole number, 0–14; below the device's limit | |
 | `device_name` (optional) | Passes `isValidDeviceName()` (1–22 characters: A–Z, a–z, 0–9, space, `.`, `-`, `_`) and isn't only spaces | The dialog's device name rule |
 
@@ -146,7 +147,8 @@ Use the same JSON as `scripts/usb_cdc_test.py backup-profiles` / `restore-profil
       "rotation": 0,
       "invert": 0,
       "speed": 30,
-      "y_scroll_scale": 10
+      "y_scroll_scale": 10,
+      "keyboard_layout": 1
     },
     {
       "index": 1,
@@ -165,6 +167,7 @@ Use the same JSON as `scripts/usb_cdc_test.py backup-profiles` / `restore-profil
 
 - `profiles` lists only the profiles that were set, each with its `index`. There is no `slot` field, since it always equals `index`.
 - `device_name` is the app's addition, and it's optional. The script ignores it on restore and doesn't write it, so the app must accept files without it.
+- `keyboard_layout` is the app's addition too. The script doesn't write it, and its restore sends the spare bytes as zeros, which sets the layout back to US.
 - The app writes the keys of each object in alphabetical order with 4-space indents (`QJsonDocument`). The script keeps the order above with 2-space indents. The data is the same, so compare the two with `jq -S` rather than `diff`.
 
 ## Testing against the firmware script
@@ -180,7 +183,7 @@ diff before.json check.json                                                  # m
 
 Check these:
 
-1. An app export of a device configured by the script matches the script's export, ignoring `device_name`: `diff <(jq -S 'del(.device_name)' app.json) <(jq -S . script.json)`.
+1. An app export of a device configured by the script matches the script's export, ignoring `device_name` and `keyboard_layout`: `diff <(jq -S 'del(.device_name, .profiles[].keyboard_layout)' app.json) <(jq -S . script.json)`.
 2. The app restores a script export onto a wiped device; `backup-profiles` then matches the original.
 3. A backup with an index at or above the device's limit is rejected before anything is written.
 4. Restoring while a bridge client runs for the device works, and the client takes on the new active profile's screen size.

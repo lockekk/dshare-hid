@@ -1,5 +1,5 @@
 /*
- * dshare-hid -- created by locke.huang@gmail.com
+ * dshare-hid -- created by dshare.hid@gmail.com
  */
 
 #include "base/Log.h"
@@ -25,6 +25,9 @@ private Q_SLOTS:
   void screenStartsAtActiveProfileSize();
   void screenKeepsGivenSizeWithoutProfile();
   void screenFollowsSwitchThatTimedOut();
+
+  // BridgePlatformScreen's keys, as the profile's keyboard layout says
+  void screenKeysFollowProfileLayout();
 
 private:
   Log m_log;

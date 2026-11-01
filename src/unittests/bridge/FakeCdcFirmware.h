@@ -1,5 +1,5 @@
 /*
- * dshare-hid -- created by locke.huang@gmail.com
+ * dshare-hid -- created by dshare.hid@gmail.com
  */
 
 #pragma once
@@ -7,11 +7,13 @@
 #include "platform/bridge/CdcTransport.h"
 
 #include <QString>
+#include <QStringList>
 
 #include <atomic>
 #include <chrono>
 #include <cstdio>
 #include <cstring>
+#include <mutex>
 #include <thread>
 #include <vector>
 
@@ -27,7 +29,7 @@
  *
  * It answers HELLO (unsigned, so open the transport with allowInsecure), the name and serial
  * reads, GET_PROFILE (with or without an index) and SWITCH_PROFILE.  Profile i is "Host i",
- * (1000 + 100 i) x (2000 + 100 i), portrait.
+ * (1000 + 100 i) x (2000 + 100 i), portrait.  It keeps the keyboard reports it is sent.
  */
 class FakeCdcFirmware
 {
@@ -102,8 +104,18 @@ public:
   std::atomic<bool> failProfileReads = false;
   /// the esp_chip_id_t HELLO reports, ESP32-C3 by default
   std::atomic<int> chipId = 5;
+  /// the profile whose keyboard layout is the same as the computer's; the others are US
+  std::atomic<int> sameKeysProfile = -1;
+
+  /// the keyboard reports sent so far, as "press 00 1c": the type, the modifiers and the key
+  QStringList keyboardReports() const
+  {
+    const std::lock_guard<std::mutex> lock(m_reportsMutex);
+    return m_keyboardReports;
+  }
 
 private:
+  static constexpr uint8_t kHid = 0x01;
   static constexpr uint8_t kControl = 0x80;
   static constexpr uint8_t kHello = 0x01;
   static constexpr uint8_t kGetName = 0x02;
@@ -144,6 +156,8 @@ private:
         buffer.erase(buffer.begin(), end);
         if (type == kControl && !payload.empty()) {
           answer(payload);
+        } else if (type == kHid) {
+          keepKeyboardReport(payload);
         }
       }
     }
@@ -183,7 +197,10 @@ private:
         send({kAck, 1});
         break;
       }
-      const auto p = profile(index);
+      auto p = profile(index);
+      if (index == sameKeysProfile) {
+        p.keyboardLayout = 1;
+      }
       std::vector<uint8_t> reply{kAck, 0};
       reply.insert(
           reply.end(), reinterpret_cast<const uint8_t *>(&p), reinterpret_cast<const uint8_t *>(&p) + sizeof(p)
@@ -203,6 +220,21 @@ private:
     default:
       break;
     }
+  }
+
+  // [magic 0xAA55 LE][event type][length][modifiers][key]
+  void keepKeyboardReport(const std::vector<uint8_t> &event)
+  {
+    constexpr uint8_t kKeyboardPress = 0x01;
+    constexpr uint8_t kKeyboardRelease = 0x02;
+    if (event.size() != 6 || (event[2] != kKeyboardPress && event[2] != kKeyboardRelease)) {
+      return;
+    }
+    const std::lock_guard<std::mutex> lock(m_reportsMutex);
+    m_keyboardReports.append(QStringLiteral("%1 %2 %3")
+                                 .arg(event[2] == kKeyboardPress ? "press" : "release")
+                                 .arg(event[4], 2, 16, QLatin1Char('0'))
+                                 .arg(event[5], 2, 16, QLatin1Char('0')));
   }
 
   void sendConfig(uint8_t request, const char *text)
@@ -240,5 +272,7 @@ private:
   int m_slave = -1;
   QString m_devicePath;
   std::atomic<bool> m_stop = false;
+  mutable std::mutex m_reportsMutex;
+  QStringList m_keyboardReports;
   std::thread m_thread;
 };

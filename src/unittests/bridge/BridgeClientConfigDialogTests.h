@@ -1,5 +1,5 @@
 /*
- * dshare-hid -- created by locke.huang@gmail.com
+ * dshare-hid -- created by dshare.hid@gmail.com
  */
 
 #include "arch/Arch.h"
@@ -32,6 +32,9 @@ private Q_SLOTS:
   void showsTheDeviceProfiles();
   void okWithoutChangesSendsNothing();
   void editIsSavedOnOk();
+  void keyboardLayoutIsSavedOnOk();
+  void keyboardLayoutStaysThroughOtherEdits();
+  void unknownKeyboardLayoutIsShownAsUs();
   void revertedEditSendsNothing();
   void editKeepsWhatTheFormDoesntShow();
   void summaryCancelSendsNothing();

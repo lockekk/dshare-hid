@@ -1,5 +1,5 @@
 /*
- * dshare-hid -- created by locke.huang@gmail.com
+ * dshare-hid -- created by dshare.hid@gmail.com
  */
 
 #include "BridgeActiveProfileTests.h"
@@ -253,6 +253,33 @@ void BridgeActiveProfileTests::screenFollowsSwitchThatTimedOut()
   QCOMPARE(int(transport->deviceConfig().activeProfile), 2);
   // so the client sends the server the new size
   QVERIFY(std::find(events.added.begin(), events.added.end(), EventTypes::ComputerShapeChanged) != events.added.end());
+}
+
+void BridgeActiveProfileTests::screenKeysFollowProfileLayout()
+{
+  // profile 1's device is set to the same layout as this computer, profile 0's to US
+  FakeCdcFirmware device(4, 1);
+  device.sameKeysProfile = 1;
+  QVERIFY(!device.devicePath().isEmpty());
+  auto transport = std::make_shared<CdcTransport>(device.devicePath());
+  QVERIFY(transport->open(true));
+
+  // a Windows server's keys, which can go as they are pressed
+  RecordingEventQueue events;
+  auto queue = std::make_shared<requests::Queue>();
+  BridgePlatformScreen screen(&events, transport, queue, 1920, 1080, BridgeKeyboard::KeyCodes::Windows);
+
+  // German's z, on the key that is y on US: the key as it is pressed
+  screen.fakeKeyDown('z', 0, 0x15, "de");
+  screen.fakeKeyUp(0x15);
+  QTRY_COMPARE(device.keyboardReports(), (QStringList{"press 00 1c", "release 00 1c"}));
+
+  // US: the key that types z on US
+  queue->push(requests::formatRequest(1, requests::kSwitch, {QStringLiteral("0")}).toStdString());
+  QVERIFY(events.call(EventTypes::StreamInputReady, queue.get()));
+  screen.fakeKeyDown('z', 0, 0x15, "de");
+  screen.fakeKeyUp(0x15);
+  QTRY_COMPARE(device.keyboardReports(), (QStringList{"press 00 1c", "release 00 1c", "press 00 1d", "release 00 1d"}));
 }
 
 QTEST_MAIN(BridgeActiveProfileTests)

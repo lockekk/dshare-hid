@@ -1,5 +1,5 @@
 /*
- * dshare-hid -- created by locke.huang@gmail.com
+ * dshare-hid -- created by dshare.hid@gmail.com
  */
 
 #include "BridgeProfileBackupTests.h"
@@ -139,6 +139,8 @@ void BridgeProfileBackupTests::readsScriptBackup()
   QCOMPARE(ipad.invert, uint8_t(0));
   QCOMPARE(ipad.speed, uint8_t(30));
   QCOMPARE(ipad.yScrollScale, uint8_t(10));
+  // the script doesn't write the keyboard layout: US
+  QCOMPARE(ipad.keyboardLayout, uint8_t(0));
 
   // nothing of the hostname's field past its NUL, nor of the reserved bytes, is left unset
   const QByteArray hostname(ipad.hostname, sizeof(ipad.hostname));
@@ -181,6 +183,7 @@ void BridgeProfileBackupTests::roundTrip()
       DeviceProfile{}, // an older firmware that couldn't read the profile
       makeProfile(3, "Work Laptop", 2560, 1600),
   };
+  device.profiles[3].keyboardLayout = 1; // the same as this computer
 
   const BridgeProfileBackup backup = BridgeProfileBackup::fromDevice(device, QStringLiteral("Desk Bridge"));
   QCOMPARE(backup.profiles.keys(), (QList<int>{0, 3}));
@@ -194,13 +197,32 @@ void BridgeProfileBackupTests::roundTrip()
   QVERIFY(sameProfile(read.profiles.value(0), device.profiles.at(0)));
   QVERIFY(sameProfile(read.profiles.value(3), device.profiles.at(3)));
 
-  // the keys usb_cdc_test.py reads, and no slot
+  // the keys usb_cdc_test.py reads, the keyboard layout, which it ignores, and no slot
   const QJsonObject entry =
       QJsonDocument::fromJson(backup.toJson()).object().value("profiles").toArray().at(0).toObject();
   QCOMPARE(
-      entry.keys(),
-      (QStringList{"height", "hid_mode", "hostname", "index", "invert", "rotation", "speed", "width", "y_scroll_scale"})
+      entry.keys(), (QStringList{
+                        "height", "hid_mode", "hostname", "index", "invert", "keyboard_layout", "rotation", "speed",
+                        "width", "y_scroll_scale"
+                    })
   );
+}
+
+void BridgeProfileBackupTests::unknownKeyboardLayoutIsUs()
+{
+  // a value the core reads as US, from a byte that was spare before the keyboard layout
+  BridgeProfileSet device;
+  device.activeIndex = 0;
+  device.profiles = {makeProfile(0, "Pixel 9", 1080, 2424), makeProfile(1, "Tab S8", 1600, 2560)};
+  device.profiles[0].keyboardLayout = 2;
+  device.profiles[1].keyboardLayout = 0xFF;
+
+  const BridgeProfileBackup backup = BridgeProfileBackup::fromDevice(device, QString());
+  BridgeProfileBackup read;
+  QStringList problems;
+  QVERIFY2(BridgeProfileBackup::fromJson(backup.toJson(), read, problems), qPrintable(problems.join('\n')));
+  QCOMPARE(read.profiles.value(0).keyboardLayout, uint8_t(0));
+  QCOMPARE(read.profiles.value(1).keyboardLayout, uint8_t(0));
 }
 
 void BridgeProfileBackupTests::skipsInvalidDeviceName()
@@ -231,6 +253,8 @@ void BridgeProfileBackupTests::rejectsInvalidFile_data()
   QTest::newRow("invert true") << withProfileValue("invert", true) << "\"invert\"";
   QTest::newRow("speed 256") << withProfileValue("speed", 256) << "\"speed\"";
   QTest::newRow("y_scroll_scale 101") << withProfileValue("y_scroll_scale", 101) << "\"y_scroll_scale\"";
+  QTest::newRow("keyboard_layout 2") << withProfileValue("keyboard_layout", 2) << "\"keyboard_layout\"";
+  QTest::newRow("keyboard_layout as text") << withProfileValue("keyboard_layout", "1") << "\"keyboard_layout\"";
   QTest::newRow("hostname empty") << withProfileValue("hostname", "") << "hostname";
   QTest::newRow("hostname spaces") << withProfileValue("hostname", "   ") << "hostname";
   QTest::newRow("hostname 32 chars") << withProfileValue("hostname", QString(32, 'a')) << "hostname";
@@ -345,6 +369,7 @@ void BridgeProfileBackupTests::checkCleansProfiles()
   DeviceProfile edited = makeProfile(3, "Work Laptop", 2560, 1600);
   edited.slot = 0;
   std::memset(edited.reserved, 0xAB, sizeof(edited.reserved));
+  edited.keyboardLayout = 0xAB;                       // read as US
   edited.hostname[sizeof(edited.hostname) - 1] = 'x'; // past the hostname's NUL
 
   BridgeProfileBackup edits;
