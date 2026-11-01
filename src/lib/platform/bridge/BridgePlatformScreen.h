@@ -34,9 +34,10 @@ namespace deskflow::bridge {
 class BridgePlatformScreen : public PlatformComputer
 {
 public:
+  /// @param keyCodes whose key codes the server sends: this computer's, or another's for a test
   BridgePlatformScreen(
       IEventQueue *events, std::shared_ptr<CdcTransport> transport, std::shared_ptr<requests::Queue> requests,
-      int32_t screenWidth, int32_t screenHeight
+      int32_t screenWidth, int32_t screenHeight, BridgeKeyboard::KeyCodes keyCodes = BridgeKeyboard::kThisComputer
   );
   ~BridgePlatformScreen() override;
 

@@ -33,6 +33,8 @@ private Q_SLOTS:
   void okWithoutChangesSendsNothing();
   void editIsSavedOnOk();
   void keyboardLayoutIsSavedOnOk();
+  void keyboardLayoutStaysThroughOtherEdits();
+  void unknownKeyboardLayoutIsShownAsUs();
   void revertedEditSendsNothing();
   void editKeepsWhatTheFormDoesntShow();
   void summaryCancelSendsNothing();

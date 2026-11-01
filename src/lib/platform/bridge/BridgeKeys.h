@@ -1,5 +1,5 @@
 /*
- * dshare-hid -- created by locke.huang@gmail.com
+ * dshare-hid -- created by dshare.hid@gmail.com
  */
 
 #pragma once
@@ -7,6 +7,7 @@
 #include "deskflow/KeyTypes.h"
 
 #include <cstdint>
+#include <functional>
 #include <vector>
 
 namespace deskflow::bridge {
@@ -52,16 +53,35 @@ uint8_t windowsScanCodeToHid(uint16_t scanCode);
 /// for 'ê', or the accent itself; none for any other character
 std::vector<char16_t> deadKeyCharacters(KeyID id);
 
-#if defined(_WIN32)
+/**
+ * @brief What findDeadKey asks of the server's keyboard layout
+ */
+struct DeadKeyLayout
+{
+  /// whether the key with this scan code types the character by itself, with the modifier keys
+  /// held (HID modifier bits), and Caps Lock on or off
+  std::function<bool(uint16_t scanCode, uint8_t heldModifiers, KeyID id)> typesCharacter;
+  /// the dead key that types this accent, and the HID modifiers it is typed with
+  std::function<bool(char16_t character, uint16_t &scanCode, uint8_t &modifiers)> deadKeyFor;
+};
+
 /**
  * @brief The dead key that the key with this scan code completed a character with
  *
  * The server's Windows hook holds a dead key back and sends only the character it composes,
  * on the next key, so a device that composes it again needs the dead key first.
+ * @param heldModifiers the HID modifier bits of the modifier keys held
  * @param deadModifiers the HID modifiers that the dead key is typed with
  * @return false when the key typed the character by itself
  */
-bool windowsDeadKey(KeyID id, uint16_t scanCode, uint16_t &deadScanCode, uint8_t &deadModifiers);
+bool findDeadKey(
+    KeyID id, uint16_t scanCode, uint8_t heldModifiers, const DeadKeyLayout &layout, uint16_t &deadScanCode,
+    uint8_t &deadModifiers
+);
+
+#if defined(_WIN32)
+/// findDeadKey, with the layout of the window typed in
+bool windowsDeadKey(KeyID id, uint16_t scanCode, uint8_t heldModifiers, uint16_t &deadScanCode, uint8_t &deadModifiers);
 #endif
 
 } // namespace deskflow::bridge

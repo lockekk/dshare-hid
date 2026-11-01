@@ -771,11 +771,12 @@ void BridgeKeyboard::keyUp(KeyButton button)
   }
 
   m_pressedButtons.erase(button);
-  if (bit != 0) {
-    m_currentHidModifiers &= ~bit;
-  } else if (sendsKeysAsPressed()) {
-    // still AltGr, if the last key typed with Control and Alt as AltGr
+  if (sendsKeysAsPressed()) {
+    // still AltGr while Control and Alt are held, if the last key typed with them as AltGr, and
+    // none once either is up, which may not be Right Alt's own key
     m_currentHidModifiers = heldHidModifiers(m_activeModifiers, heldModifierBits());
+  } else if (bit != 0) {
+    m_currentHidModifiers &= ~bit;
   } else {
     m_currentHidModifiers = heldModifierBits();
   }
@@ -795,8 +796,13 @@ void BridgeKeyboard::allKeysUp()
     }
   }
 
-  for (const auto &[button, state] : m_activeKeys) {
-    if (state.modifierBit != 0) {
+  for (auto it = m_activeKeys.begin(); it != m_activeKeys.end();) {
+    const ActiveKey state = it->second;
+    it = m_activeKeys.erase(it);
+    if (sendsKeysAsPressed()) {
+      // as keyUp(), so the last report has no AltGr left
+      m_currentHidModifiers = heldHidModifiers(m_activeModifiers, heldModifierBits());
+    } else if (state.modifierBit != 0) {
       m_currentHidModifiers &= ~state.modifierBit;
     }
     if (!m_keys(HidEventType::KeyboardRelease, m_currentHidModifiers, state.hidKey)) {
@@ -895,7 +901,8 @@ void BridgeKeyboard::sendDeadKey(KeyID id, KeyButton button) const
 {
   uint16_t deadScanCode = 0;
   uint8_t deadModifiers = 0;
-  if (m_keyCodes != KeyCodes::Windows || !m_deadKeys || !m_deadKeys(id, button, deadScanCode, deadModifiers)) {
+  if (m_keyCodes != KeyCodes::Windows || !m_deadKeys ||
+      !m_deadKeys(id, button, heldModifierBits(), deadScanCode, deadModifiers)) {
     return;
   }
   const uint8_t deadKey = windowsScanCodeToHid(deadScanCode);

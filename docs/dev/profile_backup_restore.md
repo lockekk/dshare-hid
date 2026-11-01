@@ -115,7 +115,7 @@ The firmware stores any 52 bytes it is sent as a profile: `SET_PROFILE` only che
 | `invert` | 0 or 1 | |
 | `speed` | Whole number, 0–255 | The legacy scroll speed; the core reads 0 as 120 |
 | `y_scroll_scale` | Whole number, 0–100 | Tenths: 1–100 is 0.1–10.0, as in the dialog; 0 is the default, 1.0 |
-| `keyboard_layout` (optional) | 0 or 1 | The layout set on the device: 0 US, 1 the same as this computer. Stored in the first of the profile's spare bytes. Backups made before it existed lack it, and restore it as 0 |
+| `keyboard_layout` (optional) | 0 or 1 | The layout set on the device: 0 US, 1 the same as this computer. Stored in the first of the profile's spare bytes. Backups made before it existed lack it, and restore it as 0. Any other value on the device, which the app reads as US, is backed up as 0 |
 | `active_profile` | Whole number, 0–14; below the device's limit | |
 | `device_name` (optional) | Passes `isValidDeviceName()` (1–22 characters: A–Z, a–z, 0–9, space, `.`, `-`, `_`) and isn't only spaces | The dialog's device name rule |
 

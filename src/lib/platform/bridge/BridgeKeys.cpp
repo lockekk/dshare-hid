@@ -1,5 +1,5 @@
 /*
- * dshare-hid -- created by locke.huang@gmail.com
+ * dshare-hid -- created by dshare.hid@gmail.com
  */
 
 #include "BridgeKeys.h"
@@ -304,6 +304,27 @@ std::vector<char16_t> deadKeyCharacters(KeyID id)
   return {};
 }
 
+bool findDeadKey(
+    KeyID id, uint16_t scanCode, uint8_t heldModifiers, const DeadKeyLayout &layout, uint16_t &deadScanCode,
+    uint8_t &deadModifiers
+)
+{
+  // a character, not a key without one (deskflow's are in the private use area)
+  if (id < 0x20 || id > 0xFFFF || (id >= 0xE000 && id <= 0xF8FF)) {
+    return false;
+  }
+  // the key's own character: é on French, AltGr+E on US International, or a dead key pressed twice
+  if (layout.typesCharacter(scanCode, heldModifiers, id)) {
+    return false;
+  }
+  for (const char16_t character : deadKeyCharacters(id)) {
+    if (layout.deadKeyFor(character, deadScanCode, deadModifiers)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 #if defined(_WIN32)
 
 namespace {
@@ -341,6 +362,22 @@ uint8_t hidModifiersOf(int shiftState)
   return modifiers;
 }
 
+// what a key types with this keyboard state: the number of characters, negative for a dead key
+int typed(UINT virtualKey, const BYTE *keys, WCHAR (&text)[4], HKL layout)
+{
+  // 0x4 leaves the keyboard state as it is (Windows 10 1607 and later)
+  constexpr UINT kKeepState = 0x4;
+  const int result =
+      ToUnicodeEx(virtualKey, MapVirtualKeyExW(virtualKey, MAPVK_VK_TO_VSC, layout), keys, text, 4, kKeepState, layout);
+  if (result < 0) {
+    // a Windows without that flag keeps the dead key: a space types it out
+    const BYTE none[256] = {};
+    WCHAR spare[4] = {};
+    ToUnicodeEx(VK_SPACE, MapVirtualKeyExW(VK_SPACE, MAPVK_VK_TO_VSC, layout), none, spare, 4, kKeepState, layout);
+  }
+  return result;
+}
+
 bool isDeadKey(UINT virtualKey, int shiftState, HKL layout)
 {
   BYTE keys[256] = {};
@@ -354,47 +391,72 @@ bool isDeadKey(UINT virtualKey, int shiftState, HKL layout)
     keys[VK_MENU] = 0x80;
   }
   WCHAR text[4] = {};
-  // 0x4 leaves the keyboard state as it is (Windows 10 1607 and later)
-  constexpr UINT kKeepState = 0x4;
-  const int result =
-      ToUnicodeEx(virtualKey, MapVirtualKeyExW(virtualKey, MAPVK_VK_TO_VSC, layout), keys, text, 4, kKeepState, layout);
-  if (result < 0) {
-    // a Windows without that flag keeps the dead key: a space types it out
-    const BYTE none[256] = {};
-    ToUnicodeEx(VK_SPACE, MapVirtualKeyExW(VK_SPACE, MAPVK_VK_TO_VSC, layout), none, text, 4, kKeepState, layout);
-  }
-  return result < 0;
+  return typed(virtualKey, keys, text, layout) < 0;
 }
 
-} // namespace
-
-bool windowsDeadKey(KeyID id, uint16_t scanCode, uint16_t &deadScanCode, uint8_t &deadModifiers)
+bool typesCharacter(uint16_t scanCode, uint8_t heldModifiers, KeyID id, HKL layout)
 {
-  // a character, not a key without one (deskflow's are in the private use area)
-  if (id < 0x20 || id > 0xFFFF || (id >= 0xE000 && id <= 0xF8FF)) {
+  // 0xE0 before an extended key's scan code
+  const UINT virtualKey =
+      MapVirtualKeyExW((scanCode & 0xFF) | (((scanCode & 0x100) != 0) ? 0xE000 : 0), MAPVK_VSC_TO_VK_EX, layout);
+  if (virtualKey == 0) {
     return false;
   }
 
-  const HKL layout = currentLayout();
-  if (const SHORT own = VkKeyScanExW(static_cast<WCHAR>(id), layout);
-      own != -1 && scanCodeOf(LOBYTE(own), layout) == scanCode) {
-    return false;
-  }
-
-  for (const char16_t character : deadKeyCharacters(id)) {
-    const SHORT key = VkKeyScanExW(static_cast<WCHAR>(character), layout);
-    if (key == -1) {
-      continue;
+  BYTE keys[256] = {};
+  const auto hold = [&keys, heldModifiers](uint8_t left, int either, int leftKey, int rightKey) {
+    if ((heldModifiers & left) != 0) {
+      keys[either] = keys[leftKey] = 0x80;
     }
-    const UINT virtualKey = LOBYTE(key);
-    const int shiftState = HIBYTE(key);
-    if (isDeadKey(virtualKey, shiftState, layout)) {
-      deadScanCode = scanCodeOf(virtualKey, layout);
-      deadModifiers = hidModifiersOf(shiftState);
+    if ((heldModifiers & (left << 4)) != 0) {
+      keys[either] = keys[rightKey] = 0x80;
+    }
+  };
+  hold(kLeftShift, VK_SHIFT, VK_LSHIFT, VK_RSHIFT);
+  hold(kLeftControl, VK_CONTROL, VK_LCONTROL, VK_RCONTROL);
+  hold(kLeftAlt, VK_MENU, VK_LMENU, VK_RMENU);
+
+  // Caps Lock's state isn't known here
+  for (const BYTE capsLock : {BYTE(0), BYTE(1)}) {
+    keys[VK_CAPITAL] = capsLock;
+    WCHAR text[4] = {};
+    const int count = typed(virtualKey, keys, text, layout);
+    // a dead key types its accent, as when it's pressed twice
+    if ((count == 1 || count == -1) && text[0] == id) {
       return true;
     }
   }
   return false;
+}
+
+bool deadKeyFor(char16_t character, uint16_t &scanCode, uint8_t &modifiers, HKL layout)
+{
+  const SHORT key = VkKeyScanExW(static_cast<WCHAR>(character), layout);
+  if (key == -1) {
+    return false;
+  }
+  const UINT virtualKey = LOBYTE(key);
+  const int shiftState = HIBYTE(key);
+  if (!isDeadKey(virtualKey, shiftState, layout)) {
+    return false;
+  }
+  scanCode = scanCodeOf(virtualKey, layout);
+  modifiers = hidModifiersOf(shiftState);
+  return true;
+}
+
+} // namespace
+
+bool windowsDeadKey(KeyID id, uint16_t scanCode, uint8_t heldModifiers, uint16_t &deadScanCode, uint8_t &deadModifiers)
+{
+  const HKL layout = currentLayout();
+  const DeadKeyLayout windows{
+      [layout](uint16_t key, uint8_t held, KeyID character) { return typesCharacter(key, held, character, layout); },
+      [layout](char16_t character, uint16_t &key, uint8_t &modifiers) {
+        return deadKeyFor(character, key, modifiers, layout);
+      }
+  };
+  return findDeadKey(id, scanCode, heldModifiers, windows, deadScanCode, deadModifiers);
 }
 
 #endif

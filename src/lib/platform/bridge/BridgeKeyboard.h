@@ -43,8 +43,8 @@ public:
   using KeySink = std::function<bool(HidEventType type, uint8_t modifiers, uint8_t key)>;
   using ConsumerSink = std::function<bool(HidEventType type, uint16_t usage)>;
   /// the dead key the server's Windows hook held back before a character (windowsDeadKey)
-  using DeadKeyFinder =
-      std::function<bool(KeyID id, uint16_t scanCode, uint16_t &deadScanCode, uint8_t &deadModifiers)>;
+  using DeadKeyFinder = std::function<
+      bool(KeyID id, uint16_t scanCode, uint8_t heldModifiers, uint16_t &deadScanCode, uint8_t &deadModifiers)>;
 
   BridgeKeyboard(KeyCodes keyCodes, KeySink keys, ConsumerSink consumer, DeadKeyFinder deadKeys = nullptr);
 

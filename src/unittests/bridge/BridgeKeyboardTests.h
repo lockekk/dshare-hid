@@ -17,7 +17,35 @@ private Q_SLOTS:
   void heldModifiersTurnControlAltIntoAltGr();
   void deadKeyCharacters_data();
   void deadKeyCharacters();
+  void findDeadKey_data();
+  void findDeadKey();
   void unknownLayoutIsUs();
+
+  // every key, by its key code and by its key ID, for each kind of computer and both layouts
+  void everyMacKeyCode();
+  void everyLinuxKeyCode();
+  void everyWindowsKeyCode();
+  void modifierKeysById_data();
+  void modifierKeysById();
+  void keysById_data();
+  void keysById();
+  void keypadKeys_data();
+  void keypadKeys();
+  void mediaKeys_data();
+  void mediaKeys();
+
+  // the keys held, and each report's modifiers
+  void stateFollowsTheKeys();
+  void twoKeysHeld();
+  void keyUpOfKeyNeverPressed_data();
+  void keyUpOfKeyNeverPressed();
+  void modifiersCombine();
+  void macRightCommandIsRightGui();
+  void linuxRightShiftStaysRight();
+  void keyRepeat();
+  void mediaKeyRepeat();
+  void allKeysUpReleasesInOrder();
+  void failedSends();
 
   // US, with Windows on US: the customer's workaround
   void usAltGrSymbols_data();
@@ -37,9 +65,14 @@ private Q_SLOTS:
   void germanAltGrSymbols_data();
   void germanAltGrSymbols();
   void germanAltGrTwice();
+  void rightControlAndAltAreAltGr();
   void germanControlAltShortcut();
+  void altShortcutWithControlAndAltHeld();
   void germanControlShortcut();
+  void keystrokeWithoutKeys();
+  void keypadNavigation();
   void germanDeadKeys();
+  void usInternationalDeadKeys();
   void keyRepeatKeepsAltGr();
   void allKeysUpReleasesEverything();
   void mediaKeysUseConsumerControl();

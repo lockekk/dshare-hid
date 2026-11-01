@@ -54,7 +54,7 @@ std::string hexDump(const uint8_t *data, size_t length, size_t maxBytes = 32)
 
 BridgePlatformScreen::BridgePlatformScreen(
     IEventQueue *events, std::shared_ptr<CdcTransport> transport, std::shared_ptr<requests::Queue> requests,
-    int32_t screenWidth, int32_t screenHeight
+    int32_t screenWidth, int32_t screenHeight, BridgeKeyboard::KeyCodes keyCodes
 )
     : PlatformComputer(events),
       m_transport(std::move(transport)),
@@ -63,7 +63,7 @@ BridgePlatformScreen::BridgePlatformScreen(
       m_screenHeight(screenHeight),
       m_events(events),
       m_keyboard(
-          BridgeKeyboard::kThisComputer,
+          keyCodes,
           [this](HidEventType type, uint8_t modifiers, uint8_t key) { return sendKeyboardEvent(type, modifiers, key); },
           [this](HidEventType type, uint16_t usage) { return sendConsumerControlEvent(type, usage); },
 #if defined(_WIN32)

@@ -96,6 +96,7 @@ void BridgeDeviceServiceTests::writeCleansProfiles()
   auto pixel = setProfile(0, "Pixel", 1080, 2424);
   pixel.slot = 3;
   std::memset(pixel.reserved, 0xAB, sizeof(pixel.reserved));
+  pixel.keyboardLayout = 0xAB; // read as US
 
   BridgeProfileBackup backup;
   backup.activeProfile = 0;

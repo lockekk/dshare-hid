@@ -334,6 +334,34 @@ void BridgeClientConfigDialogTests::keyboardLayoutIsSavedOnOk()
   QCOMPARE(child<QComboBox>(*again, "profileKeyboardLayout")->currentText(), QStringLiteral("Same as this computer"));
 }
 
+void BridgeClientConfigDialogTests::keyboardLayoutStaysThroughOtherEdits()
+{
+  m_device->profiles[1].keyboardLayout = 1;
+  auto dialog = openDialog();
+  QCOMPARE(child<QComboBox>(*dialog, "profileKeyboardLayout")->currentText(), QStringLiteral("Same as this computer"));
+
+  hostname(*dialog)->setText(QStringLiteral("Ipad mini"));
+  m_modals->press(QMessageBox::Apply);
+  clickOk(*dialog);
+
+  QCOMPARE(m_device->received, (QStringList{"profiles", "profiles", "save 1"}));
+  QCOMPARE(hostnameOf(m_device->profiles.at(1)), QStringLiteral("Ipad mini"));
+  QCOMPARE(m_device->profiles.at(1).keyboardLayout, uint8_t(1));
+}
+
+void BridgeClientConfigDialogTests::unknownKeyboardLayoutIsShownAsUs()
+{
+  // a value the core reads as US, from a byte that was spare before the keyboard layout
+  m_device->profiles[1].keyboardLayout = 7;
+  auto dialog = openDialog();
+  QCOMPARE(child<QComboBox>(*dialog, "profileKeyboardLayout")->currentText(), QStringLiteral("US"));
+
+  // showing it isn't an edit
+  clickOk(*dialog);
+  QCOMPARE(dialog->result(), int(QDialog::Accepted));
+  QCOMPARE(m_device->received, QStringList{"profiles"});
+}
+
 void BridgeClientConfigDialogTests::revertedEditSendsNothing()
 {
   auto dialog = openDialog();

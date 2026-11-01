@@ -208,6 +208,23 @@ void BridgeProfileBackupTests::roundTrip()
   );
 }
 
+void BridgeProfileBackupTests::unknownKeyboardLayoutIsUs()
+{
+  // a value the core reads as US, from a byte that was spare before the keyboard layout
+  BridgeProfileSet device;
+  device.activeIndex = 0;
+  device.profiles = {makeProfile(0, "Pixel 9", 1080, 2424), makeProfile(1, "Tab S8", 1600, 2560)};
+  device.profiles[0].keyboardLayout = 2;
+  device.profiles[1].keyboardLayout = 0xFF;
+
+  const BridgeProfileBackup backup = BridgeProfileBackup::fromDevice(device, QString());
+  BridgeProfileBackup read;
+  QStringList problems;
+  QVERIFY2(BridgeProfileBackup::fromJson(backup.toJson(), read, problems), qPrintable(problems.join('\n')));
+  QCOMPARE(read.profiles.value(0).keyboardLayout, uint8_t(0));
+  QCOMPARE(read.profiles.value(1).keyboardLayout, uint8_t(0));
+}
+
 void BridgeProfileBackupTests::skipsInvalidDeviceName()
 {
   BridgeProfileSet device;
@@ -352,6 +369,7 @@ void BridgeProfileBackupTests::checkCleansProfiles()
   DeviceProfile edited = makeProfile(3, "Work Laptop", 2560, 1600);
   edited.slot = 0;
   std::memset(edited.reserved, 0xAB, sizeof(edited.reserved));
+  edited.keyboardLayout = 0xAB;                       // read as US
   edited.hostname[sizeof(edited.hostname) - 1] = 'x'; // past the hostname's NUL
 
   BridgeProfileBackup edits;

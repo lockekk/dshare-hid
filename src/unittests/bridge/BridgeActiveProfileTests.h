@@ -26,6 +26,9 @@ private Q_SLOTS:
   void screenKeepsGivenSizeWithoutProfile();
   void screenFollowsSwitchThatTimedOut();
 
+  // BridgePlatformScreen's keys, as the profile's keyboard layout says
+  void screenKeysFollowProfileLayout();
+
 private:
   Log m_log;
   // the screen reads the Bluetooth keep-alive setting

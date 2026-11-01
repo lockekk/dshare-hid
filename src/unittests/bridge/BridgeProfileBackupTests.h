@@ -12,6 +12,7 @@ private Q_SLOTS:
   void deviceNameIsOptional();
   void acceptsMatchingSlotAndUnknownKeys();
   void roundTrip();
+  void unknownKeyboardLayoutIsUs();
   void skipsInvalidDeviceName();
   void rejectsInvalidFile_data();
   void rejectsInvalidFile();

@@ -5,6 +5,7 @@
 #include "BridgeProfileBackup.h"
 
 #include "gui/core/BridgeDeviceService.h"
+#include "platform/bridge/BridgeKeys.h"
 
 #include <QFile>
 #include <QJsonArray>
@@ -66,8 +67,9 @@ const Field kFields[] = {
     // tenths, 0.1-10.0 as the dialog's scroll scale; 0 is the firmware's default, 1.0
     {"y_scroll_scale", 0, 100, [](const DeviceProfile &p) -> int { return p.yScrollScale; },
      [](DeviceProfile &p, int v) { p.yScrollScale = static_cast<uint8_t>(v); }},
-    // the device's: 0 US, 1 the same as this computer
-    {"keyboard_layout", 0, 1, [](const DeviceProfile &p) -> int { return p.keyboardLayout; },
+    // the device's: 0 US, 1 the same as this computer; any other value is US, as the core reads it
+    {"keyboard_layout", 0, 1,
+     [](const DeviceProfile &p) -> int { return static_cast<int>(deskflow::bridge::keyboardLayout(p.keyboardLayout)); },
      [](DeviceProfile &p, int v) { p.keyboardLayout = static_cast<uint8_t>(v); }, true},
 };
 
