@@ -75,6 +75,23 @@ endif()
 #Store all test that should be run post build in the property
 get_property(PROJECT_TESTS GLOBAL PROPERTY ${CMAKE_PROJECT_NAME}_tests)
 
+# dshare-hid: on Windows Qt looks for its platform plugin beside each test, where nothing deploys
+# it, and a test with a QApplication stops on a "could not find the Qt platform plugin" dialog.
+# Point Qt at its own plugins with one qt.conf in each folder of tests.
+if(WIN32 AND TARGET Qt6::QOffscreenIntegrationPlugin)
+  set(qtConfDirs)
+  foreach(test IN LISTS PROJECT_TESTS)
+    get_target_property(testDir ${test} BINARY_DIR)
+    if(NOT testDir IN_LIST qtConfDirs)
+      list(APPEND qtConfDirs "${testDir}")
+      file(GENERATE
+        OUTPUT "$<TARGET_FILE_DIR:${test}>/qt.conf"
+        CONTENT "[Paths]\nPlugins = $<TARGET_FILE_DIR:Qt6::QOffscreenIntegrationPlugin>/..\n"
+      )
+    endif()
+  endforeach()
+endif()
+
 if(APPLE)
   set(guiApp DShare-HID)
 else()

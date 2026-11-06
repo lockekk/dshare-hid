@@ -70,14 +70,7 @@ create_test(
   SOURCE BridgeClientConfigDialogTests.cpp
   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
 )
-# its QApplication needs the offscreen platform plugin, which on Windows Qt looks for beside the
-# test, where nothing deploys it: point Qt at its own plugins instead
-if(WIN32 AND TARGET Qt6::QOffscreenIntegrationPlugin)
-  file(GENERATE
-    OUTPUT "$<TARGET_FILE_DIR:BridgeClientConfigDialogTests>/qt.conf"
-    CONTENT "[Paths]\nPlugins = $<TARGET_FILE_DIR:Qt6::QOffscreenIntegrationPlugin>/..\n"
-  )
-endif()
+# on Windows its QApplication finds Qt's platform plugin through the qt.conf ../CMakeLists.txt writes
 
 # the notice to pair the hosts again after firmware 1.2.1 (gui/core/BridgeFirmwareNotice.h)
 create_test(
