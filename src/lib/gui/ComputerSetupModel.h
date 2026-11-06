@@ -16,6 +16,9 @@
 
 class ComputerSetupView;
 class ServerConfigDialog;
+namespace deskflow::gui { // DShare-HID: layout
+class DisplayLayoutView;
+} // namespace deskflow::gui
 
 class ComputerSetupModel : public QAbstractTableModel
 {
@@ -23,6 +26,7 @@ class ComputerSetupModel : public QAbstractTableModel
 
   friend class ComputerSetupView;
   friend class ServerConfigDialog;
+  friend class deskflow::gui::DisplayLayoutView; // DShare-HID: layout
 
 public:
   ComputerSetupModel(ComputerList &computers, int numColumns, int numRows);

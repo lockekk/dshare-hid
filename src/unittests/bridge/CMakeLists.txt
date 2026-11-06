@@ -86,3 +86,52 @@ create_test(
   SOURCE BridgeFirmwareNoticeTests.cpp
   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
 )
+
+# the to-scale screen layout (gui/layout/), and that a merge hasn't dropped its hooks.
+# Scenario U in docs/upgrade_from_upstream_guide.md runs these.
+set(layout_tests
+  DisplayLayoutTests
+  DisplayLayoutSeedTests
+  DisplayLayoutStoreTests
+  DisplayMonitorsTests
+  DisplayLayoutViewTests
+  DisplayLayoutBondingTests
+  DisplayLayoutFollowTests
+  DisplayRectsTests
+  PortalBarrierTests
+  ComputerShapeIpcTests
+  LayoutHooksTests
+)
+foreach(layout_test IN LISTS layout_tests)
+  create_test(
+    NAME ${layout_test}
+    DEPENDS gui
+    SOURCE ${layout_test}.cpp
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
+  )
+endforeach()
+target_compile_definitions(LayoutHooksTests PRIVATE LAYOUT_SOURCE_ROOT="${CMAKE_SOURCE_DIR}")
+# upstream's dialog headers include each other relative to gui/
+target_include_directories(DisplayLayoutViewTests PRIVATE "${CMAKE_SOURCE_DIR}/src/lib/gui")
+
+# judged by the real server parser
+create_test(
+  NAME DisplayLayoutWriterTests
+  DEPENDS gui
+  LIBS server base arch ${server_extra_libs}
+  SOURCE DisplayLayoutWriterTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
+)
+
+# the rule that lets a free display edge cross (server/DisplayEdges.h), and the real server using it
+foreach(layout_test IN ITEMS DisplayEdgesTests ServerInnerEdgeTests)
+  create_test(
+    NAME ${layout_test}
+    DEPENDS server
+    LIBS base arch ${server_extra_libs}
+    SOURCE ${layout_test}.cpp
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/server"
+  )
+endforeach()
+
+add_custom_target(layout-tests DEPENDS ${layout_tests} DisplayLayoutWriterTests DisplayEdgesTests ServerInnerEdgeTests)

@@ -14,6 +14,7 @@
 #include "common/Settings.h"
 #include "deskflow/ClipboardTypes.h"
 #include "platform/EiClipboard.h"
+#include "platform/PortalBarriers.h" // DShare-HID: layout
 
 #ifdef HAVE_LIBPORTAL_CLIPBOARD
 #include "platform/PortalClipboard.h"
@@ -73,6 +74,9 @@ bool PortalInputCapture::getPortalBounds(Bounds &bounds) const
   if (m_barrierInfo.empty()) {
     return false;
   }
+
+  if (boundsFromAllZones(bounds)) // DShare-HID: layout
+    return true;
 
   bounds.left = std::numeric_limits<gint>::max();
   bounds.top = std::numeric_limits<gint>::max();
@@ -385,6 +389,9 @@ void PortalInputCapture::handleSetPointerBarriers(const GObject *, GAsyncResult 
   g_autoptr(GError) error = nullptr;
 
   auto failed_list = xdp_input_capture_session_set_pointer_barriers_finish(m_session, res, &error);
+  if (retryWithoutFreeEdges(error)) // DShare-HID: layout
+    return;
+
   if (failed_list) {
     auto it = failed_list;
     while (it) {
@@ -846,6 +853,8 @@ void PortalInputCapture::handleZonesChanged(XdpInputCaptureSession *session, con
     zones = zones->next;
   }
 
+  addFreeEdgeBarriers(session, id); // DShare-HID: layout
+
   GList *list = nullptr;
   for (auto const &b : m_barriers) {
     list = g_list_append(list, b);
@@ -877,6 +886,78 @@ void PortalInputCapture::glibThread(const void *)
   }
 
   LOG_DEBUG("shutting down glib thread");
+}
+
+// DShare-HID: layout
+void PortalInputCapture::addFreeEdgeBarriers(XdpInputCaptureSession *session, guint &id)
+{
+  m_freeEdgesSent = false;
+
+  QList<QRect> zones;
+  for (auto *zone = xdp_input_capture_session_get_zones(session); zone != nullptr; zone = zone->next) {
+    guint w;
+    guint h;
+    gint x;
+    gint y;
+    g_object_get(zone->data, "width", &w, "height", &h, "x", &x, "y", &y, nullptr);
+    zones.append(QRect(x, y, static_cast<int>(w), static_cast<int>(h)));
+  }
+  m_allZones = deskflow::platform::allZones(zones);
+
+  if (!m_tryFreeEdges) {
+    return;
+  }
+
+  const auto barriers = deskflow::platform::freeEdgeBarriers(zones, m_computer->activeSides());
+  for (const auto &barrier : barriers) {
+    using enum BarrierSide;
+    const auto side = barrier.side == Direction::Left    ? Left
+                      : barrier.side == Direction::Right ? Right
+                      : barrier.side == Direction::Top   ? Top
+                                                         : Bottom;
+    const auto barrierId = ++id;
+    LOG_DEBUG(
+        "free edge barrier (%s) %u at %d,%d-%d,%d", barrierSideName(side), barrierId, barrier.x1, barrier.y1,
+        barrier.x2, barrier.y2
+    );
+    m_barriers.push_back(XDP_INPUT_CAPTURE_POINTER_BARRIER(g_object_new(
+        XDP_TYPE_INPUT_CAPTURE_POINTER_BARRIER, "id", barrierId, "x1", barrier.x1, "y1", barrier.y1, "x2", barrier.x2,
+        "y2", barrier.y2, nullptr
+    )));
+    m_barrierInfo.push_back(
+        {barrierId, side, barrier.zone.x(), barrier.zone.y(), static_cast<guint>(barrier.zone.width()),
+         static_cast<guint>(barrier.zone.height()), barrier.x1, barrier.y1, barrier.x2, barrier.y2}
+    );
+    m_freeEdgesSent = true;
+  }
+}
+
+// DShare-HID: layout
+bool PortalInputCapture::boundsFromAllZones(Bounds &bounds) const
+{
+  // a barrier list leaves out a display with no barrier, or one the compositor refused, which
+  // shrinks the desktop and throws every position off
+  if (m_allZones.isNull()) {
+    return false;
+  }
+  bounds.left = m_allZones.left();
+  bounds.top = m_allZones.top();
+  bounds.right = m_allZones.right();
+  bounds.bottom = m_allZones.bottom();
+  return true;
+}
+
+bool PortalInputCapture::retryWithoutFreeEdges(const GError *error)
+{
+  // a compositor may refuse the whole set for one barrier, which would stop input capture
+  if (error == nullptr || !m_freeEdgesSent) {
+    return false;
+  }
+
+  LOG_WARN("the portal refused the barriers on inner edges, using the outer edges only: %s", error->message);
+  m_tryFreeEdges = false;
+  handleZonesChanged(m_session, nullptr);
+  return true;
 }
 
 } // namespace deskflow

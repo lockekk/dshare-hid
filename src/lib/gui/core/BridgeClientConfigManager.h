@@ -120,6 +120,22 @@ public:
    */
   static bool hasProfileScreenLocation(const QString &configPath, int profileId);
 
+  /**
+   * @brief Reads a profile's exact place in the to-scale layout
+   * @return The text from DisplayLayoutStore::encodePlacement(), empty if there is none
+   */
+  static QString readProfilePlacement(const QString &configPath, int profileId);
+
+  /**
+   * @brief The profiles a config file holds
+   */
+  static QList<int> profileIds(const QString &configPath);
+
+  /**
+   * @brief Writes a profile's exact place in the to-scale layout
+   */
+  static void writeProfilePlacement(const QString &configPath, int profileId, const QString &placement);
+
 private:
   /**
    * @brief Generate unique config file name

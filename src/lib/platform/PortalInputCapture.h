@@ -12,6 +12,7 @@
 #include "platform/EiComputer.h"
 
 #include <QByteArray>
+#include <QRect> // DShare-HID: layout
 
 #include <glib.h>
 #include <libportal/inputcapture.h>
@@ -57,6 +58,8 @@ private:
   void
   handleDeactivated(const XdpInputCaptureSession *session, const std::uint32_t activationId, const GVariant *options);
   void handleZonesChanged(XdpInputCaptureSession *session, const GVariant *options);
+  void addFreeEdgeBarriers(XdpInputCaptureSession *session, guint &id); // DShare-HID: layout
+  bool retryWithoutFreeEdges(const GError *error);                      // DShare-HID: layout
 
   void handleSelectionTransfer(XdpSession *session, const char *mimeType, uint32_t serial) const;
   void readClipboardSelection(XdpSession *session) const;
@@ -139,6 +142,7 @@ private:
   static int
   scaleCoordinateBetweenRanges(double value, int sourceMin, int sourceMax, int destinationMin, int destinationMax);
   bool getPortalBounds(Bounds &bounds) const;
+  bool boundsFromAllZones(Bounds &bounds) const; // DShare-HID: layout
   bool getClosestReleaseBarrier(
       double x, double y, int computerLeft, int computerTop, int computerRight, int computerBottom,
       const Bounds &portalBounds, BarrierInfo &barrier
@@ -170,6 +174,9 @@ private:
 
   std::vector<XdpInputCapturePointerBarrier *> m_barriers;
   std::vector<BarrierInfo> m_barrierInfo;
+  bool m_tryFreeEdges = true;   // DShare-HID: layout
+  bool m_freeEdgesSent = false; // DShare-HID: layout
+  QRect m_allZones;             // DShare-HID: layout
 
   EiClipboard *m_clipboard = nullptr;
 };

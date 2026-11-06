@@ -239,6 +239,7 @@ Use this table to identify which rebranded file corresponds to an upstream file 
     2.  **Do not ask the user** about test renames, deletions, or framework changes — the answer is always "take upstream."
 *   **Rationale**: `run_task.sh` configures every build with `-DSKIP_BUILD_TESTS=ON -DBUILD_TESTS=OFF`, and `src/CMakeLists.txt` wraps `add_subdirectory(unittests)` in `if(BUILD_TESTS)`. The unittests tree is never compiled in any release/dev workflow, so its content cannot affect the shipped artifact.
 *   **Exception**: Only re-engage with unittests changes if `BUILD_TESTS` is intentionally enabled in `run_task.sh`, or if a unittests change somehow leaks into a non-test target (extremely unlikely given the CMake gating).
+*   **`I18NTests` is removed on purpose**: it expects upstream's Korean catalog, which the fork leaves out (Scenario A), so it could never pass. If a merge brings back `src/unittests/common/I18NTests.{cpp,h}` or its `create_test` block in `src/unittests/common/CMakeLists.txt`, remove them again.
 *   **Fork tests**: `src/unittests/bridge/` is the fork's own (upstream has no such directory, so it never conflicts). It is hooked in by one line at the end of the subdirectory list in `src/unittests/CMakeLists.txt`, `add_subdirectory(bridge) # dshare-hid`; after taking upstream's version of that file, add the line back.
 
 ### Scenario M: macOS DMG OpenSSL Bundling
@@ -321,6 +322,150 @@ Use this table to identify which rebranded file corresponds to an upstream file 
 *   **Issue**: When upstream renames a file *and* rewrites much of it (v1.27.0: `ScreenSetupModel.cpp` → `ComputerSetupModel.cpp`), git may not pair the two, and reports `CONFLICT (modify/delete): <old> deleted in <upstream> and modified in HEAD`. The fork's version of the old file is left in the tree and would be built or silently dropped.
 *   **Resolution**: `git diff <merge-base> HEAD -- <old path>` to list the fork hunks, port them into the renamed upstream file using the new names, then `git rm <old path>`. Preview a merge's conflict set without touching the worktree with `git merge-tree --write-tree --name-only HEAD <upstream-ref>` (rename-aware, including these modify/delete cases).
 
+### Scenario U: To-scale screen layout hooks
+*   **Issue**: The to-scale Computers tab (plan: `docs/dev/scaled-screen-layout.md`) lives in fork-owned files and reaches upstream through single inserted lines, each marked `// DShare-HID: layout`. A conflict on one of those lines is the easy case. The dangerous case is **an upstream change that merges cleanly and breaks a hook**. Git says nothing, `merge_next_upstream.sh` doesn't stop, and the result can be a server that refuses to start or inner edges that quietly stop crossing.
+*   **Status**: Merged to `main` on 2026-11-06. `grep -rn 'DShare-HID: layout' src/lib` lists every hook.
+
+**Merging upstream with these hooks, step by step.** This is the whole job. The rest of this scenario is reference for when a step sends you there.
+
+1.  **Note where you start:** `git rev-parse --short HEAD` on `main`. This is `<pre-merge-tip>`.
+2.  **Merge one commit at a time** with `merge_next_upstream.sh --all`. It stops when a person is needed.
+3.  **If a line marked `// DShare-HID: layout` conflicts:** take upstream's lines, then put the hook back at its anchor from the table below. Never edit an upstream line to make a hook fit.
+4.  **If upstream renamed something the fork uses:** git can't see this. Search for the old name in fork files before committing (Scenario O). In the 2026-11-06 merge, upstream replaced `lineHostname` with `cbHostname`, and the search came back empty, so the merge was safe.
+5.  **Run the gate:** `TEST_BUILD=/some/folder/outside/the/repo .agent/skills/merge-upstream-master/verify_merge.sh <pre-merge-tip>`. It does the rebrand check, the build, the DMG check and the watch check, then runs the layout tests if a hooked file changed. If it prints `layout tests OK`, the hooks survived.
+6.  **Read what upstream did to any hooked file it changed,** even with no conflict. `verify_merge.sh` lists them. Check them against "Upstream changes to look for" below.
+7.  **Keep the regenerated `translations/dshare-hid_*.ts`** and commit them, with new strings left unfinished.
+8.  **Build on Linux if the portal code changed.** `PortalInputCapture` and the X11 code don't compile on macOS, so nothing on the Mac will catch a mistake there. See "Building on Linux" below.
+
+**Three traps that have happened:**
+
+*   **Don't run `clang-format` on a whole upstream file.** It rewraps upstream's own lines, which breaks the insert-only rule and causes conflicts at the next merge. It did this to `PortalInputCapture.cpp`. Format fork-owned files only. After touching an upstream file, `git diff main -- <file> | grep '^-'` must show no upstream lines.
+*   **Keep a hook on one line.** A hook wrapped over two lines is easy to half-remove, and only one of the lines carries the marker.
+*   **Add a new hook in three places:** the table below, `kExpected` in `LayoutHooksTests.cpp`, and the watch list in both `verify_merge.sh` and the watch check here. `LayoutHooksTests` fails if the count or the watch list is out of step.
+
+**Hooks.** Find them by anchor, never by line number. One row is one inserted line unless it says otherwise.
+
+| Phase | Upstream file | Anchor | Hook | If it is lost or misplaced |
+| :---: | :--- | :--- | :--- | :--- |
+| 1 | `gui/config/ServerConfig.cpp` | First line of `adjacentComputerIndex()` | Return `-1` while the layout is active | Grid links and layout links are both written. Overlapping ranges, **the server won't start** |
+| 1 | `gui/config/ServerConfig.cpp` | Before `end` of `section: links` in `operator<<` | `writeLinks(outStream, config)` | Computers have no links, and the cursor can't leave the server |
+| 1 | `gui/config/ServerConfig.cpp` | After `m_computers[index].setName(newName);` in `renameScreen()` | `DisplayLayoutStore::rename(...)` | A renamed device loses its place and goes to the shelf |
+| 1 | `gui/dialogs/ServerConfigDialog.cpp` | After `initConnections();` in the constructor | `install(...)` | The old grid shows and layout edits can't be made |
+| 1 | `gui/dialogs/ServerConfigDialog.cpp` | First line of `isGeneralConfigModified()` | Return `true` if the layout changed | Save stays disabled for layout-only changes |
+| 1 | `gui/ComputerSetupModel.h` | Beside `friend class ServerConfigDialog;` | Forward declaration and `friend` | Compile error |
+| 2 | `server/Server.cpp` | After `sendConnectedClientsIpc();` in the client-connected handler | Send the client's size | Sizes stay as last stored |
+| 2 | `server/Server.cpp` | In `handleShapeChanged()` | Send the new size | A resized client stays drawn at its old size |
+| 2 | `server/Server.h` | Beside `sendConnectedClientsIpc` | Declaration | Compile error |
+| 2 | `gui/core/CoreProcess.{cpp,h}` | Beside `switchBridgeProfile` | Branch and signal | The GUI ignores client sizes, which stay as last stored |
+| 2 | `platform/CMakeLists.txt` | Beside the bridge sources | `DisplayRects.{h,cpp}` | Link error |
+| 3 | `server/Server.cpp` | After `int32_t zoneSize = getJumpZoneSize(m_active);` in `onMouseMovePrimary()` | Move the position to the box edge on a free edge with a link | Inner edges quietly stop crossing |
+| 3 | `server/Server.cpp` | After `avoidJumpZone(dst, srcSide, x, y);` in `mapToNeighbor()` | Land on a real display | The return lands where no display exists |
+| 3 | `server/Server.cpp` | In `handleShapeChanged()`, when the client is primary | Refresh the display list | Inner edges are wrong after docking until the core restarts |
+| 3 | `server/Server.cpp` | After `getNeighbor(...)` in `handleSwitchInDirectionEvent()`, plus the helper at the end of the file | `nearestNeighbor(...)` when the cursor's row has no link | The "switch left/right" hotkey does nothing unless the cursor is level with a partial link |
+| 3 | `server/Server.h` | Beside `sendComputerShapeIpc` | Three declarations | Compile error |
+| 3 | `server/CMakeLists.txt` | Beside `BridgeProfileAction.cpp` | `DisplayEdges.{h,cpp}` | Link error |
+| 3 | `deskflow/ServerApp.cpp` | First line of `openServerComputer()` | `DisplayEdges::setSource(...)` | The server has no display list, so inner edges quietly stop crossing |
+| 3 | `platform/OSXComputer.mm` | In `leave()`, after `avoidHesitatingCursor();` and before the mouse is captured, plus the helper at the end of the file | `hideOffTheDock();` | A crossing through the Dock leaves the server cursor showing, and it follows the mouse. No test can catch this but the hook check, so keep the order |
+| 3 | `platform/OSXComputer.h` | Beside `hideCursor()` | One declaration | Compile error, on macOS only |
+| 5 | `platform/PortalInputCapture.cpp` | After the zone loop in `handleZonesChanged()`, before the barrier list is built | `addFreeEdgeBarriers(session, id)` | Wayland stays on outer edges, and a client in a notch can't be reached |
+| 5 | `platform/PortalInputCapture.cpp` | After `..._set_pointer_barriers_finish` in `handleSetPointerBarriers()` | `if (retryWithoutFreeEdges(error)) return;` | A refused barrier can stop input capture altogether |
+| 5 | `platform/PortalInputCapture.cpp` | In `getPortalBounds()`, after the empty check | `if (boundsFromAllZones(bounds)) return true;` (two lines) | A display with no barrier, or one the compositor refused, shrinks the desktop, and crossings land in the wrong place |
+| 5 | `platform/PortalInputCapture.h` | Beside `handleZonesChanged`, `getPortalBounds` and `m_barrierInfo`, plus `<QRect>` | Three declarations, three members, one include | Compile error, on Linux only |
+| 5 | `platform/CMakeLists.txt` | Beside the bridge sources | `PortalBarriers.{h,cpp}` | Link error |
+
+New helper functions go at the end of `Server.cpp`, `PortalInputCapture.cpp` and `OSXComputer.mm`, so they stay out of upstream's way.
+
+**Fork-owned, can't conflict:** `src/lib/gui/layout/`, `src/lib/platform/DisplayRects.*`, `src/lib/platform/PortalBarriers.*`, `src/lib/server/DisplayEdges.*`, `src/lib/common/ComputerShapeMessage.h`, `src/lib/gui/CMakeLists.user.cmake`, `src/unittests/bridge/`.
+
+**Upstream's grid stays compiled and unmodified.** `ComputerSetupView`, `ComputerSetupModel.cpp`, `ComputerList`, `Computer`, `NewComputerWidget`, `RemoveComputerWidget` and `ServerConfigDialog.ui` carry no layout changes, so always take upstream's version of their code. Keep only the older fork hooks listed in §6.
+
+*   **Resolution**:
+    1.  **Conflict on a hook line:** take upstream's lines, then re-add the hook at its anchor with the same marker. Never edit an upstream line to make a hook fit, and never fold a hook into an upstream statement.
+    2.  **Anchor gone or moved:** read what upstream did, put the hook where it keeps the same meaning, and update the anchor in the table above in the same commit. The next two tables say what each hook must keep doing.
+    3.  **Check clean merges too:** after each session, run the watch check below. A clean merge of a watched file still needs the gate.
+    4.  **Do not ask the user** about ordinary conflicts here. **Stop and ask** only for the rows marked so below.
+
+**Watch check.** `<pre-merge-tip>` is the commit before this session's first merge:
+
+```sh
+git diff --name-only <pre-merge-tip> HEAD -- \
+  src/lib/gui/config/ServerConfig.cpp src/lib/gui/dialogs/ServerConfigDialog.cpp \
+  src/lib/gui/ComputerSetupModel.h src/lib/gui/ComputerSetupModel.cpp \
+  src/lib/gui/widgets/ComputerSetupView.cpp src/lib/gui/widgets/NewComputerWidget.cpp \
+  src/lib/gui/widgets/RemoveComputerWidget.cpp src/lib/gui/core/CoreProcess.cpp \
+  src/lib/gui/core/CoreProcess.h src/lib/gui/ipc/IpcClient.cpp \
+  src/lib/server/Server.cpp src/lib/server/Server.h src/lib/server/Config.cpp \
+  src/lib/server/CMakeLists.txt src/lib/deskflow/ServerApp.cpp src/lib/deskflow/ipc \
+  src/lib/platform/CMakeLists.txt src/lib/platform/PortalInputCapture.cpp \
+  src/lib/platform/PortalInputCapture.h src/lib/platform/OSXComputer.mm \
+  src/lib/platform/OSXComputer.h
+```
+
+No output means nothing to do. Any output means read the table below for those files, then run the gate.
+
+**Upstream changes to look for.** These usually merge without a conflict. Each one that can stop the server starting has a test in the gate.
+
+| Upstream change | What breaks | What to do |
+| :--- | :--- | :--- |
+| Writes links without `adjacentComputerIndex()`, or adds a second writer | Both sets of links are written and the server won't start | Move the suppress hook so upstream's neighbour lines aren't written |
+| Changes the `section: links` grammar | Generated text is rejected | Update `DisplayLayout::linkText()` |
+| Changes how ranges are parsed | Today's parser uses `strtod`, which follows `LC_NUMERIC`, so ranges are written as `318056e-4` with no decimal point. A plain `31.8056` stops the server starting under a comma locale | Keep `DisplayLayout::formatPercent()` locale-proof |
+| Removes the text config (`feat/no-legacy-conf`) | `writeLinks` goes away | Follow "If upstream removes the text config" below |
+| Changes `mapToFraction`, `mapToPixel`, `getNeighbor` or `mapToNeighbor` | Crossing points or landings drift | Run `ServerInnerEdgeTests`, then fix the helpers, not upstream's code |
+| Changes `Config::getNeighbor`, or how a link along a whole side is stored | `projectOntoFreeEdge()` tells a whole-side link from a partial one by asking for the neighbour at both ends of the side. If that stops working, grid users get crossings on inner edges | Keep `linkAlongAWholeSideStaysAtTheOutside` passing |
+| Changes `handleSwitchInDirectionEvent` or `jumpToComputer` | The hotkey stops finding partial links | Keep the `nearestNeighbor` line straight after `getNeighbor` |
+| Changes `OSXComputer::leave()`, `hideCursor()` or the tap in `handleCGInputEvent` | The server cursor stays on show after a crossing through the Dock. **No automated test covers this.** `LayoutHooksTests` only checks the call is there and in order | `hideOffTheDock()` must stay before `CGAssociateMouseAndMouseCursorPosition(false)`, and before `m_isOnComputer` turns false. Then cross through the Dock by hand: the Dock moves to whichever display you push against, so find it first |
+| Changes `getPortalBounds` or how the portal maps positions | Crossings land in the wrong place on Wayland | Keep the hook after the empty check, and check `allZones()` still matches what upstream expects |
+| Moves the edge test in `onMouseMovePrimary` | The hook no longer runs before it | Keep the hook after `m_x` and `m_y` are saved and before the edge test |
+| Changes the jump zone or switch-wait logic | Bounce on return, or a missed switch | Keep the landing `zoneSize` pixels inside the edge |
+| Changes `mimeType()`, the `-1 -1 computer` stream in `NewComputerWidget`, or the trash drop | New computer or trash stops working on the canvas | Match it in `DisplayLayoutView` |
+| Renames `computerSetupView`, `m_computerSetupModel`, the `reset` signal or `screenDeleted` | Compile error, or Reset and bridge cleanup stop | Update `install()` |
+| Renames classes (like Screen → Computer) | Compile errors in fork files | Scenarios O and T: rename in fork files, keep the markers |
+| Changes `ipcSendToClient` or the `=` message format | Sizes stop arriving | Update the message in the Phase 2 code |
+| Changes barrier building in `handleZonesChanged` | Free-edge barriers duplicate or fail | Keep the hook after upstream's loop, and keep the fallback. Upstream's loop adds the edges on the bounding box and `freeEdgeBarriers()` adds the rest, so if upstream starts adding inner edges itself, drop ours. **This code only compiles on Linux, so build there after any change** |
+| **Stop and ask:** upstream replaces the grid, or `ComputerList` stops being the computer list | The layout has nothing to attach to | Report it, and don't improvise |
+| **Stop and ask:** upstream adds its own multi-monitor edges or a scaled layout | Two systems would do the same job | Report it, because the user decides whether to adopt theirs and drop these hooks |
+
+**If upstream removes the text config** (`upstream/feat/no-legacy-conf`, not merged as of 2026-11-06): the merge deletes `operator<<`, so the two `ServerConfig.cpp` hooks go with it.
+
+1.  On Save, write the link list from `DisplayLayout` to `<settingsPath>/screen-layout-links.conf`.
+2.  Add a fork-owned reader in `src/lib/server/` that calls `Config::connect()` with the ranges.
+3.  Insert one line at the top of `Config::addLinksFromSettings()`: if the reader loaded links, return, so upstream's full-edge grid links aren't added.
+4.  Update the hook table and call it out as a Scenario G alert.
+
+**Gate.** Run this from a scratch build folder, because `run_task.sh` always turns tests off. Point `TEST_BUILD` outside the repo. On macOS, also pass `-DCMAKE_OSX_SYSROOT="$(xcrun --show-sdk-path)"` when configuring. The temporary `HOME` keeps tests away from real settings (see Scenario R):
+
+```sh
+cmake -S . -B "$TEST_BUILD" -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON
+cmake --build "$TEST_BUILD" -j8 --target layout-tests
+env -u XDG_CONFIG_HOME -u XDG_STATE_HOME HOME="$(mktemp -d)" \
+  ctest --test-dir "$TEST_BUILD/src/unittests" --no-tests=error --output-on-failure \
+  -R 'DisplayLayout|DisplayMonitors|DisplayEdges|DisplayRects|ComputerShapeIpc|ServerInnerEdge|LayoutHooks|PortalBarrier'
+```
+
+Keep `--target layout-tests`: a test build's default target includes upstream's `run_tests`, which runs the whole suite under your real `HOME`. Keep `--test-dir` on `src/unittests` and keep `--no-tests=error`. `enable_testing()` is in that folder, so `ctest` from the build root finds nothing and still exits 0, which looks like a pass. The `layout-tests` target exists from Phase 1 and builds only the layout tests, because the upstream tests aren't kept compiling here (Scenario L).
+
+Every test must pass. `LayoutHooksTests` fails if a marker goes missing, a hook leaves its anchor, two hooks swap order, or a hooked file drops off the watch list. Then finish with `verify_merge.sh` as usual.
+
+`OSXKeyStateTests` isn't part of this gate, and it can fail by itself while DShare-HID is running on the same Mac: it sends real key presses, and a running core sees them.
+
+**Building on Linux.** Run this on a Linux machine, in a folder outside any other checkout. Use the targets shown: a test build's default target would run the suite under your real `HOME`. Fetch submodules recursively, or configure fails on `esp-serial-flasher`:
+
+```sh
+git clone --branch main git@github.com:lockekk/dshare-hid.git src
+git -C src submodule update --init --recursive --depth 1
+cmake -S src -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON
+TESTS=$(ctest --test-dir build/src/unittests -N | sed -n 's/.*Test *#[0-9]*: //p' | tr '\n' ' ')
+cmake --build build -j6 --target dshare-hid dshare-hid-core app_translations $TESTS
+env -u XDG_CONFIG_HOME -u XDG_STATE_HOME -u DISPLAY -u WAYLAND_DISPLAY HOME="$(mktemp -d)" QT_QPA_PLATFORM=offscreen \
+  ctest --test-dir build/src/unittests --no-tests=error --output-on-failure
+```
+
+Every test should pass.
+
+*   **Merge commit**: name Scenario U, the hook re-added or moved, and any row of the upstream-changes table that applied.
+*   **Tests are fork-owned**: they live in `src/unittests/bridge/`, so Scenario L's "take upstream" never touches them. After taking upstream's `src/unittests/CMakeLists.txt`, restore its `add_subdirectory(bridge)` line, as Scenario L says, or the gate finds no tests.
+
 ## Automation
 
 `.agent/skills/merge-upstream-master/merge_next_upstream.sh` merges the next
@@ -330,6 +475,9 @@ above, and stops with a template (`.git/MERGE_MSG_TEMPLATE`) whenever a human
 scenario (C–M) is hit. `verify_merge.sh` is the session gate: rebrand grep +
 `./run_task.sh 1` + the Scenario M DMG sweep (pass the pre-merge tip as the
 base ref when not merging onto `main`).
+
+`verify_merge.sh` also runs Scenario U's watch check, and its test gate when a merge
+touched a hooked file, because a hook can break in a merge with no conflict.
 
 The script assumes the target branch is `main` and the source is
 `upstream/master`. To merge a release tag or into another branch, do it by
@@ -412,12 +560,23 @@ never take upstream's), translations, README.md, and docs. See Sections 1–3.
 - `src/apps/deskflow-core/` — CoreArgs.h, CoreArgParser.{cpp,h},
   deskflow-core.cpp (bridge CLI: --link, screen size, --name handling)
 - `src/lib/platform/CMakeLists.txt` (bridge sources, OpenSSLCompat, keyword-form links), `EiComputer.cpp` (shut down on EI disconnect), `MSWindowsWatchdog.cpp`
+- `src/unittests/common/CMakeLists.txt` — `I18NTests` removed (see Scenario L)
 - `src/unittests/CMakeLists.txt` — the one line `add_subdirectory(bridge) # dshare-hid`; the fork's own tests live in `src/unittests/bridge/` (see the Scenario L exception)
+
+### To-scale screen layout hooks (Scenario U)
+`grep -rn 'DShare-HID: layout' src/lib` lists them. Scenario U has each hook's anchor
+and what breaks without it.
+- `src/lib/gui/config/ServerConfig.cpp`, `src/lib/gui/dialogs/ServerConfigDialog.cpp`, `src/lib/gui/ComputerSetupModel.h` — Phase 1
+- `src/lib/server/Server.{cpp,h}`, `src/lib/gui/core/CoreProcess.{cpp,h}`, `src/lib/platform/CMakeLists.txt` — Phase 2
+- `src/lib/server/Server.{cpp,h}`, `src/lib/server/CMakeLists.txt`, `src/lib/deskflow/ServerApp.cpp` — Phase 3
+- `src/lib/platform/PortalInputCapture.{cpp,h}`, `src/lib/platform/CMakeLists.txt` — Phase 5
+- `src/lib/platform/OSXComputer.{mm,h}` — Phase 3, hiding the cursor over the Dock
 
 ### Fork bugfixes (keep; candidates to upstream as PRs)
 - `src/lib/arch/win32/ArchMultithreadWindows.cpp` — recursive-lock deadlock fix
 - `src/lib/arch/win32/ArchNetworkWinsock.cpp` — IPV6_V6ONLY only for INet6
 - `src/lib/net/SecureUtils.cpp` — OpenSSL error handling, binary fopen mode
 - `src/lib/net/SocketMultiplexer.cpp` — `Thread::testCancel` in lock-wait loops
+- `src/lib/server/Server.cpp` — `nearestNeighbor()`: `handleSwitchInDirectionEvent` looks only at the cursor's row, so a partial link written by hand fails upstream too
 - `src/lib/platform/OSXKeyState.cpp` — `IOMainPort` (IOMasterPort deprecated)
 - `src/lib/gui/dialogs/SettingsDialog.cpp` — resetToDefault radio-button fix

@@ -8,6 +8,8 @@ add_library(server STATIC
   BaseClientProxy.h
   BridgeProfileAction.cpp
   BridgeProfileAction.h
+  DisplayEdges.cpp # DShare-HID: layout
+  DisplayEdges.h # DShare-HID: layout
   ClientListener.cpp
   ClientListener.h
   ClientProxy.cpp

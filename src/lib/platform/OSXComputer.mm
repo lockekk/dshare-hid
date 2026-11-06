@@ -822,6 +822,7 @@ void OSXComputer::leave()
 
   if (m_isPrimary) {
     avoidHesitatingCursor();
+    hideOffTheDock(); // DShare-HID: layout
 
     // capture the mouse: freeze the cursor so no local app sees motion while on
     // a client (onMouseMove reads raw deltas instead). must follow hideCursor(),
@@ -1810,7 +1811,9 @@ void OSXComputer::waitForCarbonLoop() const
   LOG_DEBUG("waiting for carbon loop");
 
   double timeout = Arch::time() + kCarbonLoopWaitTimeout;
-  while (!m_carbonLoopReady->wait()) {
+  while (!*m_carbonLoopReady) {
+    m_carbonLoopReady->wait();
+
     if (Arch::time() > timeout) {
       LOG_DEBUG("carbon loop not ready, waiting again");
       timeout = Arch::time() + kCarbonLoopWaitTimeout;
@@ -1930,6 +1933,26 @@ void avoidHesitatingCursor()
   // but now is just to avoid a hesitating cursor when transitioning to
   // the primary (this) computer.
   CGSetLocalEventsSuppressionInterval(0.0001);
+}
+
+// DShare-HID: layout
+void OSXComputer::hideOffTheDock()
+{
+  // macOS ignores the hide while the cursor is over the Dock, and only a real move takes it off:
+  // a warp isn't noticed. the tap swallows moves once we have left, so this has to come first.
+  // hiding is a count, so another hide does nothing until the cursor has been shown again.
+  constexpr int kAttempts = 5;
+  constexpr useconds_t kSettle = 3000;
+  const CGPoint centre = CGPointMake(m_xCenter, m_yCenter);
+  for (int attempt = 0; attempt < kAttempts && CGCursorIsVisible(); ++attempt) {
+    showCursor();
+    // no delta, so nothing reaches a client even if the tap gets to this after we have left
+    CGEventRef move = CGEventCreateMouseEvent(nullptr, kCGEventMouseMoved, centre, kCGMouseButtonLeft);
+    CGEventPost(kCGHIDEventTap, move);
+    CFRelease(move);
+    usleep(kSettle);
+    hideCursor();
+  }
 }
 
 #pragma GCC diagnostic error "-Wdeprecated-declarations"

@@ -21,6 +21,16 @@ set(bridge_sources
     widgets/BridgeClientWidget.h
     DeskflowHidExtension.cpp
     DeskflowHidExtension.h
+    layout/DisplayLayout.cpp
+    layout/DisplayLayout.h
+    layout/DisplayLayoutFollow.cpp
+    layout/DisplayLayoutFollow.h
+    layout/DisplayLayoutStore.cpp
+    layout/DisplayLayoutStore.h
+    layout/DisplayLayoutView.cpp
+    layout/DisplayLayoutView.h
+    layout/DisplayMonitors.cpp
+    layout/DisplayMonitors.h
 )
 
 set(AUTO_AUTH_KEY_PATH "${CMAKE_SOURCE_DIR}/firmware/build_upgrade/deskflow_auth_key.inc")

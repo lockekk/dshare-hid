@@ -22,6 +22,8 @@
 #include "net/SocketException.h"
 #include "net/SocketMultiplexer.h"
 #include "net/TCPSocketFactory.h"
+#include "platform/DisplayRects.h" // DShare-HID: layout
+#include "server/DisplayEdges.h"   // DShare-HID: layout
 #include "server/ClientListener.h"
 #include "server/ClientProxy.h"
 #include "server/Config.h"
@@ -331,6 +333,7 @@ bool ServerApp::initServer()
 
 deskflow::Computer *ServerApp::openServerComputer()
 {
+  deskflow::server::DisplayEdges::setSource(&deskflow::platform::displayRects); // DShare-HID: layout
   deskflow::Computer *computer = createComputer();
   getEvents()->addHandler(EventTypes::ComputerError, computer->getEventTarget(), [this](const auto &) {
     getEvents()->addEvent(Event(EventTypes::Quit));

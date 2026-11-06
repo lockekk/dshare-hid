@@ -5,7 +5,7 @@ description: Skill to merge upstream deskflow/deskflow commits into DShare-HID m
 # Merge Upstream Master Skill
 
 Used when pulling changes from the official Deskflow upstream repository into
-the rebranded DShare-HID repository. The detailed playbook (Scenarios A–P,
+the rebranded DShare-HID repository. The detailed playbook (Scenarios A–U,
 rebrand keyword table, file mappings, divergence budget) lives in
 `docs/upgrade_from_upstream_guide.md` — read it in full before resolving any
 conflict.
@@ -38,12 +38,20 @@ hit.
     (`git diff --name-only --cached`). Do NOT spread rebranding elsewhere.
 *   Commit with `git commit -F .git/MERGE_MSG_TEMPLATE`, appending the
     scenario notes for what you resolved.
+*   A line marked `// DShare-HID: layout` is a Scenario U hook: take upstream's
+    lines and re-add the hook at its anchor. Scenario U starts with the steps
+    to follow for these.
+*   Never run `clang-format` on a whole upstream file: it rewraps upstream's
+    lines. Format fork-owned files only.
 
 ### 3. Verification
-Run `.agent/skills/merge-upstream-master/verify_merge.sh` — rebrand grep,
+Run `.agent/skills/merge-upstream-master/verify_merge.sh <pre-merge-tip>` — rebrand grep,
 `./run_task.sh 1` build (on macOS this re-runs macdeployqt + codesign; see
 Scenario P for why raw cmake builds must not be the session's last build),
 and the Scenario M DMG OpenSSL sweep when a DMG tree exists.
+
+Also run Scenario U's watch check. An upstream change can break a layout hook and
+still merge cleanly, so a merge with no conflicts can need its test gate.
 
 ### 4. Reporting
 Report which commits were merged, conflicts resolved and scenarios applied,

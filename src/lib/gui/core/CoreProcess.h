@@ -97,6 +97,7 @@ Q_SIGNALS:
   void peerFingerprint(const QString &fingerprint);
   void missingKeyboardLayouts(const QString &layouts);
   void bridgeProfileHotkey(int position); // DShare-HID
+  void computerShape(const QString &message); // DShare-HID: layout
 
 private Q_SLOTS:
   void onProcessFinished(int exitCode, QProcess::ExitStatus);

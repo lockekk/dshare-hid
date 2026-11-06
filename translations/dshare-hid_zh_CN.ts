@@ -259,6 +259,10 @@ p, li { white-space: pre-wrap; }
         <source>Use dynamic reconnection time based on connection attempts</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Clear Server History</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ComputerSettingsDialog</name>
@@ -2666,6 +2670,49 @@ Duplicate: %1</source>
     <message>
         <source>the device sent an invalid profile list</source>
         <translation>设备发送了无效的配置文件列表</translation>
+    </message>
+</context>
+<context>
+    <name>deskflow::gui::DisplayLayoutView</name>
+    <message>
+        <source>Use the to-scale layout</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Screens drawn to scale</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move to Not linked</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use the classic grid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 · main</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>size unknown</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not linked: drop a computer here to remove its edges</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not linked: reach these with a hotkey</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

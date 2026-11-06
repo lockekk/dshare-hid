@@ -307,4 +307,46 @@ bool BridgeClientConfigManager::hasProfileScreenLocation(const QString &configPa
   return exists;
 }
 
+QString BridgeClientConfigManager::readProfilePlacement(const QString &configPath, int profileId)
+{
+  if (profileId < 0) {
+    return QString();
+  }
+  QSettings config(configPath, QSettings::IniFormat);
+  config.beginGroup(QStringLiteral("profile_%1").arg(profileId));
+  const auto placement = config.value(QStringLiteral("layout_placement")).toString();
+  config.endGroup();
+  return placement;
+}
+
+QList<int> BridgeClientConfigManager::profileIds(const QString &configPath)
+{
+  const auto prefix = QStringLiteral("profile_");
+  QList<int> ids;
+  QSettings config(configPath, QSettings::IniFormat);
+  const auto groups = config.childGroups();
+  for (const auto &group : groups) {
+    bool isNumber = false;
+    const int id = group.mid(prefix.size()).toInt(&isNumber);
+    if (group.startsWith(prefix) && isNumber) {
+      ids.append(id);
+    }
+  }
+  return ids;
+}
+
+void BridgeClientConfigManager::writeProfilePlacement(
+    const QString &configPath, int profileId, const QString &placement
+)
+{
+  if (profileId < 0) {
+    return;
+  }
+  QSettings config(configPath, QSettings::IniFormat);
+  config.beginGroup(QStringLiteral("profile_%1").arg(profileId));
+  config.setValue(QStringLiteral("layout_placement"), placement);
+  config.endGroup();
+  config.sync();
+}
+
 } // namespace deskflow::gui

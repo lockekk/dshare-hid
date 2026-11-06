@@ -12,6 +12,7 @@
 #include "common/Settings.h"
 #include "gui/core/BridgeClientConfigManager.h"
 #include "gui/core/BridgeProfileShortcuts.h"
+#include "gui/layout/DisplayLayoutStore.h" // DShare-HID: layout
 
 #include <QAbstractButton>
 #include <QPushButton>
@@ -141,6 +142,9 @@ void ServerConfig::recall()
 
 int ServerConfig::adjacentComputerIndex(int idx, int deltaColumn, int deltaRow) const
 {
+  if (deskflow::gui::DisplayLayoutStore::isActive()) // DShare-HID: layout
+    return -1;
+
   if (computers()[idx].isNull())
     return -1;
 
@@ -172,6 +176,8 @@ QTextStream &operator<<(QTextStream &outStream, const ServerConfig &config)
     }
     i++;
   }
+
+  deskflow::gui::DisplayLayoutStore::writeLinks(outStream, config); // DShare-HID: layout
 
   outStream << "end" << Qt::endl << Qt::endl;
 
@@ -311,6 +317,7 @@ bool ServerConfig::renameScreen(const QString &oldName, const QString &newName)
   // Rename the screen
   m_computers[index].setName(newName);
   qInfo() << "Renamed screen from" << oldName << "to" << newName << "at index" << index;
+  deskflow::gui::DisplayLayoutStore::rename(oldName, newName); // DShare-HID: layout
 
   // Commit changes to persist them
   commit();

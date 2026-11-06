@@ -725,6 +725,8 @@ void CoreProcess::onCoreIpcMessageReceived(const QString &command, const QString
     Q_EMIT missingKeyboardLayouts(args);
   } else if (command == "switchBridgeProfile") { // DShare-HID: see server/BridgeProfileAction
     Q_EMIT bridgeProfileHotkey(args.toInt());
+  } else if (command == "computerShape") { // DShare-HID: layout
+    Q_EMIT computerShape(args);            // DShare-HID: layout
   }
 }
 

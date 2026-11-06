@@ -211,6 +211,10 @@ set(BRIDGE_SOURCES
   bridge/CdcTransport.h
   bridge/HidFrame.cpp
   bridge/HidFrame.h
+  DisplayRects.cpp # DShare-HID: layout
+  DisplayRects.h # DShare-HID: layout
+  PortalBarriers.cpp # DShare-HID: layout
+  PortalBarriers.h # DShare-HID: layout
 )
 # wayland.h is included to check for wayland support
 add_library(platform STATIC ${PLATFORM_SOURCES} ${BRIDGE_SOURCES})

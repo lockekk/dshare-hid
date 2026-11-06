@@ -17,6 +17,8 @@
 #include "gui/core/CoreProcess.h"
 #include "gui/devices/UsbDeviceHelper.h"
 #include "gui/dialogs/BridgeClientConfigDialog.h"
+#include "gui/layout/DisplayLayoutFollow.h"
+#include "gui/layout/DisplayLayoutStore.h"
 #include "gui/widgets/BridgeClientWidget.h"
 #if DESKFLOW_HID_ENABLE_ESP32_HID_TOOLS
 #include "gui/widgets/Esp32HidToolsWidget.h"
@@ -35,8 +37,8 @@
 #endif
 
 #include "gui/core/BridgeClientProcess.h"
-#include <QCoreApplication>
 #include <QActionGroup>
+#include <QCoreApplication>
 #include <QDebug>
 #include <QEventLoop>
 #include <QGridLayout>
@@ -158,6 +160,24 @@ void DeskflowHidExtension::setup()
         &m_mainWindow->m_coreProcess, &CoreProcess::bridgeProfileHotkey, this,
         &DeskflowHidExtension::bridgeProfileHotkeyPressed, Qt::QueuedConnection
     );
+
+    // links are only worth a restart while the core is using them
+    auto *follow = new DisplayLayoutFollow(
+        this, {[this] { return DisplayLayoutStore::linkText(m_mainWindow->serverConfig()); },
+               [] { return DisplayLayoutStore::writtenLinks(); },
+               [this] {
+                 auto &core = m_mainWindow->m_coreProcess;
+                 const bool server = core.mode() == Settings::CoreMode::Server;
+                 if (core.isStarted() && DisplayLayoutStore::coreUsesLinks(server)) {
+                   qInfo() << "The screen layout changed. Restarting core process to apply it.";
+                   core.restart();
+                 }
+               }}
+    );
+    connect(&m_mainWindow->m_coreProcess, &CoreProcess::computerShape, this, [follow](const QString &message) {
+      DisplayLayoutStore::rememberShape(message);
+      follow->schedule();
+    });
   }
 
   // Check initially connected devices
@@ -346,7 +366,11 @@ void DeskflowHidExtension::applyProfileScreenBonding(const QString &configPath, 
     QString screenName = BridgeClientConfigManager::readScreenName(configPath);
 
     if (m_mainWindow && !screenName.isEmpty()) {
+      // the grid moves too, so it is right if the classic grid comes back
       int moveResult = m_mainWindow->serverConfig().moveScreenRelativeToServer(screenName, relPos);
+      if (DisplayLayoutStore::isActive()) {
+        moveResult = DisplayLayoutStore::applyProfile(configPath, activeProfile, screenName) ? 1 : 0;
+      }
       if (moveResult == 1) {
         if (m_mainWindow->m_coreProcess.isStarted()) {
           qInfo() << "Screen location changed. Restarting core process to apply changes.";
@@ -426,6 +450,9 @@ void DeskflowHidExtension::updateBondedScreenLocations(const ServerConfig &confi
         QPoint relPos(clientX - serverX, clientY - serverY);
 
         BridgeClientConfigManager::writeProfileScreenLocation(configPath, clientState->activeProfileIndex, relPos);
+        if (DisplayLayoutStore::isActive()) {
+          DisplayLayoutStore::rememberProfile(configPath, clientState->activeProfileIndex, screen.name());
+        }
       }
     }
   }
@@ -1201,6 +1228,7 @@ void DeskflowHidExtension::bridgeClientConnectToggled(
     bridgeProcConfig.logLevel = logLevel;
     bridgeProcConfig.screenWidth = screenWidth;
     bridgeProcConfig.screenHeight = screenHeight;
+    DisplayLayoutStore::rememberSize(screenName, QSize(screenWidth, screenHeight));
 
     auto *process = new BridgeClientProcess(devicePath, this);
 

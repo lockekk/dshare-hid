@@ -198,6 +198,10 @@ public:
   */
   void getClients(std::vector<std::string> &list) const;
   void sendConnectedClientsIpc() const;
+  void sendComputerShapeIpc(const BaseClientProxy *client) const;                               // DShare-HID: layout
+  void projectOntoFreeEdge(int32_t &x, int32_t &y, int32_t zoneSize) const;                     // DShare-HID: layout
+  BaseClientProxy *nearestNeighbor(const BaseClientProxy *src, Direction dir) const;            // DShare-HID: layout
+  void landOnDisplay(const BaseClientProxy *dst, Direction side, int32_t &x, int32_t &y) const; // DShare-HID: layout
   size_t getMaximumClipboardSizeBytes() const;
 
   //@}

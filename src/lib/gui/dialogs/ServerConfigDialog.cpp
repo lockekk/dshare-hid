@@ -17,6 +17,7 @@
 #include "dialogs/ComputerSettingsDialog.h"
 #include "dialogs/HotkeyDialog.h"
 #include "gui/core/BridgeClientConfigManager.h"
+#include "gui/layout/DisplayLayoutView.h" // DShare-HID: layout
 #include "gui/widgets/SettingsDialogButtonBox.h"
 
 #include <QFileDialog>
@@ -52,6 +53,7 @@ ServerConfigDialog::ServerConfigDialog(QWidget *parent, ServerConfig &config)
   if (!deskflow::platform::isWindows())
     ui->cbWin32KeepForeground->setVisible(false);
   initConnections();
+  deskflow::gui::DisplayLayoutView::install(this, ui->computerSetupView, m_computerSetupModel); // DShare-HID: layout
 }
 
 ServerConfigDialog::~ServerConfigDialog() = default;
@@ -106,6 +108,8 @@ void ServerConfigDialog::save()
     Settings::setValue(Settings::Computer::Aliases.arg(computerName), computer.aliases());
     Settings::setValue(Settings::Computer::Name.arg(computerName), computerName);
   }
+  // Write the computer list now too, or it keeps computers whose settings were just removed until the app quits.
+  m_serverConfig.commit();
   Settings::removeUnknownComputers(computerNames);
   QDialog::accept();
 }
@@ -657,6 +661,9 @@ bool ServerConfigDialog::addComputer(const QString &clientName, bool doSilent)
 
 bool ServerConfigDialog::isGeneralConfigModified() const
 {
+  if (deskflow::gui::DisplayLayoutView::isModified(this)) // DShare-HID: layout
+    return true;
+
   return m_originalServerConfigIsExternal != Settings::value(Settings::Server::ExternalConfig).toBool() ||
          m_originalServerConfigUsesExternalFile != Settings::value(Settings::Server::ExternalConfigFile).toString() ||
          m_protocol != Settings::networkProtocol() ||

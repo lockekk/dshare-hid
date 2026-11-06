@@ -10,6 +10,7 @@
 
 #include "base/IEventQueue.h"
 #include "base/Log.h"
+#include "common/ComputerShapeMessage.h" // DShare-HID: layout
 #include "deskflow/AppUtil.h"
 #include "deskflow/Computer.h"
 #include "deskflow/DeskflowException.h"
@@ -23,6 +24,7 @@
 #include "server/ClientListener.h"
 #include "server/ClientProxy.h"
 #include "server/ClientProxyUnknown.h"
+#include "server/DisplayEdges.h" // DShare-HID: layout
 #include "server/PrimaryClient.h"
 
 #ifdef _WIN32
@@ -269,6 +271,7 @@ void Server::adoptClient(BaseClientProxy *client)
   LOG_DEBUG("client \"%s\" has connected", getName(client).c_str());
   ipcSendConnectionState(deskflow::core::ConnectionState::Connected);
   sendConnectedClientsIpc();
+  sendComputerShapeIpc(client); // DShare-HID: layout
 
   // send configuration options to client
   sendOptions(client);
@@ -743,6 +746,7 @@ BaseClientProxy *Server::mapToNeighbor(BaseClientProxy *src, Direction srcSide, 
   // a neighbor (i.e. an asymmetrical side) then we don't need to
   // move inwards because that side can't provoke a jump.
   avoidJumpZone(dst, srcSide, x, y);
+  landOnDisplay(dst, srcSide, x, y); // DShare-HID: layout
 
   return dst;
 }
@@ -1150,6 +1154,7 @@ void Server::handleShapeChanged(BaseClientProxy *client)
   }
 
   LOG_DEBUG("computer \"%s\" shape changed", getName(client).c_str());
+  sendComputerShapeIpc(client); // DShare-HID: layout
 
   // update jump coordinate
   int32_t x;
@@ -1165,6 +1170,7 @@ void Server::handleShapeChanged(BaseClientProxy *client)
 
   // handle resolution change to primary computer
   if (client == m_primaryClient) {
+    DisplayEdges::refresh(); // DShare-HID: layout
     if (client == m_active) {
       onMouseMovePrimary(m_x, m_y);
     } else {
@@ -1345,6 +1351,7 @@ void Server::handleSwitchInDirectionEvent(const Event &event)
   int32_t x = m_x;
   int32_t y = m_y;
   BaseClientProxy *newComputer = getNeighbor(m_active, info->m_direction, x, y);
+  newComputer = newComputer ? newComputer : nearestNeighbor(m_active, info->m_direction); // DShare-HID: layout
   if (newComputer == nullptr) {
     LOG_VERBOSE("no neighbor %s", Config::dirName(info->m_direction));
   } else {
@@ -1657,6 +1664,7 @@ bool Server::onMouseMovePrimary(int32_t x, int32_t y)
   int32_t ah;
   m_active->getShape(ax, ay, aw, ah);
   int32_t zoneSize = getJumpZoneSize(m_active);
+  projectOntoFreeEdge(x, y, zoneSize); // DShare-HID: layout
 
   // clamp position to computer
   int32_t xc = x;
@@ -2081,4 +2089,82 @@ void Server::forceLeaveClient(const BaseClientProxy *client)
 
   // tell primary client about the active sides
   m_primaryClient->reconfigure(getActivePrimarySides());
+}
+
+// DShare-HID: layout
+void Server::sendComputerShapeIpc(const BaseClientProxy *client) const
+{
+  if (client == m_primaryClient) {
+    return;
+  }
+
+  int32_t x;
+  int32_t y;
+  int32_t w;
+  int32_t h;
+  client->getShape(x, y, w, h);
+  ipcSendToClient("computerShape", deskflow::computerShapeMessage(QString::fromStdString(getName(client)), w, h));
+}
+
+// DShare-HID: layout
+void Server::projectOntoFreeEdge(int32_t &x, int32_t &y, int32_t zoneSize) const
+{
+  int32_t ax;
+  int32_t ay;
+  int32_t aw;
+  int32_t ah;
+  m_primaryClient->getShape(ax, ay, aw, ah);
+
+  const auto name = getName(m_primaryClient);
+  DisplayEdges::project(QRect(ax, ay, aw, ah), x, y, zoneSize, [&](Direction side, int32_t px, int32_t py) {
+    const auto neighbor = m_config->getNeighbor(name, side, mapToFraction(m_primaryClient, side, px, py), nullptr);
+    // a link along the whole side is the grid's, which has only ever crossed at the outside
+    constexpr float kEndOfSide = 0.999F;
+    return !neighbor.empty() && (m_config->getNeighbor(name, side, 0, nullptr) != neighbor ||
+                                 m_config->getNeighbor(name, side, kEndOfSide, nullptr) != neighbor);
+  });
+}
+
+// DShare-HID: layout
+BaseClientProxy *Server::nearestNeighbor(const BaseClientProxy *src, Direction dir) const
+{
+  // a link can cover part of a side, and a hotkey means the side, not the row the cursor is on
+  constexpr int32_t kStep = 16; // shorter than any link a layout writes
+
+  int32_t sx;
+  int32_t sy;
+  int32_t sw;
+  int32_t sh;
+  src->getShape(sx, sy, sw, sh);
+
+  const bool rows = dir == Direction::Left || dir == Direction::Right;
+  const int32_t start = rows ? sy : sx;
+  const int32_t length = rows ? sh : sw;
+  const int32_t cursor = rows ? m_y : m_x;
+  for (int32_t distance = kStep; distance < length; distance += kStep) {
+    for (const int32_t along : {cursor - distance, cursor + distance}) {
+      if (along < start || along >= start + length)
+        continue;
+      int32_t x = rows ? m_x : along;
+      int32_t y = rows ? along : m_y;
+      if (auto *neighbor = getNeighbor(src, dir, x, y); neighbor != nullptr)
+        return neighbor;
+    }
+  }
+  return nullptr;
+}
+
+// DShare-HID: layout
+void Server::landOnDisplay(const BaseClientProxy *dst, Direction side, int32_t &x, int32_t &y) const
+{
+  if (dst != m_primaryClient) {
+    return;
+  }
+
+  int32_t ax;
+  int32_t ay;
+  int32_t aw;
+  int32_t ah;
+  dst->getShape(ax, ay, aw, ah);
+  DisplayEdges::land(QRect(ax, ay, aw, ah), side, getJumpZoneSize(dst), x, y);
 }
