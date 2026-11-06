@@ -329,7 +329,7 @@ Use this table to identify which rebranded file corresponds to an upstream file 
 **Merging upstream with these hooks, step by step.** This is the whole job. The rest of this scenario is reference for when a step sends you there.
 
 1.  **Note where you start:** `git rev-parse --short HEAD` on `main`. This is `<pre-merge-tip>`.
-2.  **Merge one commit at a time** with `merge_next_upstream.sh --all`. It stops when a person is needed.
+2.  **Merge** with one two-parent merge, or commit by commit with `merge_next_upstream.sh --all`, which stops when a person is needed.
 3.  **If a line marked `// DShare-HID: layout` conflicts:** take upstream's lines, then put the hook back at its anchor from the table below. Never edit an upstream line to make a hook fit.
 4.  **If upstream renamed something the fork uses:** git can't see this. Search for the old name in fork files before committing (Scenario O). In the 2026-11-06 merge, upstream replaced `lineHostname` with `cbHostname`, and the search came back empty, so the merge was safe.
 5.  **Run the gate:** `TEST_BUILD=/some/folder/outside/the/repo .agent/skills/merge-upstream-master/verify_merge.sh <pre-merge-tip>`. It does the rebrand check, the build, the DMG check and the watch check, then runs the layout tests if a hooked file changed. If it prints `layout tests OK`, the hooks survived.
@@ -481,10 +481,10 @@ touched a hooked file, because a hook can break in a merge with no conflict.
 
 The script assumes the target branch is `main` and the source is
 `upstream/master`. To merge a release tag or into another branch, do it by
-hand. Per-commit merges stay the default. When the user explicitly opts into a
-single merge for a large backlog (v1.27.0: 210 commits merged into `1011`),
-use **one two-parent merge** (`git merge --no-ff --no-commit <tag>`, resolve,
-build, commit) and never `git merge --squash`: a squash commit has one parent,
+hand. The default is **one two-parent merge** of the whole backlog or tag
+(`git merge --no-ff --no-commit <target>`, resolve, build, commit); v1.27.0
+merged 210 commits this way. Commit-by-commit merging with the script is
+optional. Never use `git merge --squash`: a squash commit has one parent,
 so git keeps the old merge-base and the next sync re-conflicts on every one of
 those commits.
 

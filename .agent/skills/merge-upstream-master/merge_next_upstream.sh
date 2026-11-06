@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Merge the next upstream commit into main, one commit per merge commit
-# (see docs/upgrade_from_upstream_guide.md and CLAUDE.md — never merge a range).
+# (optional: one two-parent merge of the backlog is the default; see
+# docs/upgrade_from_upstream_guide.md and CLAUDE.md).
 #
 # Deterministic conflict resolutions are applied automatically:
 #   Scenario A: re-introduced translations/deskflow_*.ts        -> git rm

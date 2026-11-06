@@ -12,17 +12,17 @@ conflict.
 
 ## Hard rule
 
-Merge **one upstream commit at a time**, each as its own merge commit on
-`main`. Never `git merge upstream/master` or a range. The only exception is an
-explicit user opt-in to a single merge (e.g. a release tag): then use one
-two-parent `git merge --no-ff <tag>`, never `--squash` (see the Automation
-section of the guide).
+Every upstream merge must be a two-parent merge. Never `git merge --squash`.
+Merge size is free: the default is one `git merge --no-ff --no-commit <target>`
+of the whole backlog or tag, and commit-by-commit merging is optional (see the
+Automation section of the guide).
 
 ## Workflow
 
-### 1. Merge loop
-Run `.agent/skills/merge-upstream-master/merge_next_upstream.sh` (or with
-`--all` for the whole backlog). It merges the next commit, auto-applies the
+### 1. Merge
+Merge the backlog in one two-parent merge, or for smaller steps run
+`.agent/skills/merge-upstream-master/merge_next_upstream.sh` (or with
+`--all` for the whole backlog). The script merges the next commit, auto-applies the
 deterministic scenarios (A: drop re-introduced `deskflow_*.ts`; J: drop
 `.github`; L: take upstream `src/unittests`; B: relocate new icons into
 `dshare-hid-light`), writes the merge-commit message in the mandated format
