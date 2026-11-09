@@ -73,7 +73,7 @@ public:
   /// a computer dragged off the map came back to it
   void dropOwnComputer(const QString &name, const QPoint &point);
   /// a computer dragged off the map is gone if the trash took it
-  void finishExternalDrag(const QString &name, Qt::DropAction action);
+  void finishExternalDrag(const QString &name);
 
   /// saves the layout, for the dialog's Save
   void commit();
@@ -151,7 +151,7 @@ private:
   bool m_savedClassic = false;
   QString m_selected;
   std::optional<Drag> m_drag;
-  bool m_externalDropHandled = false;
+  bool m_trashed = false; ///< the trash took a drop since the last drag began
   QList<Chip> m_chips;
 
   QRect m_extents;

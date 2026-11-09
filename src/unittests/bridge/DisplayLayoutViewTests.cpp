@@ -964,7 +964,7 @@ void DisplayLayoutViewTests::trashTakesADraggedComputer()
   sendDrop(trash, data.get(), trash->rect().center());
   QCOMPARE(removed.size(), 1);
 
-  f.view->finishExternalDrag("hp", Qt::MoveAction);
+  f.view->finishExternalDrag("hp");
   QVERIFY(find(f.view, "hp") == nullptr);
   QCOMPARE(deleted.size(), 1);
 }
@@ -972,11 +972,11 @@ void DisplayLayoutViewTests::trashTakesADraggedComputer()
 void DisplayLayoutViewTests::trashIsTheOnlyWayADragRemoves()
 {
   Fixture f;
-  f.view->finishExternalDrag("hp", Qt::IgnoreAction);
+  f.view->finishExternalDrag("hp");
   QVERIFY(find(f.view, "hp") != nullptr);
 
   f.view->dropOwnComputer("hp", QPoint(f.view->rect().right() - 4, f.view->shelfArea().top() / 2));
-  f.view->finishExternalDrag("hp", Qt::MoveAction);
+  f.view->finishExternalDrag("hp");
   QVERIFY(find(f.view, "hp") != nullptr);
 }
 

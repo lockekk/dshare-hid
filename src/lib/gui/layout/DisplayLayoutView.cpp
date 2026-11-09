@@ -113,6 +113,8 @@ DisplayLayoutView *DisplayLayoutView::install(QDialog *dialog, ComputerSetupView
   connect(view->m_modeButton, &QPushButton::clicked, view, [view] { view->setClassic(!view->m_classic); });
 
   connect(dialog, &QDialog::accepted, view, &DisplayLayoutView::commit);
+  if (auto *trash = dialog->findChild<RemoveComputerWidget *>())
+    connect(trash, &RemoveComputerWidget::computerRemoved, view, [view] { view->m_trashed = true; });
   if (auto *buttons = dialog->findChild<SettingsDialogButtonBox *>())
     connect(buttons, &SettingsDialogButtonBox::reset, view, &DisplayLayoutView::reload);
 
@@ -809,20 +811,23 @@ void DisplayLayoutView::startExternalDrag(const QString &name)
   drag->setMimeData(m_model.mimeData({index}));
   drag->setPixmap(m_model.data(index, Qt::DecorationRole).value<QPixmap>());
 
-  m_externalDropHandled = false;
+  m_trashed = false;
   update();
-  finishExternalDrag(name, drag->exec(Qt::MoveAction, Qt::MoveAction));
+  // what exec() returns can't be trusted: on Wayland a drop on the trash comes back as IgnoreAction
+  drag->exec(Qt::MoveAction, Qt::MoveAction);
+  finishExternalDrag(name);
 }
 
-void DisplayLayoutView::finishExternalDrag(const QString &name, Qt::DropAction action)
+void DisplayLayoutView::finishExternalDrag(const QString &name)
 {
-  if (action == Qt::MoveAction && !m_externalDropHandled)
+  if (m_trashed)
     removeComputer(name);
+  // removeComputer() signals the trash too, so this clears after it
+  m_trashed = false;
 }
 
 void DisplayLayoutView::dropOwnComputer(const QString &name, const QPoint &point)
 {
-  m_externalDropHandled = true;
   auto *entry = client(name);
   if (entry == nullptr)
     return;
