@@ -23,41 +23,36 @@ Run the `update_icons.py` script from the project root:
 ```
 
 **What this does:**
-1.  **macOS**: Updates `src/apps/res/DShare.icns`.
-2.  **Windows**: Updates `src/apps/res/dshare.ico` (multi-size ICO).
-3.  **Linux**: Updates `deploy/linux/org.lockekk.dshare-hid.png` (512x512).
+1.  **macOS**: Updates `src/apps/res/DShare-HID.icns` (only when you pass a new source image).
+2.  **Windows**: Updates `src/apps/res/dshare-hid.ico` (multi-size ICO).
+3.  **Linux**: Updates `deploy/linux/io.github.lockekk.dshare-hid.png` (512x512).
 4.  **Windows**: Generates `deploy/windows/wix-dialog.png` & `wix-banner.png`.
-5.  **macOS**: Synchs `deploy/mac/dmg-volume.icns`.
+5.  **macOS**: Syncs `deploy/mac/dmg-volume.icns` and resets `deploy/mac/dmg-background.tiff` to plain white.
 6.  **Internal Resources**: Updates embedded SVG icons used within the application GUI:
-    *   `src/apps/res/icons/dshare-dark/apps/64/org.lockekk.dshare-hid.svg` (Colorful)
-    *   `src/apps/res/icons/dshare-light/apps/64/org.lockekk.dshare-hid.svg` (Colorful)
-    *   `src/apps/res/icons/.../org.lockekk.dshare-hid-symbolic.svg` (Monochrome/Grayscale for Tray)
+    *   `src/apps/res/icons/dshare-hid-dark/apps/64/io.github.lockekk.dshare-hid.svg` (Colorful)
+    *   `src/apps/res/icons/dshare-hid-light/apps/64/io.github.lockekk.dshare-hid.svg` (Colorful)
+    *   `src/apps/res/icons/dshare-hid-{dark,light}/apps/64/io.github.lockekk.dshare-hid-symbolic.svg` (Monochrome/Grayscale for Tray)
+
+The script only writes to files that already exist. If one is missing (for example after a rename), it stops and lists the paths to fix at the top of the script.
 
 > **Note**: The script automatically generates a high-contrast **Grayscale** version for the "Symbolic" (Monocolor) icon used in the system tray. This ensures visibility even if your source icon is a solid block without transparency.
 
-## 2. Linux Integration (Critical)
+## 2. Linux Integration
 
-On Linux, simply building the application often isn't enough for the Taskbar/Dock to show the correct icon. The Desktop Environment (GNOME, KDE, etc.) needs to find the icon in a standard system path.
+The `.deb` package installs the desktop file and icons under the app ID `io.github.lockekk.dshare-hid` (see `deploy/linux/create_deb.sh`).
 
-We provide a script to handle this automatically used for local development.
-
-### Running the Integration Script
-
-After updating the icon (Step 1), run:
+The old `scripts/install_linux_integration.sh` was removed when the app was renamed to DShare-HID. If you ran it before then, it left icons named `org.deskflow.deskflow*` in `~/.local/share/icons/hicolor/` and a `~/.local/share/applications/deskflow-hid.desktop` launcher. `~/.local/share` takes priority over system and Flatpak icons, so those leftovers replace upstream Deskflow's own icon. Delete them:
 
 ```bash
-./scripts/install_linux_integration.sh
+rm -f ~/.local/share/icons/hicolor/*/apps/org.deskflow.deskflow*.{png,svg} \
+      ~/.local/share/applications/deskflow-hid.desktop
 ```
 
-**What this does:**
-1.  **Installs Icons**: Copies the generated icons to `~/.local/share/icons/hicolor/`.
-2.  **Updates Cache**: Runs `gtk-update-icon-cache` to ensure the system sees the new files immediately.
-3.  **Desktop File**: Creates a definitive `~/.local/share/applications/dshare-hid.desktop` file.
-4.  **Window Handling**: Sets `StartupWMClass=DShare-HID` to correctly associate the running window with the pinned icon.
+Never install icons under another app's name.
 
 ## 3. Applying Changes
 
-After running both scripts:
+After running the script:
 
 1.  **Rebuild** the application (required to embed the new internal resources for Windows/macOS and the About dialog):
     ```bash
@@ -70,7 +65,8 @@ After running both scripts:
 
 ## Troubleshooting
 
-*   **Taskbar Icon is Generic/Gear**: Run `./scripts/install_linux_integration.sh` again and restart the app. Ensure you are not running an old binary or a different `.desktop` file (e.g., from a Flatpak or global install) isn't taking precedence.
+*   **Taskbar Icon is Generic/Gear**: GNOME matches the window to a desktop file named `io.github.lockekk.dshare-hid.desktop`. Install the `.deb`, or make sure an older `.desktop` file isn't taking precedence.
+*   **Upstream Deskflow shows the DShare-HID icon**: Remove the leftover files listed in section 2, then log out and back in.
 *   **Tray Icon is Invisible**: If using "Monocolor" style in settings, ensure you ran `update_icons.py`. The script ensures the monochrome icon is grayscale (visible) rather than a solid white block.
 *   **Permissions**: If scripts fail to run, ensure they are executable: `chmod +x scripts/*.py scripts/*.sh`.
 

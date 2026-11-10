@@ -2,11 +2,15 @@
 """
 Update DShare Icons
 ====================
-This script reads the master macOS icon (DShare.icns) and regenerates:
+This script reads the master macOS icon (DShare-HID.icns) and regenerates:
 1. Linux deployment icon (PNG 512x512)
 2. Windows application icon (ICO multi-size)
 3. Windows WiX installer icons (Dialog & Banner)
 4. macOS DMG volume icon (icns)
+5. The app icons embedded in the GUI (colorful and symbolic SVGs)
+
+Every output must be a file the build already uses, so the script refuses to
+run if one is missing (that usually means a file was renamed).
 """
 
 import os
@@ -19,13 +23,29 @@ import argparse
 
 # Configuration
 PROJECT_ROOT = Path(__file__).parent.parent
+# Must match CMAKE_PROJECT_REV_FQDN in CMakeLists.txt
+APP_ID = "io.github.lockekk.dshare-hid"
 DEFAULT_SOURCE = PROJECT_ROOT / "src/apps/res/DShare-HID.icns"
 ICNS_PATH = PROJECT_ROOT / "src/apps/res/DShare-HID.icns"
-LINUX_ICON_PATH = PROJECT_ROOT / "deploy/linux/org.lockekk.dshare-hid.png"
-WINDOWS_ICON_PATH = PROJECT_ROOT / "src/apps/res/dshare.ico"
+LINUX_ICON_PATH = PROJECT_ROOT / f"deploy/linux/{APP_ID}.png"
+WINDOWS_ICON_PATH = PROJECT_ROOT / "src/apps/res/dshare-hid.ico"
 WIX_DIALOG_PATH = PROJECT_ROOT / "deploy/windows/wix-dialog.png"
 WIX_BANNER_PATH = PROJECT_ROOT / "deploy/windows/wix-banner.png"
 MAC_VOLUME_ICON_PATH = PROJECT_ROOT / "deploy/mac/dmg-volume.icns"
+MAC_DMG_BACKGROUND_PATH = PROJECT_ROOT / "deploy/mac/dmg-background.tiff"
+
+# GUI app icons, loaded via QIcon::fromTheme(kRevFqdnName): (path, use_grayscale)
+ICON_THEME_DIR = PROJECT_ROOT / "src/apps/res/icons"
+SVG_TARGETS = [
+    (ICON_THEME_DIR / f"dshare-hid-dark/apps/64/{APP_ID}.svg", False),
+    (ICON_THEME_DIR / f"dshare-hid-light/apps/64/{APP_ID}.svg", False),
+    (ICON_THEME_DIR / f"dshare-hid-dark/apps/64/{APP_ID}-symbolic.svg", True),
+    (ICON_THEME_DIR / f"dshare-hid-light/apps/64/{APP_ID}-symbolic.svg", True),
+]
+
+OUTPUT_PATHS = [ICNS_PATH, LINUX_ICON_PATH, WINDOWS_ICON_PATH, WIX_DIALOG_PATH,
+                WIX_BANNER_PATH, MAC_VOLUME_ICON_PATH, MAC_DMG_BACKGROUND_PATH] + \
+    [path for path, _ in SVG_TARGETS]
 
 WINDOWS_ICON_SIZES = [(256, 256), (128, 128), (64, 64),
                       (48, 48), (32, 32), (16, 16)]
@@ -35,13 +55,21 @@ def main():
     parser = argparse.ArgumentParser(
         description="Update DShare icons from a source image.")
     parser.add_argument(
-        "source", nargs="?", help="Path to source image (PNG/ICNS). Defaults to existing DShare.icns")
+        "source", nargs="?", help="Path to source image (PNG/ICNS). Defaults to existing DShare-HID.icns")
     args = parser.parse_args()
 
     source_path = Path(args.source) if args.source else DEFAULT_SOURCE
 
     if not source_path.exists():
         print(f"Error: Source image not found at {source_path}")
+        return 1
+
+    missing = [path for path in OUTPUT_PATHS if not path.exists()]
+    if missing:
+        print("Error: these icon files don't exist, so the build wouldn't use them:")
+        for path in missing:
+            print(f"  {path.relative_to(PROJECT_ROOT)}")
+        print("Update the paths at the top of this script to match the build.")
         return 1
 
     print(f"Reading source image: {source_path}")
@@ -113,12 +141,10 @@ def main():
         # 2.3 Update Mac DMG Background (Remove baked-in artifacts)
         # Create a plain white background to ensure no old artifacts persist.
         # Dimensions 600x400 match the bounds in generate_ds_store.applescript
-        print(
-            f"Updating Mac DMG background: {MAC_VOLUME_ICON_PATH.parent / 'dmg-background.tiff'}")
+        print(f"Updating Mac DMG background: {MAC_DMG_BACKGROUND_PATH}")
         bg_width, bg_height = 600, 400
         dmg_bg = Image.new("RGB", (bg_width, bg_height), "white")
-        dmg_bg.save(MAC_VOLUME_ICON_PATH.parent /
-                    "dmg-background.tiff", format="TIFF")
+        dmg_bg.save(MAC_DMG_BACKGROUND_PATH, format="TIFF")
         print("  -> Done")
 
         # 3. Update Internal SVGs (Embedded PNG in SVG)
@@ -168,21 +194,8 @@ def main():
   <image width="{size}" height="{size}" xlink:href="data:image/png;base64,{b64}"/>
 </svg>'''
 
-        # Define targets with their specific requirements
-        # (path, use_grayscale)
-        targets = [
-            # Main App Icons (Colorful)
-            (PROJECT_ROOT / "src/apps/res/icons/dshare-dark/apps/64/org.lockekk.dshare-hid.svg", False),
-            (PROJECT_ROOT / "src/apps/res/icons/dshare-light/apps/64/org.lockekk.dshare-hid.svg", False),
-
-            # Symbolic/Mono Icons
-            (PROJECT_ROOT / "src/apps/res/icons/dshare-dark/apps/64/org.lockekk.dshare-hid-symbolic.svg", True),
-            (PROJECT_ROOT / "src/apps/res/icons/dshare-light/apps/64/org.lockekk.dshare-hid-symbolic.svg", True),
-        ]
-
-        for path, use_grayscale in targets:
+        for path, use_grayscale in SVG_TARGETS:
             print(f"Generating SVG: {path}")
-            path.parent.mkdir(parents=True, exist_ok=True)
 
             b64_data = png_b64_gray if use_grayscale else png_b64_colorful
 
