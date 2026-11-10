@@ -403,7 +403,7 @@ void DisplayLayoutView::unlinkComputer(const QString &name)
 void DisplayLayoutView::removeComputer(const QString &name)
 {
   const int cell = cellOf(name);
-  if (cell < 0 || name == m_state.serverName)
+  if (cell < 0 || name == m_state.serverName || !m_grid->confirmRemove(name))
     return;
 
   m_model.m_computers[cell] = Computer();

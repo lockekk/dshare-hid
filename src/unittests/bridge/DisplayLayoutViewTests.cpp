@@ -26,6 +26,7 @@
 #include <QHelpEvent>
 #include <QLineEdit>
 #include <QMenu>
+#include <QMessageBox>
 #include <QMimeData>
 #include <QPushButton>
 #include <QSettings>
@@ -759,7 +760,43 @@ QString addBridgeConfig(const QString &name)
   return path;
 }
 
+/// answers the question box that the next call opens
+void answerQuestion(QMessageBox::StandardButton answer)
+{
+  QTimer::singleShot(0, qApp, [answer] {
+    if (auto *box = qobject_cast<QMessageBox *>(QApplication::activeModalWidget()))
+      box->button(answer)->click();
+  });
+}
+
 } // namespace
+
+void DisplayLayoutViewTests::noToTheRemovePromptKeepsABridge()
+{
+  const auto path = addBridgeConfig("dongle");
+  Fixture f({"hp", "dongle"});
+  QSignalSpy deleted(f.grid, &ComputerSetupView::screenDeleted);
+
+  answerQuestion(QMessageBox::No);
+  f.view->removeComputer("dongle");
+  QVERIFY(find(f.view, "dongle") != nullptr);
+  QCOMPARE(deleted.size(), 0);
+  QVERIFY(QFile::exists(path));
+  QVERIFY(QFile::remove(path));
+}
+
+void DisplayLayoutViewTests::yesToTheRemovePromptRemovesABridge()
+{
+  const auto path = addBridgeConfig("dongle");
+  Fixture f({"hp", "dongle"});
+  QSignalSpy deleted(f.grid, &ComputerSetupView::screenDeleted);
+
+  answerQuestion(QMessageBox::Yes);
+  f.view->removeComputer("dongle");
+  QVERIFY(find(f.view, "dongle") == nullptr);
+  QCOMPARE(deleted.size(), 1);
+  QVERIFY(!QFile::exists(path));
+}
 
 void DisplayLayoutViewTests::paintsBridgeComputers()
 {

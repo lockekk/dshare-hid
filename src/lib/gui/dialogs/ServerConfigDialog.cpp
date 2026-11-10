@@ -53,6 +53,8 @@ ServerConfigDialog::ServerConfigDialog(QWidget *parent, ServerConfig &config)
   if (!deskflow::platform::isWindows())
     ui->cbWin32KeepForeground->setVisible(false);
   initConnections();
+  // DShare-HID: a bridge client asks before it is removed
+  ui->computerSetupView->setRemoveConfirmation([this](const QString &name) { return confirmRemoveScreen(name); });
   deskflow::gui::DisplayLayoutView::install(this, ui->computerSetupView, m_computerSetupModel); // DShare-HID: layout
 }
 
@@ -363,6 +365,23 @@ void ServerConfigDialog::onComputerRemoved()
   setButtonBoxEnabledButtons();
 }
 
+bool ServerConfigDialog::confirmRemoveScreen(const QString &screenName)
+{
+  using namespace deskflow::gui;
+
+  // only a bridge client asks, since removing it deletes its settings too
+  if (BridgeClientConfigManager::findConfigByScreenName(screenName).isEmpty())
+    return true;
+
+  const auto reply = QMessageBox::question(
+      this, tr("Remove Computer"),
+      tr("Remove %1? Its bridge client settings are deleted too.")
+          .arg(BridgeClientConfigManager::displayName(screenName)),
+      QMessageBox::Yes | QMessageBox::No, QMessageBox::No
+  );
+  return reply == QMessageBox::Yes;
+}
+
 void ServerConfigDialog::onScreenDeleted(const QString &screenName)
 {
   using namespace deskflow::gui;
@@ -377,22 +396,8 @@ void ServerConfigDialog::onScreenDeleted(const QString &screenName)
     return;
   }
 
+  // confirmRemoveScreen() already asked, so this only deletes
   qInfo() << "Deleted screen is a bridge client:" << screenName << "config:" << configPath;
-
-  // Ask user if they want to delete the bridge client configuration as well
-  QMessageBox::StandardButton reply = QMessageBox::question(
-      this, tr("Delete Bridge Client Configuration"),
-      tr("The screen '%1' is a bridge client.\n\nDo you want to delete its configuration file as well?\n\n"
-         "If you choose 'Yes', the bridge client widget will be removed from the main window.\n"
-         "If you choose 'No', the bridge client configuration will be kept and can still be used.")
-          .arg(screenName),
-      QMessageBox::Yes | QMessageBox::No, QMessageBox::No
-  );
-
-  if (reply != QMessageBox::Yes) {
-    qDebug() << "User chose to keep bridge client configuration for:" << screenName;
-    return;
-  }
 
   // Delegate deletion to MainWindow so it can stop the process first
   QWidget *mainWindow = parentWidget();

@@ -37,6 +37,7 @@ public:
 protected:
   void onComputerRemoved();
   // Bridge client cleanup hook when a computer is removed via drag-to-trash
+  bool confirmRemoveScreen(const QString &screenName);
   void onScreenDeleted(const QString &screenName);
   void addClient();
   bool addComputer(const QString &clientName, bool doSilent);

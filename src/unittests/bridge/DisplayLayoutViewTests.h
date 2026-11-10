@@ -50,6 +50,8 @@ private Q_SLOTS:
   void removeComputer();
   void serverCantBeRemoved();
   void removedBridgeStillPrompts();
+  void noToTheRemovePromptKeepsABridge();
+  void yesToTheRemovePromptRemovesABridge();
 
   void settingsDialogRename();
   void settingsDialogRenameOfAnAnchor();

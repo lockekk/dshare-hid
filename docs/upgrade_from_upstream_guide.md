@@ -551,9 +551,11 @@ never take upstream's), translations, README.md, and docs. See Sections 1–3.
   ComputerSetupModel.{cpp,h}
   (`addComputer(..., awayFromServer)`), config/ComputerList.{cpp,h}
   (`addComputerAwayFromServer`), widgets/ComputerSetupView.{cpp,h}
-  (`screenDeleted` signal), ServerConfig.{cpp,h} (bridge placement,
+  (`screenDeleted` signal, and `setRemoveConfirmation`/`confirmRemove`,
+  asked in `startDrag()` before the source cell is cleared),
+  ServerConfig.{cpp,h} (bridge placement,
   `renameScreen`, `moveScreenRelativeToServer`), ServerConfigDialog.{cpp,h,ui}
-  (`onScreenDeleted`), CoreProcess.{cpp,h} (DuplicateServer only — the rest is
+  (`onScreenDeleted`, `confirmRemoveScreen` set after `initConnections();`), CoreProcess.{cpp,h} (DuplicateServer only — the rest is
   upstream's), SettingsDialog.cpp, AboutDialog.*, StyleUtils.h,
   LogWidget.cpp (h-scroll preservation in `appendLine` only — the SearchWidget
   wiring is upstream's, keep it)

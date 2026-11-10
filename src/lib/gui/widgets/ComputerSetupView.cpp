@@ -140,26 +140,32 @@ void ComputerSetupView::startDrag(Qt::DropActions)
     // make sure to only delete the drag source if computers weren't swapped
     // see ComputerSetupModel::dropMimeData
     if (!model()->computer(indexes[0]).swapped()) {
+      // Check if the screen still exists elsewhere in the grid (relocated, not dragged to trash)
+      const int sourceColumn = indexes[0].column();
+      const int sourceRow = indexes[0].row();
+      bool screenStillExists = false;
+      for (int col = 0; col < model()->columnCount() && !screenStillExists; col++) {
+        for (int row = 0; row < model()->rowCount() && !screenStillExists; row++) {
+          if ((col != sourceColumn || row != sourceRow) && !model()->computer(col, row).isNull() &&
+              model()->computer(col, row).name() == screenName) {
+            screenStillExists = true;
+          }
+        }
+      }
+      const bool removed = !screenStillExists && !screenName.isEmpty();
+
+      // a No to the confirmation keeps the computer where it was
+      if (removed && !confirmRemove(screenName)) {
+        Q_EMIT model()->computersChanged();
+        return;
+      }
+
       // Clear the source cell
       model()->computer(indexes[0]) = Computer();
 
-      // Check if the screen still exists elsewhere in the grid (relocated or swapped)
-      // Only emit screenDeleted if the screen was actually removed (dragged to trash)
-      bool screenStillExists = false;
-      if (!screenName.isEmpty()) {
-        for (int col = 0; col < model()->columnCount() && !screenStillExists; col++) {
-          for (int row = 0; row < model()->rowCount() && !screenStillExists; row++) {
-            if (!model()->computer(col, row).isNull() && model()->computer(col, row).name() == screenName) {
-              screenStillExists = true;
-            }
-          }
-        }
-
-        // Only emit screenDeleted if the screen was actually deleted (not relocated)
-        if (!screenStillExists) {
-          Q_EMIT screenDeleted(screenName);
-        }
-      }
+      // Only emit screenDeleted if the screen was actually deleted (not relocated)
+      if (removed)
+        Q_EMIT screenDeleted(screenName);
     } else
       model()->computer(indexes[0]).setSwapped(false);
 

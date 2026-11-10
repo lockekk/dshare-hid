@@ -10,6 +10,8 @@
 #include <QFlags>
 #include <QTableView>
 
+#include <functional> // DShare-HID
+
 class QWidget;
 class QMouseEvent;
 class QResizeEvent;
@@ -25,11 +27,22 @@ public:
   void setModel(QAbstractItemModel *model) override;
   ComputerSetupModel *model() const;
 
+  // DShare-HID: asked before a computer is removed, and false keeps it
+  void setRemoveConfirmation(std::function<bool(const QString &)> confirm)
+  {
+    m_confirmRemove = std::move(confirm);
+  }
+  bool confirmRemove(const QString &screenName) const
+  {
+    return !m_confirmRemove || m_confirmRemove(screenName);
+  }
+
 Q_SIGNALS:
   void screenDeleted(const QString &screenName);
 
 private:
   void showComputerConfig(int col, int row);
+  std::function<bool(const QString &)> m_confirmRemove; // DShare-HID
 
 protected:
   void mouseDoubleClickEvent(QMouseEvent *) override;
