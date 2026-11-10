@@ -1775,6 +1775,14 @@ Enabling this setting will disable the server config GUI.</source>
         <translation>設定ファイルのパス</translation>
     </message>
     <message>
+        <source>Remove Computer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove %1? Its bridge client settings are deleted too.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>%1 Configurations (*.conf);;All files (*.*)</source>
         <extracomment>%1 is replaced with the application names (*.conf) and (*.*) should not be translated</extracomment>
         <translation>%1 設定 (*.conf);;すべてのファイル (*.*)</translation>
@@ -1789,7 +1797,7 @@ Enabling this setting will disable the server config GUI.</source>
     </message>
     <message>
         <source>Delete Bridge Client Configuration</source>
-        <translation>ブリッジクライアント構成を削除</translation>
+        <translation type="vanished">ブリッジクライアント構成を削除</translation>
     </message>
     <message>
         <source>The screen &apos;%1&apos; is a bridge client.
@@ -1798,7 +1806,7 @@ Do you want to delete its configuration file as well?
 
 If you choose &apos;Yes&apos;, the bridge client widget will be removed from the main window.
 If you choose &apos;No&apos;, the bridge client configuration will be kept and can still be used.</source>
-        <translation>画面 &apos;%1&apos; はブリッジクライアントです。
+        <translation type="vanished">画面 &apos;%1&apos; はブリッジクライアントです。
 
 その設定ファイルも削除しますか？
 

@@ -1774,6 +1774,14 @@ Enabling this setting will disable the server config GUI.</source>
 L&apos;abilitazione di questa impostazione disabiliterà l&apos;interfaccia grafica di configurazione del server.</translation>
     </message>
     <message>
+        <source>Remove Computer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove %1? Its bridge client settings are deleted too.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>%1 Configurations (*.conf);;All files (*.*)</source>
         <extracomment>%1 is replaced with the application names (*.conf) and (*.*) should not be translated</extracomment>
         <translation>%1 Configurazioni (*.conf);;Tutti i file (*.*)</translation>
@@ -1788,7 +1796,7 @@ L&apos;abilitazione di questa impostazione disabiliterà l&apos;interfaccia graf
     </message>
     <message>
         <source>Delete Bridge Client Configuration</source>
-        <translation>Elimina configurazione client bridge</translation>
+        <translation type="vanished">Elimina configurazione client bridge</translation>
     </message>
     <message>
         <source>The screen &apos;%1&apos; is a bridge client.
@@ -1797,7 +1805,7 @@ Do you want to delete its configuration file as well?
 
 If you choose &apos;Yes&apos;, the bridge client widget will be removed from the main window.
 If you choose &apos;No&apos;, the bridge client configuration will be kept and can still be used.</source>
-        <translation>Lo schermo &apos;%1&apos; è un client bridge.
+        <translation type="vanished">Lo schermo &apos;%1&apos; è un client bridge.
 
 Vuoi eliminare anche il suo file di configurazione?
 

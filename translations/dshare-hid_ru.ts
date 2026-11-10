@@ -1790,6 +1790,14 @@ Enabling this setting will disable the server config GUI.</source>
         <translation>Путь к файлу конфигурации</translation>
     </message>
     <message>
+        <source>Remove Computer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove %1? Its bridge client settings are deleted too.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>%1 Configurations (*.conf);;All files (*.*)</source>
         <extracomment>%1 is replaced with the application names (*.conf) and (*.*) should not be translated</extracomment>
         <translation>%1 Конфигруации (*.conf);;All-files (*.*)</translation>
@@ -1804,7 +1812,7 @@ Enabling this setting will disable the server config GUI.</source>
     </message>
     <message>
         <source>Delete Bridge Client Configuration</source>
-        <translation>Удалить конфигурацию мост-клиента</translation>
+        <translation type="vanished">Удалить конфигурацию мост-клиента</translation>
     </message>
     <message>
         <source>The screen &apos;%1&apos; is a bridge client.
@@ -1813,7 +1821,7 @@ Do you want to delete its configuration file as well?
 
 If you choose &apos;Yes&apos;, the bridge client widget will be removed from the main window.
 If you choose &apos;No&apos;, the bridge client configuration will be kept and can still be used.</source>
-        <translation>Экран &apos;%1&apos; является клиентом моста.
+        <translation type="vanished">Экран &apos;%1&apos; является клиентом моста.
 
 Удалить также его файл конфигурации?
 
